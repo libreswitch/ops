@@ -1,4 +1,4 @@
-# High-level design of Interfaces
+# High-level design of interfaces
 OpenSwitch manages physical interfaces primarily through the Open vSwitch database interface and port tables.  The [System Daemon (sysd)](http://www.openswitch.net/ops-sysd/DESIGN.md) pushes the physical interface information into the interface table during a boot. Although the [Interface Daemon (intfd)](http://www.openswitch.net/ops-intfd/DESIGN.md) sees these physical interfaces, it does not bring these interfaces "up" if a configuration has not been supplied. Only after a user has configured a valid port in the port table with a reference to that physical interface in the interface table, does the Interface Daemon notify the vSwitch Daemon (vswitchd) that a physical interface is to be enabled.
 
 The [Pluggable Module Daemon (pmd)](http://www.openswitch.net/ops-pmd/DESIGN.md) continuously monitors for the insertion or removal of pluggable transceivers, updates the database accordingly, and turns on and off lasers for optical transceivers when notified.
@@ -43,19 +43,19 @@ Interfaces are primarily managed by four daemons; sysd, intfd, pmd, and vswitchd
 
 
 ## OVSDB-Schema
-### subsystem table
+### Subsystem table
 ```
 Subsystem:interfaces - A set containing each physical interface that is a member of this subsystem.
 ```
-See [System Daemon (sysd)](http://www.openswitch.net/ops-sysd/DESIGN.md)
+See [System Daemon (sysd)](http://www.openswitch.net/ops-sysd/DESIGN.md).
 
-### port table
+### Port table
 ```
 Port:interfaces - A set containing 1 to 8 interfaces that belong to this port.
 ```
 See [Interface Daemon (intfd)](http://www.openswitch.net/ops-intfd/DESIGN.md)
 
-### interface table
+### Interface table
 ```
 Interface:name (sysd)
 Interface:mac_in_use (sysd, set to default value of open_vswitch:system_mac)
@@ -70,25 +70,25 @@ Interface:split_children (sysd)
 See [Pluggable Module Daemon (pmd)](http://www.openswitch.net/ops-pmd/DESIGN.md), [Interface Daemon (intfd)](http://www.openswitch.net/ops-intfd/DESIGN.md), and [Virtual Switch Daemon (vswitchd)](http://www.openswitch.net/ops-openvswitch/DESIGN.md)
 
 ## Functionality
-### Slit Ports (QSFPs)
-QSFP+ ports support "splitter cables". These are cables that have a QSFP+ transceiver on one end, with the cable splitting into four separate cables, each terminated with an SFP+ transceiver. This cable takes the four 10-Gb lanes used for 40-Gb QSFP+ modules and separates them into four individual 10-Gb cables, each with a single 10-Gb lane.  Only QSFP+ interfaces can be split.
+### Slit interfaces
+QSFP+ interfaces support "splitter cables". These are cables that have a QSFP+ transceiver on one end, with the cable splitting into four separate cables, each terminated with an SFP+ transceiver. This cable takes the four 10-Gb lanes used for 40-Gb QSFP+ modules and separates them into four individual 10-Gb cables, each with a single 10-Gb lane.  Only QSFP+ interfaces can be split.
 
-The [hardware description files](http://www.openswitch.net/ops-config-as5712/DESIGN.md) contain information for each physical interface. This information specifies the capability of the physical interface (face-plate port) and it also indicates if an interface can be split.
+The [hardware description files](http://www.openswitch.net/ops-config-as5712/DESIGN.md) contain information for each physical interface. This information specifies the capability of the physical interface (face-plate interface) and it also indicates if an interface can be split.
 
-[sysd](http://www.openswitch.net/ops-sysd/DESIGN.md) adds a row into the interface table for each physical interface identified in the hardware description files. When a QSFP+ port is identified as splittable, sysd creates five entries instead of only one.
+[sysd](http://www.openswitch.net/ops-sysd/DESIGN.md) adds a row into the interface table for each physical interface identified in the hardware description files. When a QSFP+ interface is identified as splittable, sysd creates five entries instead of only one.
 
 The first entry is the "parent" interface, which has the capabilities for the interface when the interface is not configured for "split".  The remaining four interfaces are "child" interfaces and they have the capabilities for the interface when the interface is configured for "split".
 
-The system daemons use the first "parent" interface row when the user configuration parameter "lane\_split" is set to "no-split". Likewise, the daemons use the four "child" interfaces when the user configuration parameter "lane\_split" is set to "split". The presence or type of transceiver is not relevant to whether a port is "split" or not, only the value of "lane\_split". Note: The default for the user configuration parameter, if not present, is "no-split".
+The system daemons use the first "parent" interface row when the user configuration parameter "lane\_split" is set to "no-split". Likewise, the daemons use the four "child" interfaces when the user configuration parameter "lane\_split" is set to "split". The presence or type of transceiver is not relevant to whether an interface is "split" or not, only the value of "lane\_split". Note: The default for the user configuration parameter, if not present, is "no-split".
 
-### Fixed Ports
-Face-plate ports that are fixed (not pluggable) have the interface:hw_intf_info:pluggable field set to "false". This tells [pmd](http://www.openswitch.net/ops-pmd/DESIGN.md) to ignore this interface. For now, fixed fiber ports are not supported, as pmd is responsible for turning lasers on and off, and it currently ignores fixed ports.
+### Fixed interfaces
+Face-plate interfaces that are fixed (not pluggable) have the interface:hw_intf_info:pluggable field set to "false". This tells [pmd](http://www.openswitch.net/ops-pmd/DESIGN.md) to ignore this interface. For now, fixed fiber interfaces are not supported, as pmd is responsible for turning lasers on and off, and it currently ignores fixed interfaces.
 
-### Pluggable Modules
+### Pluggable modules
 SFP/SFP+ and QSFP+ modules are supported. See [Pluggable Module Daemon (pmd)](http://www.openswitch.net/ops-pmd/DESIGN.md) and [hardware description files](http://www.openswitch.net/ops-config-as5712/DESIGN.md) for additional information.
 
 ### Interface Type
-The interface:type field identifies the interface type. All physical interfaces, those representing true hardware physical interfaces (aka face-plate ports), are of type "system". There are other interfaces used for internal communication purposes that are of type "internal". Interfaces of type "internal" are not managed or configured directly by users.
+The interface:type field identifies the interface type. All physical interfaces, those representing true hardware physical interfaces (aka face-plate interfaces), are of type "system". There are other interfaces used for internal communication purposes that are of type "internal". Interfaces of type "internal" are not managed or configured directly by users.
 
 ### MAC Assignment
 A MAC address is assigned to each interface by [sysd](http://www.openswitch.net/ops-sysd/DESIGN.md) when the interface is first added to the Interface table. Since the MAC does not need to be unique, all physical interfaces get assigned the "system MAC", which is pulled from open_vswitch:system_mac.
