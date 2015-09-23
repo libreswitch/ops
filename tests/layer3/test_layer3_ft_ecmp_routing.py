@@ -1,4 +1,4 @@
-"""#!/usr/bin/env python
+#!/usr/bin/env python
 
 # Copyright (C) 2015 Hewlett Packard Enterprise Development LP
 #
@@ -15,60 +15,69 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import lib
 import pytest
-import re
-import switch
-from lib import *
-from switch.CLI.lldp import *
-from switch.CLI.interface import *
-from switch.CLI import *
+from opstestfw import *
+from opstestfw.switch.CLI import *
+from opstestfw.switch.OVS import *
 
 # Topology definition
 topoDict = {"topoExecution": 1000,
+            "topoType": "physical",
             "topoTarget": "dut01 dut02 dut03 dut04",
             "topoDevices": "dut01 dut02 wrkston01 wrkston02 wrkston03",
-            "topoLinks": "lnk01:dut01:dut02,lnk02:dut01:wrkston01,lnk03:dut01:wrkston02,lnk04:dut02:wrkston03,lnk05:dut01:dut02",
-            "topoFilters": "dut01:system-category:switch,dut02:system-category:switch,wrkston01:system-category:workstation,wrkston02:system-category:workstation,wrkston03:system-category:workstation"}
+            "topoLinks": "lnk01:dut01:dut02, \
+                          lnk02:dut01:wrkston01, \
+                          lnk03:dut01:wrkston02, \
+                          lnk04:dut02:wrkston03,lnk05:dut01:dut02",
+            "topoFilters": "dut01:system-category:switch, \
+                            dut02:system-category:switch, \
+                            wrkston01:system-category:workstation, \
+                            wrkston02:system-category:workstation, \
+                            wrkston03:system-category:workstation"}
+
 
 def ecmp_ping(**kwargs):
-    switch1 = kwargs.get('switch1',None)
-    switch2 = kwargs.get('switch2',None)
-    host1 = kwargs.get('host1',None)
-    host2 = kwargs.get('host2',None)
-    host3 = kwargs.get('host3',None)
+    switch1 = kwargs.get('switch1', None)
+    switch2 = kwargs.get('switch2', None)
+    host1 = kwargs.get('host1', None)
+    host2 = kwargs.get('host2', None)
+    host3 = kwargs.get('host3', None)
     caseReturnCode = 0
 
-    #systemctl stop zebra
-    #/usr/sbin/zebra --detach --pidfile -vSYSLOG:DBG
+    # systemctl stop zebra
+    # /usr/sbin/zebra --detach --pidfile -vSYSLOG:DBG
 
-    #Enabling interface 1 SW1
+    # Enabling interface 1 SW1
     LogOutput('info', "Enabling interface1 on SW1")
-    retStruct = InterfaceEnable(deviceObj=switch1, enable=True, interface=switch1.linkPortMapping['lnk01'])
+    retStruct = InterfaceEnable(deviceObj=switch1, enable=True,
+                                interface=switch1.linkPortMapping['lnk01'])
     retCode = retStruct.returnCode()
     if retCode != 0:
        assert "Unable to enable interafce on SW1"
        caseReturnCode = 1
 
-    #Enabling interface 2 SW1
+    # Enabling interface 2 SW1
     LogOutput('info', "Enabling interface2 on SW1")
-    retStruct = InterfaceEnable(deviceObj=switch1, enable=True, interface=switch1.linkPortMapping['lnk02'])
+    retStruct = InterfaceEnable(deviceObj=switch1, enable=True,
+        interface=switch1.linkPortMapping['lnk02'])
     retCode = retStruct.returnCode()
     if retCode != 0:
        assert "Unable to enable interafce on SW1"
        caseReturnCode = 1
 
-    #Enabling interface 3 SW1
+    # Enabling interface 3 SW1
     LogOutput('info', "Enabling interface3 on SW1")
-    retStruct = InterfaceEnable(deviceObj=switch1, enable=True, interface=switch1.linkPortMapping['lnk03'])
+    retStruct = InterfaceEnable(deviceObj=switch1, enable=True,
+        interface=switch1.linkPortMapping['lnk03'])
     retCode = retStruct.returnCode()
     if retCode != 0:
        assert "Unable to enable interafce on SW1"
        caseReturnCode = 1
 
-    #Enabling interface 1 SW2
+    # Enabling interface 1 SW2
     LogOutput('info', "Enabling interface1 on SW2")
-    retStruct = InterfaceEnable(deviceObj=switch2, enable=True, interface=switch2.linkPortMapping['lnk01'])
+    retStruct = InterfaceEnable(deviceObj=switch2, enable=True,
+        interface=switch2.linkPortMapping['lnk01'])
     retCode = retStruct.returnCode()
     if retCode != 0:
        assert "Unable to enable interafce on SW2"
@@ -668,4 +677,4 @@ class Test_ecmp_ping:
         if retValue != 0:
             assert "Test failed"
         else:
-            LogOutput('info', "test passed\n\n\n\n############################# Next Test #########################\n")"""
+            LogOutput('info', "\n### Test passed ###\n")

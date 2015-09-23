@@ -52,7 +52,7 @@ from opstestfw.switch.CLI import *
 
 # Topology definition
 
-topoDict = {#"topoType" : "all",
+topoDict = {"topoType" : "physical",
             "topoExecution": 1000,
             "topoTarget": "dut01",
             "topoDevices": "dut01 wrkston01 wrkston02",

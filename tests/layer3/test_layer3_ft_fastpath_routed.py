@@ -1,4 +1,4 @@
-"""#!/usr/bin/env python
+#!/usr/bin/env python
 
 # Copyright (C) 2015 Hewlett Packard Enterprise Development LP
 #
@@ -15,19 +15,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-#import lib
 import pytest
-import re
-from  opstestfw import *
+from opstestfw import *
 from opstestfw.switch.CLI import *
-#import switch
-#from lib import *
-#from opstestfw.switch.CLI.lldp import *
-#from opstestfw.switch.CLI.interface import *
-from opstestfw.switch.CLI import *
+from opstestfw.switch.OVS import *
 
 # Topology definition
 topoDict = {"topoExecution": 1000,
+            "topoType": "physical",
             "topoTarget": "dut01 dut02",
             "topoDevices": "dut01 dut02 wrkston01 wrkston02",
             "topoLinks": "lnk01:dut01:wrkston01,lnk02:dut01:dut02,lnk03:dut02:wrkston02",
@@ -461,4 +456,4 @@ class Test_fastpath_ping:
 	if retValue != 0:
             assert "Test failed"
 	else:
-	    LogOutput('info', "test passed\n\n\n\n############################# Next Test #########################\n")"""
+	    LogOutput('info', "\n### Test passed ###\n")

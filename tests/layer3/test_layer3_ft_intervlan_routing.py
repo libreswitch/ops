@@ -1,4 +1,4 @@
-"""#!/usr/bin/env python
+#!/usr/bin/env python
 
 # Copyright (C) 2015 Hewlett Packard Enterprise Development LP
 #
@@ -15,18 +15,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-#import lib
 import pytest
-import re
-from opstestfw import switch
-from opstestfw.switch import *
 from opstestfw import *
-#from opstestfw.switch.CLI *
-#from opstestfw.switch.CLI.interface import *
 from opstestfw.switch.CLI import *
 from opstestfw.switch.OVS import *
+
 # Topology definition
 topoDict = {"topoExecution": 1000,
+            "topoType": "physical",
             "topoTarget": "dut01",
             "topoDevices": "dut01 wrkston01 wrkston02 wrkston03 wrkston04",
             "topoLinks": "lnk01:dut01:wrkston01,lnk02:dut01:wrkston02,lnk03:dut01:wrkston03,lnk04:dut01:wrkston04",
@@ -424,4 +420,4 @@ class Test_vlan_ping:
         wrkston02Obj = self.topoObj.deviceObjGet(device="wrkston02")
         wrkston03Obj = self.topoObj.deviceObjGet(device="wrkston03")
         wrkston04Obj = self.topoObj.deviceObjGet(device="wrkston04")
-        ping_vlan(switch=dut01Obj, host1=wrkston01Obj, host2=wrkston02Obj, host3=wrkston03Obj, host4=wrkston04Obj)"""
+        ping_vlan(switch=dut01Obj, host1=wrkston01Obj, host2=wrkston02Obj, host3=wrkston03Obj, host4=wrkston04Obj)
