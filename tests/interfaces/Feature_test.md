@@ -17,7 +17,7 @@ The requirements for this test case are:
 
 #### Topology Diagram ####
 
-```
+```ditaa
                  switch                ws1
           +------------------+        +------+
           |                  |        |      |
@@ -99,7 +99,7 @@ The requirements for this test case are:
 ### Setup ###
 
 #### Topology Diagram ####
-```
+```ditaa
                  switch                ws1
           +------------------+        +------+
           |                  |        |      |
@@ -194,7 +194,7 @@ The requirements for this test case are:
 ### Setup ###
 
 #### Topology Diagram ####
-```
+```ditaa
                  switch                ws1
           +------------------+        +------+
           |                  |        |      |
