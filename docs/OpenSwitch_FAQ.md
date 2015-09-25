@@ -11,7 +11,7 @@
 
 #### Q: What is HP announcing today?
 A:   HP has created an open source community as its contribution to networking OS (Operating System). OpenSwitch is a Linux open source community which will be open to all Linux open source developers to drive the networking industry towards open innovation.
-![]/doc/images/OpenSwitch_FAQ_image001.png
+![]/img/OpenSwitch_FAQ_image001.png
 
 #### Q: Why is HP promoting open source networking?
 A: TBD.
@@ -53,17 +53,17 @@ A: OpenSwitch is an Open Source Linux distribution targeting networking switches
 
 #### Q: Why is HP supporting this open source approach for networking?
 A: HP is supporting this approach for the greater good, and ultimately transforming old paradigms and promoting networking innovations, hence creating a community to accelerate their businesses.
-![]/doc/images/OpenSwitch_FAQ_image002.png
+![]/img/OpenSwitch_FAQ_image002.png
 
 #### Q: What is HP contributing to the Network OS development community that is unique?
-![]/doc/images/OpenSwitch_FAQ_image003.png
+![]/img/OpenSwitch_FAQ_image003.png
 
 #### Q: What role does HP's disaggregated switches take in the creation of OpenSwitch?
 A: TBD
 
 #### Q: What is unique about OpenSwitch NOS?
 A: OpenSwitch NOS (Network Operating System) features modern architecture, a new way of development, and innovative testing. This results in a community that is modern and consistent.
-![]/doc/images/OpenSwitch_FAQ_image004.png
+![]/img/OpenSwitch_FAQ_image004.png
 
 #### Q: What are the design principles behind OpenSwitch?
 A: OpenSwitch is designed to be modular and highly available with minimal kernel resident code. It is portable, extensible, and have good open source citizenship.
