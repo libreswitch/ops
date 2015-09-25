@@ -1,0 +1,64 @@
+{
+ "name": "dhcp_leases",
+  "version": "0.0.1",
+  "tables": {
+    "DHCP_Lease": {
+      "columns":  {
+        "expiry_time": {
+          "category": "status",
+          "type": {
+              "key": {
+                "type": "string",
+                "maxLength": 10
+                }
+            }
+        },
+        "mac_address": {
+          "category": "status",
+          "type": {
+              "key": {
+                "type": "string",
+                "minLength":17,
+                "maxLength":17
+              }
+            }
+        },
+        "ip_address": {
+          "category": "status",
+          "type":  {
+              "key": {
+                "type": "string",
+                "maxLength": 45
+              }
+            }
+        },
+        "client_hostname": {
+          "category": "status",
+          "type":  {
+              "key": {
+                "type": "string"
+             },
+            "min": 0,
+            "max": 1
+           }
+        },
+        "client_id": {
+          "category": "status",
+          "type":  {
+              "key": {
+                "type": "string"
+                },
+            "min":0,
+            "max":1
+          }
+        }
+      },
+      "indexes": [
+        [
+          "ip_address"
+        ]
+      ],
+      "isRoot": true
+    }
+  }
+}

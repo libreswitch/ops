@@ -1,0 +1,30 @@
+{
+  "name": "configdb",
+  "version": "0.0.1",
+  "cksum": "3405665125 35733",
+  "tables": {
+    "config": {
+      "columns": {
+        "type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "writer": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        },
+        "config": {
+          "type": "string"
+        },
+        "hardware": {
+          "type": "string"
+        }
+      },
+      "isRoot": true
+    }
+  }
+}
