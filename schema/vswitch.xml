@@ -2180,10 +2180,208 @@
         Defaults to <code>false</code> if unset.
       </column>
 
-      <column name="lldp_neighbor_info">
-        This column includes a map of keys:values of neighbors as discovered
-        by LLDP.
-      </column>
+      <group title="LLDP Neighbor Info">
+        <column name="lldp_neighbor_info">
+          Keys-value pairs of neighbor's port info as discovered by LLDP.
+        </column>
+
+        <column name="lldp_neighbor_info" key="port_description">
+          The port description field shall contain an alpha-numeric string that
+          indicates the port's description.
+        </column>
+
+        <column name="lldp_neighbor_info" key="port_id">
+          The Port ID is a mandatory TLV that identifies the port component
+          of the MSAP identifier associated with the transmitting LLDP agent.
+        </column>
+
+        <column name="lldp_neighbor_info" key="port_id_len">
+          Port ID length.
+        </column>
+
+        <column name="lldp_neighbor_info" key="port_id_subtype">
+          The port ID subtype field shall contain an integer value indicating the
+          basis for the identifier that is listed in the port ID field.
+        </column>
+
+        <column name="lldp_neighbor_info" key="port_mfs">
+          Port maximum frame size.
+        </column>
+
+        <column name="lldp_neighbor_info" key="port_protocol">
+          Protocol used to get this port (LLDP).
+        </column>
+
+        <column name="lldp_neighbor_info" key="port_pvid">
+          The port VLAN identifier field shall contain the VLAN ID for the
+          bridge port as defined in 8.4.4 of IEEE Std 802.1Q.
+        </column>
+
+        <column name="lldp_neighbor_info" key="port_lastchange">
+          Time (posix seconds) of last change of values.
+        </column>
+
+        <column name="lldp_neighbor_info" key="port_lastupdate">
+          Time (posix seconds) of last update received.
+        </column>
+
+        <column name="lldp_neighbor_info" key="port_hidden_in">
+          Considered as hidden for reception.
+        </column>
+
+        <column name="lldp_neighbor_info" key="port_hidden_out">
+          Considered as hidden for transmission.
+        </column>
+
+        <column name="lldp_neighbor_info" key="chassis_description">
+          The chassis description field contains an alpha-numeric string
+          that is the textual description of the network entity. It includes
+          the full name and version identification of the hardware type,
+          software operating system, and networking software.
+        </column>
+
+        <column name="lldp_neighbor_info" key="chassis_id">
+          The Chassis ID identifies the chassis containing the IEEE 802
+          LAN station associated with the transmitting LLDP agent.
+        </column>
+
+        <column name="lldp_neighbor_info" key="chassis_id_len">
+          Chassis ID TLV length.
+        </column>
+
+        <column name="lldp_neighbor_info" key="chassis_id_subtype">
+          The chassis ID subtype field contains an integer value indicating
+          the basis for the chassis ID entity listed in the chassis ID field.
+        </column>
+
+        <column name="lldp_neighbor_info" key="chassis_index">
+          The interface index value used to identify the chassis.
+        </column>
+
+        <column name="lldp_neighbor_info" key="chassis_name">
+          The system name field contains an alpha-numeric string that indicates
+          the administratively assigned name.
+        </column>
+
+        <column name="lldp_neighbor_info" key="chassis_protocol">
+          Chassis protocol name (LLDP).
+        </column>
+
+        <column name="lldp_neighbor_info" key="chassis_refcount">
+          Chassis reference count.
+        </column>
+
+        <column name="lldp_neighbor_info" key="chassis_ttl">
+          The Time To Live TLV indicates the number of seconds that the
+          recipient LLDP agent is to regard the information associated
+          with this MSAP identifier to be valid.
+        </column>
+
+        <column name="lldp_neighbor_info" key="chassis_capability_available">
+          The chassis capabilities field contains a bit-map of the
+          capabilities that define the primary function(s) of the system.
+          A binary one in the associated bit indicates the existence of
+          that capability. Individual systems may indicate more than one
+          implemented functional capability (for example, both a bridge
+          and router capability).
+        </column>
+
+        <column name="lldp_neighbor_info" key="chassis_capability_enabled">
+          The enabled capabilities field contains a bit map of the
+          primary functions of the system. A binary one in a bit position
+          indicates that the function is currently enabled.
+        </column>
+
+        <column name="lldp_neighbor_info" key="mgmt_ip_list">
+          A comma-seperated list of management IP addresses.
+        </column>
+
+        <column name="lldp_neighbor_info" key="mgmt_iface_list">
+          A comma-seperated list of management IP interfaces.
+        </column>
+
+        <column name="lldp_neighbor_info" key="vlan_name_list">
+          A comma-seperated list of vlan names.
+        </column>
+
+        <column name="lldp_neighbor_info" key="vlan_id_list">
+          A comma-seperated list of vlan IDs.
+        </column>
+
+        <column name="lldp_neighbor_info" key="ppvids_cap_list">
+          A comma-seperated list of port and protocol vlan capablity.
+        </column>
+
+        <column name="lldp_neighbor_info" key="ppvids_ppvid_list">
+          A comma-seperated list of port and protocol vlan IDs.
+        </column>
+
+        <column name="lldp_neighbor_info" key="pids_name_list">
+          A comma-seperated list of protocol ID name.
+        </column>
+
+        <column name="lldp_neighbor_info" key="pids_len_list">
+          A comma-seperated list of length of protocol ID names.
+        </column>
+
+        <column name="lldp_neighbor_info" key="macphy_autoneg_advertised">
+          Link autonegotiation advertized.
+        </column>
+
+        <column name="lldp_neighbor_info" key="macphy_autoneg_enabled">
+          Link autonegotiation enabled.
+        </column>
+
+        <column name="lldp_neighbor_info" key="macphy_autoneg_support">
+          Link autonnegotiation supported.
+        </column>
+
+        <column name="lldp_neighbor_info" key="macphy_mau_type">
+          Common enumeration values for repeater and interface MAU jack types.
+        </column>
+
+        <column name="lldp_neighbor_info" key="power_paircontrol">
+          Describes the capability of controlling the power pairs
+          functionality to switch pins for sourcing power.
+          The value true indicate that the device has the capability
+          to control the power pairs.  When false the PSE Pinout
+          Alternative used cannot be controlled through the
+          PethPsePortAdminEnable attribute.
+        </column>
+
+        <column name="lldp_neighbor_info" key="power_pairs">
+          Describes or controls the pairs in use.
+          A value of signal(1) means that the signal pairs only are in use.
+          A value of spare(2) means that the spare pairs only are in use.
+        </column>
+
+        <column name="lldp_neighbor_info" key="power_powertype">
+          Power type or LLDP_DOT3_POWER_8023AT_OFF indicating source,
+          priority, requested and allocated have no meaning.
+        </column>
+
+        <column name="lldp_neighbor_info" key="power_source">
+          Power Source code indicates neighbor Primary Power Source
+          or the Backup Power Source.
+        </column>
+
+        <column name="lldp_neighbor_info" key="power_priority">
+          Power priority configured on the neighbor port.
+        </column>
+
+        <column name="lldp_neighbor_info" key="power_allocated">
+          The power value is the power the neighbor allocates.
+        </column>
+
+        <column name="lldp_neighbor_info" key="power_requested">
+          The power value is the power the neighbor requests.
+        </column>
+
+        <column name="lldp_neighbor_info" key="power_supported">
+          Power value is the power the neighbor supports.
+        </column>
+
+      </group>
 
       <column name="status">
         Key-value pairs that report port status.  Supported status values are
