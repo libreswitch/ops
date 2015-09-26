@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database title="DHCP Server Leases">
+  <p>
+    A database with this schema holds the leases information of the
+    DHCP server.
+  </p>
+
+  <table name="DHCP_Lease" title="DHCP Server Leases Information">
+    List of the leases information of DHCP server. Number of records
+    correspond to the number of DHCP clients or hosts that got assigned
+    the IP address by the DHCP server.
+
+    <column name="expiry_time">
+      Specifies the expiry time of the DHCP lease entry in epoch format.
+      Example: 1440997908.
+    </column>
+
+    <column name="mac_address">
+      Specifies the Ethernet MAC address of the DHCP client to which IP address
+      is assigned by the DHCP server.
+      Example: e6:8c:98:bb:b4:de.
+    </column>
+
+    <column name="ip_address">
+      Specifies the IPv4/IPv6 address that got assigned to the DHCP
+      client.
+      Example IPv4 address: 192.168.10.27.
+    </column>
+
+    <column name="client_hostname">
+      Specifies the hostname of the DHCP client to which IP address is
+      assigned by the DHCP server.
+    </column>
+
+    <column name="client_id">
+      Specifies the client id of the DHCP client to which IP address is
+      assigned by the DHCP server.
+    </column>
+
+  </table>
+
+</database>

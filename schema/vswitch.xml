@@ -1,0 +1,3297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database title="Open Halon Configuration Database">
+  <p>
+    A database with this schema holds the configuration for one Open
+    Halon system.
+  </p>
+  <p>
+    The schema is derived from Open vSwitch schema.
+    Tables/attributes which are not related to Open Halon first open source release
+    (OSR1) were removed. Additionally the schema was extended to include OSR1
+    features that don't exist in Open vSwitch, as well as information
+    specific to a physical switch.
+    Going forward, the expectation is to restore the Open vSwitch parts
+    of the schema that were removed as we implement additional features.
+  </p>
+  <p>
+    The top-level configuration is the
+    <ref table="System"/> table, which must have exactly one
+    record. Records that are not reachable from
+    the <ref table="System"/> table are automatically deleted
+    from the database, except for records in a few distinguished
+    ``root set'' tables.
+  </p>
+  <p>
+    Note that a basic tenet of the Open Halon schema is that in the absence of any
+    configuration, the default behavior of the Open Halon switch is such that
+    no data traffic can be accepted or transmitted on any port or interface.
+    Any future additions to the Open Halon schema must adhere to this principle.
+  </p>
+
+  <h2>Common Columns</h2>
+
+  <p>
+    Many tables contain two special columns, named <code>other_config</code>
+    and <code>external_ids</code>. These columns have the same form and
+    purpose each place that they appear, so we describe them here to save space
+    later.
+  </p>
+
+  <dl>
+    <dt><code>other_config</code>: map of string-string pairs</dt>
+    <dd>
+      <p>
+        Key-value pairs for configuring rarely used features.  Supported keys,
+        along with the forms taken by their values, are documented individually
+        for each table.
+      </p>
+      <p>
+        A few tables do not have <code>other_config</code> columns because no
+        key-value pairs have yet been defined for them.
+      </p>
+    </dd>
+
+    <dt><code>external_ids</code>: map of string-string pairs</dt>
+    <dd>
+      Key-value pairs for use by external frameworks that integrate with Open
+      Halon, rather than by Open Halon itself.  System integrators should
+      either use the Open Halon development mailing list to coordinate on
+      common key-value definitions, or choose key names that are likely to be
+      unique.  In some cases, where key-value pairs have been defined that are
+      likely to be widely useful, they are documented individually for each
+      table.
+    </dd>
+  </dl>
+
+  <table name="System" title="Open Halon top level configuration.">
+    Configuration for an Open Halon system. There must be exactly
+    one record in the <ref table="System"/> table.
+
+    <group title="Configuration">
+      <column name="subsystems">
+      </column>
+
+      <column name="bridges">
+        Set of bridges.
+      </column>
+
+      <column name="vrfs">
+      </column>
+
+      <column name="management_mac">
+        Ethernet MAC address for the management interface port for this system.
+      </column>
+
+      <column name="system_mac">
+        Ethernet MAC address available to use anywhere a non-unique MAC is
+        needed.
+      </column>
+
+      <column name="daemons">
+      </column>
+
+      <column name="ssl">
+      </column>
+
+      <column name="hostname">
+      </column>
+
+      <column name="dns_servers">
+      </column>
+
+      <column name="asset_tag_number">
+      </column>
+
+      <column name="other_config" key="stats-update-interval"
+              type='{"type": "integer", "minInteger": 5000}'>
+        <p>
+          Interval for updating statistics to the database, in milliseconds.
+          This option will affect the update of the <code>statistics</code>
+          column in the following tables: <code>Port</code>, <code>Interface
+          </code>.
+        </p>
+        <p>
+          Default value is 5000 ms.
+        </p>
+      </column>
+
+      <column name="other_config" key="min_internal_vlan"
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 4094}'>
+        <p>
+            This key specifies a lower bound of the VLAN range, which is being used for internal system purposes.
+        </p>
+        <p>
+            Default value is 1024.
+        </p>
+      </column>
+
+      <column name="other_config" key="max_internal_vlan"
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 4094}'>
+        <p>
+            This key specifies an upper bound of the VLAN range, which is being used for internal system purposes.
+        </p>
+        <p>
+            Default value is 4094.
+        </p>
+      </column>
+
+      <column name="other_config" key="internal_vlan_policy"
+              type='{"type": "string"}'>
+        <p>
+            This key indicates order of assignment of internal VLAN ID (ascending or descending).
+        </p>
+
+        <p>
+            Default option is ascending order.
+        </p>
+      </column>
+
+      <group title="TFTP Server Configurations">
+        <column name="other_config" key="tftp_server_enable"
+                type='{"type": "boolean"}'>
+          Set this value to <code>true</code> to enable TFTP server
+          and set to <code>false</code> to disable it. If not set, TFTP server
+          would be enabled.
+        </column>
+
+        <column name="other_config" key="tftp_server_secure"
+                type='{"type": "boolean"}'>
+          Set this value to <code>true</code> to enable TFTP secure mode
+          and set to <code>false</code> to disable it. If not set, TFTP secure mode
+          would be enabled. This config is valid only if TFTP server is enabled.
+        </column>
+      </group>
+
+
+    <group title="LACP Configurations">
+      <column name="lacp_config" key="lacp-system-id">
+        The LACP system ID of this <ref table="Bridge"/>.  The system ID of a
+        LACP bond is used to identify itself to its partners.  Must be a
+        nonzero MAC address. Defaults to the bridge Ethernet address if
+        unset.
+      </column>
+      <column name="lacp_config" key="lacp-system-priority"
+              type='{"type": "integer", "minInteger": 0, "maxInteger": 65535}'>
+        The LACP system priority of this <ref table="Bridge"/>.  In LACP
+        negotiations, link status decisions are made by the system with the
+        numerically lower priority. Defaults to 65534.
+      </column>
+   </group>
+
+    <group title="LLDP Configurations">
+      <column name="other_config" key="lldp_enable"
+              type='{"type": "boolean"}'>
+        Set this value to <code>true</code> to enable System level LLDP
+        or to <code>false</code> to explicitly disable it.
+        Default is <code>disable</code>.
+      </column>
+
+      <column name="other_config" key="lldp_tlv_mgmt_addr_enable"
+              type='{"type": "boolean"}'>
+        Set this value to <code>true</code> to enable transmission of LLDP
+        Management Address TLV or set it to <code>false</code> to disable
+        transmitting it.
+        Default is <code>enable</code>.
+      </column>
+
+      <column name="other_config" key="lldp_tlv_port_desc_enable"
+              type='{"type": "boolean"}'>
+        Set this value to <code>true</code> to enable transmission of LLDP
+        Port Description TLV or set it to <code>false</code> to disable
+        transmitting it.
+        Default is <code>enable</code>.
+      </column>
+
+      <column name="other_config" key="lldp_tlv_port_vlan_enable"
+              type='{"type": "boolean"}'>
+        Set this value to <code>true</code> to enable transmission of LLDP
+        Port VLAN TLV or set it to <code>false</code> to disable
+        transmitting it.
+        Default is <code>enable</code>.
+      </column>
+
+      <column name="other_config" key="lldp_tlv_sys_cap_enable"
+              type='{"type": "boolean"}'>
+        Set this value to <code>true</code> to enable transmission of LLDP
+        System Capabilities TLV or set it to <code>false</code> to disable
+        transmitting it.
+        Default is <code>enable</code>.
+      </column>
+
+      <column name="other_config" key="lldp_tlv_sys_desc_enable"
+              type='{"type": "boolean"}'>
+        Set this value to <code>true</code> to enable transmission of LLDP
+        System Description TLV or set it to <code>false</code> to disable
+        transmitting it.
+        Default is <code>enable</code>.
+      </column>
+
+      <column name="other_config" key="lldp_tlv_sys_name_enable"
+              type='{"type": "boolean"}'>
+        Set this value to <code>true</code> to enable transmission of LLDP
+        System Name TLV or set it to <code>false</code> to disable
+        transmitting it.
+        Default is <code>enable</code>.
+      </column>
+
+      <column name="other_config" key="lldp_mgmt_addr"
+              type='{"type": "string"}'>
+        LLDP Management IP Address to be sent in TLV.
+      </column>
+
+      <column name="other_config" key="lldp_tx_interval"
+              type='{"type": "integer", "minInteger": 5, "maxInteger": 32768}'>
+        <p>
+            The interval in seconds at which LLDP status updates are
+            transmitted to neighbors in seconds.
+        </p>
+        <p>
+          Default value is 30 sec.
+        </p>
+      </column>
+
+      <column name="other_config" key="lldp_hold"
+              type='{"type": "integer", "minInteger": 2, "maxInteger": 10}'>
+        <p>
+          The amount of time a receiving device should hold the information
+          sent by your device before discarding it.
+          This variable is used as a multiplier of lldp_tx_interval,
+          to determine the value of TTL that is carried in LLDP frames.
+        </p>
+        <p>
+          Default value is 4.
+        </p>
+      </column>
+   </group>
+
+   </group>
+
+    <group title="Status">
+      <column name="status">
+        System level status information per service like <code>LLDP</code>, etc.
+      </column>
+
+    <group title="LLDP Status Info">
+      <column name="status" key="lldp_local_mgmt_ip">
+      Management IP Address currently being advertised by LLDP.
+      </column>
+
+      <column name="status" key="lldp_local_system_cap">
+      System Capabilities currently being advertised by LLDP.
+      </column>
+
+      <column name="status" key="lldp_local_system_desc">
+      System Description info currently being advertised by LLDP.
+      </column>
+
+      <column name="status" key="lldp_local_system_name">
+      System Name currently being advertised by LLDP.
+      </column>
+
+      <column name="status" key="lldp_last_table_change_time">
+      Last time when LLDP neighbor table was changed.
+      </column>
+
+      <column name="status" key="lldp_num_clear_counters_requested">
+      Number of times clear statistic counters was requested by user.
+      </column>
+
+      <column name="status" key="lldp_last_clear_counters_performed">
+      Last time when clear statistic counters was perfomed.
+      </column>
+
+      <column name="status" key="lldp_num_clear_table_requested">
+      Number of times clearing of neighbor table was requested by user.
+      </column>
+
+      <column name="status" key="lldp_last_clear_table_performed">
+      Last time when neighbor table was cleared.
+      </column>
+   </group>
+
+      <column name="mgmt_intf_status">
+        This column holds the status of the management interface IP parameters.
+        This column contains key-value pairs that report the mangement interface
+        IP attributes like IP address, subnet, default gateway, primary and
+        secondary name server. These values are either statically configured by
+        the user or populated by the DHCP client.
+        The keys of this column is same as that of mgmt_intf column.
+      </column>
+      <column name="mgmt_intf_status" key="hostname">
+        Hostname the system is configured with. Hostname can be configured
+        through CLI, or specified in DHCP messages. If none of these are
+        available, it defaults to "switch".
+      </column>
+      <column name="mgmt_intf_status" key="dhcp_hostname">
+        Holds hostname configured by dhcp client.
+      </column>
+      <column name="next_cfg">
+        Sequence number for client to increment.  When a client modifies
+        any part of the database configuration and wishes to wait for
+        Open Halon to finish applying the changes, it may increment
+        this sequence number.
+      </column>
+
+      <column name="cur_cfg">
+        Sequence number that Open Halon sets to the current value of
+        <ref column="next_cfg"/> after it finishes applying a set of
+        configuration changes.
+      </column>
+
+      <column name="next_hw">
+        Sequence number to indicate that a change has occurred in the hardware
+        configuration (e.g., a subsystem has been added or removed).
+        </column>
+
+      <column name="cur_hw">
+        Sequence number that indicates the current change level for the h/w
+        configuration. When <ref column="cur_hw"/> is the same as <ref
+        column="next_hw"/>, then all platform daemon processing has completed
+        in response to the hardware addition or removal. This is not used for
+        transceiver pluggable module insertion/removal.
+      </column>
+
+      <column name="boot_time">
+        Boot time of the machine, represented in seconds since 1970-01-01 00:00:00 UTC.
+        OVSDB integers are 64 bit, which means it will take some time until we roll over.
+      </column>
+    </group>
+
+      <group title="Statistics">
+        <p>
+          The <code>statistics</code> column contains key-value pairs that
+          report statistics about a system running Open Halon.  These are
+          updated periodically (by default, every 5 seconds).  Key-value pairs
+          that cannot be determined or that do not apply to a platform are
+          omitted.
+        </p>
+
+        <column name="other_config" key="enable-statistics"
+                type='{"type": "boolean"}'>
+          Statistics are disabled by default to avoid overhead in the common
+          case when statistics gathering is not useful.  Set this value to
+          <code>true</code> to enable populating the <ref column="statistics"/>
+          column or to <code>false</code> to explicitly disable it.
+        </column>
+
+        <column name="statistics" key="cpu"
+                type='{"type": "integer", "minInteger": 1}'>
+          <p>
+            Number of CPU processors, threads, or cores currently online and
+            available to the operating system,
+            as an integer.  This may be less than the number installed, if some
+            are not online or if they are not available to the operating
+            system.
+          </p>
+        </column>
+
+        <column name="statistics" key="load_average">
+          A comma-separated list of three floating-point numbers,
+          representing the system load average over the last 1, 5, and 15
+          minutes, respectively.
+        </column>
+
+        <column name="statistics" key="memory">
+          <p>
+            A comma-separated list of integers, each of which represents a
+            quantity of memory in kilobytes that describes the operating
+            system.  In respective order,
+            these values are:
+          </p>
+
+          <ol>
+            <li>Total amount of RAM allocated to the OS.</li>
+            <li>RAM allocated to the OS that is in use.</li>
+            <li>RAM that can be flushed out to disk or otherwise discarded
+            if that space is needed for another purpose.  This number is
+            necessarily less than or equal to the previous value.</li>
+            <li>Total disk space allocated for swap.</li>
+            <li>Swap space currently in use.</li>
+          </ol>
+        </column>
+
+        <column name="statistics" key="process_NAME">
+          <p>
+            One such key-value pair, with <code>NAME</code> replaced by
+            a process name, will exist for each running Open Halon
+            daemon process, with <var>name</var> replaced by the
+            daemon's name (e.g. <code>process_sysd</code>).  The
+            value is a comma-separated list of integers.  The integers
+            represent the following, with memory measured in kilobytes
+            and durations in milliseconds:
+          </p>
+
+          <ol>
+            <li>The process's virtual memory size.</li>
+            <li>The process's resident set size.</li>
+            <li>The amount of user and system CPU time consumed by the
+            process.</li>
+            <li>The number of times that the process has crashed and been
+            automatically restarted by the monitor.</li>
+            <li>The duration since the process was started.</li>
+            <li>The duration for which the process has been running.</li>
+          </ol>
+
+          <p>
+            The interpretation of some of these values depends on whether the
+            process was started with the <option>--monitor</option>.  If it
+            was not, then the crash count will always be 0 and the two
+            durations will always be the same.  If <option>--monitor</option>
+            was given, then the crash count may be positive; if it is, the
+            latter duration is the amount of time since the most recent crash
+            and restart.
+          </p>
+
+          <p>
+            There will be one key-value pair for each file in Open Halon's
+            ``run directory'' (usually <code>/var/run/openvswitch</code>)
+            whose name ends in <code>.pid</code>, whose contents are a
+            process ID, and which is locked by a running process.  The
+            <var>name</var> is taken from the pidfile's name.
+          </p>
+        </column>
+
+        <column name="statistics" key="file_systems">
+          <p>
+            A space-separated list of information on local, writable file
+            systems.  Each item in the list describes one file system and
+            consists in turn of a comma-separated list of the following:
+          </p>
+
+          <ol>
+            <li>Mount point, e.g. <code>/</code> or <code>/var/log</code>.
+            Any spaces or commas in the mount point are replaced by
+            underscores.</li>
+            <li>Total size, in kilobytes, as an integer.</li>
+            <li>Amount of storage in use, in kilobytes, as an integer.</li>
+          </ol>
+
+          <p>
+            This key-value pair is omitted if there are no local, writable
+            file systems or if Open Halon cannot obtain the needed
+            information.
+          </p>
+        </column>
+
+    <group title="LLDP Statistics">
+        <column name="lldp_statistics" key="lldp_table_inserts">
+            Number of neighbor entries inserted to LLDP neighbor table.
+            Default is 0.
+        </column>
+
+        <column name="lldp_statistics" key="lldp_table_deletes">
+            Number of neighbor entries deleted from LLDP neighbor table.
+            Default is 0.
+        </column>
+
+        <column name="lldp_statistics" key="lldp_table_drops">
+            Number of neighbor entries that could not be added to LLDP
+            neighbor table and dropped.
+            Default is 0.
+        </column>
+
+        <column name="lldp_statistics" key="lldp_table_ageouts">
+            Number of times neighbor info was deleted from LLDP neighbor
+            table because of the TTL timer associated with a neighbor
+            has expired.
+            Default is 0.
+        </column>
+    </group>
+
+    </group>
+
+    <group title="Version Reporting">
+      <p>
+        These columns report the types and versions of the hardware and
+        software running Open Halon.  We recommend in general that software
+        should test whether specific features are supported instead of relying
+        on version number checks.  These values are primarily intended for
+        reporting to human administrators.
+      </p>
+
+      <column name="switch_version">
+        The Open Halon version number, e.g. <code>0.1.0</code>.
+      </column>
+
+      <column name="db_version">
+        <p>
+          The database schema version number in the form
+          <code><var>major</var>.<var>minor</var>.<var>tweak</var></code>,
+          e.g. <code>1.2.3</code>.  Whenever the database schema is changed in
+          a non-backward compatible way (e.g. deleting a column or a table),
+          <var>major</var> is incremented.  When the database schema is changed
+          in a backward compatible way (e.g. adding a new column),
+          <var>minor</var> is incremented.  When the database schema is changed
+          cosmetically (e.g. reindenting its syntax), <var>tweak</var> is
+          incremented.
+        </p>
+
+        <p>
+          The schema version is part of the database schema, so it can also be
+          retrieved by fetching the schema using the Open vSwitch database
+          protocol.
+        </p>
+      </column>
+
+      <column name="software_info" key="bios_release_date">
+      </column>
+
+      <column name="software_info" key="bios_vendor">
+      </column>
+
+      <column name="software_info" key="bios_version">
+      </column>
+
+      <column name="software_info" key="boot_loader">
+      </column>
+
+      <column name="software_info" key="boot_loader_version">
+      </column>
+
+      <column name="software_info" key="diag_version">
+      </column>
+
+      <column name="software_info" key="install_env">
+      </column>
+
+      <column name="software_info" key="install_env_version">
+      </column>
+    </group>
+
+    <group title="Database Configuration">
+      <p>
+        These columns primarily configure the Open Halon database
+        (<code>ovsdb-server</code>), not the Open Halon switch
+        (<code>pswitchd</code>).  The OVSDB database also uses the <ref
+        column="ssl"/> settings.
+      </p>
+
+      <p>
+        The Open Halon switch does read the database configuration to
+        determine remote IP addresses to which in-band control should apply.
+      </p>
+      <column name="aaa" key="radius" type='{"type": "string"}'>
+        This column used for AAA feature. The valid values for the key 'radius'
+        are true or false based on the user request for authentication.
+        If radius=true, radius based authentication is enabled. By default
+        authentication is local.
+      </column>
+      <column name="aaa" key="fallback" type='{"type": "string"}'>
+        This column used for AAA feature. The valid values for the key 'fallback'
+        are true or false based on the user request for authentication. If
+        fallback=true, fall to local authentication if radius server is not reachable.
+      </column>
+      <column name="manager_options">
+        Database clients to which the Open Halon database server should
+        connect or to which it should listen, along with options for how these
+        connection should be configured.  See the <ref table="Manager"/> table
+        for more information.
+      </column>
+      <column name="mgmt_intf">
+        This column is a map of string-string pairs
+        Management interface column contains the attributes of management
+        interface. The keys are name, mode, ip, subnet mask, default gateway,
+        dns server IPv4 addresses. This column holds values that are configured
+        by the user.
+      </column>
+      <column name="mgmt_intf" key="name" >
+        The value for this key is a valid interface name that is to be
+        configured as management interface
+      </column>
+      <column name="mgmt_intf" key="mode" >
+        The value is static or dhcp based on the mode in which the management
+        ip is to be obtained. Default value is dhcp.
+      </column>
+      <column name="mgmt_intf" key="ip" >
+        The value for this key is interface IPv4 address of the management interface.
+      </column>
+      <column name="mgmt_intf" key="subnet_mask" >
+        The value for this key is subnet mask of the interface IP of management
+        interface in CIDR format. The valid value range is 1 to 31.
+      </column>
+      <column name="mgmt_intf" key="default_gateway" >
+        The value for this key is default gateway IPv4 address.
+      </column>
+      <column name="mgmt_intf" key="dns_server_1" >
+        The value for this key is Primary nameserver IPv4 address.
+      </column>
+      <column name="mgmt_intf" key="dns_server_2" >
+        The value for this key is Secondary nameserver IPv4 address.
+      </column>
+      <column name="mgmt_intf" key="ipv6" >
+        The value for this key is IPv6 address of the management interface.
+        Possible value X:X::X:X/M.
+      </column>
+      <column name="mgmt_intf" key="default_gateway_v6" >
+        The value for this key is default gateway IPv6 address
+      </column>
+      <column name="radius_servers">
+        Specifies radius servers configuration. See the <ref table="Radius_Server"/>
+        table for more information.
+      </column>
+      <column name="auto_provisioning_status" key="performed" type='{"type": "boolean"}'>
+        Specifies whether auto-provisioning was performed. False if not specified.
+      </column>
+      <column name="auto_provisioning_status" key="url">
+        Specifies the URL that was used to fetch auto-provisioning script. Would not be
+        present if auto-provisioning was not performed.
+      </column>
+    </group>
+
+    <group title="Logrotate configuration">
+        <column name="logrotate_config" key="period" type='{"type": "string"}'>
+            The user configured period of logrotation. The possible values are
+            'hourly','daily','weekly'or 'monthly'.
+            Default value is 'daily'
+        </column>
+
+        <column name="logrotate_config" key="maxsize"
+                type='{"type": "integer", "minInteger": 1, "maxInteger": 200}'>
+            Log size (in megabytes), which would trigger rotation. 10 megabytes if not specified
+        </column>
+
+        <column name="logrotate_config" key="target" type='{"type": "string"}'>
+            The user configured URI of the remote host .The valid value is
+            'tftp://A.B.C.D'.If not specified log files will be rotated locally.
+        </column>
+    </group>
+
+    <group title="Bufmon configuration">
+      <column name="bufmon_config" key="enabled"
+              type='{"type": "boolean"}'>
+        Specifies whether the bufmon feature is enabled on the system.
+        False, if the value is not present.
+      </column>
+
+      <column name="bufmon_config" key="counters_mode"
+                type='{"type": "string", "enum": ["set", ["peak", "current"]]}'>
+        Specifies whether counters should report their current values or peak values
+        since last collection.
+      </column>
+
+      <column name="bufmon_config" key="periodic_collection_enabled"
+              type='{"type": "boolean"}'>
+        Specifies whether periodic collection of the counters is enabled.
+        False, if the value is not present.
+      </column>
+
+      <column name="bufmon_config" key="collection_period"
+              type='{"type": "integer", "minInteger": 1}'>
+        Specifies the period of collection in seconds.
+        Five, if the value is not present.
+      </column>
+
+      <column name="bufmon_config" key="threshold_trigger_collection_enabled"
+              type='{"type": "boolean"}'>
+        Specifies whether counters should be collected immediately
+        when one of the thresholds is crossed.
+        True, if the value is not present.
+      </column>
+
+      <column name="bufmon_config" key="threshold_trigger_rate_limit"
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 600}'>
+        Specifies maximum number of trigger generated reports per minute.
+        The limit will be averaged and imposed on a per second basis.
+        For example, value of 600 will allow report every 100ms.
+        If no value is set, the default is 60 i.e. once per second.
+      </column>
+
+      <column name="bufmon_config" key="snapshot_on_threshold_trigger"
+              type='{"type": "boolean"}'>
+        Specifies whether counters should be frozen when one of the thresholds is crossed.
+        True, if the value is not present.
+      </column>
+
+    </group>
+    <group title="Information">
+      <column name="bufmon_info" key="cap_mode_peak"
+              type='{"type": "boolean"}'>
+        Specifies whether the system is capable of collecting peak values of
+        the counters.
+        False, if the value is not present.
+      </column>
+      <column name="bufmon_info" key="cap_mode_current"
+              type='{"type": "boolean"}'>
+        Specifies whether the system is capable of collecting current values of
+        the counters.
+        False, if the value is not present.
+      </column>
+      <column name="bufmon_info" key="cap_snapshot_on_threshold_trigger"
+              type='{"type": "boolean"}'>
+        Specifies whether the system is capable of freezing counters values on
+        threshold crossing.
+        False, if the value is not present.
+      </column>
+      <column name="bufmon_info" key="cap_threshold_trigger_collection"
+              type='{"type": "boolean"}'>
+        Specifies whether the system is capable of immediately collecting values on
+        threshold crossing.
+        False, if the value is not present.
+      </column>
+      <column name="bufmon_info" key="last_collection_timestamp"
+              type='{"type": "integer"}'>
+        Specifies the timestamp of the last collection in seconds from Jan 1, 1970.
+      </column>
+    </group>
+
+    <group title="ECMP configuration">
+      <p>
+        Specifies the various ECMP (Equal Cost Multi-Path) configuration options.
+      </p>
+
+        <column name="ecmp_config" key="enabled" type='{"type": "boolean"}'>
+            Determines whether ECMP is enabled in the system.
+            Default is true.
+        </column>
+        <column name="ecmp_config" key="hash_srcip_enabled" type='{"type": "boolean"}'>
+            Determines whether source IP participates in ECMP hash calculation.
+            Default is true.
+        </column>
+        <column name="ecmp_config" key="hash_dstip_enabled" type='{"type": "boolean"}'>
+            Determines whether destination IP participates in ECMP hash
+            calculation.
+            Default is true.
+        </column>
+        <column name="ecmp_config" key="hash_srcport_enabled" type='{"type": "boolean"}'>
+            Determines whether source TCP/UDP port participates in ECMP hash
+            calculation.
+            Default is true.
+        </column>
+        <column name="ecmp_config" key="hash_dstport_enabled" type='{"type": "boolean"}'>
+            Determines whether destination TCP/UDP port participates in ECMP
+            hash calculation.
+            Default is true.
+        </column>
+    </group>
+
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config"/>
+      <column name="external_ids"/>
+    </group>
+  </table>
+
+  <table name="Subsystem" title="system board, daughter card, line card, etc.">
+    <group title="Configuration">
+      <column name="interfaces">
+      </column>
+      <column name="leds">
+      </column>
+      <column name="fans">
+      </column>
+      <column name="temp_sensors">
+      </column>
+      <column name="power_supplies">
+      </column>
+      <column name="asset_tag_number">
+      </column>
+    </group>
+    <group title="Hardware Configuration">
+      <column name="next_mac_address">
+        Next available (unused) Ethernet MAC address from the MAC address pool
+        for this subsystem.
+      </column>
+      <column name="macs_remaining">
+        The number of available (unused) Ethernet MAC address from the MAC
+        address pool for this subsystem.
+      </column>
+    </group>
+    <group title="Inventory Info">
+      <column name="name">
+      </column>
+      <column name="hw_desc_dir">
+        Directory where the hardware description files for this subsystem
+        are located.
+      </column>
+      <column name="type">
+      </column>
+      <column name="other_info" key="device_version" >
+      </column>
+      <column name="other_info" key="diag_version" >
+      </column>
+      <column name="other_info" key="label_revision" >
+      </column>
+      <column name="other_info" key="base_mac_address" >
+      </column>
+      <column name="other_info" key="number_of_macs" >
+      </column>
+      <column name="other_info" key="onie_version" >
+      </column>
+      <column name="other_info" key="manufacturer" >
+      </column>
+      <column name="other_info" key="vendor" >
+      </column>
+      <column name="other_info" key="part_number" >
+      </column>
+      <column name="other_info" key="platform_name" >
+      </column>
+      <column name="other_info" key="serial_number" >
+      </column>
+      <column name="other_info" key="manufacture_date" >
+      </column>
+      <column name="other_info" key="country_code" >
+      </column>
+      <column name="other_info" key="height" >
+      </column>
+      <column name="other_info" key="interface_count" >
+      </column>
+      <column name="other_info" key="max_interface_speed" >
+      </column>
+      <column name="other_info" key="max_transmission_unit" >
+      </column>
+      <column name="other_info" key="max_bond_count" >
+      </column>
+      <column name="other_info" key="max_bond_member_count" >
+      </column>
+      <column name="other_info" key="l3_port_requires_internal_vlan" >
+      </column>
+    </group>
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config" key="fan_speed_override"
+          type='{"type": "string", "enum": ["set", ["slow", "normal", "medium", "fast", "max"]]}'>
+        If the fan_speed_override value is set, <code>fand</code> uses that value
+        (unless the output of <code>tempd</code> requests max speed, in which case
+        the fans are set to max to avoid an over-temperature situation).
+      </column>
+      <column name="external_ids">
+      </column>
+    </group>
+  </table>
+
+  <table name="Bridge">
+    <p>
+      Configuration for a bridge within an <ref table="System"/>.
+    </p>
+    <p>
+      A <ref table="Bridge"/> record represents an Ethernet switch with one or
+      more ``ports,'' which are the <ref table="Port"/> records pointed to by
+      the <ref table="Bridge"/>'s <ref column="ports"/> column. In the first
+      release, only one default bridge (bridge_normal) is supported
+    </p>
+
+    <group title="Core Features">
+      <column name="name">
+        Bridge identifier.  Should be alphanumeric and no more than about 8
+        bytes long.  Must be unique among the names of ports, interfaces, and
+        bridges on a host.
+      </column>
+
+      <column name="ports">
+        Ports included in the bridge.
+      </column>
+
+      <column name="vlans">
+        VLANs included in the bridge.
+      </column>
+    </group>
+
+    <group title="Other Features">
+      <column name="datapath_type">
+        Name of datapath provider.
+      </column>
+      <column name="datapath_version">
+      </column>
+      <column name="datapath_id">
+      </column>
+      <column name="other_config" key="hwaddr">
+        An Ethernet address in the form
+        <var>xx</var>:<var>xx</var>:<var>xx</var>:<var>xx</var>:<var>xx</var>:<var>xx</var>
+        to set the hardware address of the local port and influence the
+        datapath ID.
+      </column>
+
+      <column name="other_config" key="mac-aging-time"
+              type='{"type": "integer", "minInteger": 1}'>
+        <p>
+          The maximum number of seconds to retain a MAC learning entry for
+          which no packets have been seen.  The default is currently 300
+          seconds (5 minutes).  The value, if specified, is forced into a
+          reasonable range, currently 15 to 3600 seconds.
+        </p>
+
+        <p>
+          A short MAC aging time allows a network to more quickly detect that a
+          host is no longer connected to a switch port.  However, it also makes
+          it more likely that packets will be flooded unnecessarily, when they
+          are addressed to a connected host that rarely transmits packets.  To
+          reduce the incidence of unnecessary flooding, use a MAC aging time
+          longer than the maximum interval at which a host will ordinarily
+          transmit packets.
+        </p>
+      </column>
+
+      <column name="other_config" key="mac-table-size"
+              type='{"type": "integer", "minInteger": 1}'>
+        <p>
+          The maximum number of MAC addresses to learn.  The default is
+          currently 16K.  The value, if specified, is forced into a reasonable
+          range, currently 10 to 256K.
+        </p>
+      </column>
+    </group>
+
+    <group title="Bridge Status">
+      <p>
+        Status information about bridges.
+      </p>
+      <column name="status">
+        Key-value pairs that report bridge status.
+      </column>
+      <column name="status" key="actual-mac-table-size">
+        Actual size of the mac table.
+        If mac-table-size exceeds hardware capability, then
+        this field will show the real size used.
+      </column>
+     </group>
+
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config"/>
+      <column name="external_ids"/>
+    </group>
+  </table>
+
+  <table name="VRF" title="Virtual Routing and Forwarding">
+    <p>
+        Each entry in this table represents a single routing domain,
+        commonly known as Virtual Routing and Forwarding.
+    </p>
+    <group title="Configuration">
+      <column name="name">
+        VRF identifier. Should be alphanumeric. VRF names must be
+        unique.
+      </column>
+
+      <column name="ports">
+        Ports included in the VRF.
+      </column>
+      <column name="bgp_routers" keyname="asn">
+        BGP routers keyed by ASN value.
+      </column>
+      <column name="dhcp_server">
+        DHCP Server in the VRF.
+      </column>
+    </group>
+   <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+   </group>
+  </table>
+
+  <table name="Daemon" title="Daemon Information">
+    Each entry in this table represents a single system daemon and contains
+    information about that specific daemon. One use is to identify those
+    daemons that read and process hardware description files to add new
+    hardware into the db.
+    <group title="Configuration">
+      <column name="name">
+        The name of the daemon.
+      </column>
+      <column name="is_hw_handler">
+        A boolean to indicate if this daemon is responsible for processing
+        hardware description information (either on boot, or as hardware
+        subsystems are added or removed).
+      </column>
+    </group>
+    <group title="Status">
+      <column name="cur_hw">
+        Sequence number that a daemon sets to the current value of
+        <ref column="next_hw"/> in the <ref table="System"/> table after
+        it has successfully responded to a hardware change.
+      </column>
+    </group>
+  </table>
+
+  <table name="Route_Map" title="Route Map">
+    <group title="Global Route Map Configuration">
+      <column name="name">
+        Reference to the VRF table, to which this route belongs.
+      </column>
+      <column name="route_map_entries" keyname="preference">
+        Route map entries keyed by preference value.
+      </column>
+    </group>
+   <group title="Status">
+      <column name="status" >
+      </column>
+   </group>
+   <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+   </group>
+  </table>
+  <table name="Route_Map_Entry" title="Route Map Entry">
+    <group title="Global Route Map Entries Configuration">
+      <column name="description">
+      </column>
+      <column name="action">
+        There are three types, permit, deny, and any.
+      </column>
+      <column name="exitpolicy">
+        Rather than normal exiting, route map can continue on processing next route map,
+        or goto N route map and continue on processing.
+      </column>
+      <column name="goto_target">
+        If exitpolicy is goto, nextpref is the route map to jump to.
+      </column>
+      <column name="call">
+        If call command is used, nextrm indicate which route map to goto.
+      </column>
+      <column name="match">
+        The match rule for route map. Default is deny.
+      </column>
+      <column name="set">
+        The set rule for route map
+      </column>
+   </group>
+   <group title="Status">
+      <column name="status" >
+      </column>
+   </group>
+   <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+   </group>
+  </table>
+
+  <table name="Prefix_List" title="Prefix List">
+    <group title="Global IP Address Prefix List Configuration">
+      <column name="name">
+        Name of the prefix list.
+      </column>
+      <column name="prefix_list_entries" keyname="preference">
+        Prefix list entries keyed by preference value.
+      </column>
+      <column name="description">
+      </column>
+   </group>
+   <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+   </group>
+  </table>
+
+  <table name="Prefix_List_Entry" title="Prefix List Entry">
+    <group title="Global Prefix List Entries Configuration">
+      <column name="le">
+      </column>
+      <column name="ge">
+      </column>
+      <column name="action">
+        There are three types, permit, deny, and any.
+      </column>
+      <column name="prefix">
+      </column>
+   </group>
+   <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+   </group>
+  </table>
+
+  <table name="Route" title="Routes Information Base">
+    <p>
+      Global routes information base within an <ref table="System"/>.
+    </p>
+    <p>
+        A <ref table="Route"/> record represents a route. This is a unique
+        record per (vrf, prefix, protocol) set.
+    </p>
+    <group title="Global Routes Configuration">
+      <column name="vrf">
+        Reference to the VRF table, to which this route belongs.
+      </column>
+      <column name="prefix">
+          IPv4 or IPv6 destination prefix and mask in the address/mask
+          format. Example 192.168.0.0/16
+      </column>
+      <column name="from">
+          Protocol that is responsible for this entry. The value is
+          <code>BGP</code> if BGP created this entry, <code>static</code>
+          when the user configures a static route and <code>connected</code>
+          if it is a directly connected device.
+      </column>
+      <column name="protocol_private">
+          Indicates that this row is a protocol specific route entry.
+          The entries which have this value set, should not participate in
+          routing. Example: BGP can store routes for reference and future
+          selection but should not currently be used for forwarding.
+          Default is <code>false</code>.
+      </column>
+      <column name="selected">
+          Route table can have entries which may not be selected for
+          forwarding. This flag indicates if this entry is selected
+          as an active route for forwarding.
+          Default is <code>false</code>.
+      </column>
+      <column name="address_family">
+        Represents the address family for this entry.
+        Default value is <code>ipv4</code>.
+      </column>
+      <column name="sub_address_family">
+        Represents more information regarding this entry.
+        Default is <code>unicast</code>.
+      </column>
+      <column name="distance">
+          Administrative distance for the route entry. This value is populated
+          every time a protocol or a user adds a new entry.
+          The default value is 1 which is the default distance for static
+          routes.
+      </column>
+      <column name="metric">
+          This is the BGP Multi Exit Discriminator (MED) attribute used in best
+          path selection. The MED provides a dynamic way to influence another AS
+          in the way to reach a certain route when there are multiple entry points
+          for that AS.  BGP decision process takes weight, local preference, AS path,
+          Origin and MED into account.  For selection, if all other factors are equal,
+          the exit point with the lowest MED is preferred.
+          Default value is 0
+      </column>
+      <column name="nexthops">
+          List of all the nexthops for this entry. This will be empty in case
+          of blackhole.
+      </column>
+   </group>
+   <group title="Protocol Specific">
+      <p>
+          The <code>protocol_specific</code> column contains key-value pairs that
+          are used by the owner of the entry. Example: If BGP created an entry
+          BGP can populate these key-value pairs for its internal use. These
+          values may not add value to other daemons
+      </p>
+      <column name="protocol_specific" key="bgp_flags"
+          type='{"type": "string"}'>
+          Route status flags. Allowed values are <code>history</code>,
+          <code>damped</code>,<code>multipath</code>
+      </column>
+      <column name="protocol_specific" key="bgp_as_path"
+          type='{"type": "string"}'>
+          List of AS path number for a route. Example: 200,300,400
+      </column>
+      <column name="protocol_specific" key="bgp_origin"
+          type='{"type": "string"}'>
+          Indicates whether a route is <code>IGP</code>, <code>EGP</code>
+          or <code>incomplete</code>.
+      </column>
+      <column name="protocol_specific" key="bgp_loc_pref"
+          type='{"type": "string"}'>
+          Local preference path attribute. Used by BGP to influence in the
+          best path selectionUsed by BGP to influence in the
+          best path selection..
+      </column>
+   </group>
+  </table>
+
+  <table name="Nexthop" title="Nexthops">
+    <p>
+      Global list of all the nexthops as used by the <ref table="Route"/> table.
+      Each entry in the <ref table="Route"/> can have a reference to one or
+      many(for ECMP) entries in this table.
+    </p>
+    <group title="Configuration">
+      <column name="ip_address">
+          IP address of the nexthop device.
+      </column>
+      <column name="ports">
+          List of outgoing ports. Nexthop entries of type <code>unicast</code>
+          can have atmost 1 port.
+      </column>
+      <column name="type">
+          Type of the nexthop.
+          Default is <code>unicast</code>.
+      </column>
+      <column name="selected">
+          Indicates if this nexthop is actively participating in forwarding.
+          Multiple nexthops can exist for each route entry but the routing protocol
+          can indicate if a particular nexthop should not be used in forwarding.
+          Default is <code>true</code>.
+      </column>
+      <column name="weight">
+          Weight is used to differentially balance the packets. Example: For a route
+          if there are 2 nexthops nh1 with weight 5 and nh2 with weight 1, then
+          for every 5 packets that uses nh1, one packet will use nh2.
+          In the first release, the above case is not supported. Only ECMP is
+          supported.
+          Default is 0 (for static routes).
+      </column>
+    </group>
+   <group title="Status">
+      <p>
+        Status information to indicate the current state of the nexthop.
+      </p>
+      <column name="status" key="arp_resolved"
+          type='{"type": "boolean"}'>
+          Indicate if ARP is resolved for this entry. If the ARP entry is
+          missing, this value is <code>false</code>
+      </column>
+      <column name="status" key="hw_configured"
+          type='{"type": "boolean"}'>
+          Indicate if nexthop programmed in the asic. If the ARP entry is
+          missing, this value is <code>false</code>
+      </column>
+      <column name="status" key="error">
+          Human readable error string.
+      </column>
+   </group>
+   <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+   </group>
+  </table>
+
+  <table name="BGP_Route" title="BGP Routes Information Base">
+    <p>
+      BGP local RIB.
+    </p>
+    <group title="BGP Routes">
+      <column name="vrf">
+        Reference to the VRF to which this route belongs.
+      </column>
+      <column name="prefix">
+          IPv4 or IPv6 destination prefix and mask in the address/mask
+          format. Example 192.168.0.0/16
+      </column>
+      <column name="address_family">
+        Represents the address family for this entry.
+        Default value is <code>ipv4</code>.
+      </column>
+      <column name="sub_address_family">
+        Represents subsequent address family identifier such as unicast, multicast
+        or MPLS VPN.
+        Default is <code>unicast</code>.
+      </column>
+      <column name="distance">
+          Administrative distance for the route entry.
+          Default value is 0.
+      </column>
+      <column name="metric">
+          This is the BGP Multi Exit Discriminator (MED) attribute used in best
+          path selection.
+          Default value is 0
+      </column>
+      <column name="bgp_nexthops">
+          Represents nexthops for this entry. Each entry in the <ref table="BGP_Route"/>
+          can have a reference to one or many(for ECMP) nexthop entries.
+      </column>
+   </group>
+   <group title="Path attributes">
+      <p>
+          The <code>path_attributes</code> column contains key-value pairs that
+          represent route attributes.
+      </p>
+      <column name="path_attributes" key="bgp_flags"
+          type='{"type": "string"}'>
+          Route status flags. Allowed values are <code>history</code>,
+          <code>damped</code>,<code>multipath</code>,<code>valid</code>,
+          <code>selected</code>
+           Default value is 0.
+      </column>
+      <column name="path_attributes" key="bgp_as_path"
+          type='{"type": "string"}'>
+          List of AS path number for a route. Default is 0. Example: 200,300,400
+      </column>
+      <column name="path_attributes" key="bgp_origin"
+          type='{"type": "string"}'>
+          Indicates whether a route is <code>IGP</code>, <code>EGP</code>
+          or <code>incomplete</code>.
+          Default is incomplete.
+      </column>
+      <column name="path_attributes" key="bgp_loc_pref"
+          type='{"type": "string"}'>
+          Local preference path attribute. Used by BGP to influence in the
+          best path selection.
+          Default value is 0.
+      </column>
+   </group>
+  </table>
+
+  <table name="BGP_Nexthop" title="BGP Nexthops">
+    <p>
+      List of all nexthops used by BGP.
+      Each entry in the BGP RIB can have a reference to one or
+      many (for ECMP) nexthop entries.
+    </p>
+    <group title="Status">
+      <column name="ip_address">
+          IP address of the nexthop device.
+      </column>
+      <column name="type">
+          Type of the nexthop.
+          Default is <code>unicast</code>.
+      </column>
+    </group>
+  </table>
+
+  <table name="BGP_Router" title="BGP high level configuration">
+    <group title="Configuration">
+      BGP_router includes all bgp config related information. The entries are
+      created on per asn basis.
+      <column name="router_id">
+      Specifies the router-id for given ASN.
+      </column>
+      <column name="networks">
+      Announces networks for given bgp router.
+      </column>
+      <column name="maximum_paths">
+      Number of paths BGP may install into the routing table. If not specified, BGP selects a
+      single path.
+      Default is 1.
+      </column>
+      <column name="timers" key="keepalive"
+             type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'>
+      Specifies BGP keepalive time in seconds.
+      Default is 60 seconds.
+      </column>
+      <column name="timers" key="holdtime"
+              type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'>
+      Specifies BGP hold time in seconds.
+      Default is 180 seconds.
+      </column>
+      <column name="redistribute">
+      Allows redistribution of routes from various protocols.
+      For example: static, connected. Enabling of redistribution protocols is not mutually
+      exclusive.
+      </column>
+      <column name="always_compare_med">
+      Compares MED (Multi-Exit Discriminitor) from different neighbors.
+      Default is false.
+      </column>
+      <column name="deterministic_med">
+      When enabled, selects the best-MED path among paths advertised from the neighboring AS.
+      Default is false.
+      </column>
+      <column name="gr_stale_timer">
+      Specifies the maximum time to hold onto restarting peer stale paths.
+      Range: 1-3600 seconds.
+      Default value is 360 seconds.
+      </column>
+      <column name="bgp_neighbors" keyname="ip_or_group_name">
+        BGP neighbors or neighbor groups, keyed by IP for the former or any
+	string name for the latter.
+      </column>
+    </group>
+   <group title="Status">
+      <column name="status" >
+      </column>
+   </group>
+   <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+   </group>
+  </table>
+
+  <table name="BGP_Neighbor" title="BGP Neighbors and Peer Groups">
+    This table holds both BGP neighbors and BGP peer groups.  A boolean
+    named is_peer_group identifies whether a specific entry is a bgp
+    neighbor or a peer group.
+
+    <group title="Neighbor Configuration">
+
+      <column name="is_peer_group">
+      This is a flag which identifies whether this specific entry is
+      an individual BGP neighbor or is a BGP peer group.  A value
+      of true implies a peer group.  Otherwise, the entry represents
+      a BGP neighbor.  If the value is not set, it implies false.
+      </column>
+
+      <column name="description">
+      This is an optional string which can be used for describing this entry.
+      Default is empty.
+      </column>
+
+      <column name="shutdown">
+      Specifies whether the neighbor has been administratively shut down.
+      If not specified, the default is false.
+      </column>
+
+      <column name="bgp_peer_group">
+      This column is used only if the entry is a BGP neighbor.  It represents
+      the peer group this BGP neighbor is a member of.  Default is none.
+      </column>
+
+      <column name="local_interface">
+      Reference to the corresponding interface.  This is used only for ipv6.
+      Default is none.
+      </column>
+
+      <column name="remote_as">
+      Peer AS number. For EBGP, the peer is in another AS, so the remote AS
+      number must be different from the local router's AS number or BGP
+      router asn. For IBGP, the peer is in the same AS, so the two AS
+      numbers must be the same.
+      Remote AS number. Range: 1-4294967295.
+      </column>
+
+      <column name="allow_as_in">
+       Allow-as-in is the number of times BGP can allow an instance of AS
+      to be in the AS_PATH.
+      </column>
+
+      <column name="local_as">
+      To specify a different asn from BGP router asn to be used as local AS
+      number in update messages to peers.
+      Local AS number. Range: 1-4294967295.
+      </column>
+
+      <column name="weight">
+      This is the weight for routes from this neighbor.
+      </column>
+
+      <column name="tcp_port_number">
+      This is the BGP neighbor's tcp port number.  Default value is 179.
+      </column>
+
+      <column name="advertisement_interval">
+      Minimum interval between sending BGP routing updates. Range: 0-600 seconds.
+      </column>
+
+      <column name="maximum_prefix_limit">
+      Maximum number of prefixes that can be accepted on a BGP peer
+      session. When the limit is exceeded, a system log message is logged.
+      </column>
+
+      <column name="capability">
+      Advertise dynamic/ORF capabilities to the peer.
+      </column>
+
+      <column name="override_capability">
+      Override capability negotiation result.
+      </column>
+
+      <column name="inbound_soft_reconfiguration">
+      Allow inbound soft reconfiguration for this neighbor.
+      </column>
+
+      <column name="remove_private_as">
+      Specifies whether private AS should be removed.
+      If not specified, the default value is false.
+      </column>
+
+      <column name="passive">
+      Indicates that open messages should NOT be sent to this neighbor.
+      Default is false.
+      </column>
+
+      <column name="password">
+      The password for this entry.
+      </column>
+
+      <column name="strict_capability_match">
+      Strict capability negotiation match.
+      </column>
+
+      <column name="timers">
+      BGP per neighbor timers - Connect timer/Keep-alive Interval.
+      </column>
+
+      <column name="route_maps">
+      Name and direction of the route maps.
+      </column>
+
+      <column name="route_maps" key="in">
+      Map associated with incoming routes.
+      </column>
+
+      <column name="route_maps" key="out">
+      Map associated with outbound routes.
+      </column>
+
+    </group>
+
+   <group title="Status">
+      <column name="status">
+      These values describe various status information about this
+      BGP neighbor or BGP Peer group entry.
+      </column>
+   </group>
+
+   <group title="BGP Neighbor or Peer group Status Info">
+      <p>
+        The <code>status</code> column contains one or more
+        informational entries indicating various status
+        values for this BGP neighbor.
+      </p>
+      <column name="status" key="bgp_peer_state">
+          This represents the BGP neighbor state at this specific
+          instance in time.  The value can be one of Idle, Connect,
+          Active, OpenSent, OpenConfirm, Established, Clearing or
+          Deleted and can change any time.  Default is Idle.
+      </column>
+   </group>
+
+   <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config">
+      </column>
+
+      <column name="external_ids">
+      </column>
+   </group>
+
+   <group title="BGP Neighbor Statistics">
+     <p>
+       The <code>statistics</code> column contains various counters
+       about this BGP neighbor.
+     </p>
+      <column name="statistics" key="bgp_peer_established_count">
+      This indicates the number of times peers have been established.
+      </column>
+      <column name="statistics" key="bgp_peer_dropped_count">
+      This indicates the number of times peers have been dropped
+      from the established state.
+      </column>
+      <column name="statistics" key="bgp_peer_open_in_count">
+      This indicates how many times an open message has been received.
+      </column>
+      <column name="statistics" key="bgp_peer_open_out_count">
+      This indicates how many times an open message has been sent.
+      </column>
+      <column name="statistics" key="bgp_peer_update_in_count">
+      This indicates how many times an update message has been received.
+      </column>
+      <column name="statistics" key="bgp_peer_update_out_count">
+      This indicates how many times an update message has been sent.
+      </column>
+      <column name="statistics" key="bgp_peer_keepalive_in_count">
+      This indicates how many times a keepalive message has been received.
+      </column>
+      <column name="statistics" key="bgp_peer_keepalive_out_count">
+      This indicates how many times a keepalive message has been sent.
+      </column>
+      <column name="statistics" key="bgp_peer_notify_in_count">
+      This indicates how many times a notify message has been received.
+      </column>
+      <column name="statistics" key="bgp_peer_notify_out_count">
+      This indicates how many times a notify message has been sent.
+      </column>
+      <column name="statistics" key="bgp_peer_refresh_in_count">
+      This indicates how many times a frefresh message has been received.
+      </column>
+      <column name="statistics" key="bgp_peer_refresh_out_count">
+      This indicates how many times a refresh message has been sent.
+      </column>
+      <column name="statistics" key="bgp_peer_dynamic_cap_in_count">
+      This indicates how many times a dynamic cap message has been received.
+      </column>
+      <column name="statistics" key="bgp_peer_dynamic_cap_out_count">
+      This indicates how many times a dynamic cap message has been sent.
+      </column>
+      <column name="statistics" key="bgp_peer_uptime">
+      This indicates how long since peer has been in the established state,
+      or since the last route update was received.
+      </column>
+      <column name="statistics" key="bgp_peer_readtime">
+      This indicates the last time an update or keepalive message has been
+      received.
+      </column>
+      <column name="statistics" key="bgp_peer_resettime">
+      Indicates the last time peer was reset.
+      </column>
+   </group>
+
+  </table>
+
+  <table name="Neighbor" title="L2 Neighbors">
+    <p>
+      List of all the connected neighbors.
+    </p>
+    <group title="Neighbor information">
+      <column name="vrf">
+        Reference to the VRF table, to which this neighbor belongs.
+      </column>
+      <column name="ip_address">
+        The IPv4 address or the IPv6 address of neighbor
+      </column>
+      <column name="address_family">
+          Address family of the neighbor.
+      </column>
+      <column name="mac">
+        MAC address learned for this neighbor.
+      </column>
+      <column name="port">
+         Port on which this neighbor was learned.
+      </column>
+      <column name="state">
+        Current state of the neighbor entry.
+      </column>
+      <column name="status" key="dp_hit"
+          type='{"type": "boolean"}'>
+          Indicates if there is active traffic to the neighbor. This value
+          is periodically updated. If the value is set to <code>false</code>,
+          it indicates that there was no traffic to this neighbor recently.
+          Default is <code>true</code>
+      </column>
+   </group>
+  </table>
+
+  <table name="VLAN" title="Virtual Local Area Network">
+    <group title="Configuration">
+      <column name="name">
+        VLAN name.  Should be alphanumeric and no more than about 8 bytes long.
+      </column>
+      <column name="id">
+        The ID of this VLAN.
+      </column>
+      <column name="description">
+        User provided description of this VLAN.
+      </column>
+      <column name="admin">
+        Administratively configured state of this VLAN.
+        Default is down if not specified.
+      </column>
+    </group>
+
+    <group title="Hardware VLAN Configuration">
+      <column name="hw_vlan_config">
+          Key-value pairs that represent the configuration passed down to hardware.
+      </column>
+      <column name="hw_vlan_config" key="enable">
+        The possible values are "true" and "false".
+      </column>
+    </group>
+   <group title="VLAN Status">
+      <column name="oper_state">
+        Operational state of this VLAN.
+      </column>
+      <column name="oper_state_reason">
+        Human readable reason for the operational state of this VLAN.
+      </column>
+   </group>
+   <group title="Internal VLAN Config">
+      <p>
+          Information about how this VLAN is used internally by the system.
+          VLAN could be used for L3 interface, sflow, etc.
+      </p>
+      <column name="internal_usage">
+          Key-value pairs that represent how this VLAN is used internally by the
+          system.
+      </column>
+      <column name="internal_usage" key="l3port">
+          VLAN is used internally by ASIC to configure L3 behavior of the port.
+          The value is the port name that uses this VLAN.
+      </column>
+    </group>
+   <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+   </group>
+  </table>
+
+ <table name="Port" table="Port or bond configuration.">
+    <p>A port within a <ref table="Bridge"/>.</p>
+    <p>Most commonly, a port has exactly one ``interface,'' pointed to by its
+    <ref column="interfaces"/> column.  Such a port logically
+    corresponds to a port on a physical Ethernet switch.  A port
+    with more than one interface is a ``bonded port'' (see
+    <ref group="Bonding Configuration"/>).</p>
+    <p>Some properties that one might think as belonging to a port are actually
+    part of the port's <ref table="Interface"/> members.</p>
+
+    <p>
+        If port has an IP address, then it becomes L3 and might participate
+        in VRFs. Unless referenced interface has an "internal" type, L3 port
+        can not participate in the bridge.
+        "internal" ports that basically represent VLAN interfaces may be
+        referenced by both Bridge and VRF.
+    </p>
+
+    <column name="name">
+      Port name.  Should be alphanumeric and no more than about 8
+      bytes long.  May be the same as the interface name, for
+      non-bonded ports.  Must otherwise be unique among the names of
+      ports, interfaces, and bridges on a host.
+    </column>
+
+    <column name="interfaces">
+      The port's interfaces.  If there is more than one, this is a
+      bonded Port. A maximum of 8 interfaces can be assigned to a port.
+    </column>
+
+    <column name="admin">
+      The administrative state of the Port configured by user. The port admin
+      state determines the hardware configuration based on the business logic.
+      When port "admin" is configured down the interface(s) associated
+      with the port should force their hardware configuration to down. By
+      default the port is up.
+    </column>
+
+    <group title="Hardware Port Configuration">
+      <p>
+        The following fields are not meant to be configured by the user,
+        but rather by <code>portd</code> daemon that is responsible to consider
+        user configuration and business logic in order to determine
+        hardware configuration.
+      </p>
+
+      <column name="hw_config">
+        Key-value pairs that represent the configuration passed down to hardware.
+      </column>
+      <column name="hw_config" key="enable"
+              type='{"type": "boolean"}'>
+        The possible values are "true" and "false".
+      </column>
+      <column name="hw_config" key="internal-vlan">
+        The VLAN associated with l3 interfaces.
+      </column>
+    </group>
+
+    <group title="VLAN Configuration">
+      <p>Bridge ports support the following types of VLAN configuration:</p>
+      <dl>
+        <dt>trunk</dt>
+        <dd>
+          <p>
+            A trunk port carries packets on one or more VLANs specified
+            in the <ref column="trunks"/> column (or all VLANs defined in
+            <ref table="VLAN"/> table if trunks is empty or not specified).
+            A packet that ingresses on a trunk port is in the VLAN
+            specified in its 802.1Q header, or VLAN 1 if the packet has no
+            802.1Q header.  A packet that egresses through a trunk port will
+            have an 802.1Q header if it has a nonzero VLAN ID.
+          </p>
+
+          <p>
+            Any packet that ingresses on a trunk port tagged with a VLAN that
+            the port does not trunk is dropped.
+          </p>
+        </dd>
+
+        <dt>access</dt>
+        <dd>
+          <p>
+            An access port carries packets on exactly one VLAN specified in the
+            <ref column="tag"/> column.  Packets egressing on an access port
+            have no 802.1Q header.
+          </p>
+
+          <p>
+            Any packet with an 802.1Q header with a nonzero VLAN ID that
+            ingresses on an access port is dropped, regardless of whether the
+            VLAN ID in the header is the access port's VLAN ID.
+          </p>
+        </dd>
+
+        <dt>native-tagged</dt>
+        <dd>
+          A native-tagged port resembles a trunk port, with the exception that
+          a packet without an 802.1Q header that ingresses on a native-tagged
+          port is in the ``native VLAN'' (specified in the <ref column="tag"/>
+          column).
+        </dd>
+
+        <dt>native-untagged</dt>
+        <dd>
+          A native-untagged port resembles a native-tagged port, with the
+          exception that a packet that egresses on a native-untagged port in
+          the native VLAN will not have an 802.1Q header.
+        </dd>
+      </dl>
+      <p>
+        A packet will only egress through bridge ports that carry the VLAN of
+        the packet, as described by the rules above.
+      </p>
+
+      <column name="vlan_mode">
+        <p>
+          The VLAN mode of the port, as described above.  When this column is
+          empty, a default mode is selected as follows:
+        </p>
+        <ul>
+          <li>
+            If <ref column="tag"/> contains a value, the port is an access
+            port.  The <ref column="trunks"/> column should be empty.
+          </li>
+          <li>
+            Otherwise, the port is a trunk port.  The <ref column="trunks"/>
+            column value is honored if it is present.
+          </li>
+        </ul>
+      </column>
+
+      <column name="tag">
+        <p>
+          For an access port, the port's implicitly tagged VLAN.  For a
+          native-tagged or native-untagged port, the port's native VLAN.  Must
+          be empty if this is a trunk port.
+        </p>
+      </column>
+
+      <column name="trunks">
+        <p>
+          For a trunk, native-tagged, or native-untagged port, the 802.1Q VLAN
+          or VLANs that this port trunks; if it is empty, then the port trunks
+          all VLANs defined in the <ref table="VLAN"/> table.  Must be empty
+          if this is an access port.
+        </p>
+        <p>
+          A native-tagged or native-untagged port always trunks its native
+          VLAN, regardless of whether <ref column="trunks"/> includes that
+          VLAN.
+        </p>
+      </column>
+    </group>
+
+    <group title="Bonding Configuration">
+      <p>A port that has more than one interface is a ``bonded port.'' Bonding
+      allows for load balancing and fail-over.</p>
+
+      <p>
+        The following modes (bond_mode) require the upstream switch to support
+        802.3ad with successful LACP negotiation.</p>
+
+      <p>These columns apply only to bonded ports.  Their values are otherwise
+          ignored.</p>
+
+      <column name="bond_mode"> <p>The type of bonding used for a bonded port.
+              Defaults to <code>l3-src-dst-hash</code> if not assigned.  </p>
+      </column>
+
+      <group title="LACP Configuration">
+        <p>
+          LACP, the Link Aggregation Control Protocol, is an IEEE standard that
+          allows switches to automatically detect that they are connected by
+          multiple links and aggregate across those links.  These settings
+          control LACP behavior.
+        </p>
+
+        <column name="lacp">
+          Configures LACP on this port.  LACP allows directly connected
+          switches to negotiate which links may be bonded.  LACP may be enabled
+          on non-bonded ports for the benefit of any switches they may be
+          connected to.  <code>active</code> ports are allowed to initiate LACP
+          negotiations.  <code>passive</code> ports are allowed to participate
+          in LACP negotiations initiated by a remote switch, but not allowed to
+          initiate such negotiations themselves.  If LACP is enabled on a port
+          whose partner switch does not support LACP, the bond will be
+          disabled. Defaults to <code>off</code> if unset.
+        </column>
+
+        <column name="other_config" key="lacp-system-id">
+          The LACP system ID of this <ref table="Port"/>.  The system ID of a
+          LACP bond is used to identify itself to its partners.  Must be a
+          nonzero MAC address. Defaults to the bridge Ethernet address if
+          unset.
+        </column>
+
+        <column name="other_config" key="lacp-system-priority"
+                type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+          The LACP system priority of this <ref table="Port"/>.  In LACP
+          negotiations, link status decisions are made by the system with the
+          numerically lower priority.
+        </column>
+
+        <column name="other_config" key="lacp-time"
+          type='{"type": "string", "enum": ["set", ["fast", "slow"]]}'>
+          <p>
+            The LACP timing which should be used on this <ref table="Port"/>.
+            By default <code>slow</code> is used.  When configured to be
+            <code>fast</code> LACP heartbeats are requested at a rate of once
+            per second causing connectivity problems to be detected more
+            quickly.  In <code>slow</code> mode, heartbeats are requested at a
+            rate of once every 30 seconds.
+          </p>
+        </column>
+      </group>
+    </group>
+   <group title="L3 Configuration">
+       <column name="ip4_address">
+        The IPv4 address and subnet mask in the address/mask format.
+        This is the primary IP address.
+      </column>
+       <column name="ip4_address_secondary">
+        This is a list of secondary IPv4 addresses and subnet mask
+        in the address/mask format.
+      </column>
+       <column name="ip6_address">
+        The IPv6 address and subnet mask in the address/mask format.
+        This is the primary IPv6 address.
+      </column>
+       <column name="ip6_address_secondary">
+        This is a list of secondary IPv6 addresses and subnet mask
+        in the address/mask format.
+      </column>
+   </group>
+
+   <group title="Other Features">
+      <column name="mac">
+        The MAC address to use for this port for the purpose of choosing the
+        bridge's MAC address.  This column does not necessarily reflect the
+        port's actual MAC address, nor will setting it change the port's actual
+        MAC address.
+      </column>
+
+   </group>
+
+    <group title="Port Status">
+      <p>
+        Status information about ports attached to bridges.
+      </p>
+      <column name="status">
+        Key-value pairs that report port status.
+      </column>
+      <column name="status" key="bond_hw_handle">
+        Unique identifier of the LAG from the data path's perspective.
+        This key value should be treated as opaque handle by application
+        daemons while updating LAG member interfaces in hardware.
+      </column>
+      <column name="lacp_status">
+        Key-value pairs that report lacp-specific port status.
+      </column>
+      <column name="lacp_status" key="bond_speed">
+        Speed of interfaces operating in lag.
+      </column>
+      <column name="lacp_status" key="bond_status">
+        Operational status of LAG. The values are "ok" (bond is functional)
+        "down" (bond isn't functional), and "defaulted" (remote LACP not
+        operating, using one interface in non-LACP mode).
+      </column>
+      <column name="lacp_status" key="bond_status_reason">
+        String identifying the reason why the bond_status is "down".
+      </column>
+    </group>
+
+    <group title="Port Statistics">
+      <p>
+        Key-value pairs that report port statistics.  The update period
+        is controlled by <ref column="other_config"
+        key="stats-update-interval"/> in the <ref table="System"/> table.
+      </p>
+    </group>
+
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config"/>
+      <column name="external_ids"/>
+    </group>
+  </table>
+
+  <table name="Interface" title="One physical network device in a Port.">
+    An interface within a <ref table="Port"/>.
+
+    <group title="Core Features">
+      <column name="name">
+        Interface name.  Should be alphanumeric and no more than about 8 bytes
+        long.  May be the same as the port name, for non-bonded ports.  Must
+        otherwise be unique among the names of ports, interfaces, and bridges
+        on a host.
+      </column>
+
+    </group>
+
+    <group title="System-Specific Details">
+      <column name="type">
+        <p>
+          The interface type, one of:
+        </p>
+
+        <dl>
+          <dt><code>system</code></dt>
+          <dd>An ordinary network device, e.g. <code>eth0</code> on Linux.
+          Sometimes referred to as ``external interfaces'' since they are
+          generally connected to hardware external to that on which the Open
+          Halon is running.  The empty string is a synonym for
+          <code>system</code>.</dd>
+
+          <dt><code>internal</code></dt>
+          <dd>A simulated network device that sends and receives traffic.  An
+          internal interface whose <ref column="name"/> is the same as its
+          bridge's <ref table="System" column="name"/> is called the
+          ``local interface.''  It does not make sense to bond an internal
+          interface, so the terms ``port'' and ``interface'' are often used
+          imprecisely for internal interfaces.</dd>
+       </dl>
+      </column>
+    </group>
+
+    <group title="Interface Status">
+      <p>
+        Status information about interfaces attached to bridges, updated every
+        5 seconds.  Not all interfaces have all of these properties; virtual
+        interfaces don't have a link speed, for example.  Non-applicable
+        columns will have empty values.
+      </p>
+      <column name="admin_state">
+        <p>
+          The administrative state of the physical network link.
+        </p>
+      </column>
+
+      <column name="error">
+        If the configuration of the <ref table="Interface"/> failed,
+        Open Halon sets this column to an error
+        description in human readable form.  Otherwise, Open Halon clears
+        this column.
+      </column>
+      <column name="mac_in_use">
+        The MAC address in use by this <ref table="Interface"/>.
+      </column>
+
+      <column name="link_state">
+        <p>
+          The observed state of the physical network link.  This is ordinarily
+          the link's carrier status.
+        </p>
+      </column>
+
+      <column name="link_resets">
+        <p>
+          The number of times Open Halon has observed the
+          <ref column="link_state"/> of this <ref table="Interface"/> change.
+        </p>
+      </column>
+
+      <column name="link_speed">
+        <p>
+          The negotiated speed of the physical network link in bits per second.
+          Valid values are positive integers greater than 0.
+        </p>
+      </column>
+
+      <column name="duplex">
+        <p>
+          The duplex mode of the physical network link.
+        </p>
+      </column>
+      <column name="pause">
+        <p>
+          The status of the Ethernet PAUSE (link-level flow control)
+          mode of the physical network link.
+        </p>
+      </column>
+
+      <column name="mtu">
+        <p>
+          The MTU (maximum transmission unit); i.e. the largest
+          amount of data that can fit into a single Ethernet frame.
+          The standard Ethernet MTU is 1500 bytes.  Some physical media
+          and many kinds of virtual interfaces can be configured with
+          higher MTUs.
+        </p>
+        <p>
+          This column will be empty for an interface that does not
+          have an MTU as, for example, some kinds of tunnels do not.
+        </p>
+      </column>
+
+      <column name="lacp_current">
+        Boolean value indicating LACP status for this interface.  If true, this
+        interface has current LACP information about its LACP partner.  This
+        information may be used to monitor the health of interfaces in a LACP
+        enabled port.  This column will be empty if LACP is not enabled.
+      </column>
+
+      <column name="lacp_status">
+        Key-value pairs that report LACP protocol status.
+      </column>
+
+      <column name="lacp_status" key="actor_system_id">
+        The LACP actor system ID in the form of priority and mac address tuple.
+      </column>
+      <column name="lacp_status" key="actor_port_id">
+        The LACP actor port ID in the form of priority and port number tuple.
+      </column>
+      <column name="lacp_status" key="actor_key">
+        The LACP actor key in use.
+      </column>
+      <column name="lacp_status" key="actor_state">
+        The LACP actor protocol state information in an abbreviated form
+        reporting status/state bit values. For example,
+            (Actv:1,TmOut:1,Aggr:1,Sync:1,Col:1,Dist:1,Def:0,Exp:0)
+      </column>
+      <column name="lacp_status" key="partner_system_id">
+        The LACP partner system ID in the form of priority and mac address tuple.
+      </column>
+      <column name="lacp_status" key="partner_port_id">
+        The LACP partner port ID in the form of priority and port number tuple.
+      </column>
+      <column name="lacp_status" key="partner_key">
+        The LACP partner key in use.
+      </column>
+      <column name="lacp_status" key="partner_state">
+        The LACP partner protocol state information in an abbreviated form
+        reporting status/state bit values. For example,
+            (Actv:1,TmOut:1,Aggr:1,Sync:1,Col:1,Dist:1,Def:0,Exp:0)
+      </column>
+
+      <column name="hw_bond_config">
+        Key-value pairs that configure the interface as a member of bond.
+      </column>
+      <column name="hw_bond_config" key="bond_hw_handle">
+        Identifies the LAG to which this interface should be attached in
+        hardware. This value is directly copied from
+        <ref table="Port" column="status" key="bond_hw_handle"/>.
+      </column>
+      <column name="hw_bond_config" key="rx_enabled">
+        A state flag to indicate that this interface is attached to a
+        hardware LAG and receive logic is enabled.
+        Defaults to <code>false</code> if unset.
+      </column>
+      <column name="hw_bond_config" key="tx_enabled">
+        A state flag to indicate that the transmit logic is enabled for this
+        interface in hardware LAG.
+        Defaults to <code>false</code> if unset.
+      </column>
+
+      <column name="lldp_neighbor_info">
+        This column includes a map of keys:values of neighbors as discovered
+        by LLDP.
+      </column>
+
+      <column name="status">
+        Key-value pairs that report port status.  Supported status values are
+        <ref column="type"/>-dependent; some interfaces may not have a valid
+        <ref column="status" key="driver_name"/>, for example.
+      </column>
+
+      <column name="status" key="driver_name">
+        The name of the device driver controlling the network adapter.
+      </column>
+
+      <column name="status" key="driver_version">
+        The version string of the device driver controlling the network
+        adapter.
+      </column>
+
+      <column name="status" key="firmware_version">
+        The version string of the network adapter's firmware, if available.
+      </column>
+
+    <group title="LLDP status info">
+      <column name="status" key="lldp_local_port_vlan">
+        Information about port VLAN config.
+      </column>
+
+      <column name="status" key="lldp_local_port_description">
+        Description of LLDP port in alpha-numeric format.
+      </column>
+    </group>
+
+    </group>
+
+    <group title="Module Information">
+      <p>
+        Information about the pluggable module inserted into the physical interface socket.
+      </p>
+
+      <column name="pm_info">
+        Key-value pairs that report pluggable module information.
+      </column>
+      <column name="pm_info" key="connector">
+        The type of pluggable module connector inserted into the socket.
+        The possible values are "absent", "unknown", "SFP_RJ45", "SFP_SX", "SFP_LX",
+        "SFP_CX", "SFP_SR", "SFP_LR", "SFP_LRM", "SFP_DAC", "SFP_FC", "QSFP_CR4",
+        "QSFP_SR4" and "QSFP_LR4".
+      </column>
+      <column name="pm_info" key="connector_status">
+        The status of the connector to indicate whether it is supported by the hardware platform.
+        The possible values are "unrecognized", "unsupported" and "supported".
+      </column>
+      <column name="pm_info" key="supported_speeds">
+        The list of speeds, in megabits per second, supported by this pluggable module.
+      </column>
+      <column name="pm_info" key="cable_technology">
+        This indicates whether a copper pluggable module is active or passive.
+        The possible values are "active" and "passive".
+      </column>
+      <column name="pm_info" key="cable_length">
+        The length of the cable in meters. This is only applicable to transceivers
+        with built-in cable or the maximum cable length for a transceiver restricted
+        by length.
+      </column>
+      <column name="pm_info" key="max_speed">
+        The maximum speed supported by the transceiver, in units of megabits per second.
+      </column>
+      <column name="pm_info" key="power_mode">
+        The power mode for the pluggable module. The possible values are "low" or "high".
+        This typically applies to QSFP pluggable modules.
+      </column>
+      <column name="pm_info" key="vendor_name">
+        The name of the vendor of the module.
+      </column>
+      <column name="pm_info" key="vendor_oui">
+        The Organizationally Unique Identifier (OUI) of the module vendor.
+      </column>
+      <column name="pm_info" key="vendor_part_number">
+        The vendor's module part number.
+      </column>
+      <column name="pm_info" key="vendor_revision">
+        The vendor's module revision number.
+      </column>
+      <column name="pm_info" key="vendor_serial_number">
+        The vendor's module serial number.
+      </column>
+    </group>
+
+    <group title="Statistics">
+      <p>
+        Key-value pairs that report interface statistics.  The current
+        implementation updates these counters periodically.  The update period
+        is controlled by <ref column="other_config"
+        key="stats-update-interval"/> in the <ref table="System"/> table.
+     </p>
+      <p>
+        If an interface does not support a
+        given statistic, then that pair is omitted.
+      </p>
+      <group title="Statistics: Successful transmit and receive counters">
+        <column name="statistics" key="rx_packets">
+          Number of received packets.
+        </column>
+        <column name="statistics" key="rx_bytes">
+          Number of received bytes.
+        </column>
+        <column name="statistics" key="tx_packets">
+          Number of transmitted packets.
+        </column>
+        <column name="statistics" key="tx_bytes">
+          Number of transmitted bytes.
+        </column>
+      </group>
+      <group title="Statistics: Receive errors">
+        <column name="statistics" key="rx_dropped">
+          Number of packets dropped by RX.
+        </column>
+        <column name="statistics" key="rx_frame_err">
+          Number of frame alignment errors.
+        </column>
+        <column name="statistics" key="rx_over_err">
+          Number of packets with RX overrun.
+        </column>
+        <column name="statistics" key="rx_crc_err">
+          Number of CRC errors.
+        </column>
+        <column name="statistics" key="rx_errors">
+          Total number of receive errors, greater than or equal to the sum of
+          the above.
+        </column>
+      </group>
+      <group title="Statistics: Transmit errors">
+        <column name="statistics" key="tx_dropped">
+          Number of packets dropped by TX.
+        </column>
+        <column name="statistics" key="collisions">
+          Number of collisions.
+        </column>
+        <column name="statistics" key="tx_errors">
+          Total number of transmit errors, greater than or equal to the sum of
+          the above.
+        </column>
+      </group>
+      <group title="LLDP Interface Level Statistics">
+        <column name="lldp_statistics" key="lldp_tx">
+          Number of lldp packets transmitted.
+        </column>
+        <column name="lldp_statistics" key="lldp_tx_len_err">
+          Number of lldp packet transmit error because of length.
+        </column>
+        <column name="lldp_statistics" key="lldp_rx">
+          Number of lldp packets received.
+        </column>
+        <column name="lldp_statistics" key="lldp_rx_err">
+          Number of lldp packets received with one or more detectable errors.
+        </column>
+        <column name="lldp_statistics" key="lldp_rx_discard">
+          Number of lldp packet received and discarded because of missing,
+          out-of-order or incorrect TLVs.
+        </column>
+        <column name="lldp_statistics" key="lldp_rx_tlv_discard">
+          Number of lldp TLVs discarded because of errors.
+        </column>
+        <column name="lldp_statistics" key="lldp_rx_tlv_unknown">
+          Number of lldp TLVs discarded because of unknown tlv.
+        </column>
+      </group>
+    </group>
+
+    <group title="Bonding Configuration">
+      <column name="other_config" key="lacp-port-id"
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+        The LACP port ID of this <ref table="Interface"/>.  Port IDs are
+        used in LACP negotiations to identify individual ports
+        participating in a bond.
+      </column>
+
+      <column name="other_config" key="lacp-port-priority"
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+        The LACP port priority of this <ref table="Interface"/>.  In LACP
+        negotiations <ref table="Interface"/>s with numerically lower
+        priorities are preferred for aggregation.
+      </column>
+    </group>
+
+    <group title="User Configuration">
+    <p>
+      The following fields are meant to be configured by the user.
+      It represents the configuration of the interface in the bridge.
+    </p>
+
+    <column name="user_config">
+      Key-value pairs that stores the user configuration of <ref table="Interface"/>.
+    </column>
+    <column name="user_config" key="admin">
+      The user-configured administrative state of <ref table="Interface"/>.
+      The possible values are "up" and "down".  Default is "down" if not specified.
+    </column>
+    <column name="user_config" key="autoneg">
+      The user-configured auto-negotiation state of <ref table="Interface"/>.
+      The possible values are "default", "on", and "off".
+    </column>
+    <column name="user_config" key="speeds">
+      The list of user-configured interface speeds in megabits per second.
+      When autoneg is disabled, the first speed value in the list is applied.
+    </column>
+    <column name="user_config" key="duplex">
+      The user-configured duplex mode of <ref table="Interface"/>.
+      The possible values are "half" and "full".
+    </column>
+    <column name="user_config" key="pause">
+      The user-configured Ethernet PAUSE (link-level flow control) mode
+      of <ref table="Interface"/>. The possible values are "none", "rx", "tx", and "rxtx".
+    </column>
+    <column name="user_config" key="mtu">
+      The user-configured MTU of <ref table="Interface"/>.
+    </column>
+    <column name="user_config" key="lane_split">
+      The user-configured split mode of <ref table="Interface"/>.
+      This is only applicable if an interface can be split into
+      multiple interfaces, e.g. QSFP+ ports.
+      The possible values are "split" and "no-split".
+    </column>
+    </group>
+
+    <group title="Hardware Interface Configuration">
+    <p>
+      The following fields are not meant to be configured by the user,
+      but rather by <code>intfd</code> daemon that is responsible to consider
+      user configuration or the port admin_state configuration and business
+      logic in order to determine hardware configuration. When port associated
+      with the interface is configured to down the hardware configuration is
+      forced to down.
+    </p>
+
+    <column name="hw_intf_config">
+      Key-value pairs that represent the configuration passed down to hardware.
+    </column>
+    <column name="hw_intf_config" key="enable">
+      The possible values are "true" and "false".
+    </column>
+    <column name="hw_intf_config" key="autoneg">
+      The possible values are "on" and "off".
+    </column>
+    <column name="hw_intf_config" key="speeds">
+      The list of possible interface speeds, in megabits per second.
+      If autoneg is true, this is the list of advertised speeds.
+      If not, the first speed in the list is the fixed speed of <ref table="Interface"/>.
+    </column>
+    <column name="hw_intf_config" key="duplex">
+      The possible values are "half" and "full".
+    </column>
+    <column name="hw_intf_config" key="pause">
+      The possible values are "none", "rx", "tx", and "rxtx".
+    </column>
+    <column name="hw_intf_config" key="mtu">
+      Maximum transmission unit (MTU) of <ref table="Interface"/>.
+    </column>
+    <column name="hw_intf_config" key="interface_type">
+      Physical layer interface type of <ref table="Interface"/>.
+      The possible values are "unknown", "backplane", "1GBASE_SX", "1GBASE_T",
+      "10GBASE_CR", "10GBASE_SR", "10GBASE_LR", "10GBASE_LRM", "40GBASE_CR4",
+      "40GBASE_SR4" and "40GBASE_LR4".
+    </column>
+    </group>
+
+    <group title="Hardware Interface Information">
+    <p>
+      The following fields describes the hardware information of <ref table="Interface"/>.
+      These values do not change through the life of the system.
+    </p>
+
+    <column name="hw_intf_info">
+      Key-value pairs that show the information about a physical interface.
+    </column>
+    <column name="hw_intf_info" key="switch_unit">
+      The hardware switch chip unit identifier.
+      This value is applicable only to interfaces on physical switch devices.
+    </column>
+    <column name="hw_intf_info" key="switch_intf_id">
+      The hardware switch chip interface identifier.
+      This value is applicable only to interfaces on physical switch devices.
+    </column>
+    <column name="hw_intf_info" key="mac_addr">
+      The MAC Address for the interface.
+    </column>
+    <column name="hw_intf_info" key="max_speed">
+      The maximum speed of the interface in units of megabits per second.
+    </column>
+    <column name="hw_intf_info" key="speeds">
+      The list of supported speeds of the interface in units of megabits per second.
+    </column>
+    <column name="hw_intf_info" key="connector">
+      The form factor of the interface socket.
+      The possible values are "SFP_PLUS" and "QSFP_PLUS".
+    </column>
+    <column name="hw_intf_info" key="pluggable">
+      Boolean value indicating whether or not the interface has a fixed connector or
+      a pluggable module socket.
+    </column>
+    <column name="hw_intf_info" key="capability_enet1G">
+      Boolean value indicating whether or not the interface supports Ethernet
+      1G speed.
+    </column>
+    <column name="hw_intf_info" key="capability_enet10G">
+      Boolean value indicating whether or not the interface supports Ethernet
+      10G speed.
+    </column>
+    <column name="hw_intf_info" key="capability_enet40G">
+      Boolean value indicating whether or not the interface supports Ethernet
+      40G speed.
+    </column>
+    <column name="hw_intf_info" key="capability_split_4">
+      Boolean value indicating whether or not the interface supports being
+      split into four split ports. For example, a QSFP+ port can run as a
+      single port or can be split into four 10G split ports using a QSFP+
+      splitter cable.
+    </column>
+    <column name="hw_intf_info" key="bridge"
+      type='{"type": "boolean"}'>
+      Boolean value indicating interface is a `bridge' interface which is
+      created for every bridge instance. The `bridge' interface receives all
+      VLAN traffic and distributes to the vlan interfaces based on the VLAN
+      tags. The default value is `false'
+    </column>
+    <column name="split_parent">
+      For a split child interface, this is the reference to the parent <ref table="Interface"/>.
+    </column>
+    <column name="split_children">
+      For a split parent interface, this is the reference to the list of children <ref table="Interface"/>s.
+    </column>
+    </group>
+
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config"/>
+    <group title="LLDP Interface configurations">
+        <column name="other_config" key="lldp_enable_dir"
+          type='{"type": "string", "enum": ["set", ["off", "rx", "tx", "rxtx"]]}'>
+          <p>
+            LLDP interface level config.
+          </p>
+        </column>
+    </group>
+      <column name="external_ids"/>
+    </group>
+  </table>
+
+  <table name="Fan" title="Fans on various subsystems">
+    <group title="Core Features">
+      <column name="name">
+      </column>
+    </group>
+    <group title="Status">
+      <column name="speed">
+      </column>
+      <column name="direction">
+      </column>
+      <column name="rpm" >
+      </column>
+      <column name="status" >
+      </column>
+    </group>
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+    </group>
+  </table>
+
+  <table name="LED" title="LEDs on various subsystems">
+    <group title="Configuration">
+      <column name="id">
+      </column>
+      <column name="state">
+      </column>
+    </group>
+   <group title="Status">
+      <column name="status" >
+      </column>
+   </group>
+   <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+   </group>
+  </table>
+
+  <table name="Temp_sensor" title="Temperature sensors">
+      <column name="name">
+        Logical name of the temperature sensor, including the subsystem name and
+        numeric identifier of the temperature sensor.
+      </column>
+      <column name="location">
+        Descriptive text for the physical location of the temperature sensor
+        relative to the subsystem.
+      </column>
+    <group title="Readings">
+      <column name="temperature">
+        Current temperature reading, in milidegrees Celcius.
+      </column>
+      <column name="min">
+        Historic minimum (since last restart of tempd process), in milidegrees
+        Celcius.
+      </column>
+      <column name="max">
+        Historic maximum (since last restart of tempd process), in milidegrees
+        Celcius.
+      </column>
+    </group>
+   <group title="Status">
+      <column name="status"
+        type='{"type": "string", "enum": ["set", ["uninitialized", "normal", "min", "max", "low_critical", "critical","fault","emergency"]]}'>
+        Results of evaluation of the current temperature against the sensor's
+        threshold values.
+      </column>
+      <column name="fan_state"
+        type='{"type": "string", "enum": ["set", ["normal", "medium", "fast", "max"]]}'>
+        Recommended minimum fan setting based on current temperature. The fand
+        process should choose the worst-case sensor fan_state when determining
+        the fan setting for the subsystem.
+      </column>
+   </group>
+   <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+   </group>
+  </table>
+
+  <table name="Power_supply" title="Power supplies">
+      <column name="name">
+      </column>
+   <group title="Status">
+      <column name="status" >
+      </column>
+   </group>
+   <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+   </group>
+  </table>
+
+  <table name="Radius_Server" title="Radius server configuration">
+      These radius servers are being used for authenticating when users
+      wants to login to the box.
+
+      <column name="ip_address">
+          IP address of the radius server configured.
+      </column>
+
+      <column name="priority">
+          Specifies the order in which radius servers are configured on the switch.
+      </column>
+
+      <column name="udp_port" >
+          Specifies the udp port number for authentication. Default udp port
+          number for authentication is 1812.
+      </column>
+
+      <column name="passkey" >
+          Specifies the passkey between radius client and radius server
+          for authentication. Default passkey is testing123-1.
+      </column>
+
+      <column name="timeout" >
+          Specifies the timeout between authentication requests to radius server.
+          Default timeout is 5 seconds.
+      </column>
+
+      <column name="retries" >
+          Specifies the number of retries to radius server if there is no response.
+          Default retry value is 1.
+      </column>
+  </table>
+
+  <table name="Manager" title="OVSDB management connection.">
+    <p>
+      Configuration for a database connection to an Open Halon database
+      (OVSDB) client.
+    </p>
+
+    <p>
+      This table primarily configures the Open Halon database
+      (<code>ovsdb-server</code>), not the Open Halon switch
+      (<code>ovs-vswitchd</code>).  The switch does read the table to determine
+      what connections should be treated as in-band.
+    </p>
+
+    <p>
+      The Open Halon database server can initiate and maintain active
+      connections to remote clients.  It can also listen for database
+      connections.
+    </p>
+
+    <group title="Core Features">
+      <column name="target">
+        <p>Connection method for managers.</p>
+        <p>
+          The following connection methods are currently supported:
+        </p>
+        <dl>
+          <dt><code>ssl:<var>ip</var></code>[<code>:<var>port</var></code>]</dt>
+          <dd>
+            <p>
+              The specified SSL <var>port</var> on the host at the given
+              <var>ip</var>, which must be expressed as an IP address
+              (not a DNS name).  The <ref table="System"
+              column="ssl"/> column in the <ref table="System"/>
+              table must point to a valid SSL configuration when this
+              form is used.
+            </p>
+            <p>
+              If <var>port</var> is not specified, it currently defaults
+              to 6632.  In the future, the default will change to 6640,
+              which is the IANA-defined value.
+            </p>
+            <p>
+              SSL support is an optional feature that is not always
+              built as part of Open Halon.
+            </p>
+          </dd>
+
+          <dt><code>tcp:<var>ip</var></code>[<code>:<var>port</var></code>]</dt>
+          <dd>
+            <p>
+              The specified TCP <var>port</var> on the host at the given
+              <var>ip</var>, which must be expressed as an IP address (not a
+              DNS name), where <var>ip</var> can be IPv4 or IPv6 address.  If
+              <var>ip</var> is an IPv6 address, wrap it in square brackets,
+              e.g. <code>tcp:[::1]:6632</code>.
+            </p>
+            <p>
+              If <var>port</var> is not specified, it currently defaults
+              to 6632.  In the future, the default will change to 6640,
+              which is the IANA-defined value.
+            </p>
+          </dd>
+          <dt><code>pssl:</code>[<var>port</var>][<code>:<var>ip</var></code>]</dt>
+          <dd>
+            <p>
+              Listens for SSL connections on the specified TCP <var>port</var>.
+              Specify 0 for <var>port</var> to have the kernel automatically
+              choose an available port.  If <var>ip</var>, which must be
+              expressed as an IP address (not a DNS name), is specified, then
+              connections are restricted to the specified local IP address
+              (either IPv4 or IPv6 address).  If <var>ip</var> is an IPv6
+              address, wrap in square brackets,
+              e.g. <code>pssl:6632:[::1]</code>.  If <var>ip</var> is not
+              specified then it listens only on IPv4 (but not IPv6) addresses.
+              The <ref table="System" column="ssl"/> column in the <ref
+              table="System"/> table must point to a valid SSL
+              configuration when this form is used.
+            </p>
+            <p>
+              If <var>port</var> is not specified, it currently defaults
+              to 6632.  In the future, the default will change to 6640,
+              which is the IANA-defined value.
+            </p>
+            <p>
+              SSL support is an optional feature that is not always built as
+              part of Open Halon.
+            </p>
+          </dd>
+          <dt><code>ptcp:</code>[<var>port</var>][<code>:<var>ip</var></code>]</dt>
+          <dd>
+            <p>
+              Listens for connections on the specified TCP <var>port</var>.
+              Specify 0 for <var>port</var> to have the kernel automatically
+              choose an available port.  If <var>ip</var>, which must be
+              expressed as an IP address (not a DNS name), is specified, then
+              connections are restricted to the specified local IP address
+              (either IPv4 or IPv6 address).  If <var>ip</var> is an IPv6
+              address, wrap it in square brackets,
+              e.g. <code>ptcp:6632:[::1]</code>.  If <var>ip</var> is not
+              specified then it listens only on IPv4 addresses.
+            </p>
+            <p>
+              If <var>port</var> is not specified, it currently defaults
+              to 6632.  In the future, the default will change to 6640,
+              which is the IANA-defined value.
+            </p>
+          </dd>
+        </dl>
+        <p>When multiple managers are configured, the <ref column="target"/>
+        values must be unique.  Duplicate <ref column="target"/> values yield
+        unspecified results.</p>
+      </column>
+
+      <column name="connection_mode">
+        <p>
+          If it is specified, this setting must be one of the following strings
+          that describes how Open Halon contacts this OVSDB client over the
+          network:
+        </p>
+
+        <dl>
+          <dt><code>in-band</code></dt>
+          <dd>
+            In this mode, this connection's traffic travels over a bridge
+            managed by Open Halon.  With this setting, Open Halon allows
+            traffic to and from the client regardless of the contents of the
+            OpenFlow flow table.  (Otherwise, Open Halon would never be able
+            to connect to the client, because it did not have a flow to enable
+            it.)  This is the most common connection mode because it is not
+            necessary to maintain two independent networks.
+          </dd>
+          <dt><code>out-of-band</code></dt>
+          <dd>
+            In this mode, the client's traffic uses a control network separate
+            from that managed by Open Halon, that is, Open Halon does not
+            use any of its own network devices to communicate with the client.
+            The control network must be configured separately, before or after
+            <code>pswitchd</code> is started.
+          </dd>
+        </dl>
+
+        <p>
+          If not specified, the default is implementation-specific.
+        </p>
+      </column>
+    </group>
+
+    <group title="Client Failure Detection and Handling">
+      <column name="max_backoff">
+        Maximum number of milliseconds to wait between connection attempts.
+        Default is implementation-specific.
+      </column>
+
+      <column name="inactivity_probe">
+        Maximum number of milliseconds of idle time on connection to the client
+        before sending an inactivity probe message.  If Open Halon does not
+        communicate with the client for the specified number of seconds, it
+        will send a probe.  If a response is not received for the same
+        additional amount of time, Open Halon assumes the connection has been
+        broken and attempts to reconnect.  Default is implementation-specific.
+        A value of 0 disables inactivity probes.
+      </column>
+    </group>
+
+    <group title="Status">
+      <column name="is_connected">
+        <code>true</code> if currently connected to this manager,
+        <code>false</code> otherwise.
+      </column>
+
+      <column name="status" key="last_error">
+        A human-readable description of the last error on the connection
+        to the manager; i.e. <code>strerror(errno)</code>.  This key
+        will exist only if an error has occurred.
+      </column>
+
+      <column name="status" key="state"
+              type='{"type": "string", "enum": ["set", ["VOID", "BACKOFF", "CONNECTING", "ACTIVE", "IDLE"]]}'>
+        <p>
+          The state of the connection to the manager:
+        </p>
+        <dl>
+          <dt><code>VOID</code></dt>
+          <dd>Connection is disabled.</dd>
+
+          <dt><code>BACKOFF</code></dt>
+          <dd>Attempting to reconnect at an increasing period.</dd>
+
+          <dt><code>CONNECTING</code></dt>
+          <dd>Attempting to connect.</dd>
+
+          <dt><code>ACTIVE</code></dt>
+          <dd>Connected, remote host responsive.</dd>
+
+          <dt><code>IDLE</code></dt>
+          <dd>Connection is idle.  Waiting for response to keep-alive.</dd>
+        </dl>
+        <p>
+          These values may change in the future.  They are provided only for
+          human consumption.
+        </p>
+      </column>
+
+      <column name="status" key="sec_since_connect"
+              type='{"type": "integer", "minInteger": 0}'>
+        The amount of time since this manager last successfully connected
+        to the database (in seconds). Value is empty if manager has never
+        successfully connected.
+      </column>
+
+      <column name="status" key="sec_since_disconnect"
+              type='{"type": "integer", "minInteger": 0}'>
+        The amount of time since this manager last disconnected from the
+        database (in seconds). Value is empty if manager has never
+        disconnected.
+      </column>
+
+      <column name="status" key="locks_held">
+        Space-separated list of the names of OVSDB locks that the connection
+        holds.  Omitted if the connection does not hold any locks.
+      </column>
+
+      <column name="status" key="locks_waiting">
+        Space-separated list of the names of OVSDB locks that the connection is
+        currently waiting to acquire.  Omitted if the connection is not waiting
+        for any locks.
+      </column>
+
+      <column name="status" key="locks_lost">
+        Space-separated list of the names of OVSDB locks that the connection
+        has had stolen by another OVSDB client.  Omitted if no locks have been
+        stolen from this connection.
+      </column>
+
+      <column name="status" key="n_connections"
+              type='{"type": "integer", "minInteger": 2}'>
+        <p>
+          When <ref column="target"/> specifies a connection method that
+          listens for inbound connections (e.g. <code>ptcp:</code> or
+          <code>pssl:</code>) and more than one connection is actually active,
+          the value is the number of active connections.  Otherwise, this
+          key-value pair is omitted.
+        </p>
+        <p>
+          When multiple connections are active, status columns and key-value
+          pairs (other than this one) report the status of one arbitrarily
+          chosen connection.
+        </p>
+      </column>
+
+      <column name="status" key="bound_port" type='{"type": "integer"}'>
+          When <ref column="target"/> is <code>ptcp:</code> or
+          <code>pssl:</code>, this is the TCP port on which the OVSDB server is
+          listening.  (This is is particularly useful when <ref
+          column="target"/> specifies a port of 0, allowing the kernel to
+          choose any available port.)
+      </column>
+    </group>
+
+    <group title="Connection Parameters">
+      <p>
+        Additional configuration for a connection between the manager
+        and the Open Halon Database.
+      </p>
+
+      <column name="other_config" key="dscp"
+                type='{"type": "integer"}'>
+        The Differentiated Service Code Point (DSCP) is specified using 6 bits
+        in the Type of Service (TOS) field in the IP header. DSCP provides a
+        mechanism to classify the network traffic and provide Quality of
+        Service (QoS) on IP networks.
+
+        The DSCP value specified here is used when establishing the connection
+        between the manager and the Open Halon.  If no value is specified, a
+        default value of 48 is chosen.  Valid DSCP values must be in the range
+        0 to 63.
+      </column>
+    </group>
+
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="external_ids"/>
+      <column name="other_config"/>
+    </group>
+  </table>
+
+  <table name="SSL">
+    SSL configuration for an System.
+
+    <column name="private_key">
+      Name of a PEM file containing the private key used as the switch's
+      identity for SSL connections to the controller.
+    </column>
+
+    <column name="certificate">
+      Name of a PEM file containing a certificate, signed by the
+      certificate authority (CA) used by the controller and manager,
+      that certifies the switch's private key, identifying a trustworthy
+      switch.
+    </column>
+
+    <column name="ca_cert">
+      Name of a PEM file containing the CA certificate used to verify
+      that the switch is connected to a trustworthy controller.
+    </column>
+
+    <column name="bootstrap_ca_cert">
+      If set to <code>true</code>, then Open Halon will attempt to
+      obtain the CA certificate from the controller on its first SSL
+      connection and save it to the named PEM file. If it is successful,
+      it will immediately drop the connection and reconnect, and from then
+      on all SSL connections must be authenticated by a certificate signed
+      by the CA certificate thus obtained.  <em>This option exposes the
+      SSL connection to a man-in-the-middle attack obtaining the initial
+      CA certificate.</em>  It may still be useful for bootstrapping.
+    </column>
+
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="external_ids"/>
+    </group>
+  </table>
+
+  <table name="CLI_Alias">
+    Alias configurations for the command line interface.
+
+    <column name="alias_name">
+      Shortcut name configured by the user for a set of commands.
+    </column>
+
+    <column name="alias_definition">
+      The list of commands to be executed when the shortcut is used.
+      Different commands can be separated by ";". Runtime arguments can be
+      specified using $1, $2 etc. Any extra arguments, will be added at the
+      end of last command.
+      Eg: Execute the command "alias mycmd hostname $1; console length $2;
+      console width $3" to configure "mycmd" as shortcut.
+      On executing "mycmd Switch1 80 24", it will be expanded to
+      "hostname Switch1; console length 80; console width 24".
+      "mycmd" will be stored in alias_name" and
+      "hostname $1; console length $2; console width $3" will be saved in
+      alias_definition.
+    </column>
+
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="external_ids"/>
+    </group>
+  </table>
+
+  <table name="bufmon">
+    <p>
+      Configuration and status of the counters per Capacity Monitoring feature
+    </p>
+    <group title="Counter identification">
+      <column name="hw_unit_id">
+        Identifies the ASIC that counter belongs to.
+      </column>
+
+      <column name="name">
+        Name of the counter as it will be shown in the management systems and will
+        be referenced by all the interested agents. No spaces should be used in the name.
+      </column>
+
+      <column name="counter_vendor_specific_info">
+        Contains any information that might help ASIC specific driver to
+        identify the counter. Both keys and values are driver and ASIC specific.
+      </column>
+    </group>
+    <group title="Configuration">
+      <column name="enabled">
+        Specifies whether counter is enabled.
+      </column>
+
+      <column name="trigger_threshold">
+        Specifies counter specific threshold that would trigger collection.
+      </column>
+    </group>
+    <group title="Status">
+      <column name="counter_value">
+        Last collected value of the counter.
+      </column>
+      <column name="status">
+        Specifies the status of the counter.
+      </column>
+    </group>
+  </table>
+
+  <table name="DHCP_Server">
+
+    <p>
+      DHCP Server configuration.
+    </p>
+
+    <group title="Configuration">
+      <column name="ranges">
+        Dynamic IP address ranges.
+      </column>
+
+      <column name="static_hosts">
+        Static leases.
+      </column>
+
+      <column name="dhcp_options">
+        DHCP options settings.
+      </column>
+
+      <column name="matches">
+        Matching incoming DHCP options.
+      </column>
+
+      <column name="bootp">
+        BOOTP options for the network boot of DHCP clients.
+      </column>
+    </group>
+
+  </table>
+
+  <table name="DHCPSrv_Range">
+
+    <p>
+      Dynamic IP address ranges configuration of the DHCP server.
+    </p>
+
+    <column name="name">
+      Identifier for DHCP Server IP address range configuration. This has
+      to be unique across all DHCP ranges and across all VRFs.
+    </column>
+
+    <column name="start_ip_address">
+      Specifies the start IPv4/IPv6 address of the dynamic IP address range.
+    </column>
+
+    <column name="end_ip_address">
+      Specifies the end IPv4/IPv6 address of the dynamic IP address range.
+      If not specifed, then for IPv4 address family - end ip address would
+      be calculated based on the configured netmask for this range or
+      based on the netmask of the interface that received the DHCP request
+      and for IPv6 family - end ip address would be calculated based on the
+      constructor template configuration.
+    </column>
+
+    <column name="set_tag">
+      Sets an alphanumeric label that marks the network so that dhcp options
+      would be specified on a per-network basis.
+    </column>
+
+    <column name="match_tags">
+      Specifies the list of the tags that would be matched for the
+      incoming DHCP request on the interfaces whose IP addresses are
+      in the configured range.
+    </column>
+
+    <column name="is_static">
+      Set this value to <code>true</code> to assign static IP addresses
+      to DHCP clients that have static host configuration. If the value
+      is set to <code>false</code>, then the IP addresses in this range
+      would be use for dynamic allocation. If not specifed, the IP address
+      range would be used for dynamic allocation.
+    </column>
+
+    <column name="lease_duration">
+      Specifies the lease expiry time in minutes. If not specified,
+      default value of one hour (60) would be used.
+    </column>
+
+    <column name="netmask">
+      This is used only in IPv4 address ranges configuration.
+      Specifies the netmask that would be used for the assigned IP addresses
+      in this range and this would be sent to DHCP clients. If end ip address
+      is not configured for this range, then end ip address would be chosen
+      based on the netmask. If netmask is not specified, then netmask of
+      the switch interface that received the DHCP request would be used.
+    </column>
+
+    <column name="broadcast">
+      This is used only in IPv4 address ranges configuration.
+      Specifies the broadcast address that would be used for the assigned
+      IP addresses in this range and this would be sent to DHCP clients.
+      If not specified, broadcast address of the switch interface that
+      received the DHCP request would be used.
+    </column>
+
+    <column name="constructor">
+      This is used only in IPv6 address ranges configuration.
+      Specifies the interface whose IP address would be used
+      to calculate the end IP address for this range.
+      This is used when end ip address is not specified.
+    </column>
+
+    <column name="prefix_len">
+      This is used only in IPv6 address ranges configuration.
+      Specifies the prefix length that would be used for the
+      assigned IPv6 addresses. If not specifed, default value
+      of 64 would be used.
+    </column>
+
+  </table>
+
+  <table name="DHCPSrv_Static_Host">
+
+    <p>
+      Static leases configured by the user.
+    </p>
+
+    <column name="ip_address">
+      Specifies the static IP address that should be assigned to
+      the specific host.This ip address may contain an IPv4
+      address or an IPv6 address, or both.
+    </column>
+
+    <column name="mac_addresses">
+      Specifies the list of MAC addresses of the DHCP hosts to which the
+      static IP address would be assigned. If more than one MAC addresses
+      are specified, it would work reliably only if one MAC address
+      is active at a time.
+    </column>
+
+    <column name="set_tags">
+      Specifies the list of tags associated with the DHCP request.
+      When a DHCP request from the specific DHCP client is received,
+      the list of configured tags would be set
+      and used to selectively send DHCP options for the client.
+    </column>
+
+    <column name="client_hostname">
+      Specifies the client hostname of the DHCP client to which the configured
+      static IP address would be assigned.
+    </column>
+
+    <column name="client_id">
+      Specifies the client id of the DHCP client to which the configured
+      static IP address would be assigned,
+    </column>
+
+    <column name="lease_duration">
+      Specifies the lease expiry time in minutes. If not specified,
+      default value of one hour (60) would be used.
+    </column>
+
+  </table>
+
+  <table name="DHCPSrv_Option">
+
+    <p>
+      Configuration to specify extra options (other than standard options) that
+      would be sent to the DHCP clients.
+    </p>
+
+    <column name="match_tags">
+      The option and option value specified in the configuration would be
+      sent only if the DHCP request from the client matches all the tags
+      specified in this list.
+    </column>
+
+    <column name="option_name">
+      Specifies the name of the extra option that should be sent to the
+      DHCP clients.
+    </column>
+
+    <column name="option_number">
+      Specifies the number of the extra option that should be sent to the
+      DHCP clients. The option number would be ignored if option name
+      is specified.
+    </column>
+
+    <column name="option_value">
+      Specifies the value of the extra option that should be sent to the
+      DHCP clients.
+    </column>
+
+    <column name="ipv6">
+      Set this value to <code>true</code> if the configured option is for IPv6
+      and set to <code>false</code> for IPv4 option. If not specifed,
+      the configured option would be used for IPv4.
+    </column>
+
+  </table>
+
+  <table name="DHCPSrv_Match">
+
+    <p>
+      Configuration to set tags for the incoming DHCP requests based on
+      the options and its value sent by the clients.
+    </p>
+
+    <column name="set_tag">
+      Specifies the name of the tag that would be set if the incoming
+      DHCP request has the configured option and the value.
+    </column>
+
+    <column name="option_name">
+      Specifies the name of the option that should be sent by the client
+      to set the configured tag for DHCP requests.
+    </column>
+
+    <column name="option_number">
+      Specifies the number of the extra option that should be sent by the
+      client to set the configured tag for DHCP requests. The option number
+      would be ignored if option name is specified.
+    </column>
+
+    <column name="option_value">
+      Specifies the value of the option that should be sent
+      by the client to set the configured tag for DHCP requests.
+      If the value is not specified, then the tag
+      would be set for any value of the option.
+    </column>
+
+  </table>
+
+</database>
