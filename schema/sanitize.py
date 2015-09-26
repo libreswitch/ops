@@ -20,7 +20,7 @@ if __name__ == '__main__':
     ovsschema =  json.loads(f)
 
     # delete the keys
-    delete_keys(ovsschema, ['category', 'relation'])
+    delete_keys(ovsschema, ['category', 'relationship'])
 
     if 'cksum' in ovsschema:
         ovsschema.pop('cksum')
