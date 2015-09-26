@@ -4,7 +4,7 @@
 
 ## Overview ##
  <!--Provide an overview here. This overview should give the reader an introduction of when, where and why they would use the feature. -->
-In general, there are two types of configuration at any given time, the current running configuration and startup configuration. Currently, the running configuration is not persistent across reboots but the startup configuration is persistent across reboots. At this time, there is no provision to facilitate rollbacks and local preservation of old configurations, we might add the ability to store multiple startup configurations. OSVDB schema would be designed to accommodate such a future enhancement.
+There are two types of configurations: the current running configuration and the startup configuration. The running configuration is not persistent across reboots but the startup configuration is persistent across reboots. While there are currently no provisions to facilitate rollbacks or local preservation of old configurations, these functions are being investigated as further enhancements.
 
 ## How to use the feature ##
 #### Configuration types
@@ -17,11 +17,11 @@ When a configuration is saved as a startup configuration, it is stored in the **
 
 The content of each row includes:
 
-- type: Only supported type is startup
+- type: Only supported type is startup.
 - name: Unique name, specified either by the system or by the user (Currently not populated).
 - writer: Identifies who requested this configuration to be saved (Currently not populated).
 - date: Date/Time when this row was last modified (Currently not populated).
-- config: Configuration data
+- config: Configuration data.
 - hardware: JSON formatted list of dictionaries containing the following information for all subsystems configured by the configuration data (Currently not populated).
 
 #### Configuration format
