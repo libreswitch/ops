@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<database title="Open Halon Configuration Database">
+<database title="OpenSwitch Configuration Database">
   <p>
-    A database with this schema holds the configuration for one Open
-    Halon system.
+    A database with this schema holds the configuration for one OpenSwitch
+    system.
   </p>
   <p>
     The schema is derived from Open vSwitch schema.
-    Tables/attributes which are not related to Open Halon first open source release
+    Tables/attributes which are not related to OpenSwitch first open source release
     (OSR1) were removed. Additionally the schema was extended to include OSR1
     features that don't exist in Open vSwitch, as well as information
     specific to a physical switch.
@@ -22,10 +22,10 @@
     ``root set'' tables.
   </p>
   <p>
-    Note that a basic tenet of the Open Halon schema is that in the absence of any
-    configuration, the default behavior of the Open Halon switch is such that
+    Note that a basic tenet of the OpenSwitch schema is that in the absence of any
+    configuration, the default behavior of the OpenSwitch switch is such that
     no data traffic can be accepted or transmitted on any port or interface.
-    Any future additions to the Open Halon schema must adhere to this principle.
+    Any future additions to the OpenSwitch schema must adhere to this principle.
   </p>
 
   <h2>Common Columns</h2>
@@ -53,9 +53,9 @@
 
     <dt><code>external_ids</code>: map of string-string pairs</dt>
     <dd>
-      Key-value pairs for use by external frameworks that integrate with Open
-      Halon, rather than by Open Halon itself.  System integrators should
-      either use the Open Halon development mailing list to coordinate on
+      Key-value pairs for use by external frameworks that integrate with OpenSwitch,
+      rather than by OpenSwitch itself.  System integrators should
+      either use the OpenSwitch development mailing list to coordinate on
       common key-value definitions, or choose key names that are likely to be
       unique.  In some cases, where key-value pairs have been defined that are
       likely to be widely useful, they are documented individually for each
@@ -63,8 +63,8 @@
     </dd>
   </dl>
 
-  <table name="System" title="Open Halon top level configuration.">
-    Configuration for an Open Halon system. There must be exactly
+  <table name="System" title="OpenSwitch top level configuration.">
+    Configuration for an OpenSwitch system. There must be exactly
     one record in the <ref table="System"/> table.
 
     <group title="Configuration">
@@ -328,12 +328,12 @@
       <column name="next_cfg">
         Sequence number for client to increment.  When a client modifies
         any part of the database configuration and wishes to wait for
-        Open Halon to finish applying the changes, it may increment
+        OpenSwitch to finish applying the changes, it may increment
         this sequence number.
       </column>
 
       <column name="cur_cfg">
-        Sequence number that Open Halon sets to the current value of
+        Sequence number that OpenSwitch sets to the current value of
         <ref column="next_cfg"/> after it finishes applying a set of
         configuration changes.
       </column>
@@ -360,7 +360,7 @@
       <group title="Statistics">
         <p>
           The <code>statistics</code> column contains key-value pairs that
-          report statistics about a system running Open Halon.  These are
+          report statistics about a system running OpenSwitch.  These are
           updated periodically (by default, every 5 seconds).  Key-value pairs
           that cannot be determined or that do not apply to a platform are
           omitted.
@@ -413,7 +413,7 @@
         <column name="statistics" key="process_NAME">
           <p>
             One such key-value pair, with <code>NAME</code> replaced by
-            a process name, will exist for each running Open Halon
+            a process name, will exist for each running OpenSwitch
             daemon process, with <var>name</var> replaced by the
             daemon's name (e.g. <code>process_sysd</code>).  The
             value is a comma-separated list of integers.  The integers
@@ -443,7 +443,7 @@
           </p>
 
           <p>
-            There will be one key-value pair for each file in Open Halon's
+            There will be one key-value pair for each file in OpenSwitch's
             ``run directory'' (usually <code>/var/run/openvswitch</code>)
             whose name ends in <code>.pid</code>, whose contents are a
             process ID, and which is locked by a running process.  The
@@ -468,7 +468,7 @@
 
           <p>
             This key-value pair is omitted if there are no local, writable
-            file systems or if Open Halon cannot obtain the needed
+            file systems or if OpenSwitch cannot obtain the needed
             information.
           </p>
         </column>
@@ -503,14 +503,14 @@
     <group title="Version Reporting">
       <p>
         These columns report the types and versions of the hardware and
-        software running Open Halon.  We recommend in general that software
+        software running OpenSwitch.  We recommend in general that software
         should test whether specific features are supported instead of relying
         on version number checks.  These values are primarily intended for
         reporting to human administrators.
       </p>
 
       <column name="switch_version">
-        The Open Halon version number, e.g. <code>0.1.0</code>.
+        The OpenSwitch version number, e.g. <code>0.1.0</code>.
       </column>
 
       <column name="db_version">
@@ -560,14 +560,14 @@
 
     <group title="Database Configuration">
       <p>
-        These columns primarily configure the Open Halon database
-        (<code>ovsdb-server</code>), not the Open Halon switch
+        These columns primarily configure the OpenSwitch database
+        (<code>ovsdb-server</code>), not the OpenSwitch switch
         (<code>pswitchd</code>).  The OVSDB database also uses the <ref
         column="ssl"/> settings.
       </p>
 
       <p>
-        The Open Halon switch does read the database configuration to
+        The OpenSwitch switch does read the database configuration to
         determine remote IP addresses to which in-band control should apply.
       </p>
       <column name="aaa" key="radius" type='{"type": "string"}'>
@@ -582,7 +582,7 @@
         fallback=true, fall to local authentication if radius server is not reachable.
       </column>
       <column name="manager_options">
-        Database clients to which the Open Halon database server should
+        Database clients to which the OpenSwitch database server should
         connect or to which it should listen, along with options for how these
         connection should be configured.  See the <ref table="Manager"/> table
         for more information.
@@ -2036,8 +2036,8 @@
           <dt><code>system</code></dt>
           <dd>An ordinary network device, e.g. <code>eth0</code> on Linux.
           Sometimes referred to as ``external interfaces'' since they are
-          generally connected to hardware external to that on which the Open
-          Halon is running.  The empty string is a synonym for
+          generally connected to hardware external to that on which the OpenSwitch
+          is running.  The empty string is a synonym for
           <code>system</code>.</dd>
 
           <dt><code>internal</code></dt>
@@ -2066,8 +2066,8 @@
 
       <column name="error">
         If the configuration of the <ref table="Interface"/> failed,
-        Open Halon sets this column to an error
-        description in human readable form.  Otherwise, Open Halon clears
+        OpenSwitch sets this column to an error
+        description in human readable form.  Otherwise, OpenSwitch clears
         this column.
       </column>
       <column name="mac_in_use">
@@ -2083,7 +2083,7 @@
 
       <column name="link_resets">
         <p>
-          The number of times Open Halon has observed the
+          The number of times OpenSwitch has observed the
           <ref column="link_state"/> of this <ref table="Interface"/> change.
         </p>
       </column>
@@ -2877,19 +2877,19 @@
 
   <table name="Manager" title="OVSDB management connection.">
     <p>
-      Configuration for a database connection to an Open Halon database
+      Configuration for a database connection to an OpenSwitch database
       (OVSDB) client.
     </p>
 
     <p>
-      This table primarily configures the Open Halon database
-      (<code>ovsdb-server</code>), not the Open Halon switch
+      This table primarily configures the OpenSwitch database
+      (<code>ovsdb-server</code>), not the OpenSwitch switch
       (<code>ovs-vswitchd</code>).  The switch does read the table to determine
       what connections should be treated as in-band.
     </p>
 
     <p>
-      The Open Halon database server can initiate and maintain active
+      The OpenSwitch database server can initiate and maintain active
       connections to remote clients.  It can also listen for database
       connections.
     </p>
@@ -2918,7 +2918,7 @@
             </p>
             <p>
               SSL support is an optional feature that is not always
-              built as part of Open Halon.
+              built as part of OpenSwitch.
             </p>
           </dd>
 
@@ -2960,7 +2960,7 @@
             </p>
             <p>
               SSL support is an optional feature that is not always built as
-              part of Open Halon.
+              part of OpenSwitch.
             </p>
           </dd>
           <dt><code>ptcp:</code>[<var>port</var>][<code>:<var>ip</var></code>]</dt>
@@ -2991,7 +2991,7 @@
       <column name="connection_mode">
         <p>
           If it is specified, this setting must be one of the following strings
-          that describes how Open Halon contacts this OVSDB client over the
+          that describes how OpenSwitch contacts this OVSDB client over the
           network:
         </p>
 
@@ -2999,9 +2999,9 @@
           <dt><code>in-band</code></dt>
           <dd>
             In this mode, this connection's traffic travels over a bridge
-            managed by Open Halon.  With this setting, Open Halon allows
+            managed by OpenSwitch.  With this setting, OpenSwitch allows
             traffic to and from the client regardless of the contents of the
-            OpenFlow flow table.  (Otherwise, Open Halon would never be able
+            OpenFlow flow table.  (Otherwise, OpenSwitch would never be able
             to connect to the client, because it did not have a flow to enable
             it.)  This is the most common connection mode because it is not
             necessary to maintain two independent networks.
@@ -3009,7 +3009,7 @@
           <dt><code>out-of-band</code></dt>
           <dd>
             In this mode, the client's traffic uses a control network separate
-            from that managed by Open Halon, that is, Open Halon does not
+            from that managed by OpenSwitch, that is, OpenSwitch does not
             use any of its own network devices to communicate with the client.
             The control network must be configured separately, before or after
             <code>pswitchd</code> is started.
@@ -3030,10 +3030,10 @@
 
       <column name="inactivity_probe">
         Maximum number of milliseconds of idle time on connection to the client
-        before sending an inactivity probe message.  If Open Halon does not
+        before sending an inactivity probe message.  If OpenSwitch does not
         communicate with the client for the specified number of seconds, it
         will send a probe.  If a response is not received for the same
-        additional amount of time, Open Halon assumes the connection has been
+        additional amount of time, OpenSwitch assumes the connection has been
         broken and attempts to reconnect.  Default is implementation-specific.
         A value of 0 disables inactivity probes.
       </column>
@@ -3137,7 +3137,7 @@
     <group title="Connection Parameters">
       <p>
         Additional configuration for a connection between the manager
-        and the Open Halon Database.
+        and the OpenSwitch Database.
       </p>
 
       <column name="other_config" key="dscp"
@@ -3148,7 +3148,7 @@
         Service (QoS) on IP networks.
 
         The DSCP value specified here is used when establishing the connection
-        between the manager and the Open Halon.  If no value is specified, a
+        between the manager and the OpenSwitch.  If no value is specified, a
         default value of 48 is chosen.  Valid DSCP values must be in the range
         0 to 63.
       </column>
@@ -3184,7 +3184,7 @@
     </column>
 
     <column name="bootstrap_ca_cert">
-      If set to <code>true</code>, then Open Halon will attempt to
+      If set to <code>true</code>, then OpenSwitch will attempt to
       obtain the CA certificate from the controller on its first SSL
       connection and save it to the named PEM file. If it is successful,
       it will immediately drop the connection and reconnect, and from then

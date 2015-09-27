@@ -1,5 +1,5 @@
 {
-  "name": "OpenHalon",
+  "name": "OpenSwitch",
   "version": "0.1.8",
   "tables": {
     "System": {
