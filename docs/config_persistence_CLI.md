@@ -1,15 +1,15 @@
 #CLI support for Config Persistence
 ## Contents##
-- [1. Copy commands](#1.-copy-commands)
-    - [1.1 Copy startup configuration to running configuration](#1.1-copy-startup-configuration-
+- [Copy commands](#copy-commands)
+    - [Copy startup configuration to running configuration](#copy-startup-configuration-
 to-running-configuration)
-    - [1.2 Copy running configuration to startup configuration](#1.2-copy-running-configuration-
+    - [Copy running configuration to startup configuration](#copy-running-configuration-
 to-startup-configuration)
-- [2. Show commands](#2.-show-commands)
-    - [2.1 Show startup configuration](#2.1-show-startup-configuration)
+- [Show commands](#show-commands)
+    - [Show startup configuration](#show-startup-configuration)
 
-## 1. Copy commands ##
-###1.1 Copy startup configuration to running configuration
+## Copy commands ##
+### Copy startup configuration to running configuration
 #### Syntax ####
 copy startup-config running-config
 
@@ -26,7 +26,7 @@ None
 switch # copy startup-config running-config
 ```
 
-###1.2 Copy running configuration to startup configuration
+### Copy running configuration to startup configuration
 #### Syntax ####
 copy running-config startup-config
 
@@ -42,13 +42,13 @@ None
 switch # copy running-config startup-config
 ```
 
-##2. Show Commands ##
-###2.1 Show startup configuration
+## Show Commands ##
+### Show startup configuration
 #### Syntax ####
 show startup-config
 
 #### Description ####
-To display the saved startup configuration in JSON format.
+To display the saved startup configuration in CLI command format.
 
 #### Authority ####
 Admin
