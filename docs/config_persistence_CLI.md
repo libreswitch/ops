@@ -48,7 +48,7 @@ switch # copy running-config startup-config
 show startup-config
 
 #### Description ####
-To display the saved startup configuration in CLI command format.
+This command displays the saved startup configuration in CLI command format.
 
 #### Authority ####
 Admin
@@ -58,4 +58,11 @@ None
 #### Examples ####
 ```bash
 switch # show startup-config
+Startup configuration:
+!
+radius-server host 1.2.3.4 key testRadius
+radius-server host 1.2.3.4 auth_port 2015
+radius-server retries 5
+radius-server timeout 10
+!
 ```
