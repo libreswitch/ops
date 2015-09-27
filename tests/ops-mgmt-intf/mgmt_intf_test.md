@@ -6,6 +6,7 @@ The following test cases verify Management interface configurations in :
 - [Static IPv4 mode](#verifying-management-interface-configuration-test-cases-in-static-ipv4-mode.)
 - [IPv6 DHCP mode](#verifying-management-interface-configuration-test-cases-in-ipv6-dhcp-mode.)
 - [Static IPv6 mode](#verifying-management-interface-configuration-test-cases-in-static-ipv6-mode.)
+- [System hostname](#verifying-system-hostname-configuration-testcases.)
 
 ## Verifying Management interface configuration test cases in IPv4 DHCP mode.##
 ### Objectives ###
@@ -262,3 +263,43 @@ The test is successful if the `Primary Nameserver`,and `Secondary Nameserver` ad
 #### Fail Criteria ####
 The test fails if the `Primary Nameserver`,and `Secondary Nameserver` addresses are present in the `show interface mgmt` output or the `/etc/resolv.conf` file.
 
+## Verifying system hostname configuration testcases.  ##
+
+### Objectives ###
+   These cases test:
+   - Configuring, reconfiguring and unconfiguring the system hostname.
+   - Verifying the expected behavior of the system hostname.
+
+### Requirements ###
+The requirements for this test case are:
+
+ -  DHCP Server.
+
+### Setup ###
+- #### Topology Diagram ####
+
+                                                +-------------------+
+              +------------------+              | Linux workstation |
+              |                  |eth0     eth1 |+-----------------+|
+              |  AS5712 switch   |--------------||   DHCP Server   ||
+              |                  |              |+-----------------+|
+              +------------------+              +-------------------+
+
+
+### Test case 5.01 : Verifying that the system hostname is configured using CLI.  ###
+#### Description ####
+Test to verify whether hostname of the system changes to the value configured using CLI command "hostname halon" in config mode.
+### Test Result Criteria ###
+#### Pass Criteria ####
+The test is successful if the configured value is present in `uname -n` output.
+#### Fail Criteria ####
+The test fails if  the configured hostname is not present in `uname -n` output.
+
+### Test case 5.02 : Verifying that the system hostname is configured via DHCP Server.  ###
+#### Description ####
+Test to verify whether hostname of the system changes to the value configured by DHCP server via dhclient using option12 "option host-name".
+### Test Result Criteria ###
+#### Pass Criteria ####
+The test is successful if the configured value is present in `uname -n` output.
+#### Fail Criteria ####
+The test fails if  the configured hostname is not present in `uname -n` output.

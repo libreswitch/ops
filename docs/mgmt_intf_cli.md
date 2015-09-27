@@ -6,6 +6,7 @@
 	- [DHCP mode configuration](#dhcp-mode-configuration)
 	- [Default gateway configuration](#default-gateway-configuration)
 	- [Nameserver configuration](#nameserver-configuration)
+	- [Hostname configuration](#hostname-configuration)
 - [Management interface show commands](#management-interface-show-commands)
    - [Show command](#show-command)
    - [Show running configuration](#show-running-configuration)
@@ -157,6 +158,8 @@ The example shows the management interface information in the `show running-conf
 	as5712# show running-config
 	Current configuration:
 	!
+	hostname "halon"
+	!
 	interface mgmt
 	    ip static 192.168.1.100/16
 	    ip static 2001:db8:0:1::129/64
@@ -187,4 +190,25 @@ None
 	    default-gateway 192.168.1.5
 	    default-gateway 2001:db8:0:1::128
 	    nameserver 2001:db8:0:2::100 2001:db8:0:3::150
+```
+## Hostname configuration ##
+### Hostname configuration commands###
+These commands are used to configure the system hostname.
+#### Syntax ####
+```
+hostname <name>
+no hostname
+```
+#### Description ####
+Command "hostname <name>" is used to configure the hostname of the system through CLI. Command "no hostname" reconfigures the system hostname to default value "switch".
+#### Authority ####
+Admin
+#### Parameters ####
+User can configure hostname as alphanumeric string. First letter must be alphabet and the maximum length of the string can be 32.
+#### Examples ####
+```
+    switch(config)#hostname halon
+    halon(config)#no hostname
+    switch(config)#
+
 ```
