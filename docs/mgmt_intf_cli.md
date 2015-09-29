@@ -158,7 +158,7 @@ The example shows the management interface information in the `show running-conf
 	as5712# show running-config
 	Current configuration:
 	!
-	hostname "halon"
+	hostname "new-name"
 	!
 	interface mgmt
 	    ip static 192.168.1.100/16
@@ -207,8 +207,8 @@ Admin
 User can configure hostname as alphanumeric string. First letter must be alphabet and the maximum length of the string can be 32.
 #### Examples ####
 ```
-    switch(config)#hostname halon
-    halon(config)#no hostname
+    switch(config)#hostname new-name
+    new-name(config)#no hostname
     switch(config)#
 
 ```
