@@ -151,16 +151,17 @@ class Test_template:
         admin_state =  obj.cmd("ovs-vsctl get interface " + str(intf) + " admin_state").splitlines()
         obj.cmd("exit")
         i  = len(admin_state)
-        if i >= 2 and "root@" in admin_state[i-1]:
-            assert admin_state[i-2] == expected, "Interface should be %s, is %s" % \
+        if i >= 2:
+            assert admin_state[i-1] == expected, "Interface should be %s, is %s" % \
                                          (expected, admin_state)
         else:
             assert 1 == 0, "Invalid response from get admin_state, resp = %s" % admin_state
 
     def verify_ping(self, src, dest, expected):
         out = src.Ping(ipAddr=dest._ip, interval=.2, errorCheck=False)
-
-        if out is None:
+        if out.returnCode() != 0:
+            if expected is False:
+                return
             assert 1 == 0, "ping command failed, no output"
 
         LogOutput("info", "%s" % out.data)
