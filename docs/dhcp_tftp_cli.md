@@ -1,9 +1,9 @@
 DHCP TFTP commands
 -------
 
-## DHCP-TFTP server configuration commands <a id="dhcptftpmain"></a> ##
+## DHCP-TFTP server configuration commands ##
 In vtysh, every command belongs to a particular context. All dhcp server configuration commands, except "dhcp-server", work in dhcp server context. All tftp server configuration commands, except "tftp-server", work in tftp server context.
-### Changing to dhcp server context <a id="dhcpservercontext"></a> ###
+### Changing to dhcp server context ###
 ### Syntax ###
 `dhcp-server`
 #### Description ####
@@ -18,7 +18,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-server
 ops-as5712(config-dhcp-server)#
 ```
-### Setting DHCP dynamic configuration <a id="dhcpdynamic"></a> ###
+### Setting DHCP dynamic configuration ###
 ### Syntax ###
 `range <range-name> start-ip-address ( <ipv4_address> | <ipv6_address> ) end-ip-address ( <ipv4_address> | <ipv6_address> ) netmask <subnet_mask> broadcast <broadcast_address> match tags <match_tag_names> set tag <set_tag_name> prefix-len <prefix_length_value> lease-duration <lease_duration_value> static`
 #### Description ####
@@ -43,7 +43,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-server
 ops-as5712(config-dhcp-server)# range dynamic start-ip-address 10.0.0.1 end-ip-address 10.255.255.254 netmask 255.0.0.0 broadcast 10.255.255.255 match tags tag1,tag2,tag3 set tag tag4
 ```
-### Removing DHCP dynamic configuration <a id="dhcpnodynamic"></a> ###
+### Removing DHCP dynamic configuration ###
 ### Syntax ###
 `no range <range-name> start-ip-address ( <ipv4_address> | <ipv6_address> ) end-ip-address ( <ipv4_address> | <ipv6_address> ) netmask <subnet_mask> broadcast <broadcast_address> match tags <match_tag_names> set tag <set_tag_name> prefix-len <prefix_length_value> lease-duration <lease_duration_value> static`
 #### Description ####
@@ -68,7 +68,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-server
 ops-as5712(config-dhcp-server)# no range dynamic start-ip-address 10.0.0.1 end-ip-address 10.255.255.254 netmask 255.0.0.0 broadcast 10.255.255.255 match tags tag1,tag2,tag3 set tag tag4
 ```
-### Setting DHCP static configuration <a id="dhcpstatic"></a> ###
+### Setting DHCP static configuration ###
 ### Syntax ###
 `static  ( <ipv4_address> | <ipv6_address> ) match-mac-addresses <mac_addresses> match-client-hostname <hostname> match-client-id <client-id> set tags <set_tag_names> lease-duration <lease_duration_value>`
 #### Description ####
@@ -91,7 +91,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-server
 ops-as5712(config-dhcp-server)#static 10.0.0.25 match-mac-addresses 36:d4:1b:12:ea:52 match-client-hostname 95_h2 set tags tag1,tag2,tag3 lease-duration 120
 ```
-### Removing DHCP static configuration <a id="dhcpnostatic"></a> ###
+### Removing DHCP static configuration ###
 ### Syntax ###
 `no static  ( <ipv4_address> | <ipv6_address> ) match-mac-addresses <mac_addresses> match-client-hostname <hostname> match-client-id <client-id> set tags <set_tag_names> lease-duration <lease_duration_value>`
 #### Description ####
@@ -114,7 +114,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-server
 ops-as5712(config-dhcp-server)#no static 10.0.0.25 match-mac-addresses 36:d4:1b:12:ea:52 match-client-hostname 95_h2 set tags tag1,tag2,tag3 lease-duration 120
 ```
-### Setting DHCP options configuration using an option name <a id="dhcpoptionname"></a> ###
+### Setting DHCP options configuration using an option name ###
 ### Syntax ###
 `option set option-name <option_name> option-value <option_value>  match tags <match_tag_names> ipv6`
 #### Description ####
@@ -133,7 +133,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-server
 ops-as5712(config-dhcp-server)#option set option-name Router option-value 10.0.0.1 match tags tag1,tag2,tag3
 ```
-### Removing DHCP options configuration using an option name <a id="dhcpnooptionname"></a> ###
+### Removing DHCP options configuration using an option name ###
 ### Syntax ###
 `no option set option-name <option_name> option-value <option_value>  match tags <match_tag_names> ipv6`
 #### Description ####
@@ -152,7 +152,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-server
 ops-as5712(config-dhcp-server)# no option set option-name Router option-value 10.0.0.1 match tags tag1,tag2,tag3
 ```
-### Setting DHCP options configuration using an option number <a id="dhcpoptionnumber"></a> ###
+### Setting DHCP options configuration using an option number ###
 ### Syntax ###
 `option set option-number <option_number> option-value <option_value>  match tags <match_tag_names> ipv6`#### Description ####
 This command works in the dhcp-server context and sets DHCP option configuration values for the DHCP server by specifying an option number. The parameter match-tags is optional and multiple tags can be specified for the parameter match-tags. The optional parameter IPv6 specifies whether the options are IPv6 options or not.
@@ -168,8 +168,9 @@ All users.
 ```
 ops-as5712# configure terminal
 ops-as5712(config)# dhcp-server
-ops-as5712(config-dhcp-server)#option set option-number 3 option-value 10.0.0.1 match tags tag1,tag2,tag3```
-### Removing DHCP options configuration using an option number <a id="dhcpnooptionnumber"></a> ###
+ops-as5712(config-dhcp-server)#option set option-number 3 option-value 10.0.0.1 match tags tag1,tag2,tag3
+```
+### Removing DHCP options configuration using an option number ###
 ### Syntax ###
 `no option set option-number <option_number> option-value <option_value>  match tags <match_tag_names> ipv6`
 #### Description ####
@@ -188,7 +189,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-server
 ops-as5712(config-dhcp-server)# no option set option-number 3 option-value 10.0.0.1 match tags tag1,tag2,tag3
 ```
-### Setting DHCP match configuration using an option name <a id="dhcpmatchoptionname"></a> ###
+### Setting DHCP match configuration using an option name ###
 ### Syntax ###
 `match set tag <set_tag_name> match-option-name <option_name> match-option-value <option_value>`
 #### Description ####
@@ -207,7 +208,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-server
 ops-as5712(config-dhcp-server)# match set tag tag1 match-option-name Router match-option-value 10.0.0.1
 ```
-### Removing DHCP match configuration using an option name <a id="dhcpnomatchoptionname"></a> ###
+### Removing DHCP match configuration using an option name ###
 ### Syntax ###
 `no match set tag <set_tag_name> match-option-name <option_name> match-option-value <option_value>`
 #### Description ####
@@ -225,7 +226,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-server
 ops-as5712(config-dhcp-server)# no match set tag tag1 match-option-name Router match-option-value 10.0.0.1
 ```
-### Setting DHCP match configuration using an option number <a id="dhcpmatchoptionnumber"></a> ###
+### Setting DHCP match configuration using an option number ###
 ### Syntax ###
 `match set tag <set_tag_name> match-option-number <option_number> match-option-value <option_value>`
 #### Description ####
@@ -244,7 +245,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-server
 ops-as5712(config-dhcp-server)# match set tag tag1 match-option-number 3 match-option-value 10.0.0.1
 ```
-### Removing DHCP match configuration using an option number <a id="dhcpnomatchoptionnumber"></a> ###
+### Removing DHCP match configuration using an option number ###
 ### Syntax ###
 `no match set tag <set_tag_name> match-option-number <option_number> match-option-value <option_value>`
 #### Description ####
@@ -263,7 +264,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-server
 ops-as5712(config-dhcp-server)#no match set tag tag1 match-option-number 3 match-option-value 10.0.0.1
 ```
-### Setting DHCP BOOTP configuration <a id="dhcpbootp"></a> ###
+### Setting DHCP BOOTP configuration ###
 ### Syntax ###
 `boot set file <file_name> match tag <match_tag_name>`
 #### Description ####
@@ -281,7 +282,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-server
 ops-as5712(config-dhcp-server)# boot set file /tmp/tftp_file match tag tag1
 ```
-### Removing DHCP BOOTP configuration <a id="dhcpnobootp"></a> ###
+### Removing DHCP BOOTP configuration ###
 ### Syntax ###
 `no boot set file <file_name> match tag <match_tag_name>`
 #### Description ####
@@ -299,7 +300,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-server
 ops-as5712(config-dhcp-server)# no boot set file /tmp/tftp_file match tag tag1
 ```
-### Changing to tftp server context <a id="tftpservercontext"></a> ###
+### Changing to tftp server context ###
 ### Syntax
 `tftp-server`
 #### Description ####
@@ -314,7 +315,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# tftp-server
 ops-as5712(config-tftp-server)#
 ```
-### Enabling TFTP server <a id="tftpenable"></a> ###
+### Enabling TFTP server ###
 ### Syntax ###
 `enable`
 #### Description ####
@@ -329,7 +330,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# tftp-server
 ops-as5712(config-tftp-server)# enable
 ```
-### Disabling TFTP Server <a id="tftpdisable"></a>
+### Disabling TFTP Server ###
 ### Syntax ###
 `disable`
 #### Description ####
@@ -344,7 +345,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# tftp-server
 ops-as5712(config-tftp-server)# no enable
 ```
-### Enabling TFTP server secure mode <a id="tftpenablesecure"></a>
+### Enabling TFTP server secure mode ###
 ### Syntax ###
 `secure-mode`
 #### Description ####
@@ -359,7 +360,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# tftp-server
 ops-as5712(config-tftp-server)# secure-mode
 ```
-### Disabling TFTP server secure mode <a id="tftpdisablesecure"></a>
+### Disabling TFTP server secure mode ###
 ### Syntax ###
 `no secure-mode`
 #### Description ####
@@ -374,7 +375,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# tftp-server
 ops-as5712(config-tftp-server)# no secure-mode
 ```
-### Setting an TFTP root <a id="tftproot"></a>
+### Setting an TFTP root ###
 ### Syntax ###
 `path <path_name>`
 #### Description ####
@@ -391,8 +392,8 @@ ops-as5712# configure terminal
 ops-as5712(config)# tftp-server
 ops-as5712(config-tftp-server)# path /tmp/
 ```
-## Using DHCP-TFTP server show commands <a id="showdhcptftpserver"></a> ##
-### Show DHCP server configuration <a id="showdhcpserverconf"></a> ###
+## Using DHCP-TFTP server show commands ##
+### Show DHCP server configuration ###
 #### Syntax ####
 `show dhcp-server`
 #### Description ####
@@ -442,7 +443,7 @@ Tag               File
 tag1              /tmp/tftp_file
 ```
 
-### Showing DHCP server leases configurations <a id="showdhcpleases"></a> ###
+### Showing DHCP server leases configurations ###
 #### Syntax ####
 `show dhcp-server leases`
 #### Description ####
@@ -460,7 +461,7 @@ Wed Sep 23 23:07:12 2015  df:36:12:1b:54:ea  10.0.0.5    95_h1            *
 Wed Sep 23 22:05:10 2015  36:d4:1b:12:ea:52  10.0.0.25   95_h2            *
 ```
 
-### Showing TFTP Server Configuration <a id="showtftpserverconf"></a> ###
+### Showing TFTP Server Configuration ###
 #### Syntax ####
 `show tftp-server`
 #### Description ####
