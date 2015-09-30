@@ -288,7 +288,7 @@ The requirements for this test case are:
 
 ### Test case 5.01 : Verifying that the system hostname is configured using CLI.  ###
 #### Description ####
-Test to verify whether hostname of the system changes to the value configured using CLI command "hostname halon" in config mode.
+Test to verify whether hostname of the system changes to the value configured using CLI command "hostname new-name" in config mode.
 ### Test Result Criteria ###
 #### Pass Criteria ####
 The test is successful if the configured value is present in `uname -n` output.
