@@ -1,3 +1,6 @@
-# News
+# OpenSwitch News
 
-Content to be added later
+-	Press release, October 5, 2015
+-	FAQ, October 5, 2015
+-	Press coverage
+-	Analysts coverage
