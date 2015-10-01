@@ -111,7 +111,7 @@ from opstestfw.switch.CLI import *
 # Topology definition
 
 topoDict = {"topoType" : "physical",
-            "topoExecution": 1000,
+            "topoExecution": 4000,
             "topoTarget": "dut01",
             "topoDevices": "dut01 wrkston01 wrkston02",
             "topoLinks": "lnk01:dut01:wrkston01, \
@@ -209,8 +209,8 @@ class Test_template:
         admin_state =  obj.cmd("ovs-vsctl get interface " + str(intf) + " admin_state").splitlines()
         obj.cmd("exit")
         i  = len(admin_state)
-        if i >= 2 and "root@" in admin_state[i-1]:
-            assert admin_state[i-2] == expected, "Interface should be %s, is %s" % \
+        if i >= 2:
+            assert admin_state[i-1] == expected, "Interface should be %s, is %s" % \
                                          (expected, admin_state)
         else:
             assert 1 == 0, "Invalid response from get admin_state, resp = %s" % admin_state
@@ -220,8 +220,8 @@ class Test_template:
         error =  obj.cmd("ovs-vsctl get interface " + str(intf) + " error").splitlines()
         obj.cmd("exit")
         i  = len(error)
-        if i >= 2 and "root@" in error[i-1]:
-            assert error[i-2] == expected, "Interface error should be %s, is %s" % \
+        if i >= 2:
+            assert error[i-1] == expected, "Interface error should be %s, is %s" % \
                                            (expected, error)
         else:
             assert 1 == 0, "Invalid response from get error, resp = %s" % error
@@ -232,11 +232,11 @@ class Test_template:
                            " hw_intf_config:autoneg").splitlines()
         obj.cmd("exit")
         i  = len(autoneg)
-        if i >= 2 and "root@" in autoneg[i-1]:
+        if i >= 2:
             if expected is True:
-                assert autoneg[i-2] == "on", "Autoneg should be on, is off"
+                assert autoneg[i-1] == "on", "Autoneg should be on, is off"
             else:
-                assert autoneg[i-2] <> "on", "Autoneg should be off, is %s" % autoneg
+                assert autoneg[i-1] <> "on", "Autoneg should be off, is %s" % autoneg
         else:
             assert 1 == 0, "Invalid response from get autoneg, resp = %s" % autoneg
 

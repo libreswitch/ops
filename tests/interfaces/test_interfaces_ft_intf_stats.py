@@ -192,16 +192,16 @@ class Test_template:
         data = lines[1].split()
         mydict["rx_error"] = int(data[0])
         mydict["rx_dropped"] = int(data[3])
-        data = lines[3].split()
+        data = lines[2].split()
         mydict["rx_crc"] = int(data[0])
 
-        data = lines[5].split()
+        data = lines[4].split()
         mydict["tx_packets"] = int(data[0])
         mydict["tx_bytes"] = int(data[3])
-        data = lines[6].split()
+        data = lines[5].split()
         mydict["tx_error"] = int(data[0])
         mydict["tx_dropped"] = int(data[3])
-        data = lines[7].split()
+        data = lines[6].split()
         mydict["tx_collision"] = int(data[0])
 
         return mydict
