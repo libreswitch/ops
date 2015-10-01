@@ -42,28 +42,24 @@ OpenSwitch development.
 IRC
 ---
 
-OpenSwitch uses [Freenode][4] for IRC. Please join #openswitch.
+OpenSwitch uses [Freenode](http://www.freenode.net/) for IRC. Please join #openswitch.
 
 Sending Your First Patch For Review
 ===================================
 
 To submit your first patch:
 
-1. To submit patches and develop for OpenSwitch, you must have a [github][1]
+1. To submit patches and develop for OpenSwitch, you must have a [github](https://github.com/)
 account. Please create an account if you do not already have one.
-2. Log in to the [OpenSwitch gerrit system][2] using your github account.
+2. Log in to the [OpenSwitch gerrit system](http://review.openswitch.net/) using your github account.
 3. Add your public SSH key to your account so you can submit patches using
   gerrit-review.
 4. Clone the repository you are interested in submitting patches for. A full
   list of repositories can be found at the top of the gerrit system.
 5. Create a local branch and make your changes locally.
 6. Commit your changes ensuring you use "-s" to git commit. This ensures you
-  have the Developers Certificate of Origin ([DCO][5]), which is needed for
+  have the Developers Certificate of Origin ([DCO](http://governance.openswitch.net/governance/contributor-onboarding.html#licensing-of-contributions)), which is needed for
   all commits.
 7. Push your changes using "git review".
 
-[1]: https://github.com/
-[2]: http://review.openswitch.net/
-[3]: http://governance.openswitch.net/governance/contributor-onboarding.html#licensing-of-contributions
-[4]: http://www.freenode.net/
-[5]: http://governance.openswitch.net/governance/contributor-onboarding.html#licensing-of-contributions
+For more detail, please see [Getting Started](http://www.openswitch.net/develop/develophome#gettingstart)
