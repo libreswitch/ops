@@ -38,7 +38,7 @@ Under the config context.
 `[no] ip ecmp load-balance dst-ip disable`
 
 ##### Description
-Disable load balancing by destination IP.
+Disable destination IP based load balancing. Use the 'no' variant to enable.
 
 ##### Authority
 Admin.
@@ -60,7 +60,7 @@ Under the config context.
 `[no] ip ecmp load-balance src-ip disable`
 
 ##### Description
-Disable load balancing by source IP.
+Disable source IP based load balancing. Use the 'no' variant to enable.
 
 ##### Authority
 Admin.
@@ -82,7 +82,7 @@ Under the config context.
 `[no] ip ecmp load-balance dst-port disable`
 
 ##### Description
-Disable load balancing by destination port.
+Disable destination port based load balancing. Use the 'no' variant to enable.
 
 ##### Authority
 Admin.
@@ -104,7 +104,7 @@ Under the config context.
 `[no] ip ecmp load-balance src-port disable`
 
 ##### Description
-Disable load balancing by source port.
+Disable source port based load balancing. Use the 'no' variant to enable.
 
 ##### Authority
 Admin.

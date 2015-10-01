@@ -6,12 +6,15 @@
 	- [vrf attach](#vrf-attach)
 	- [ip address](#ip-address)
 	- [ipv6 address](#ipv6-address)
+	- [interface vlan](#interface-vlan)
+	- [interface](#interface)
 - [Display commands](#display-commands)
 	- [show interface](#show-interface)
+	- [show interface <vlan-name>](#show-interface <vlan-name>)
 
 ## Configuration commands
 
-###  routing
+###  `routing`
 
 ##### Syntax
 Under the interface context.
@@ -33,7 +36,7 @@ hostname(config-if)# routing
 hostname(config-if)#
 ```
 
-###  vrf attach
+###  `vrf attach`
 
 ##### Syntax
 Under the interface context.
@@ -59,7 +62,7 @@ hostname(config-if)# vrf attach myVRF
 hostname(config-if)#
 ```
 
-###  ip address
+###  `ip address`
 
 ##### Syntax
 Under the interface context.
@@ -87,7 +90,7 @@ hostname(config-if)# ip address 172.16.100.10/24
 hostname(config-if)#
 ```
 
-###  ipv6 address
+###  `ipv6 address`
 
 ##### Syntax
 Under the interface context.
@@ -115,9 +118,62 @@ hostname(config-if)# ipv6 address fd00:5708::f02d:4df6/64
 hostname(config-if)#
 ```
 
+###  `interface vlan`
+
+##### Syntax
+Under the config context.
+
+`[no] interface vlan <vlan-id>`
+
+##### Description
+This command lets you create and configure a L3 VLAN interface corresponding to the specified VLAN ID.
+
+##### Authority
+Admin
+
+##### Parameters
+| Parameter | Status   | Syntax |	Description          |
+|-----------|----------|----------------------|
+| *vlan-id*  | Required  |1-4094 |	The VLAN ID |
+| **no** | Optional | Literal | Removes the VLAN interface corresponding to the specified VLAN ID |
+
+##### Example
+
+```
+hostname(config)# interface vlan 101
+hostname(config-if-vlan)#
+```
+
+###  `interface`
+
+##### Syntax
+
+Under the config context
+
+`[no] interface <vlan-name>`
+
+##### Description
+This command lets you create and configure a L3 VLAN interface corresponding to the specified VLAN name.
+
+##### Authority
+Admin
+
+##### Parameters
+| Parameter | Status   | Syntax |	Description          |
+|-----------|----------|----------------------|
+| *vlan-name*  | Required  |String  |	The VLAN name |
+| **no** | Optional | Literal | Removes the VLAN interface corresponding to the specified VLAN name |
+
+##### Example
+
+```
+hostname(config)# interface vlan101
+hostname(config-if-vlan)#
+```
+
 ## Display commands
 
-### show interface
+### `show interface`
 
 ##### Syntax
 Under privileged mode.
@@ -150,27 +206,6 @@ hostname# show interface mgmt
   Primary Nameserver            :
   Secondary Nameserver          :
 ```
-
-### show interface
-
-##### Syntax
-Under privileged mode.
-
-`show interface <interface> [brief]`
-
-#### Description
-Displays information for the specific interface including statistics, configuration and interface state.
-
-#### Authority
-Operator.
-
-##### Parameters
-| Parameter | Status   | Syntax | Description          |
-|-----------|----------|--------|------------------------|
-| *interface*   | Required | String| The interface name.|
-| **brief**   | Optional | Literal | Displays brief information of the interface.|
-
-##### Examples
 Show specific interface in detail mode (interface: 1)
 ```
 hostname# show interface 1
@@ -202,4 +237,32 @@ Ethernet      VLAN    Type Mode   Status  Reason                   Speed     Por
 Interface                                                          (Mb/s)    Ch#
 --------------------------------------------------------------------------------
  1            --      eth  --     up                               1000     --
+```
+
+### `show interface <vlan-name>`
+
+##### Syntax
+Under privileged mode.
+
+`show interface <vlan-name>`
+
+#### Description
+This command displays the interface VLAN configuration.
+
+#### Authority
+Operator
+
+##### Parameters
+| Parameter | Status   | Syntax |	Description          |
+|-----------|----------|----------------------|
+| *vlan-name*  | Required  |String  |	The VLAN name. |
+
+##### Example
+The following example displays the VLAN interface configuration for VLAN: vlan101:
+```
+hostname# show interface vlan101
+
+Interface vlan101 is down (Administratively down)
+ Admin state is down
+ Hardware: Ethernet, MAC Address: 48:0f:cf:af:02:17
 ```
