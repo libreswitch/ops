@@ -12,8 +12,8 @@ Developers can build on the reliable and modern architecture to create unique ne
 
 ## The OpenSwitch Community
 
-The OpenSwitch community is an open community initiated by charter contributors who are offering and will continue to offer valuable contributions to the community, with the goal of advancing state of the art of open networking.
+The OpenSwitch community is an open community initiated by charter contributors who are offering and will continue to offer valuable contributions to the community, with the goal of advancing the state of the art of open networking.
 
-It is not a secret that the current vertically-integrated networking switches model has been frozen in time for decades and is no longer suitable for web-scale data center needs. OpenSwitch will serve as a catalyst for accelerating the move to disaggregated networking switches and enable developers and customers with the tools they need to break free from the limitations of integrated switches to take control of their networks and better serve their business needs. The OpenSwitch community is here to support and nurture the community effort, help the adoption of OpenSwitch, and facilitate the growth of a healthy OpenSwitch ecosystem of developers and users.
+It is not a secret that the current vertically-integrated networking switches model is not perceived as a good fit for web-scale data center needs. OpenSwitch will serve as a catalyst for accelerating the move to disaggregated networking switches and enable developers and customers with the tools they need to break free from the limitations of integrated switches to take control of their networks and better serve their business needs. The OpenSwitch community is here to support and nurture the community effort, help the adoption of OpenSwitch, and facilitate the growth of a healthy OpenSwitch ecosystem of developers and users.
 
 Charter contributors to OpenSwitch are Hewlett Packard, Accton, Broadcom, Intel, Qosmos and VMWare. You are invited to join the growing OpenSwitch community to benefit from the experiences and contributions of members, make your own contributions and help guide the OpenSwitch community.
