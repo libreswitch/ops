@@ -1,11 +1,33 @@
 VLAN commands
 ======
 
-[TOC]
+## Contents
 
-##  VLAN configuration commands <a id="vlanconfigcmds"></a> ##
-### Interface context commands <a id="vlanintfcxt"></a> ###
-#### Assigning an interface to access mode VLAN <a id="vlanaccess"></a> ####
+- [VLAN configuration commands](#vlan-configuration-commands)
+	- [Interface context commands](#interface-context-commands)
+		- [Assigning an interface to access mode VLAN](#assigning-an-interface-to-access-mode-vlan)
+		- [Removing an interface from access mode VLAN](#removing-an-interface-from-access-mode-vlan)
+		- [Assigning a trunk native VLAN to an interface](#assigning-a-trunk-native-vlan-to-an-interface)
+		- [Removing a trunk native VLAN from an interface](#removing-a-trunk-native-vlan-from-an-interface)
+		- [Assigning tagging on a native VLAN to an interface](#assigning-tagging-on-a-native-vlan-to-an-interface)
+		- [Removing tagging on a native VLAN from an interface](#removing-tagging-on-a-native-vlan-from-an-interface)
+		- [Assigning a VLAN to a trunk on the interface](#assigning-a-vlan-to-a-trunk-on-the-interface)
+		- [Removing a VLAN from a trunk on the interface](#removing-a-vlan-from-a-trunk-on-the-interface)
+	- [VLAN context commands](#vlan-context-commands)
+		- [Removing a description](#removing-a-description)
+		- [Turning on a VLAN](#turning-on-a-vlan)
+		- [Turning off a VLAN](#turning-off-a-vlan)
+	- [Global context commands](#global-context-commands-)
+		- [Creating a VLAN](#creating-a-vlan)
+		- [Deleting a VLAN](#deleting-a-vlan)
+- [VLAN display commands](#vlan-display-commands)
+	- [Displaying a VLAN summary](#displaying-a-vlan-summary)
+	- [Displaying a VLAN detail](#displaying-a-vlan-detail)
+
+
+##  VLAN configuration commands
+### Interface context commands
+#### Assigning an interface to access mode VLAN
 ####Syntax
 `vlan access <vlanid>`
 #### Description
@@ -26,7 +48,7 @@ switch(config-if)#no routing
 switch(config-if)#vlan access 20
 ```
 
-#### Removing an interface from access mode VLAN <a id="novlanaccess"></a>####
+#### Removing an interface from access mode VLAN
 #### Syntax
 `no vlan access [<vlanid>]`
 #### Description
@@ -48,7 +70,7 @@ OR
 switch(config-if)# no VLAN access 20
 ```
 
-#### Assigning a trunk native VLAN to an interface <a id="vlantrunknative"></a>####
+#### Assigning a trunk native VLAN to an interface
 #### Syntax
 `vlan trunk native <vlanid>`
 #### Description
@@ -72,7 +94,7 @@ switch(config-lag-if)#no routing
 switch(config-lag-if)#vlan native trunk 20
 ```
 
-#### Removing a trunk native VLAN from an interface<a id="novlantrunknative"></a> ####
+#### Removing a trunk native VLAN from an interface
 #### Syntax
 `no vlan trunk native [<vlanid>]`
 #### Description
@@ -93,7 +115,7 @@ switch(config)# interface lag 2
 switch(config-lag-if)#no vlan trunk native
 ```
 
-#### Assigning tagging on a native VLAN to an interface <a id="tagging"></a> ####
+#### Assigning tagging on a native VLAN to an interface
 #### Syntax
 `vlan trunk native tag`
 #### Description
@@ -115,7 +137,7 @@ switch(config-lag-if)#vlan trunk native tag
 ```
 
 
-####Removing tagging on a native VLAN from an interface <a id="notagging"></a>####
+####Removing tagging on a native VLAN from an interface
 #### Syntax
 `no vlan trunk native tag`
 
@@ -138,7 +160,7 @@ The following commands remove interface LAG 2 to trunk native VLAN 20 which is a
 switch(config)# interface lag 2
 switch(config-lag-if)#no vlan trunk native tag
 
-#### Assigning a VLAN to a trunk on the interface <a id="vlantrunk"></a>####
+#### Assigning a VLAN to a trunk on the interface
 #### Syntax
 `vlan trunk allowed <vlanid>`
 
@@ -167,7 +189,7 @@ switch(config-lag-if)#vlan native trunk 1
 switch(config-lag-if)#vlan trunk allowed 2
 ```
 
-#### Removing a VLAN from a trunk on the interface<a id="novlantrunk"></a> ####
+#### Removing a VLAN from a trunk on the interface
 #### Syntax
 `no vlan trunk allowed [<vlanid>]`
 
@@ -193,8 +215,8 @@ switch(config-lag-if)#no vlan trunk allowed 2
 ```
 
 
-### VLAN context commands <a id="vlancxt"></a>###
-####  Description <a id="description"></a>####
+### VLAN context commands
+####  Description
 #### Syntax
 `description <description>`
 
@@ -215,7 +237,7 @@ switch(config)# vlan 3
 switch(config-vlan)#description TrafficFromX
 ```
 
-#### Removing a description <a id="nodescription"></a>####
+#### Removing a description
 #### Syntax
 no description <description>
 
@@ -238,7 +260,7 @@ switch(config-vlan)# no description
 ```
 
 
-#### Turning on a VLAN <a id="noshutdown"></a>####
+#### Turning on a VLAN
 #### Syntax
 `no shutdown`
 
@@ -256,7 +278,7 @@ This command does not require a parameter.
 switch(config)# vlan 3
 switch(config-vlan)# no shutdown
 ```
-#### Turning off a VLAN <a id="shutdown"></a>####
+#### Turning off a VLAN
 #### Syntax
 `shutdown`
 
@@ -274,8 +296,8 @@ This command does not require a parameter.
 switch(config)# vlan 3
 switch(config-vlan)# shutdown
 ```
-### Global context commands ###
-#### Creating a VLAN <a id="vlan"></a>####
+### Global context commands
+#### Creating a VLAN
 #### Syntax
 `vlan <vlanid>`
 
@@ -296,7 +318,7 @@ switch(config)# vlan 3
 switch(config-vlan)#
 ```
 
-#### Deleting a VLAN <a id="novlan"></a>####
+#### Deleting a VLAN
 #### Syntax
 `no vlan < vlanid >`
 
@@ -315,8 +337,8 @@ All users.
 switch(config-vlan)# no vlan 3
 switch(config)#
 ```
-## VLAN display commands <a id="vlanshowcmds"></a>##
-### Displaying a VLAN summary <a id="vlansummary"></a>###
+## VLAN display commands
+### Displaying a VLAN summary
 #### Syntax
 `show vlan summary`
 
@@ -336,7 +358,7 @@ switch#show vlan summary
 ```
 Number of existing VLANs : 2
 ```
-### Displaying a VLAN detail <a id="vlandetail"></a>###
+### Displaying a VLAN detail
 #### Syntax
 `show vlan [< vlanid >]`
 
