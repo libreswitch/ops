@@ -4,7 +4,7 @@
 
 The exponential rise in networking traffic driven by cloud data centers, big data analytics and mobile social media necessitates a new networking model that is able to support data centers into the future. It is no secret that the most successful businesses today are those that are the best at building and running the most efficient data centers. Your data center is your business is a reality. Running a reliable data center with great compute and storage resources requires an even better data center network.
 
-Today’s vertically integrated networking model is not well suited for web-scale data centers. It lacks the ability to scale, utilizes outdated development and operating tools, is very manual, results in high costs, and worst of all is not that secure.
+Today’s vertically integrated networking model is not perceived to be well suited for web-scale data centers. It offers less scalability than cloud data centers require, and it requires manual handling of autonomous individual devices which results in higher costs.
 
 Network disaggregation is aimed at providing a new approach to networking that addresses the limitations of vertically integrated solutions by offering alternative solutions that separate the forwarding and control planes of the switch.
 
