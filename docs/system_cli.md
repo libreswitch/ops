@@ -1,21 +1,26 @@
 System commands
 ======
 
+## Contents
+
+- [System configuration commands](#system-configuration-commands)
+	- [Setting the fan speed](#setting-the-fan-speed)
+	- [Unsetting the fan speed](#unsetting-the-fan-speed)
+	- [Setting an LED state](#setting-an-led-state)
+	- [Unsetting an LED state](#unsetting-an-led-state)
+- [System Display Commands](#system-display-commands)
+	- [Showing system information](#showing-system-information)
+	- [System fan information](#system-fan-information)
+	- [Showing system temperature information](#showing-system-temperature-information)
+	- [Showing system LED information](#showing-system-led-information)
+	- [Showing system power-supply information](#showing-system-power-supply-information)
 
 
-[TOC]
+## System configuration commands
 
 
 
-
-
-
-
-## System configuration commands <a id="systemconfigcmds"></a>
-
-
-
-###  Setting the fan speed <a id="fanspeed"></a>
+###  Setting the fan speed
 
 
 
@@ -66,29 +71,11 @@ By default fans operate at normal speed.
 
 
 | Parameter | Status   | Syntax         | Description                           |
-
-
-
-|:-----------|:----------|:----------------:|:---------------------------------------|
-
-
-
+|-----------|----------|----------------------|
 | *slow* | choose one| Literal | set fan speed to slow, which is 25% of maximum speed |
-
-
-
 | *normal* | choose one| Literal | set fan speed to normal, which is 40% of maximum speed  |
-
-
-
 | *medium* | choose one| Literal | set fan speed to medium, which is 65% of maximum speed|
-
-
-
 | *fast* | choose one| Literal | set fan speed to fast, which is 80% of maximum speed|
-
-
-
 | *max* | choose one| Literal | set fan speed to maximum |
 
 
@@ -117,7 +104,7 @@ switch(config)#fan-speed slow
 
 
 
-### Unsetting the fan speed <a id="nofanspeed"></a>
+### Unsetting the fan speed
 
 
 
@@ -154,29 +141,11 @@ All users.
 
 
 | Parameter | Status   | Syntax         | Description                           |
-
-
-
-|:-----------|:----------|:----------------:|:---------------------------------------|
-
-
-
+|-----------|----------|----------------------|
 | *slow* | optional(choose one)| Literal | set fan speed to slow, which is 25% of maximum speed |
-
-
-
-| *normal* |optional(choose one)| Literal | set fan speed to normal, which is 40% of maximum speed  |
-
-
-
+| *normal* |optional(choose one)| Literal | set fan speed to normal, which is 40% of maximum speed | 
 | *medium* | optional(choose one)| Literal | set fan speed to medium, which is 65% of maximum speed|
-
-
-
 | *fast* | optional(choose one)| Literal | set fan speed to fast, which is 80% of maximum speed|
-
-
-
 | *max* | optional(choose one)| Literal | set fan speed to maximum |
 
 
@@ -197,7 +166,7 @@ switch(config)#no fan-speed
 
 
 
-### Setting an LED state <a id="led"></a>
+### Setting an LED state
 
 
 
@@ -230,41 +199,14 @@ All users.
 
 
 | Parameter 1| Status   | Syntax         | Description                           |
-
-
-
 |:-----------|:----------|:----------------:|:---------------------------------------|
-
-
-
 | *led-name* | Required | Literal |LED name of whose state is to be set |
 
 
-
-
-
-
-
-
-
-
-
 | Parameter 2| Status   | Syntax         | Description                           |
-
-
-
 |:-----------|:----------|:----------------:|:---------------------------------------|
-
-
-
 | *off* | choose one| Literal |Select this to switch off LED |
-
-
-
 | *on* | choose one| Literal  | Select this to switch on LED |
-
-
-
 | *flashing*| choose one|Literal | Select this to blink/flash the LED|
 
 
@@ -293,7 +235,7 @@ switch(config)#led base-loc on
 
 
 
-### Unsetting an LED state <a id="noled"></a>
+### Unsetting an LED state
 
 
 
@@ -346,51 +288,15 @@ All users.
 
 
 | Parameter 1| Status   | Syntax         | Description                           |
-
-
-
 |:-----------|:----------|:----------------:|:---------------------------------------|
-
-
-
 | *led-name* | Required | Literal | LED name of whose state is to be set |
 
 
-
-
-
-
-
-
-
-
-
 | Parameter 2| Status   | Syntax         | Description                           |
-
-
-
 |:-----------|:----------|:----------------:|:---------------------------------------|
-
-
-
 | *off* | Optional(choose one)| Literal |Select this to switch the LED off |
-
-
-
 | *on* | Optional (choose one)| Literal  | Select this to switch the LED on |
-
-
-
 | *flashing*| Optional (choose one)|Literal | Select this to blink/flash the LED|
-
-
-
-
-
-
-
-
-
 
 
 #### Examples
@@ -409,11 +315,11 @@ switch(config)#no led base-loc
 
 
 
-## System Display Commands <a id="systemdisplaycmds"></a>
+## System Display Commands
 
 
 
-### Showing system information <a id="showsystem"></a>
+### Showing system information
 
 
 
@@ -466,41 +372,14 @@ All users.
 
 
 | Parameter 1 | Status   | Syntax         | Description                           |
-
-
-
 |:-----------|:----------|:----------------:|:---------------------------------------|
-
-
-
 | *fan* | choose one| Literal | To display fan information |
-
-
-
 | *temperature * | choose one| Literal | To display temperature-sensor information |
-
-
-
 | *led* | choose one| Literal | To display LED information |
-
-
-
 | *power-supply* | choose one| Literal | To display power-supply information |
 
-
-
-
-
-
-
 | Parameter 2 | Status   | Syntax         | Description                           |
-
-
-
 |:-----------|:----------|:----------------:|:---------------------------------------|
-
-
-
 | *detail* | Optional | Literal | To display detailed temperature-sensor information |
 
 
@@ -729,7 +608,7 @@ back                                              base-2    20.00
 
 
 
-### System fan information <a id="showfan"></a>
+### System fan information
 
 
 
@@ -853,7 +732,7 @@ Fan speed override is not configured
 
 
 
-### Showing system temperature information<a id="showtemp"></a>
+### Showing system temperature information
 
 
 
@@ -886,13 +765,7 @@ All users.
 
 
 | Parameter  | Status   | Syntax         | Description                           |
-
-
-
 |:-----------|:----------|:----------------:|:---------------------------------------|
-
-
-
 | *detail* | Optional | Literal | To display detailed temperature-sensor information |
 
 
@@ -1081,7 +954,7 @@ Maximum temperature(in C) :21.00
 
 
 
-### Showing system LED information <a id="showled"></a>
+### Showing system LED information
 
 
 
@@ -1157,7 +1030,7 @@ base-loc       on        ok
 
 
 
-### Showing system power-supply information<a id="showpowersupply"></a>
+### Showing system power-supply information
 
 
 
