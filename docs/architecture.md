@@ -81,14 +81,14 @@ Being based on ovs-vswtchd from Open vSwitch, ops-switchd also contains Openflow
 
 Hardware support daemons
 ------------------------
-Hardware support daemons mediate between the kernel drivers of various peripheral devices and OVSDB. In the current implementation, I2C based peripherals are supported using *Config-YAML library*.
+Hardware support daemons mediate between the kernel drivers of various peripheral devices and OVSDB. In the current implementation, I2C based peripherals are supported using **Config-YAML library**.
 
 For further information regarding specific daemons, refer to:
-* *Fan daemon*
-* *Temperature daemon*
-* *Power supply daemon*
-* *LED daemon*
-* *Pluggable modules daemon*
+* **Fan daemon**
+* **Temperature daemon**
+* **Power supply daemon**
+* **LED daemon**
+* **Pluggable modules daemon**
 
 For further information on porting to new platforms (not ASICs), refer to ["porting to a different platform".](http://www.openswitch.net/documents/user/porting)
 
@@ -105,18 +105,18 @@ L2/L3 protocol daemons
 Each protocol resides in a separate daemon.
 Protocol daemons gather packets from kernel interfaces by regular means of raw, UDP or TCP sockets.
 
-For LLDP protocol, OpenSwitch integrates [lldpd daemon from Vincent Bernat](https://github.com/vincentbernat/lldpd). For further information, refer to *LLDP* feature documentation
+For LLDP protocol, OpenSwitch integrates [lldpd daemon from Vincent Bernat](https://github.com/vincentbernat/lldpd). For further information, refer to **LDP** feature documentation
 
-LACP protocol implementation is contributed by HP. For further information, refer to *Link aggregation* documentation.
+LACP protocol implementation is contributed by HP. For further information, refer to **Link aggregation** documentation.
 
-For L3 routing protocols, OpenSwitch integrates [Quagga suite](https://github.com/opensourcerouting/quagga). For further information refer to *L3 system* documentation.
+For L3 routing protocols, OpenSwitch integrates [Quagga suite](https://github.com/opensourcerouting/quagga). For further information refer to **L3 system** documentation.
 
 System daemons
 --------------
 System daemons are responsible for various pieces of functionality in the system, which essentially doesn't require external input or output besides manipulation of states in OVSDB:
-* Initializing the System table row, detecting and provisioning subsystems - *ops-sysd*
-* Saving and restoring startup configuration - *ops-cfgd*
-* Managing system ports enable/mtu/duplex/... logic - *ops-intfd*
+* Initializing the System table row, detecting and provisioning subsystems - **ops-sysd**
+* Saving and restoring startup configuration - **ops-cfgd**
+* Managing system ports enable/mtu/duplex/... logic - **ops-intfd**
 * ...
 
 
@@ -126,6 +126,6 @@ While OVSDB protocol is a powerful tool, which can be used for managing OpenSwit
 Overall approach is to provide "adaptor" agents that would translate between the specific management approach and OVSDB.
 
 Currently there are three management agents available:
-* *CLI*
-* *REST API*
-* *Declarative configuration*
+* **CLI**
+* **REST API**
+* **Declarative configuration**
