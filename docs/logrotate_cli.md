@@ -2,7 +2,12 @@
 
 ## Contents ##
 
-[TOC]
+- [Configuration commands](#configuration-commands-)
+	- [logrotate period](#logrotate-period)
+	- [logrotate maxsize](#logrotate-maxsize)
+	- [logrotate target](#logrotate-target)
+- [Display Commands](#display-commands)
+	- [show logrotate](#show-logrotate)
 
 # Configuration commands #
 ###  logrotate period ###
