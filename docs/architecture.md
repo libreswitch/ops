@@ -75,22 +75,22 @@ ops-switchd
 The primary responsibility of ops-switchd is to translate the data model residing in OVSDB into ASIC specific SDK calls and vice versa.
 In fact, ops-switchd is the only daemon that is allowed to access ASIC SDK.
 
-Internal modularity of ops-switchd provides the ability to port OpenSwitch to different SDKs and their corresponding silicon. For more information on ASIC portability, refer to http://www.openswitch.netdocuments/dev/porting-new-asic.
+Internal modularity of ops-switchd provides the ability to port OpenSwitch to different SDKs and their corresponding silicon. For more information on ASIC portability, refer to http://www.openswitch.net/documents/dev/porting-new-asic.
 
 Being based on ovs-vswtchd from Open vSwitch, ops-switchd also contains Openflow agent and communicated directly to Openflow controllers. OpenFlow functionality is not yet supported (not connected to any ASIC SDK), but will be added in the future.
 
 Hardware support daemons
 ------------------------
-Hardware support daemons mediate between the kernel drivers of various peripheral devices and OVSDB. In the current implementation, I2C based peripherals are supported using [Config-YAML library](http://www.openswitch.netdocuments/dev/ops-config-yaml)
+Hardware support daemons mediate between the kernel drivers of various peripheral devices and OVSDB. In the current implementation, I2C based peripherals are supported using [Config-YAML library](http://www.openswitch.net/documents/dev/ops-config-yaml)
 
 For further information regarding specific daemons, refer to:
-* [Fan daemon](/documents/dev/ops-fand/design)
-* [Temperature daemon](/documents/dev/ops-tempd/design)
-* [Power supply daemon](/documents/dev/ops-powerd/design)
-* [LED daemon](/documents/dev/ops-ledd/design)
-* [Pluggable modules daemon](/documents/dev/ops-pmd/design)
+* [Fan daemon](http://www.openswitch.net/documents/dev/ops-fand/design)
+* [Temperature daemon](http://www.openswitch.net/documents/dev/ops-tempd/design)
+* [Power supply daemon](http://www.openswitch.net/documents/dev/ops-powerd/design)
+* [LED daemon](http://www.openswitch.net/documents/dev/ops-ledd/design)
+* [Pluggable modules daemon](http://www.openswitch.net/documents/dev/ops-pmd/design)
 
-For further information on porting to new platforms (not ASICs), refer to ["porting to the new platform".](http://www.openswitch.netdocuments/dev/ops/porting-new-platform)
+For further information on porting to new platforms (not ASICs), refer to ["porting to the new platform".](http://www.openswitch.net/documents/user/porting)
 
 Virtual interfaces
 ------------------
@@ -105,18 +105,18 @@ L2/L3 protocol daemons
 Each protocol resides in a separate daemon.
 Protocol daemons gather packets from kernel interfaces by regular means of raw, UDP or TCP sockets.
 
-For LLDP protocol, OpenSwitch integrates [lldpd daemon from Vincent Bernat](https://github.com/vincentbernat/lldpd). For further information, refer to [LLDP](http://www.openswitch.netdocuments/dev/ops/lldp) feature documentation
+For LLDP protocol, OpenSwitch integrates [lldpd daemon from Vincent Bernat](https://github.com/vincentbernat/lldpd). For further information, refer to [LLDP](http://www.openswitch.net/documents/dev/ops/lldp) feature documentation
 
-LACP protocol implementation is contributed by HP. For further information, refer to [Link aggregation](http://www.openswitch.netdocuments/dev/lag) documentation.
+LACP protocol implementation is contributed by HP. For further information, refer to [Link aggregation](http://www.openswitch.net/documents/dev/lag) documentation.
 
-For L3 routing protocols, OpenSwitch integrates [Quagga suite](https://github.com/opensourcerouting/quagga). For further information refer to [L3 system](http://www.openswitch.netdocuments/dev/ops/l3) documentation.
+For L3 routing protocols, OpenSwitch integrates [Quagga suite](https://github.com/opensourcerouting/quagga). For further information refer to [L3 system](http://www.openswitch.net/documents/dev/ops/l3) documentation.
 
 System daemons
 --------------
 System daemons are responsible for various pieces of functionality in the system, which essentially doesn't require external input or output besides manipulation of states in OVSDB:
-* Initializing the System table row, detecting and provisioning subsystems - [ops-sysd](/documents/dev/ops-sysd/design)
-* Saving and restoring startup configuration - [ops-cfgd](/documents/dev/ops-cfgd/design)
-* Managing system ports enable/mtu/duplex/... logic - [ops-intfd](/documents/dev/ops-intfd/design)
+* Initializing the System table row, detecting and provisioning subsystems - [ops-sysd](http://www.openswitch.net/documents/dev/ops-sysd/design)
+* Saving and restoring startup configuration - [ops-cfgd](http://www.openswitch.net/documents/dev/ops-cfgd/design)
+* Managing system ports enable/mtu/duplex/... logic - [ops-intfd](http://www.openswitch.net/documents/dev/ops-intfd/design)
 * ...
 
 
@@ -126,6 +126,6 @@ While OVSDB protocol is a powerful tool, which can be used for managing OpenSwit
 Overall approach is to provide "adaptor" agents that would translate between the specific management approach and OVSDB.
 
 Currently there are three management agents available:
-* [CLI](/documents/dev/ops-cli/design)
-* [REST API](/documents/dev/ops-restd/design)
-* [Declarative configuration](/documents/dev/ops-restd/design)
+* [CLI](http://www.openswitch.net/documents/dev/ops-cli/design)
+* [REST API](http://www.openswitch.net/documents/dev/ops-restd/design)
+* [Declarative configuration](http://www.openswitch.net/documents/dev/ops-restd/design)
