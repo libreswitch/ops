@@ -1,12 +1,27 @@
-Physical Interface
-===================
+# Physical Interface
+
 ## Contents
 
-[TOC]
-## Overview <a id="intfover"></a> ##
+- [Contents](#contents)
+- [Overview](#overview)
+- [Configuring the physical interface](#configuring-the-physical-interface)
+	- [Setting up the basic configuration](#setting-up-the-basic-configuration)
+	- [Setting up optional configurations](#setting-up-optional-configurations)
+	- [Verifying the configuration](#verifying-the-configuration)
+		- [Viewing interface information](#viewing-interface-information)
+		- [Viewing snapshot of active configurations.](#viewing-snapshot-of-active-configurations)
+	- [Troubleshooting the configuration](#troubleshooting-the-configuration)
+		- [Condition](#condition)
+		- [Cause](#cause)
+		- [Remedy](#remedy)
+- [CLI](#cli)
+- [Related features](#related-features)
+
+## Overview
 This guide provides detail for managing and monitoring the physical interface present in the switch. All configurations work in interface context. When the interface is running, all the default configurations take effect. To change the default configuration, see [Setting up the basic configuration](#intfconfopt).
-## Configuring the physical interface <a id="intfconf"></a> ##
-###Setting up the basic configuration <a id="intfconfbasic"></a> ###
+
+## Configuring the physical interface
+### Setting up the basic configuration
 1. Change to the interface context.
 The `interface` *`interface`* command changes the vtysh context to interface. The *`interface`* variable in the command depicts the name of the interface, such as interface "1" in the following example.
 ```
@@ -77,7 +92,7 @@ ops-as5712(config-if)# no flowcontrol receive
 ops-as5712(config-if)# no flowcontrol send on
 ```
 
-###Setting up optional configurations <a id="intfconfopt"></a> ###
+### Setting up optional configurations
 1. Set up interface description.
 The `description` command associates a description with an interface.
 ```
@@ -118,8 +133,8 @@ ops-as5712(config-if)# no ip address 10.10.10.2/24 secondary
 ops-as5712(config-if)#  no ipv6 address 2001:0db8:85a3:0000:0000:8a2e:0370:7334/24 secondary
 ```
 
-###Verifying the configuration <a id="intfconfver"></a> ###
-#####Viewing interface information
+### Verifying the configuration
+##### Viewing interface information
 The `show interface` and `show interface brief` commands display information about the state and configuration of all the interfaces. The information includes details on speed, mtu, packet counts, and so on.
 ```
 ops-as5712# show interface
@@ -223,14 +238,16 @@ Interface 2
    exit
 ```
 
-###Troubleshooting the configuration <a id="intftrouble"></a> ###
+### Troubleshooting the configuration
 #### Condition
 Unable to set the ipv4/ipv6 address even after enabling the interface.
 #### Cause
 The interface may be configured as an L2.
 #### Remedy
 Configure the interface as an L3 using the `routing` command. See the Command Reference for more information.
-## CLI <a id="intfcli"></a> ##
+
+## CLI
 Click [here](https://openswitch.net/cli_feat.html#cli_command_anchor) to access the CLI commands related to the Physical interface.
-## Related features <a id="intfrelated"></a> ##
+
+## Related features
 No related features.

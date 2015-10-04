@@ -1,10 +1,23 @@
 LLDP
 ======
+
 ## Contents
+- [Contents](#contents)
+- [Overview](#overview)
+- [Prerequisites](#prerequisites)
+- [Configuring LLDP](#configuring-lldp)
+	- [Setting up the basic configuration](#setting-up-the-basic-configuration)
+	- [Setting up optional configurations](#setting-up-optional-configurations)
+	- [Verifying the configuration](#verifying-the-configuration)
+		- [Viewing LLDP Global Information](#viewing-lldp-global-information)
+		- [Viewing LLDP Neighbors](#viewing-lldp-neighbors)
+		- [Viewing LLDP statistics](#viewing-lldp-statistics)
+		- [Viewing LLDP TLVs](#viewing-lldp-tlvs)
+	- [Troubleshooting the configuration](#troubleshooting-the-configuration)
+- [CLI](#cli)
+- [Related features](#related-features)
 
-[TOC]
-
-## Overview <a id="lldpover"></a> ##
+## Overview
 The Link Layer Discovery Protocol (LLDP) is an industry-standard, vendor-neutral method to allow networked devices to advertise capabilities, discover and identify other LLDP enabled devices and gather information in a LAN. The following bullet list contains some of the information gathered by LLDP:
 
 - System name and description
@@ -15,10 +28,11 @@ The Link Layer Discovery Protocol (LLDP) is an industry-standard, vendor-neutral
 - MAC address and physical layer information
 - Power information
 
-## Prerequisites <a id="lldppre"></a> ##
+## Prerequisites
 All the DUT interfaces (at least the interfaces that are connected to other devices) must be administratively up.
-## Configuring LLDP <a id="lldpconf"></a> ##
-###Setting up the basic configuration <a id="lldpconfbasic"></a> ###
+
+## Configuring LLDP
+### Setting up the basic configuration
 1. Configure the terminal to change the vtysh context to config context with the following commands:
 ```
 ops-as5712# configure terminal
@@ -43,7 +57,7 @@ ops-as5712(config-if)# lldp transmission
 ops-as5712(config-if)#
 ```
 
-###Setting up optional configurations <a id="lldpconfopt"></a> ###
+### Setting up optional configurations
 
 1. Setting the LLDP Timer.
 The `lldp timer` command specifies the time in seconds between LLDP updates sent by the switch.
@@ -99,8 +113,8 @@ ops-as5712(config)# lldp clear neighbors
 ops-as5712(config)#
 ```
 
-###Verifying the configuration <a id="lldpconfver"></a> ###
-#####Viewing LLDP Global Information
+### Verifying the configuration
+##### Viewing LLDP Global Information
 The `show lldp configuration` command displays LLDP configuration information configured above.
 ```
 ops-as5712# show lldp configuration
@@ -131,7 +145,7 @@ Port  Transmission-enabled     Receive-enabled
 ..................................
 ```
 
-#####Viewing LLDP Neighbors
+##### Viewing LLDP Neighbors
 The `show lldp neighbor-info` command displays information about LLDP neighbors.
 ```
 ops-as5712# show lldp neighbor-info
@@ -166,7 +180,7 @@ TTL                            :
 ops-as5712#
 ```
 
-#####Viewing LLDP statistics
+##### Viewing LLDP statistics
 The `show lldp statistics` command displays the LLDP traffic information for the switch.
 ```
 ops-as5712# show lldp statistics
@@ -198,7 +212,7 @@ Packets received and unrecognized :0
 ops-as5712#
 ```
 
-#####Viewing LLDP TLVs
+##### Viewing LLDP TLVs
 The 'show lldp tlv' command displays the LLDP TLVs to be sent and received.
 ```
 ops-as5712# show lld tlv
@@ -216,23 +230,24 @@ System name
 ops-as5712#
 ```
 
-###Troubleshooting the configuration <a id="lldptrouble"></a> ###
+### Troubleshooting the configuration
 
-####Condition
+#### Condition
 - LLDP Neighbor information is not displayed even if neighbor is present.
 - System description is not displayed in neighbor info.
 
-####Cause
+#### Cause
 - Interface may be down.
 - Neighbor may not support LLDP or feature is not enabled.
 - system description TLV may not be selected.
 
-####Remedy
+#### Remedy
 - Make interface administratively up by using 'no shutdown' command. Refer physical interface command reference. Neighbor should support LLDP feature and enabled.
 - Select system description TLV using 'lldp select-tlv' command.
 
-## CLI <a id="lldpcli"></a> ##
+## CLI
 <!--Provide a link to the CLI command related to the feature. The CLI files will be generated to a CLI directory.  -->
 Click [here](https://openswitch.net/cli_feat.html#cli_command_anchor) for the CLI commands related to the LLDP feature.
-## Related features <a id="lldprelated"></a> ##
+
+## Related features
 When configuring the switch for LLDP, it might also be necessary to configure [Physical Interface](https://openswitch.net./tbd/other_filefeatures/related_feature1.html#first_anchor) so that interface to which neighbor is connected will act as expected.

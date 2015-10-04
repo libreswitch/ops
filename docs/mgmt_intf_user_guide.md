@@ -1,8 +1,17 @@
 # Management Interface
-#Table of contents
-[TOC]
+## Table of contents
+- [Table of contents](#table-of-contents)
+- [Overview](#overview)
+- [Prerequisites](#prerequisites)
+- [How to use the feature](#how-to-use-the-feature)
+	- [Setting up the basic configuration](#setting-up-the-basic-configuration)
+	- [Setting up the optional configuration](#setting-up-the-optional-configuration)
+	- [Verifying the configuration](#verifying-the-configuration)
+	- [Troubleshooting the configuration](#troubleshooting-the-configuration)
+- [CLI](#cli)
+- [Related features](#related-features)
 
-## Overview ##
+## Overview
 The primary goal of the management module is to facilitate the management of the device. It provides the following:
 
 - Device access and configuration
@@ -17,28 +26,28 @@ The primary goal of the management module is to facilitate the management of the
 
 The device is configured or monitored through the management interface. All management traffic such as device ssh, tftp and so on, goes through the management interface.
 
-## Prerequisites ##
+## Prerequisites
 - A physical interface of the switch designated as the management interface must be specified in the 'image.manifest' hardware description file.
 
-## How to use the feature ##
+## How to use the feature
 
-###Setting up the basic configuration
+### Setting up the basic configuration
 
  Configure the mode in which the management interface is going to operate. Select one of the following options:
 - DHCP mode -- The DHCP Client automatically populates all the management interface parameters.
 - Static mode -- The user manually configures the management interface parameters.
 
-###Setting up the optional configuration
+### Setting up the optional configuration
 
  1. Configure the IPv4 or the IPv6 configuration depending on the requirement.
  2. Configure the secondary nameserver if fallback is required.
 
-###Verifying the configuration
+### Verifying the configuration
 
  1. Verify the configured values using the `show interface mgmt` command.
  2. Verify the configuration using the `show running-config` command.
 
-###Troubleshooting the configuration
+### Troubleshooting the configuration
 Troubleshoot the device only through the management interface. if there is any problem with the management interface configuration, you may not be able to access the device over the network. Try accessing it over the serial console.
 #### Scenario 1
 ##### Condition
@@ -78,8 +87,8 @@ Currently IPv6 notifications are not available.
 ##### Remedy
 - The user can start the shell using "start-shell" command and check the IPv6 attributes by running the command `ip addr show`.
 
-## CLI ##
+## CLI
 Click [here-TBL](https://openswitch.net/cli_feature_name.html#cli_command_anchor) for the CLI commands related to the named feature.
 
-## Related features ##
+## Related features
 None.

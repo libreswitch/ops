@@ -1,23 +1,24 @@
-#CLI support for Autoprovision
+# CLI support for Autoprovision
 
-[TOC]
+- [Autoprovision show command](#autoprovision-show-command)
+	- [show autoprovision](#show-autoprovision)
 
-##Autoprovision show command ##
+##Autoprovision show command
 ### show autoprovision
 Display the status of autoprovision.
-#### Syntax ####
+#### Syntax
 show startup-config
 
-#### Description ####
+#### Description
 This command displays the autoprovision status. If autoprovision has been performed, the script URL is displayed. See the following examples for expected output.
 
-#### Authority ####
+#### Authority
 Admin
-#### Parameters ####
 
+#### Parameters
 None
 
-#### Examples ####
+#### Examples
 If autoprovision is performed
 ```bash
 switch # show autoprovision
