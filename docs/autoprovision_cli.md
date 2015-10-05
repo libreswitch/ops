@@ -3,7 +3,7 @@
 - [Autoprovision show command](#autoprovision-show-command)
 	- [show autoprovision](#show-autoprovision)
 
-##Autoprovision show command
+## Autoprovision show command
 ### show autoprovision
 Display the status of autoprovision.
 #### Syntax
