@@ -22,7 +22,6 @@
 	- [show aaa authentication](#show-aaa-authentication)
 	- [show radius-server](#show-radius-server)
 	- [show SSH authentication-method](#show-ssh-authentication-method)
-	- [show autoprovisioning](#show-autoprovisioning)
 	- [show running-config](#show-running-config)
 
 ## Authentication configuration commands
@@ -107,7 +106,7 @@ This command is used to configure the number of retries.
 
 #### Syntax
 ```
-[no] radius-server retries <1-60>
+[no] radius-server retries <0-5>
 ```
 #### Description
 This command configures the number of retries when connecting to the RADIUS server host from the switch. The authentication takes place accordingly.
@@ -143,7 +142,7 @@ Admin
 
 | Parameter | Status   | Syntax | Description |
 |-----------|----------|----------------------|
-| **no** | Optional | Literal | Removes the configuration for the number of retries|
+| **no** | Optional | Literal | Removes the configuration for the timeout |
 | *1-60* | Required | 1-60 | The maximum amount of seconds the RADIUS client waits for a response from the RADIUS authentication server before it times out. |
 
 #### Examples
@@ -202,10 +201,10 @@ All users
     Confirm new password:
     user added successfully.
 ```
-### passwd
+### password
 #### Syntax
 ```
-passwd <user_name>
+password <user_name>
 ```
 #### Description
 This command configures an existing user password, except for the root user.
@@ -311,23 +310,6 @@ N/A
     switch# show ssh authentication-method
      SSH publickey authentication : Enabled
      SSH password authentication  : Enabled
-```
-### show autoprovisioning
-#### Syntax
-```
-show autoprovisioning
-```
-#### Description
-This command displays the presence of auto-provisioning. If auto-provisioning is active, the command output shows the URL that was used to fetch the auto-provisioning script.
-#### Authority
-All users
-#### Parameters
-N/A
-#### Examples
-```
-    switch# show autoprovisioning
-     Performed : Yes
-     URL       : https://192.168.0.1/my_autoprov_script_path
 ```
 ### show running-config
 #### Syntax
