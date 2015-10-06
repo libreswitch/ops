@@ -27,11 +27,12 @@
 ## LACP configuration commands
 ### Global context commands
 #### Creation of LAG interface
-##### Syntax  
+##### Syntax
 
 ```
     interface lag ID
 ```
+
 ##### Description
 This command creates a LAG interface represented by an ID.
 
@@ -42,13 +43,16 @@ all users
 This command takes an ID as a parameter which represents a LAG interface. The LAG interface ID can be in the range of 1 to 2000.
 
 ##### Examples
+
 ```
 switch(config)# interface lag 100
 
 switch(config-lag-if)#
 ```
+
 #### Deletion of LAG interface
-##### Syntax  
+##### Syntax
+
 ```
  no interface lag ID
 ```
@@ -63,12 +67,14 @@ all users
 This command takes an ID as a parameter which represents a LAG interface. The LAG interface ID can be in the range of 1 to 2000.
 
 ##### Examples
+
 ```
 switch(config)# no interface lag 100
 ```
 
 #### Configuring LACP system priority
-##### Syntax  
+##### Syntax
+
 ```
     lacp system-priority <0-65535>
 ```
@@ -83,11 +89,14 @@ all users
 This command takes a system priority value in the of range 0 to 65535.
 
 ##### Examples
+
 ```
 switch(config)# lacp system-priority 100
 ```
+
 #### Configuring default LACP system priority
-##### Syntax  
+##### Syntax
+
 ```
     no lacp system-priority
 ```
@@ -102,13 +111,14 @@ all users
 no parameters
 
 ##### Examples
+
 ```
 switch(config)# lacp system-priority 100
 ```
 
 ### Interface context commands
 #### Assigning interface to LAG
-##### Syntax  
+##### Syntax
 
 ```
     lag ID
@@ -131,11 +141,12 @@ switch(config-if)# lag 100
 ```
 
 #### Removing interface from LAG
-##### Syntax  
+##### Syntax
 
 ```
     no lag ID
 ```
+
 ##### Description
 This command removes an interface from a LAG interface specified by an ID.
 
@@ -146,16 +157,19 @@ all users
 This command takes an ID as a parameter which represents a LAG interface. The LAG interface ID can be in the range of 1 to 2000.
 
 ##### Examples
+
 ```
 switch(config)# interface 1
 switch(config-if)# no lag 100
 ```
 
 #### Configuring LACP port-id
-##### Syntax  
+##### Syntax
+
 ```
     lacp port-id <1-65535>
 ```
+
 ##### Description
 This command sets an LACP port-id value of the interface.
 
@@ -166,14 +180,18 @@ all users
 This command takes a port-id value in the range of 1 to 65535.
 
 ##### Examples
+
 ```
 switch(config-if)# lacp port-id 10
 ```
+
 #### Configuring LACP port-priority
-##### Syntax  
+##### Syntax
+
 ```
     lacp port-priority <1-65535>
 ```
+
 ##### Description
 This command sets an LACP port-priority value for the interface.
 
@@ -184,16 +202,19 @@ all users
 This command takes a port-priority value in the range of 1 to 65535.
 
 ##### Examples
+
 ```
 switch(config-if)# lacp port-priority 10
 ```
 
 ### LAG context commands
 #### Entering into LAG context
-##### Syntax  
+##### Syntax
+
 ```
     interface lag ID
 ```
+
 ##### Description
 This command enters into the LAG context of the specified LAG ID. If the specified LAG interface is not present, this command creates a LAG interface and enters it into the LAG context.
 
@@ -204,12 +225,15 @@ all users
 This command takes an ID as a parameter which represents a LAG interface. The LAG interface ID can be in the range of 1 to 2000.
 
 ##### Examples
+
 ```
 switch(config)# interface 1
 switch(config-if)# lag 100
 ```
+
 #### Configuring LACP mode
-##### Syntax  
+##### Syntax
+
 ```
     [no] lacp mode {active/passive}
 ```
@@ -225,6 +249,7 @@ all users
 This command takes an **active** or **passive** keyword as an argument to set an LACP mode.
 
 ##### Examples
+
 ```
 switch(config)# interface lag 1
 switch(config-lag-if)# lacp mode active
@@ -232,7 +257,7 @@ switch(config-lag-if)# no lacp mode active
 ```
 
 #### Configuring hash type
-##### Syntax  
+##### Syntax
     hash l2-src-dst
 
 ##### Description
@@ -246,6 +271,7 @@ all users
 no parameters.
 
 ##### Examples
+
 ```
 switch(config)# interface lag 1
 switch(config-lag-if)# hash l2-src-dst
@@ -253,7 +279,7 @@ switch(config-lag-if)# no hash l2-src-dst
 ```
 
 #### Configuring LACP fallback mode
-##### Syntax  
+##### Syntax
 
 ```
     lacp fallback
@@ -270,6 +296,7 @@ all users
 no parameters.
 
 ##### Examples
+
 ```
 switch(config)# interface lag 1
 switch(config-lag-if)# lacp fallback
@@ -277,7 +304,8 @@ switch(config-lag-if)# no lacp fallback
 ```
 
 ##### Configuring LACP rate
-##### Syntax  
+##### Syntax
+
 ```
     lacp rate fast
 ```
@@ -292,6 +320,7 @@ all users
 no parameters.
 
 ##### Examples
+
 ```
 switch(config)# interface lag 1
 switch(config-lag-if)# lacp rate fast
@@ -299,7 +328,8 @@ switch(config-lag-if)# lacp rate fast
 
 ## LAG display commands
 ### Display global LACP configuration
-#### Syntax  
+#### Syntax
+
 ```
     show lacp configuration
 ```
@@ -314,6 +344,7 @@ all users
 no parameters
 
 #### Examples
+
 ```
 switch# show lacp configuration
 System-id       : 70:72:cf:ef:fc:d9
@@ -321,7 +352,8 @@ System-priority : 65534
 ```
 
 ### Display LACP aggregates
-#### Syntax  
+#### Syntax
+
 ```
     show lacp aggregates [lag-name]
 ```
@@ -336,6 +368,7 @@ all users
 This command takes a LAG name as an optional parameter.
 
 #### Examples
+
 ```
 switch# show lacp aggregates lag100
 Aggregate-name          : lag100
@@ -362,7 +395,8 @@ Aggregate mode           : off
 ```
 
 ### Display LACP interface configuration
-#### Syntax  
+#### Syntax
+
 ```
     show lacp interfaces [IFNAME]
 ```
@@ -377,6 +411,7 @@ all users
 This command takes an interface name as an optional parameter.
 
 #### Examples
+
 ```
 switch# show lacp interfaces
 State abbreviations

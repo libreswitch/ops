@@ -23,21 +23,12 @@ This command configures the rotation of log files based on time. The possible va
 All users
 
 #### Parameters ####
-```ditaa
 
-+----------------+--------------+-------------+---------------------------------+
-|                |              |             |                                 |
-|  Parameter     |  Status      |  Syntax     | Description                     |
-+-------------------------------------------------------------------------------+
-|                |              |             |                                 |
+| Parameter | Status   | Syntax | Description          |
+|-----------|----------|--------|------------------------|
 |   period_value |  Required    |  'hourly'   | Rotates log files every hour.   |
-|                |              |             |                                 |
 |                |              |  'monthly'  | Rotates log files every month.  |
-|                |              |             |                                 |
 |                |              |  'weekly'   | Rotates log files every week.   |
-|                |              |             |                                 |
-+----------------+--------------+-------------+---------------------------------+
-```
 
 If no parameter is specified, the default value of `daily` is used.
 #### Examples ####
@@ -63,18 +54,11 @@ To reset the default value of 10 MB, use the `no` form of the command (`no logro
   *filesize*
 
 Specify the maximum file size in megabytes (MB) for the log rotation. The range is from 1 to 200 MB. If a value is not specified, the default value is 10 MB.
-```ditaa
-+----------------+--------------+-------------+---------------------------------+
-|                |              |             |                                 |
-|  Parameter     |  Status      |  Syntax     | Description                     |
-+-------------------------------------------------------------------------------+
-|                |              |             |                                 |
-|  *filesize*    |  Required    |  <1-200>    | File size in Mega Bytes (MB).   |
-|                |              |             | Default value is 10MB           |
-|                |              |             |                                 |
-+----------------+--------------+-------------+---------------------------------+
 
-```
+| Parameter | Status   | Syntax | Description          |
+|-----------|----------|--------|------------------------|
+|  *filesize*    |  Required    |  <1-200>    | File size in Mega Bytes (MB).  Default value is 10MB    |
+
 
 #### Examples ####
 ```
@@ -94,26 +78,16 @@ This command sends the rotated log files to a specified remote host Universal Re
 #### Authority ####
    All users
 #### Parameters ####
-    *URI*
-
 
 This parameter specifies the URI of the remote host. The possible values are `tftp://A.B.C.D' or 'tftp://X:X::X:X`. Both IPv4 and IPv6 addresses are supported.
 
-```ditaa
-
-+----------------+--------------+-------------+---------------------------------+
-|                |              |             |                                 |
-|  Parameter     |  Status      |  Syntax     | Description                     |
-+-------------------------------------------------------------------------------+
-|                |              |             |                                 |
+| Parameter | Status   | Syntax | Description          |
+|-----------|----------|--------|------------------------|
 |  URI           |  Required    |  String     | URI of the remote host.         |
 |                |              |             | Supported values :              |
 |                |              |             | 'tftp://A.B.C.D' or             |
 |                |              |             | 'tftp://X:X::X:X'               |
-|                |              |             |                                 |
-|                |              |             |                                 |
-+----------------+--------------+-------------+---------------------------------+
-```
+
 
 #### Examples ####
 ```
@@ -121,7 +95,7 @@ This parameter specifies the URI of the remote host. The possible values are `tf
     switch(config)# logrotate target tftp://2001:db8:0:1::128
 ```
 
-## Display Commands ##
+## Display commands ##
 ### show logrotate ###
 #### Syntax ####
 ```
