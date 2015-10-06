@@ -1,6 +1,7 @@
 # L3 Interfaces
 
 ## Contents
+
 - [Configuration commands](#configuration-commands)
 	- [routing](#routing)
 	- [vrf attach](#vrf-attach)
@@ -10,11 +11,11 @@
 	- [interface](#interface)
 - [Display commands](#display-commands)
 	- [show interface](#show-interface)
-	- [show interface <vlan-name>](#show-interface <vlan-name>)
+	- [show interface <vlan-name>](#show-interface-vlan-name)
 
 ## Configuration commands
 
-###  `routing`
+###  routing
 
 ##### Syntax
 Under the interface context.
@@ -36,7 +37,7 @@ hostname(config-if)# routing
 hostname(config-if)#
 ```
 
-###  `vrf attach`
+###  vrf attach
 
 ##### Syntax
 Under the interface context.
@@ -62,7 +63,7 @@ hostname(config-if)# vrf attach myVRF
 hostname(config-if)#
 ```
 
-###  `ip address`
+###  ip address
 
 ##### Syntax
 Under the interface context.
@@ -90,7 +91,7 @@ hostname(config-if)# ip address 172.16.100.10/24
 hostname(config-if)#
 ```
 
-###  `ipv6 address`
+###  ipv6 address
 
 ##### Syntax
 Under the interface context.
@@ -118,7 +119,7 @@ hostname(config-if)# ipv6 address fd00:5708::f02d:4df6/64
 hostname(config-if)#
 ```
 
-###  `interface vlan`
+###  interface vlan
 
 ##### Syntax
 Under the config context.
@@ -144,7 +145,7 @@ hostname(config)# interface vlan 101
 hostname(config-if-vlan)#
 ```
 
-###  `interface`
+###  interface
 
 ##### Syntax
 
@@ -173,9 +174,9 @@ hostname(config-if-vlan)#
 
 ## Display commands
 
-### `show interface`
+### show interface
 
-##### Syntax
+#### Syntax
 Under privileged mode.
 
 `show interface [brief | mgmt]`
@@ -186,13 +187,13 @@ Displays information for the interfaces including statistics, configuration and 
 #### Authority
 Operator.
 
-##### Parameters
+#### Parameters
 | Parameter | Status   | Syntax | Description          |
 |-----------|----------|--------|------------------------|
 | **brief**   | Optional | Literal | Displays brief information of the interfaces.|
 | **mgmt**   | Optional | Literal | Displays the management interface details.|
 
-##### Example
+#### Example
 
 Show management interface details
 ```
@@ -239,9 +240,9 @@ Interface                                                          (Mb/s)    Ch#
  1            --      eth  --     up                               1000     --
 ```
 
-### `show interface <vlan-name>`
+### show interface <vlan-name>
 
-##### Syntax
+#### Syntax
 Under privileged mode.
 
 `show interface <vlan-name>`
@@ -252,12 +253,12 @@ This command displays the interface VLAN configuration.
 #### Authority
 Operator
 
-##### Parameters
+#### Parameters
 | Parameter | Status   | Syntax |	Description          |
 |-----------|----------|----------------------|
 | *vlan-name*  | Required  |String  |	The VLAN name. |
 
-##### Example
+#### Example
 The following example displays the VLAN interface configuration for VLAN: vlan101:
 ```
 hostname# show interface vlan101
