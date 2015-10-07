@@ -11,51 +11,52 @@
 	- [interface](#interface)
 - [Display commands](#display-commands)
 	- [show interface](#show-interface)
-	- [show interface <vlan-name>](#show-interface-vlan-name)
+	- [show interface vlan-name](#show-interface-vlan-name)
+
 
 ## Configuration commands
 
-###  routing
+### routing
 
-##### Syntax
+#### Syntax
 Under the interface context.
 
 `[no] routing`
 
-##### Description
+#### Description
 Enable/disable routing for the interface.
 
-##### Authority
+#### Authority
 Admin.
 
-##### Parameters
+#### Parameters
 None.
 
-##### Example
+#### Example
 ```
 hostname(config-if)# routing
 hostname(config-if)#
 ```
 
-###  vrf attach
+### vrf attach
 
-##### Syntax
+#### Syntax
 Under the interface context.
 
 `[no] vrf attach <vrf-name>`
 
-##### Description
+#### Description
 Attach/detach an interface to/from a VRF.
 
-##### Authority
+#### Authority
 Admin.
 
-##### Parameters
+#### Parameters
 | Parameter | Status   | Syntax | Description          |
 |-----------|----------|--------|------------------------|
 | *vrf-name*  | Required | String |  The name of the VRF. |
 
-##### Example
+#### Example
 Attach an interface to a VRF (interface: 1, VRF: myVRF)
 ```
 hostname(config)# interface 1
@@ -63,27 +64,27 @@ hostname(config-if)# vrf attach myVRF
 hostname(config-if)#
 ```
 
-###  ip address
+### ip address
 
-##### Syntax
+#### Syntax
 Under the interface context.
 
 `[no] ip address <address/mask> [secondary]`
 
-##### Description
+#### Description
 Configures an IPv4 address to the specified interface.
 
-##### Authority
+#### Authority
 Admin.
 
-##### Parameters
+#### Parameters
 | Parameter | Status   | Syntax | Description          |
 |-----------|----------|--------|------------------------|
 | *address/mask*  | Required |A.B.C.D/M | The address and mask. |
 | **secondary**  | Optional | Literal | Configures a secondary address.|
 
 
-##### Example
+#### Example
 Configures an IPv4 address on the interface.
 ```
 hostname(config-if)# interface 1
@@ -91,27 +92,27 @@ hostname(config-if)# ip address 172.16.100.10/24
 hostname(config-if)#
 ```
 
-###  ipv6 address
+### ipv6 address
 
-##### Syntax
+#### Syntax
 Under the interface context.
 
 `[no] ipv6 address <address/prefix> [secondary]`
 
-##### Description
+#### Description
 Configures an IPv6 address to the specified interface.
 
-##### Authority
+#### Authority
 Admin.
 
-##### Parameters
+#### Parameters
 | Parameter | Status   | Syntax | Description          |
 |-----------|----------|--------|------------------------|
 | *address/prefix*  | Required |X:X::X:X/P | The address and prefix length.|
 | **secondary**  | Optional | Literal | Configures a secondary address.|
 
 
-##### Example
+#### Example
 Configures an IPv6 address on the interface.
 ```
 hostname(config)# interface 1
@@ -119,53 +120,53 @@ hostname(config-if)# ipv6 address fd00:5708::f02d:4df6/64
 hostname(config-if)#
 ```
 
-###  interface vlan
+### interface vlan
 
-##### Syntax
+#### Syntax
 Under the config context.
 
 `[no] interface vlan <vlan-id>`
 
-##### Description
+#### Description
 This command lets you create and configure a L3 VLAN interface corresponding to the specified VLAN ID.
 
-##### Authority
+#### Authority
 Admin
 
-##### Parameters
+#### Parameters
 | Parameter | Status   | Syntax |	Description          |
 |-----------|----------|----------------------|
 | *vlan-id*  | Required  |1-4094 |	The VLAN ID |
 | **no** | Optional | Literal | Removes the VLAN interface corresponding to the specified VLAN ID |
 
-##### Example
+#### Example
 
 ```
 hostname(config)# interface vlan 101
 hostname(config-if-vlan)#
 ```
 
-###  interface
+### interface
 
-##### Syntax
+#### Syntax
 
 Under the config context
 
 `[no] interface <vlan-name>`
 
-##### Description
+#### Description
 This command lets you create and configure a L3 VLAN interface corresponding to the specified VLAN name.
 
-##### Authority
+#### Authority
 Admin
 
-##### Parameters
+#### Parameters
 | Parameter | Status   | Syntax |	Description          |
 |-----------|----------|----------------------|
 | *vlan-name*  | Required  |String  |	The VLAN name |
 | **no** | Optional | Literal | Removes the VLAN interface corresponding to the specified VLAN name |
 
-##### Example
+#### Example
 
 ```
 hostname(config)# interface vlan101
@@ -240,7 +241,7 @@ Interface                                                          (Mb/s)    Ch#
  1            --      eth  --     up                               1000     --
 ```
 
-### show interface <vlan-name>
+### show interface vlan-name
 
 #### Syntax
 Under privileged mode.
