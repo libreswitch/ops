@@ -1,47 +1,41 @@
-Testing for OPS-WEBUI
-=====================
-
+# Testing for OPS-WEBUI
 The current Web UI testing consists of:
 * automated JavaScript unit tests
 * manual GUI tests
 
 This document only describes the automated JavaScript unit tests.
 
-Automated JavaScript Unit Tests
-===============================
-
+## Automated JavaScript unit tests
 This testing uses the following NodeJS modules:
 * [NodeJS / npm](https://nodejs.org/en) - used to run the JavaScript development tools
 * [Webpack Module Bundler](https://webpack.github.io/) - module builder
 * [Karma](http://karma-runner.github.io/0.13/index.html) - unit test runner
 * [Jasmine](http://jasmine.github.io/) - unit test framework (see also [jasmine introduction](http://jasmine.github.io/2.0/introduction.html))
 
-Additionally, there are test support files located in **tools/test**
-* karma.config.js - Karma configuration file (resues webpack configuration)
-* mock-ajax.js - 3rd party library that provides mocking of ajax requests
-* tests.webpack.js - used by Karma to find and run all the test files
+Additionally, there are test support files located in **tools/test**:
+* `karma.config.js` - Karma configuration file (resues webpack configuration)
+* `mock-ajax.js` - 3rd party library that provides mocking of ajax requests
+* `tests.webpack.js` - used by Karma to find and run all the test files
 
-All **Karma/Jasmine** tests are located in \__tests__ directories.
+All **Karma/Jasmine** tests are located in `\__tests__ directories`.
 
-Shell Test Commands
--------------------
+##Shell test commands
 The NodeJs/npm build commands (defined in package.json) can be run from the **ops-webui** root directory.  For example:
 
     ops-webui$ npm run test
 
-There is an **aliases.sh** file in the ops-webui root directory that can be sourced to provide aliases for each command.  For example:
+There is an `aliases.sh` file in the ops-webui root directory that can be sourced to provide aliases for each command.  For example:
 
     alias wt='npm run test'
 
 * **wt** - run the unit tests a single time (karma/jasmine tests are located in \__test__ directories)
 * **wtw** - continuous testing, same as test but reruns when files change
 
-Tests
------
+##Tests
 
     Start:
      Test Suite For InterfaceActions
-       ✔ completes correctly ignoring non system interfaces
+       ✔ completes correctly ignoring non-system interfaces
        ✔ fails the first pass correctly
        ✔ fails the second pass correctly
      Test Suite For SystemInfoActions
