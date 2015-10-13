@@ -106,7 +106,7 @@ class CreatePortTest (OpsVsiTest):
         assert results, "Unable to execute requests in verify_attribute_type"
 
         for attribute in results:
-            assert attribute[1], "{0} code issued instead of BAD_REQUEST for an attribute with wrong type in field '{1}'".format(attribute[2], attribute[0])
+            assert attribute[1], "{0} code issued instead of {2} for type test in field '{1}'".format(attribute[2], attribute[0], attribute[3])
             info("{0} code received as expected for field {1}!\n".format(attribute[2], attribute[0]))
 
         info("\n########## End test to verify attribute types ##########\n")
@@ -134,7 +134,7 @@ class CreatePortTest (OpsVsiTest):
         assert results, "Unable to execute requests in verify_attribute_range"
 
         for attribute in results:
-            assert attribute[1], "{0} code issued instead of BAD_REQUEST for an attribute with value out of range in field '{1}'".format(attribute[2], attribute[0])
+            assert attribute[1], "{0} code issued instead of {2} for value range test in field '{1}'".format(attribute[2], attribute[0], attribute[3])
             info("{0} code received as expected for field {1}!\n".format(attribute[2], attribute[0]))
 
         info("\n########## End test to verify attribute ranges ##########\n")
@@ -154,7 +154,7 @@ class CreatePortTest (OpsVsiTest):
         assert results, "Unable to execute requests in verify_attribute_value"
 
         for attribute in results:
-            assert attribute[1], "{0} code issued instead of BAD_REQUEST for an attribute with invalid value in field '{1}'".format(attribute[2], attribute[0])
+            assert attribute[1], "{0} code issued instead of {2} for attribute valid value test in field '{1}'".format(attribute[2], attribute[0], attribute[3])
             info("{0} code received as expected for field {1}!\n".format(attribute[2], attribute[0]))
 
         info("\n########## End test to verify attribute valid value ##########\n")
@@ -208,7 +208,7 @@ class CreatePortTest (OpsVsiTest):
         assert results, "Unable to execute requests in verify_unknown_attribute"
 
         for attribute in results:
-            assert attribute[1], "{0} code issued instead of BAD_REQUEST for port with unknown attribute '{1}'".format(attribute[2], attribute[0])
+            assert attribute[1], "{0} code issued instead of {2} for unknown attribute test in field '{1}'".format(attribute[2], attribute[0], attribute[3])
             info("{0} code received as expected for field {1}!\n".format(attribute[2], attribute[0]))
 
         info("\n########## End test to verify unkown attribute ##########\n")
