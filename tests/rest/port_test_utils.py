@@ -117,7 +117,7 @@ def execute_port_operations(data, port_name, http_method, operation_uri, switch_
         # Check if status code was as expected
 
         if status_code != expected_code:
-            results.append((attribute_name, False, status_code))
+            results.append((attribute_name, False, status_code, expected_code))
         else:
             results.append((attribute_name, True, status_code))
 
