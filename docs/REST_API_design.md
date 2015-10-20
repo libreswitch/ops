@@ -51,6 +51,6 @@ A sanitizing Python script is run to strip the extended schema file of the two g
 
 References
 ----------
-* [REST API user guide](http://www.openswitch.net/docs/REST_API_user_guide.md)
-* [REST API rendering component design](http://www.openswitch.net/docs/REST_API_design.md)
-* [REST daemon component design](http://www.openswitch.net/docs/REST_daemon_design.md)
+* [REST API user guide](http://www.openswitch.net/docs/REST_API_user_guide)
+* [REST API rendering component design](http://www.openswitch.net/docs/REST_API_design)
+* [REST daemon component design](http://www.openswitch.net/docs/REST_daemon_design)
