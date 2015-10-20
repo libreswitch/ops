@@ -53,4 +53,3 @@ References
 ----------
 * [REST API user guide](http://www.openswitch.net/docs/REST_API_user_guide)
 * [REST API rendering component design](http://www.openswitch.net/docs/REST_API_design)
-* [REST daemon component design](http://www.openswitch.net/docs/REST_daemon_design)
