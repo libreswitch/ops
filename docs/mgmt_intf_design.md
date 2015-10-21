@@ -16,5 +16,5 @@ The device is configured or monitored through the management interface. All mana
 
 ##References
 
-* [Management Interface Design Document - TBL](http://www.openswitch.net/docs/mgmt-intf)
-* [Management Interface User guide - TBL](http://www.openswitch.net/docs/mgmt-intf)
+* [Management Interface Design Document - TBL](/docs/mgmt-intf)
+* [Management Interface User guide - TBL](/docs/mgmt-intf)

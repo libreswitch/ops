@@ -86,4 +86,4 @@ In the VLAN table, vland examines the admin value as part of determining the ope
 
 References
 ----------
-* [vland design](https://www.openswitch.net/documents/dev/ops-vland/DESIGN)
+* [vland design](/documents/dev/ops-vland/DESIGN)

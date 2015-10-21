@@ -6,7 +6,7 @@ Below is a high level description of steps to be taken when approaching either o
 
 Porting to a different ASIC
 ---------------------------
-As further explained in [OpenSwitch Architecture](http://www.openswitch.net/documents/user/architecture),
+As further explained in [OpenSwitch Architecture](/documents/user/architecture),
 ops-switchd is conceptually constructed out of three layers -
 SDK independent layer, SDK specific plugin and ASIC SDK itself.
 
@@ -63,4 +63,4 @@ management - temperature, power supplies, LEDs.
 OpenSwitch design attempts to abstract those differences into a set of YAML files that explain the specific configuration,
 I2C bus parameters etc.
 In order to support a new platform, new set of YAML description files has to be created in openswitch/ops-hw-config repository.
-Please refer to http://www.openswitch.net/documents/dev/ops-hw-config/design for more details.
+Please refer to /documents/dev/ops-hw-config/design for more details.

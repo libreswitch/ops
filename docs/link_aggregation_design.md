@@ -77,5 +77,5 @@ The lacpd daemon also sets the `hw_bond_config:bond_hw_handle` value to notify t
 
 References
 ----------
-* [lacpd design](https://www.openswitch.net/documents/dev/ops-lacpd/DESIGN)
-* [lacp cli reference](https://www.openswitch.net/documents/user/lacp_cli)
+* [lacpd design](/documents/dev/ops-lacpd/DESIGN)
+* [lacp cli reference](/documents/user/lacp_cli)

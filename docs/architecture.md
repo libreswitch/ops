@@ -75,7 +75,7 @@ ops-switchd
 The primary responsibility of ops-switchd is to translate the data model residing in OVSDB into ASIC specific SDK calls and vice versa.
 In fact, ops-switchd is the only daemon that is allowed to access ASIC SDK.
 
-Internal modularity of ops-switchd provides the ability to port OpenSwitch to different SDKs and their corresponding silicon. For more information on ASIC portability, refer to ["porting to a different ASIC".](http://www.openswitch.net/documents/user/porting).
+Internal modularity of ops-switchd provides the ability to port OpenSwitch to different SDKs and their corresponding silicon. For more information on ASIC portability, refer to ["porting to a different ASIC".](/documents/user/porting).
 
 Being based on ovs-vswtchd from Open vSwitch, ops-switchd also contains Openflow agent and communicated directly to Openflow controllers. OpenFlow functionality is not yet supported (not connected to any ASIC SDK), but will be added in the future.
 
@@ -90,7 +90,7 @@ For further information regarding specific daemons, refer to:
 * **LED daemon**
 * **Pluggable modules daemon**
 
-For further information on porting to new platforms (not ASICs), refer to ["porting to a different platform".](http://www.openswitch.net/documents/user/porting)
+For further information on porting to new platforms (not ASICs), refer to ["porting to a different platform".](/documents/user/porting)
 
 Virtual interfaces
 ------------------
