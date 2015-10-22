@@ -1,4 +1,4 @@
-"""#!/usr/bin/env python
+#!/usr/bin/env python
 
 # Copyright (C) 2015 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
@@ -107,11 +107,86 @@ def lldp_wait_hold(**kwargs):
     retCode = retStruct.returnCode()
     assert retCode==0, "\nFailed to enable interface"
 
+    #Configuring no routing on interface
+    #Entering VTYSH terminal
+    retStruct = device1.VtyshShell(enter=True)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to enter vtysh prompt"
+
+    #Entering confi terminal SW1
+    retStruct = device1.ConfigVtyShell(enter=True)
+    retCode= retStruct.returnCode()
+    assert retCode==0, "Failed to enter config terminal"
+
+    #Entering interface
+    LogOutput('info', "Switch 1 interface is :"+str(device1.linkPortMapping['lnk01']))
+    devIntRetStruct = device1.DeviceInteract(command="interface "+str(device1.linkPortMapping['lnk01']))
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to enter interface"
+
+
+    devIntRetStruct = device1.DeviceInteract(command="no routing")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to disable routing"
+
+    #Exiting interface
+    devIntRetStruct = device1.DeviceInteract(command="exit")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to exit interface"
+
+    #Exiting Config terminal
+    retStruct= device1.ConfigVtyShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to come out of config terminal"
+
+    #Exiting VTYSH terminal
+    retStruct=device1.VtyshShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to exit vtysh prompt"
+    # End configure no routing switch 1 port over lnk01
 
     #Entering interface SW2
     retStruct = InterfaceEnable(deviceObj=device2, enable=True, interface=device2.linkPortMapping['lnk01'])
     retCode = retStruct.returnCode()
     assert retCode==0, "Failed to enable interface"
+
+    #Configuring no routing on interface
+    #Entering VTYSH terminal
+    retStruct = device2.VtyshShell(enter=True)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to enter vtysh prompt"
+
+    #Entering confi terminal SW1
+    retStruct = device2.ConfigVtyShell(enter=True)
+    retCode= retStruct.returnCode()
+    assert retCode==0, "Failed to enter config terminal"
+
+    #Entering interface
+    LogOutput('info', "Switch 2 interface is :"+str(device2.linkPortMapping['lnk01']))
+    devIntRetStruct = device2.DeviceInteract(command="interface "+str(device2.linkPortMapping['lnk01']))
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to enter interface"
+
+
+    devIntRetStruct = device2.DeviceInteract(command="no routing")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to disable routing"
+
+    #Exiting interface
+    devIntRetStruct = device2.DeviceInteract(command="exit")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to exit interface"
+
+    #Exiting Config terminal
+    retStruct= device2.ConfigVtyShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to come out of config terminal"
+
+    #Exiting VTYSH terminal
+    retStruct=device2.VtyshShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to exit vtysh prompt"
+    # End configure no routing on switch 2 port over lnk01
 
     #Waiting for LLDP message exchange
     time.sleep(15)
@@ -127,7 +202,8 @@ def lldp_wait_hold(**kwargs):
     retStruct.printValueString()
     lnk01PrtStats = retStruct.valueGet(key='portStats')
     LogOutput('info', "\nExpected Neighbor Port ID: "+str(lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())
-    assert int((lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())==1, "Case Failed, No Neighbor present for SW1"
+    #assert int((lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())==1, "Case Failed, No Neighbor present for SW1"
+    assert int((lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())== int(device2.linkPortMapping['lnk01']), "Case Failed, No Neighbor present for SW1"
     if (lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']):
        LogOutput('info',"\nCase Passed, Neighborship established by SW1")
        LogOutput('info', "\nPort of SW1 neighbor is :" + str(lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']))
@@ -147,7 +223,8 @@ def lldp_wait_hold(**kwargs):
     retStruct.printValueString()
     lnk01PrtStats = retStruct.valueGet(key='portStats')
     LogOutput('info', "\nExpected Neighbor Port ID: "+str(lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())
-    assert int((lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())==1, "Case Failed, No Neighbor present for SW2"
+    #assert int((lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())==1, "Case Failed, No Neighbor present for SW2"
+    assert int((lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip()) == int(device1.linkPortMapping['lnk01']), "Case Failed, No Neighbor present for SW2"
     if (lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']):
        LogOutput('info',"\nCase Passed, Neighborship established by SW2")
        LogOutput('info', "\nPort of SW2 neighbor is :" + str(lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']))
@@ -212,6 +289,7 @@ def lldp_wait_hold(**kwargs):
     assert (lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip()=="", "Case Failed, Neighbor present for SW2"
     LogOutput('info',"\nNo Neighbour is present for SW2, case passed")
 
+@pytest.mark.timeout(1000)
 class Test_lldp_configuration:
     def setup_class (cls):
         # Test object will parse command line and formulate the env
@@ -225,4 +303,4 @@ class Test_lldp_configuration:
     def test_lldp_wait_hold(self):
         dut01Obj = self.topoObj.deviceObjGet(device="dut01")
         dut02Obj = self.topoObj.deviceObjGet(device="dut02")
-        lldp_wait_hold(device1=dut01Obj, device2=dut02Obj)"""
+        lldp_wait_hold(device1=dut01Obj, device2=dut02Obj)

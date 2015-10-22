@@ -1,4 +1,4 @@
-"""#!/usr/bin/env python
+#!/usr/bin/env python
 
 # Copyright (C) 2015 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
@@ -25,8 +25,12 @@ from opstestfw.switch import *
 topoDict = {"topoExecution": 1000,
             "topoTarget": "dut01 dut02",
             "topoDevices": "dut01 dut02",
-            "topoLinks": "lnk01:dut01:dut02,lnk02:dut01:dut02,lnk03:dut01:dut02,lnk04:dut01:dut02",
-            "topoFilters": "dut01:system-category:switch,dut02:system-category:switch"}
+            "topoLinks": "lnk01:dut01:dut02,\
+                          lnk02:dut01:dut02,\
+                          lnk03:dut01:dut02,\
+                          lnk04:dut01:dut02",
+            "topoFilters": "dut01:system-category:switch,\
+                            dut02:system-category:switch"}
 
 def lldp_interface_txrx(**kwargs):
     device1 = kwargs.get('device1',None)
@@ -70,6 +74,43 @@ def lldp_interface_txrx(**kwargs):
     retCode = retStruct.returnCode()
     assert retCode==0, "Unable to configure lldp on SW2"
 
+    # Configuring no routing on interface
+    #Entering VTYSH terminal
+    retStruct = device1.VtyshShell(enter=True)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to enter vtysh prompt"
+
+    #Entering confi terminal SW1
+    retStruct = device1.ConfigVtyShell(enter=True)
+    retCode= retStruct.returnCode()
+    assert retCode==0, "Failed to enter config terminal"
+
+    #Entering interface
+    LogOutput('info', "Switch 1 interface is :"+str(device1.linkPortMapping['lnk01']))
+    devIntRetStruct = device1.DeviceInteract(command="interface "+str(device1.linkPortMapping['lnk01']))
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to enter interface"
+
+    devIntRetStruct = device1.DeviceInteract(command="no routing")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to disable routing"
+
+    #Exiting interface
+    devIntRetStruct = device1.DeviceInteract(command="exit")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to exit interface"
+
+    #Exiting Config terminal
+    retStruct= device1.ConfigVtyShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to come out of config terminal"
+
+    #Exiting VTYSH terminal
+    retStruct=device1.VtyshShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to exit vtysh prompt"
+    # End configuring no routiner on switch1 port over lnk01
+
     #Enabling interface 1 SW1
     LogOutput('info', "Enabling interface on SW1")
     retStruct = InterfaceEnable(deviceObj=device1, enable=True, interface=device1.linkPortMapping['lnk01'])
@@ -82,11 +123,85 @@ def lldp_interface_txrx(**kwargs):
     retCode = retStruct.returnCode()
     assert retCode==0, "Unable to enabling interafce on SW1"
 
+    # Configuring no routing on interface
+    #Entering VTYSH terminal
+    retStruct = device1.VtyshShell(enter=True)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to enter vtysh prompt"
+
+    #Entering confi terminal SW1
+    retStruct = device1.ConfigVtyShell(enter=True)
+    retCode= retStruct.returnCode()
+    assert retCode==0, "Failed to enter config terminal"
+
+    #Entering interface
+    LogOutput('info', "Switch 1 interface is :"+str(device1.linkPortMapping['lnk02']))
+    devIntRetStruct = device1.DeviceInteract(command="interface "+str(device1.linkPortMapping['lnk02']))
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to enter interface"
+
+    devIntRetStruct = device1.DeviceInteract(command="no routing")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to disable routing"
+
+    #Exiting interface
+    devIntRetStruct = device1.DeviceInteract(command="exit")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to exit interface"
+
+    #Exiting Config terminal
+    retStruct= device1.ConfigVtyShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to come out of config terminal"
+
+    #Exiting VTYSH terminal
+    retStruct=device1.VtyshShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to exit vtysh prompt"
+    # End configuring no routing switch 1 port over lnk02
+
     #Enabling interface 3 SW1
     LogOutput('info', "Enabling interface on SW1")
     retStruct = InterfaceEnable(deviceObj=device1, enable=True, interface=device1.linkPortMapping['lnk03'])
     retCode = retStruct.returnCode()
     assert retCode==0, "Unable to enabling interafce on SW1"
+
+    # Configuring no routing on interface
+    #Entering VTYSH terminal
+    retStruct = device1.VtyshShell(enter=True)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to enter vtysh prompt"
+
+    #Entering confi terminal SW1
+    retStruct = device1.ConfigVtyShell(enter=True)
+    retCode= retStruct.returnCode()
+    assert retCode==0, "Failed to enter config terminal"
+
+    #Entering interface
+    LogOutput('info', "Switch 1 interface is :"+str(device1.linkPortMapping['lnk03']))
+    devIntRetStruct = device1.DeviceInteract(command="interface "+str(device1.linkPortMapping['lnk03']))
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to enter interface"
+
+    devIntRetStruct = device1.DeviceInteract(command="no routing")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to disable routing"
+
+    #Exiting interface
+    devIntRetStruct = device1.DeviceInteract(command="exit")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to exit interface"
+
+    #Exiting Config terminal
+    retStruct= device1.ConfigVtyShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to come out of config terminal"
+
+    #Exiting VTYSH terminal
+    retStruct=device1.VtyshShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to exit vtysh prompt"
+    # End configure no routing switch 1 port over lnk03
 
     #Enabling interface 4 SW1
     LogOutput('info', "Enabling interface on SW1")
@@ -94,11 +209,85 @@ def lldp_interface_txrx(**kwargs):
     retCode = retStruct.returnCode()
     assert retCode==0, "Unable to enabling interafce on SW1"
 
+    # Configuring no routing on interface
+    #Entering VTYSH terminal
+    retStruct = device1.VtyshShell(enter=True)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to enter vtysh prompt"
+
+    #Entering confi terminal SW1
+    retStruct = device1.ConfigVtyShell(enter=True)
+    retCode= retStruct.returnCode()
+    assert retCode==0, "Failed to enter config terminal"
+
+    #Entering interface
+    LogOutput('info', "Switch 1 interface is :"+str(device1.linkPortMapping['lnk04']))
+    devIntRetStruct = device1.DeviceInteract(command="interface "+str(device1.linkPortMapping['lnk04']))
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to enter interface"
+
+    devIntRetStruct = device1.DeviceInteract(command="no routing")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to disable routing"
+
+    #Exiting interface
+    devIntRetStruct = device1.DeviceInteract(command="exit")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to exit interface"
+
+    #Exiting Config terminal
+    retStruct= device1.ConfigVtyShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to come out of config terminal"
+
+    #Exiting VTYSH terminal
+    retStruct=device1.VtyshShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to exit vtysh prompt"
+    # End configure no routing switch1 port over lnk04
+
     #Enabling interface 1 SW2
     LogOutput('info', "Enabling interface on SW2")
     retStruct = InterfaceEnable(deviceObj=device2, enable=True, interface=device2.linkPortMapping['lnk01'])
     retCode = retStruct.returnCode()
     assert retCode==0, "Unable to enabling interafce on SW2"
+
+    # Configure no routing switch2 port over lnk01
+    #Entering VTYSH terminal
+    retStruct = device2.VtyshShell(enter=True)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to enter vtysh prompt"
+
+    #Entering confi terminal SW1
+    retStruct = device2.ConfigVtyShell(enter=True)
+    retCode= retStruct.returnCode()
+    assert retCode==0, "Failed to enter config terminal"
+
+    #Entering interface 1
+    LogOutput('info', "Switch 2 interface is : "+str(device2.linkPortMapping['lnk01']))
+    devIntRetStruct = device2.DeviceInteract(command="interface "+str(device2.linkPortMapping['lnk01']))
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to enter interface"
+
+    devIntRetStruct = device2.DeviceInteract(command="no routing")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to disable routing"
+
+    #Exiting interface
+    devIntRetStruct = device2.DeviceInteract(command="exit")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to exit interface"
+
+    #Exiting config terminal
+    retStruct= device2.ConfigVtyShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to come out of config terminal"
+
+    #Exiting VTYSH terminal
+    retStruct=device2.VtyshShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to exit vtysh prompt"
+    # End configure switch2 no routing on port over lnk01
 
     #Enabling interface 2 SW2
     LogOutput('info', "Enabling interface on SW2")
@@ -106,17 +295,128 @@ def lldp_interface_txrx(**kwargs):
     retCode = retStruct.returnCode()
     assert retCode==0, "Unable to enabling interafce on SW2"
 
+    # Configure no routing on switch2 port over lnk02
+    #Entering VTYSH terminal
+    retStruct = device2.VtyshShell(enter=True)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to enter vtysh prompt"
+
+    #Entering confi terminal SW1
+    retStruct = device2.ConfigVtyShell(enter=True)
+    retCode= retStruct.returnCode()
+    assert retCode==0, "Failed to enter config terminal"
+
+    #Entering interface 1
+    LogOutput('info', "Switch 2 interface is : "+str(device2.linkPortMapping['lnk02']))
+    devIntRetStruct = device2.DeviceInteract(command="interface "+str(device2.linkPortMapping['lnk02']))
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to enter interface"
+
+    devIntRetStruct = device2.DeviceInteract(command="no routing")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to disable routing"
+
+    #Exiting interface
+    devIntRetStruct = device2.DeviceInteract(command="exit")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to exit interface"
+
+    #Exiting config terminal
+    retStruct= device2.ConfigVtyShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to come out of config terminal"
+
+    #Exiting VTYSH terminal
+    retStruct=device2.VtyshShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to exit vtysh prompt"
+    # End configure no routing on switch 2 port over lnk02
+
     #Enabling interface 3 SW2
     LogOutput('info', "Enabling interface on SW2")
     retStruct = InterfaceEnable(deviceObj=device2, enable=True, interface=device2.linkPortMapping['lnk03'])
     retCode = retStruct.returnCode()
     assert retCode==0, "Unable to enabling interafce on SW2"
 
+    # Configure no routing switch2 port over lnk03
+    #Entering VTYSH terminal
+    retStruct = device2.VtyshShell(enter=True)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to enter vtysh prompt"
+
+    #Entering confi terminal SW1
+    retStruct = device2.ConfigVtyShell(enter=True)
+    retCode= retStruct.returnCode()
+    assert retCode==0, "Failed to enter config terminal"
+
+    #Entering interface 1
+    LogOutput('info', "Switch 2 interface is : "+str(device2.linkPortMapping['lnk03']))
+    devIntRetStruct = device2.DeviceInteract(command="interface "+str(device2.linkPortMapping['lnk03']))
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to enter interface"
+
+    devIntRetStruct = device2.DeviceInteract(command="no routing")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to disable routing"
+
+    #Exiting interface
+    devIntRetStruct = device2.DeviceInteract(command="exit")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to exit interface"
+
+    #Exiting config terminal
+    retStruct= device2.ConfigVtyShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to come out of config terminal"
+
+    #Exiting VTYSH terminal
+    retStruct=device2.VtyshShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to exit vtysh prompt"
+    # End configure no routing on switch 2 port over lnk03
+
     #Enabling interface 4 SW2
     LogOutput('info', "Enabling interface on SW2")
     retStruct = InterfaceEnable(deviceObj=device2, enable=True, interface=device2.linkPortMapping['lnk04'])
     retCode = retStruct.returnCode()
     assert retCode==0, "Unable to enabling interafce on SW2"
+
+    # Configure no routing switch2 port over lnk04
+    #Entering VTYSH terminal
+    retStruct = device2.VtyshShell(enter=True)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to enter vtysh prompt"
+
+    #Entering confi terminal SW1
+    retStruct = device2.ConfigVtyShell(enter=True)
+    retCode= retStruct.returnCode()
+    assert retCode==0, "Failed to enter config terminal"
+
+    #Entering interface 1
+    LogOutput('info', "Switch 2 interface is : "+str(device2.linkPortMapping['lnk04']))
+    devIntRetStruct = device2.DeviceInteract(command="interface "+str(device2.linkPortMapping['lnk04']))
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to enter interface"
+
+    devIntRetStruct = device2.DeviceInteract(command="no routing")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to disable routing"
+
+    #Exiting interface
+    devIntRetStruct = device2.DeviceInteract(command="exit")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode==0, "Failed to exit interface"
+
+    #Exiting config terminal
+    retStruct= device2.ConfigVtyShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to come out of config terminal"
+
+    #Exiting VTYSH terminal
+    retStruct=device2.VtyshShell(enter=False)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "Failed to exit vtysh prompt"
+    # End configure no routing switch2 port over lnk04
 
     #Waiting for neighbour entry to flood
     Sleep(seconds=30, message="\nWaiting ")
@@ -134,7 +434,8 @@ def lldp_interface_txrx(**kwargs):
     retStruct.printValueString()
     lnk01PrtStats = retStruct.valueGet(key='portStats')
     LogOutput('info', "\nExpected Neighbor Port ID: "+str(lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())
-    assert int((lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())==1, "Case Failed, No Neighbor is present for SW1 on Link 1"
+    #assert int((lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())==1, "Case Failed, No Neighbor is present for SW1 on Link 1"
+    assert int((lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())== int(device2.linkPortMapping['lnk01']), "Case Failed, No Neighbor is present for SW1 on Link 1"
     if (lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']):
         LogOutput('info',"Case Passed, Neighborship established by SW1 on Link1")
         LogOutput('info', "\nPort of SW1 neighbor is :" + str(lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']))
@@ -149,7 +450,8 @@ def lldp_interface_txrx(**kwargs):
     LogOutput('info', "CLI_Switch2")
     retStruct.printValueString()
     LogOutput('info', "\nExpected Neighbor Port ID: "+str(lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())
-    assert int((lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())==1, "Case Failed, No Neighbor is present for SW2 on link 1"
+    #assert int((lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())==1, "Case Failed, No Neighbor is present for SW2 on link 1"
+    assert int((lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())== int(device1.linkPortMapping['lnk01']), "Case Failed, No Neighbor is present for SW2 on link 1"
     if (lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']):
         LogOutput('info',"\nCase Passed, Neighborship established by SW2 on Link 1")
         LogOutput('info', "\nPort of SW1 neighbor is :" + str(lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']))
@@ -169,7 +471,8 @@ def lldp_interface_txrx(**kwargs):
     LogOutput('info', "CLI_Switch1")
     retStruct.printValueString()
     LogOutput('info', "\nExpected Neighbor Port ID: "+str(lnk02PrtStats[device1.linkPortMapping['lnk02']]['Neighbor_portID']).rstrip())
-    assert int((lnk02PrtStats[device1.linkPortMapping['lnk02']]['Neighbor_portID']).rstrip())==2, "Case Failed, No Neighbor present for SW1 on Link 2"
+    #assert int((lnk02PrtStats[device1.linkPortMapping['lnk02']]['Neighbor_portID']).rstrip())==2, "Case Failed, No Neighbor present for SW1 on Link 2"
+    assert int((lnk02PrtStats[device1.linkPortMapping['lnk02']]['Neighbor_portID']).rstrip())== int(device2.linkPortMapping['lnk02']), "Case Failed, No Neighbor present for SW1 on Link 2"
     if (lnk02PrtStats[device1.linkPortMapping['lnk02']]['Neighbor_portID']):
         LogOutput('info',"Case Passed,  Neighborship established for SW1 on link 2")
         LogOutput('info', "\nPort of SW1 neighbor is :" + str(lnk02PrtStats[device1.linkPortMapping['lnk02']]['Neighbor_portID']))
@@ -187,7 +490,7 @@ def lldp_interface_txrx(**kwargs):
     LogOutput('info', "CLI_Switch2")
     retStruct.printValueString()
     LogOutput('info', "\nExpected Neighbor Port ID: "+str(lnk02PrtStats[device2.linkPortMapping['lnk02']]['Neighbor_portID']).rstrip())
-    assert (lnk02PrtStats[device2.linkPortMapping['lnk02']]['Neighbor_portID']).rstrip()=="", "Case Failed, Neighbor is present for SW2 Link 2"
+    assert (lnk02PrtStats[device2.linkPortMapping['lnk02']]['Neighbor_portID']).rstrip()=="", "Case Failed, Neighbor is present for SW2 Link 2"    
     if (lnk02PrtStats[device2.linkPortMapping['lnk02']]['Neighbor_portID']):
         LogOutput('info',"\nCase Failed, Neighborship established by SW2 on Link 2")
         LogOutput('info', "\nPort of SW2 neighbor is :" + str(lnk02PrtStats[device2.linkPortMapping['lnk02']]['Neighbor_portID']))
@@ -231,7 +534,8 @@ def lldp_interface_txrx(**kwargs):
     LogOutput('info', "CLI_Switch2")
     retStruct.printValueString()
     LogOutput('info', "\nExpected Neighbor Port ID: "+str(lnk03PrtStats[device2.linkPortMapping['lnk03']]['Neighbor_portID']).rstrip())
-    assert int((lnk03PrtStats[device2.linkPortMapping['lnk03']]['Neighbor_portID']).rstrip())==3, "Case Passed, No Neighbor is present for SW2 on Link 3"
+    #assert int((lnk03PrtStats[device2.linkPortMapping['lnk03']]['Neighbor_portID']).rstrip())==3, "Case Passed, No Neighbor is present for SW2 on Link 3"
+    assert int((lnk03PrtStats[device2.linkPortMapping['lnk03']]['Neighbor_portID']).rstrip())== int(device1.linkPortMapping['lnk03']), "Case Passed, No Neighbor is present for SW2 on Link 3"
     if (lnk03PrtStats[device2.linkPortMapping['lnk03']]['Neighbor_portID']):
         LogOutput('info',"\nCase Passed, Neighborship established by SW2 on Link 3")
         LogOutput('info', "\nPort of SW2 neighbour is :" + str(lnk03PrtStats[device2.linkPortMapping['lnk03']]['Neighbor_portID']))
@@ -318,6 +622,7 @@ def lldp_interface_txrx(**kwargs):
     retCode = retStruct.returnCode()
     assert retCode==0, "Unable to disable interface"
 
+@pytest.mark.timeout(1000)
 class Test_lldp_configuration:
     def setup_class (cls):
         # Test object will parse command line and formulate the env
@@ -331,4 +636,4 @@ class Test_lldp_configuration:
     def test_lldp_interface_txrx(self):
         dut01Obj = self.topoObj.deviceObjGet(device="dut01")
         dut02Obj = self.topoObj.deviceObjGet(device="dut02")
-        retValue = lldp_interface_txrx(device1=dut01Obj, device2=dut02Obj)"""
+        retValue = lldp_interface_txrx(device1=dut01Obj, device2=dut02Obj)
