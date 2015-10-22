@@ -97,7 +97,7 @@ Only use compatible module types at either end of a network connection.
 Click [here](/documents/user/interface_cli) for the CLI commands related to interfaces and pluggable modules.
 
 ## Related features
-See also the [Interface User Guide](/documents/user/interface_user_guide0 for information on configuring physical interfaces.
+See also the [Interface User Guide](/documents/user/interface_user_guide) for information on configuring physical interfaces.
 
 ## External references
 [Small Formfactor Pluggable](https://en.wikipedia.org/wiki/Small_form-factor_pluggable_transceiver "Wikipedia")
