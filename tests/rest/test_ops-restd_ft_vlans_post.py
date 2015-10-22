@@ -153,7 +153,11 @@ class configTest (OpsVsiTest):
                         "ports": [],
                         "vlans": [],
                         "datapath_type": "",
-                        "other_config": {},
+                        "other_config": {
+                            "hwaddr": "",
+                            "mac-table-size": "16",
+                            "mac-aging-time": "300"
+                        },
                         "external_ids": {}
                      }
                 }
