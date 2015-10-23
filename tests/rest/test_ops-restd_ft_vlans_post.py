@@ -25,8 +25,8 @@ import json
 import httplib
 import urllib
 
-import request_test_utils
-import port_test_utils
+from utils.fakes import *
+from utils.utils import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -45,7 +45,6 @@ test_vlan_data["boolean"]           = deepcopy(base_vlan_data)
 
 class myTopo(Topo):
     def build (self, hsts=0, sws=1, **_opts):
-
         self.hsts = hsts
         self.sws = sws
         switch = self.addSwitch("s1")
@@ -53,10 +52,6 @@ class myTopo(Topo):
 class configTest (OpsVsiTest):
     def setupNet (self):
         self.fake_bridge = "fake_bridge"
-        self.path = "/rest/v1/system/bridges"
-        self.switch_ip = ""
-        self.switch_port = 8091
-        self.test_path = "%s/%s/vlans" % (self.path, self.fake_bridge)
 
         self.net = Mininet(topo=myTopo(hsts = NUM_HOSTS_PER_SWITCH,
                                        sws = NUM_OF_SWITCHES,
@@ -68,115 +63,10 @@ class configTest (OpsVsiTest):
                                        controller = None,
                                        build = True)
 
-    ###########################################################################
-    #                                                                         #
-    #   Utils                                                                 #
-    #                                                                         #
-    ###########################################################################
-    def setup_switch_ip(self):
-        self.switch_ip = port_test_utils.get_switch_ip(self.net.switches[0])
-
-    def create_fake_port(self, fake_port_name):
-        data =  """
-                {
-                    "configuration": {
-                        "name": "%s",
-                        "interfaces": ["/rest/v1/system/interfaces/1"],
-                        "trunks": [413],
-                        "ip4_address_secondary": ["192.168.0.1"],
-                        "lacp": ["active"],
-                        "bond_mode": ["l2-src-dst-hash"],
-                        "tag": 654,
-                        "vlan_mode": "trunk",
-                        "ip6_address": ["2001:0db8:85a3:0000:0000:8a2e:0370:7334"],
-                        "external_ids": {"extid1key": "extid1value"},
-                        "bond_options": {"key1": "value1"},
-                        "mac": ["01:23:45:67:89:ab"],
-                        "other_config": {"cfg-1key": "cfg1val"},
-                        "bond_active_slave": "null",
-                        "ip6_address_secondary": ["01:23:45:67:89:ab"],
-                        "vlan_options": {"opt1key": "opt2val"},
-                        "ip4_address": "192.168.0.1",
-                        "admin": "up"
-                    },
-                    "referenced_by": [{"uri": "/rest/v1/system/bridges/bridge_normal"}]
-                }
-                """ % fake_port_name
-
-        path = "/rest/v1/system/ports"
-
-        info("\n---------- Creating fake port (%s) ----------\n" % fake_port_name)
-        info("Testing path: %s\nTesting data: %s\n" % (path, data))
-
-        response_status, response_data = request_test_utils.execute_request(path, "POST", data, self.switch_ip)
-
-        assert response.status == httplib.OK, "Response status received: %s\n" % response_status
-        info("Fake port \"%s\" created!\n" % fake_port_name)
-
-        assert response_data is "", "Response data received: %s\n" % response_data
-        info("Response data: %s)" % response_data)
-        info("---------- Creating fake port (%s) DONE ----------\n" % fake_port_name)
-
-    def create_fake_vlan(self, bridge_name, fake_vlan_name):
-        data =  """
-                {
-                    "configuration": {
-                        "name": "%s",
-                        "id": 1,
-                        "description": "test vlan",
-                        "admin": ["up"],
-                        "other_config": {},
-                        "external_ids": {}
-                    }
-                }
-                """ % fake_vlan_name
-
-        path = "%s/%s/vlans" % (self.path, bridge_name)
-
-        info("\n---------- Creating fake vlan (%s) ----------\n" % fake_vlan_name)
-        info("Testing Path: %s\nTesting Data: %s\n" % (path, data))
-
-        response_status, response_data = request_test_utils.execute_request(path, "POST", data, self.switch_ip)
-
-        assert response_status == httplib.CREATED, "Response status received: %s\n" % response_status
-        info("Fake VLAN \"%s\" created!\n" % fake_vlan_name)
-
-        assert response_data is "", "Response data received: %s\n" % response_data
-        info("Response data received: %s\n" % response_data)
-        info("---------- Creating fake vlan (%s) DONE ----------\n" % fake_vlan_name)
-
-    def create_fake_bridge(self, fake_bridge_name):
-        data =  """
-                {
-                    "configuration": {
-                        "name": "%s",
-                        "ports": [],
-                        "vlans": [],
-                        "datapath_type": "",
-                        "other_config": {
-                            "hwaddr": "",
-                            "mac-table-size": "16",
-                            "mac-aging-time": "300"
-                        },
-                        "external_ids": {}
-                     }
-                }
-                """ % fake_bridge_name
-
-        path = self.path
-
-        info("\n---------- Creating fake bridge (%s) ----------\n" % fake_bridge_name)
-        info("Testing path: %s\nTesting data: %s\n" % (path, data))
-
-        response_status, response_data = request_test_utils.execute_request(path, "POST", data, self.switch_ip)
-
-        assert response_status == httplib.CREATED, "Response status: %s\n" % response_status
-        info("Bridge \"%s\" created!\n" % fake_bridge_name)
-
-        assert response_data is "", "Response data received: %s\n" % response_data
-        info("Response data received: %s\n" % response_data)
-
-        info("---------- Creating fake bridge (%s) DONE ----------\n" % fake_bridge_name)
+        self.path = "/rest/v1/system/bridges"
+        self.switch_ip = get_switch_ip(self.net.switches[0])
+        self.switch_port = 8091
+        self.test_path = "%s/%s/vlans" % (self.path, self.fake_bridge)
 
     ###########################################################################
     #                                                                         #
@@ -202,7 +92,7 @@ class configTest (OpsVsiTest):
         info("\n########## Executing POST to /system/bridges ##########\n")
         info("Testing Path: %s\n" % self.test_path)
 
-        response_status, response_data = request_test_utils.execute_request(self.test_path, "POST", data, self.switch_ip)
+        response_status, response_data = execute_request(self.test_path, "POST", data, self.switch_ip)
 
         assert response_status == httplib.CREATED, "Response status received: %s\n" % response_status
         info("Response status received: \"%s\"\n" % response_status)
@@ -238,7 +128,7 @@ class configTest (OpsVsiTest):
         for field, value in data.iteritems():
             info("Testing field \"name\" as [%s] with value: %s\n" % (field, value))
 
-            response_status, response_data = request_test_utils.execute_request(self.test_path, "POST", json.dumps(value), self.switch_ip)
+            response_status, response_data = execute_request(self.test_path, "POST", json.dumps(value), self.switch_ip)
 
             assert response_status == httplib.BAD_REQUEST, "Response status received: %s\n" % response_status
             info("Response status received: \"%s\"\n" % response_status)
@@ -274,7 +164,7 @@ class configTest (OpsVsiTest):
         for field, value in data.iteritems():
             info("Testing field \"id\" as [%s] with value: %s\n" % (field, value))
 
-            response_status, response_data = request_test_utils.execute_request(self.test_path, "POST", json.dumps(value), self.switch_ip)
+            response_status, response_data = execute_request(self.test_path, "POST", json.dumps(value), self.switch_ip)
 
             assert response_status == httplib.BAD_REQUEST, "Response status received: %s\n" % response_status
             info("Response status received: \"%s\"\n" % response_status)
@@ -310,7 +200,7 @@ class configTest (OpsVsiTest):
         for field, value in data.iteritems():
             info("Testing field \"description\" as [%s] with value: %s\n" % (field, value))
 
-            response_status, response_data = request_test_utils.execute_request(self.test_path, "POST", json.dumps(value), self.switch_ip)
+            response_status, response_data = execute_request(self.test_path, "POST", json.dumps(value), self.switch_ip)
 
             assert response_status == httplib.BAD_REQUEST, "Response status received: %s\n" % response_status
             info("Response status received: \"%s\"\n" % response_status)
@@ -346,7 +236,7 @@ class configTest (OpsVsiTest):
         for field, value in data.iteritems():
             info("Testing field \"admin\" as %s with value: %s\n" % (field, value))
 
-            response_status, response_data = request_test_utils.execute_request(self.test_path, "POST", json.dumps(value), self.switch_ip)
+            response_status, response_data = execute_request(self.test_path, "POST", json.dumps(value), self.switch_ip)
 
             assert response_status == httplib.BAD_REQUEST, "Response status received: %s\n" % response_status
             info("Response status received: \"%s\"\n" % response_status)
@@ -382,7 +272,7 @@ class configTest (OpsVsiTest):
         for field, value in data.iteritems():
             info("Testing field \"other_config\" as [%s] with value: %s\n" % (field, value))
 
-            response_status, response_data = request_test_utils.execute_request(self.test_path, "POST", json.dumps(value), self.switch_ip)
+            response_status, response_data = execute_request(self.test_path, "POST", json.dumps(value), self.switch_ip)
 
             assert response_status == httplib.BAD_REQUEST, "Response status received: %s\n" % response_status
             info("Response status received: \"%s\"\n" % response_status)
@@ -418,7 +308,7 @@ class configTest (OpsVsiTest):
         for field, value in data.iteritems():
             info("Testing field \"external_ids\" as %s with value: %s\n" % (field, value))
 
-            response_status, response_data = request_test_utils.execute_request(self.test_path, "POST", json.dumps(value), self.switch_ip)
+            response_status, response_data = execute_request(self.test_path, "POST", json.dumps(value), self.switch_ip)
 
             assert response_status == httplib.BAD_REQUEST, "Response status received: %s\n" % response_status
             info("Response status received: \"%s\"\n" % response_status)
@@ -457,7 +347,7 @@ class configTest (OpsVsiTest):
         for field, value in data.iteritems():
             info("Testing missing field \"%s\" with value: %s\n" % (field, value))
 
-            response_status, response_data = request_test_utils.execute_request(self.test_path, "POST", json.dumps(value), self.switch_ip)
+            response_status, response_data = execute_request(self.test_path, "POST", json.dumps(value), self.switch_ip)
 
             assert response_status == httplib.BAD_REQUEST, "Response status received: %s\n" % response_status
             info("Response status received: \"%s\"\n" % response_status)
@@ -491,7 +381,7 @@ class configTest (OpsVsiTest):
         info("\n########## Executing POST to test duplicated VLAN ##########\n")
         info("Testing Path: %s\n" % self.test_path)
 
-        response_status, response_data = request_test_utils.execute_request(self.test_path, "POST", data, self.switch_ip)
+        response_status, response_data = execute_request(self.test_path, "POST", data, self.switch_ip)
 
         assert response_status == httplib.CREATED, "Response status received: %s\n" % response_status
         info("Response status received: \"%s\"\n" % response_status)
@@ -501,7 +391,7 @@ class configTest (OpsVsiTest):
 
         # Create duplicated
         info("Creating VLAN duplicate: %s\n" % fake_vlan)
-        response_status, response_data = request_test_utils.execute_request(self.test_path, "POST", data, self.switch_ip)
+        response_status, response_data = execute_request(self.test_path, "POST", data, self.switch_ip)
 
         assert response_status == httplib.BAD_REQUEST, "Response status received: %s\n" % response_status
         info("Response status received: \"%s\"\n" % response_status)
@@ -513,7 +403,7 @@ class configTest (OpsVsiTest):
 
     def run_all(self):
         info("\n########## Starting VLAN POST tests ##########\n")
-        self.create_fake_bridge(self.fake_bridge)
+        create_fake_bridge(self.path, self.switch_ip, self.fake_bridge)
         self.test_post_vlan()
         self.test_post_vlan_bad_name()
         self.test_post_vlan_bad_id()
@@ -548,5 +438,4 @@ class Test_config:
         del self.test_var
 
     def test_run (self):
-        self.test_var.setup_switch_ip()
         self.test_var.run_all()

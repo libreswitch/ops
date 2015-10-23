@@ -18,12 +18,10 @@
 import json
 import httplib
 import urllib
+
 from copy import deepcopy
 
-import request_test_utils
-
-
-test_data = {"configuration": {
+PORT_DATA = {"configuration": {
         "name": "Port1",
         "interfaces": ["/rest/v1/system/interfaces/1"],
         "trunks": [413],
@@ -45,13 +43,12 @@ test_data = {"configuration": {
     },
     "referenced_by": [{"uri":"/rest/v1/system/bridges/bridge_normal"}]}
 
-
 def get_switch_ip(switch):
     return switch.cmd("python -c \"import socket; print socket.gethostbyname(socket.gethostname())\"")
 
 def create_test_port (ip):
     path = "/rest/v1/system/ports"
-    status_code, response_data = request_test_utils.execute_request(path, "POST", json.dumps(test_data), ip)
+    status_code, response_data = execute_request(path, "POST", json.dumps(PORT_DATA), ip)
     return status_code
 
 def compare_dict(dict1, dict2):
@@ -88,13 +85,13 @@ def execute_port_operations(data, port_name, http_method, operation_uri, switch_
         attribute_value = attribute[1]
         expected_code = attribute[2]
 
-        request_data = deepcopy(test_data)
+        request_data = deepcopy(PORT_DATA)
         request_data['configuration']['name'] = "{0}_{1}_{2}".format(port_name, attribute_name, expected_code)
 
         if http_method == 'PUT':
 
             # Create a test port
-            status_code, response_data = request_test_utils.execute_request(operation_uri, "POST", json.dumps(request_data), switch_ip)
+            status_code, response_data = execute_request(operation_uri, "POST", json.dumps(request_data), switch_ip)
 
             if status_code != httplib.CREATED:
                 return []
@@ -112,13 +109,26 @@ def execute_port_operations(data, port_name, http_method, operation_uri, switch_
         # Change value for specified attribute
         request_data['configuration'][attribute_name] = attribute_value
         # Execute request
-        status_code, response_data = request_test_utils.execute_request(port_uri, http_method, json.dumps(request_data), switch_ip)
+        status_code, response_data = execute_request(port_uri, http_method, json.dumps(request_data), switch_ip)
 
         # Check if status code was as expected
 
         if status_code != expected_code:
-            results.append((attribute_name, False, status_code, expected_code))
+            results.append((attribute_name, False, status_code))
         else:
             results.append((attribute_name, True, status_code))
 
     return results
+
+def execute_request(path, http_method, data, ip, full_response=False):
+    headers = {"Content-type": "application/json", "Accept": "text/plain"}
+    conn = httplib.HTTPConnection(ip, 8091)
+    conn.request(http_method, path, data, headers)
+    response = conn.getresponse()
+    status_code, response_data = response.status, response.read()
+    conn.close()
+
+    if full_response:
+        return response, response_data
+    else:
+        return status_code, response_data

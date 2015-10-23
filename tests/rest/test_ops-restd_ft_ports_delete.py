@@ -29,8 +29,7 @@ import json
 import httplib
 import urllib
 
-import request_test_utils
-import port_test_utils
+from utils.utils import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -47,10 +46,6 @@ class myTopo(Topo):
 
 class DeletePortTest (OpsVsiTest):
     def setupNet (self):
-        self.SWITCH_IP = ""
-        self.PATH = "/rest/v1/system/ports"
-        self.PORT_PATH = self.PATH + "/Port1"
-
         self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
                                        sws=NUM_OF_SWITCHES,
                                        hopts=self.getHostOpts(),
@@ -61,13 +56,13 @@ class DeletePortTest (OpsVsiTest):
                                        controller=None,
                                        build=True)
 
-    def setup_switch_ip(self):
-        s1 = self.net.switches[0]
-        self.SWITCH_IP = port_test_utils.get_switch_ip(s1)
+        self.SWITCH_IP = get_switch_ip(self.net.switches[0])
+        self.PATH = "/rest/v1/system/ports"
+        self.PORT_PATH = self.PATH + "/Port1"
 
     def delete_port (self):
         info("\n########## Test delete Port ##########\n")
-        status_code, response_data = request_test_utils.execute_request(self.PORT_PATH, "DELETE", None, self.SWITCH_IP)
+        status_code, response_data = execute_request(self.PORT_PATH, "DELETE", None, self.SWITCH_IP)
         assert status_code == httplib.NO_CONTENT, "Is not sending No Content status code. Status code: %s" % status_code
         info("### Status code is 204 No Content  ###\n")
 
@@ -76,7 +71,7 @@ class DeletePortTest (OpsVsiTest):
     def verify_deleted_port_from_port_list(self):
         info("\n########## Test Verify if Port is been deleted from port list ##########\n")
         # Verify if port has been deleted from the list
-        status_code, response_data = request_test_utils.execute_request(self.PATH, "GET", None, self.SWITCH_IP)
+        status_code, response_data = execute_request(self.PATH, "GET", None, self.SWITCH_IP)
         json_data = []
         try:
             json_data = json.loads(response_data)
@@ -91,7 +86,7 @@ class DeletePortTest (OpsVsiTest):
     def verify_deleted_port(self):
         info("\n########## Test Verify if Port is found ##########\n")
         # Verify deleted port
-        status_code, response_data = request_test_utils.execute_request(self.PORT_PATH, "GET", None, self.SWITCH_IP)
+        status_code, response_data = execute_request(self.PORT_PATH, "GET", None, self.SWITCH_IP)
         assert status_code == httplib.NOT_FOUND, "Port has not be deleted"
         info("### Port not found  ###\n")
 
@@ -100,7 +95,7 @@ class DeletePortTest (OpsVsiTest):
     def delete_non_existent_port(self):
         info("\n########## Test delete non-existent Port ##########\n")
         new_path = self.PATH + "/Port2"
-        status_code, response_data = request_test_utils.execute_request(new_path, "DELETE", None, self.SWITCH_IP)
+        status_code, response_data = execute_request(new_path, "DELETE", None, self.SWITCH_IP)
 
         assert status_code == httplib.NOT_FOUND, "Validation failed, is not sending Not Found error. Status code: %s" % status_code
         info("### Status code is 404 Not Found  ###\n")
@@ -116,9 +111,8 @@ class Test_DeletePort:
 
     def setup_class (cls):
         Test_DeletePort.test_var = DeletePortTest()
-        Test_DeletePort.test_var.setup_switch_ip()
         # Add a test port
-        port_test_utils.create_test_port(Test_DeletePort.test_var.SWITCH_IP)
+        create_test_port(Test_DeletePort.test_var.SWITCH_IP)
 
     def teardown_class (cls):
         Test_DeletePort.test_var.net.stop()

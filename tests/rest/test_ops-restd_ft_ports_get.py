@@ -25,9 +25,7 @@ import json
 import httplib
 import urllib
 
-import request_test_utils
-import port_test_utils
-
+from utils.utils import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -38,13 +36,8 @@ class myTopo(Topo):
         self.sws = sws
         switch = self.addSwitch("s1")
 
-
 class QueryPortTest (OpsVsiTest):
     def setupNet (self):
-        self.SWITCH_IP = ""
-        self.PATH = "/rest/v1/system/ports"
-        self.PORT_PATH = self.PATH + "/Port1"
-
         self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
                                        sws=NUM_OF_SWITCHES,
                                        hopts=self.getHostOpts(),
@@ -55,14 +48,14 @@ class QueryPortTest (OpsVsiTest):
                                        controller=None,
                                        build=True)
 
-    def setup_switch_ip(self):
-        s1 = self.net.switches[0]
-        self.SWITCH_IP = port_test_utils.get_switch_ip(s1)
+        self.SWITCH_IP = get_switch_ip(self.net.switches[0])
+        self.PATH = "/rest/v1/system/ports"
+        self.PORT_PATH = self.PATH + "/Port1"
 
     def query_all_ports (self):
         info("\n########## Test to Validate first GET all Ports request ##########\n")
 
-        status_code, response_data = request_test_utils.execute_request(self.PATH, "GET", None, self.SWITCH_IP)
+        status_code, response_data = execute_request(self.PATH, "GET", None, self.SWITCH_IP)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -87,7 +80,7 @@ class QueryPortTest (OpsVsiTest):
     def query_port (self):
         info("\n########## Test to Validate first GET single Port request ##########\n")
 
-        status_code, response_data = request_test_utils.execute_request(self.PORT_PATH, "GET", None, self.SWITCH_IP)
+        status_code, response_data = execute_request(self.PORT_PATH, "GET", None, self.SWITCH_IP)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -106,7 +99,7 @@ class QueryPortTest (OpsVsiTest):
         assert json_data["status"] is not None, "status key is not present"
         info("### Configuration, statistics and status keys present ###\n")
 
-        assert json_data["configuration"] == port_test_utils.test_data["configuration"], "Configuration data is not equal that posted data"
+        assert json_data["configuration"] == PORT_DATA["configuration"], "Configuration data is not equal that posted data"
         info("### Configuration data validated ###\n")
 
         info("\n########## End Test to Validate first GET single Port request ##########\n")
@@ -115,7 +108,7 @@ class QueryPortTest (OpsVsiTest):
         info("\n########## Test to Validate first GET Non-existent Port request ##########\n")
 
         new_path = self.PATH + "/Port2"
-        status_code, response_data = request_test_utils.execute_request(new_path, "GET", None, self.SWITCH_IP)
+        status_code, response_data = execute_request(new_path, "GET", None, self.SWITCH_IP)
 
         assert status_code == httplib.NOT_FOUND, "Wrong status code %s " % status_code
         info("### Status code is NOT FOUND ###\n")
@@ -131,9 +124,8 @@ class Test_QueryPort:
 
     def setup_class (cls):
         Test_QueryPort.test_var = QueryPortTest()
-        Test_QueryPort.test_var.setup_switch_ip()
         # Add a test port
-        port_test_utils.create_test_port(Test_QueryPort.test_var.SWITCH_IP)
+        create_test_port(Test_QueryPort.test_var.SWITCH_IP)
 
     def teardown_class (cls):
         Test_QueryPort.test_var.net.stop()

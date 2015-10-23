@@ -25,12 +25,13 @@ import json
 import httplib
 import urllib
 
+from utils.utils import *
+
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 
 class myTopo(Topo):
     def build(self, hsts=0, sws=1, **_opts):
-
         self.hsts = hsts
         self.sws = sws
 
@@ -39,10 +40,6 @@ class myTopo(Topo):
 class systemTest(OpsVsiTest):
 
     def setupNet(self):
-        self.SWITCH_PORT = 8091
-        self.SWITCH_IP = ""
-        self.PATH = "/rest/v1/system"
-
         self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
                                        sws=NUM_OF_SWITCHES,
                                        hopts=self.getHostOpts(),
@@ -53,26 +50,16 @@ class systemTest(OpsVsiTest):
                                        controller=None,
                                        build=True)
 
-    def setup_switch_ip(self):
-        s1 = self.net.switches[0]
-        self.SWITCH_IP = s1.cmd("python -c \"import socket; print \
-            socket.gethostbyname(socket.gethostname())\"")
-
-    def execute_request(self, http_method, request_data=""):
-        headers = {"Content-type": "application/json", "Accept": "text/plain"}
-        conn = httplib.HTTPConnection(self.SWITCH_IP, self.SWITCH_PORT)
-        conn.request(http_method, self.PATH, request_data, headers)
-        response = conn.getresponse()
-        data = response.read()
-        conn.close()
-        return response, data
+        self.SWITCH_IP = get_switch_ip(self.net.switches[0])
+        self.SWITCH_PORT = 8091
+        self.PATH = "/rest/v1/system"
 
     def call_system_get(self):
         info("\n########## Executing GET request on %s ##########\n" % self.PATH)
 
         # # Execute GET
 
-        response, json_string = self.execute_request("GET")
+        response, json_string = execute_request(self.PATH, "GET", None, self.SWITCH_IP, True)
 
         assert response.status == httplib.OK, "GET request failed: {0} {1}".format(response.status, response.reason)
 
@@ -97,7 +84,7 @@ class systemTest(OpsVsiTest):
 
         # # Execute OPTIONS
 
-        response, json_string = self.execute_request("OPTIONS")
+        response, json_string = execute_request(self.PATH, "OPTIONS", None, self.SWITCH_IP, True)
 
         assert response.status == httplib.OK, "OPTIONS request failed: {0} {1}".format(response.status, response.reason)
 
@@ -126,7 +113,7 @@ class systemTest(OpsVsiTest):
         mgmt_intf = {}
         while not mgmt_intf:
 
-            response, pre_put_json_string = self.execute_request("GET")
+            response, pre_put_json_string = execute_request(self.PATH, "GET", None, self.SWITCH_IP, True)
 
             assert response.status == httplib.OK, "PUT: initial GET request failed: {0} {1}".format(response.status, response.reason)
 
@@ -214,13 +201,13 @@ class systemTest(OpsVsiTest):
         if 'ssh_passkeyauthentication' in put_data['aaa']:
             del put_data['aaa']['ssh_passkeyauthentication']
 
-        response, json_string = self.execute_request("PUT", json.dumps({'configuration': put_data}))
+        response, json_string = execute_request(self.PATH, "PUT", json.dumps({'configuration': put_data}), self.SWITCH_IP, True)
 
         assert response.status == httplib.OK, "PUT request failed: {0} {1}".format(response.status, response.reason)
 
         # # Get post-PUT data
 
-        response, post_put_json_string = self.execute_request("GET")
+        response, post_put_json_string = execute_request(self.PATH, "GET", None, self.SWITCH_IP, True)
 
         assert response.status == httplib.OK, "PUT: Post-PUT GET request failed: {0} {1}".format(response.status, response.reason)
 
@@ -242,7 +229,7 @@ class systemTest(OpsVsiTest):
         json_string = json.dumps({'configuration': put_data})
         json_string += ","
 
-        response, json_string = self.execute_request("PUT", json_string)
+        response, json_string = execute_request(self.PATH, "PUT", json_string, self.SWITCH_IP, True)
 
         assert response.status == httplib.BAD_REQUEST, "PUT: Malformed JSON did not yield BAD_REQUEST: {0} {1}".format(response.status, response.reason)
 
@@ -271,7 +258,6 @@ class Test_system:
         del self.test_var
 
     def test_run (self):
-        self.test_var.setup_switch_ip()
         self.test_var.call_system_get()
         self.test_var.call_system_options()
         self.test_var.call_system_put()

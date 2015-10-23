@@ -15,7 +15,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-
 import pytest
 
 from opsvsi.docker import *
@@ -25,8 +24,7 @@ import json
 import httplib
 import urllib
 
-import request_test_utils
-import port_test_utils
+from utils.utils import *
 from copy import deepcopy
 
 NUM_OF_SWITCHES = 1
@@ -38,13 +36,8 @@ class myTopo(Topo):
         self.sws = sws
         switch = self.addSwitch("s1")
 
-
 class CreatePortTest (OpsVsiTest):
     def setupNet (self):
-        self.SWITCH_IP = ""
-        self.PATH = "/rest/v1/system/ports"
-        self.PORT_PATH = self.PATH + "/Port1"
-
         self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
                                        sws=NUM_OF_SWITCHES,
                                        hopts=self.getHostOpts(),
@@ -55,18 +48,18 @@ class CreatePortTest (OpsVsiTest):
                                        controller=None,
                                        build=True)
 
-    def setup_switch_ip(self):
-        s1 = self.net.switches[0]
-        self.SWITCH_IP = port_test_utils.get_switch_ip(s1)
+        self.SWITCH_IP = get_switch_ip(self.net.switches[0])
+        self.PATH = "/rest/v1/system/ports"
+        self.PORT_PATH = self.PATH + "/Port1"
 
     def create_port (self):
         info("\n########## Test to Validate Create Port ##########\n")
-        status_code, response_data = request_test_utils.execute_request(self.PATH, "POST", json.dumps(port_test_utils.test_data), self.SWITCH_IP)
+        status_code, response_data = execute_request(self.PATH, "POST", json.dumps(PORT_DATA), self.SWITCH_IP)
         assert status_code == httplib.CREATED, "Error creating a Port. Status code: %s Response data: %s " % (status_code, response_data)
         info("### Port Created. Status code is 201 CREATED  ###\n")
 
         # Verify data
-        status_code, response_data = request_test_utils.execute_request(self.PORT_PATH, "GET", None, self.SWITCH_IP)
+        status_code, response_data = execute_request(self.PORT_PATH, "GET", None, self.SWITCH_IP)
         assert status_code == httplib.OK, "Failed to query added Port"
         json_data = {}
         try:
@@ -74,14 +67,14 @@ class CreatePortTest (OpsVsiTest):
         except:
             assert False, "Malformed JSON"
 
-        assert json_data["configuration"] == port_test_utils.test_data["configuration"], "Configuration data is not equal that posted data"
+        assert json_data["configuration"] == PORT_DATA["configuration"], "Configuration data is not equal that posted data"
         info("### Configuration data validated ###\n")
 
         info("\n########## End Test to Validate Create Port ##########\n")
 
     def create_same_port (self):
         info("\n########## Test create same port ##########\n")
-        status_code, response_data = request_test_utils.execute_request(self.PORT_PATH, "POST", json.dumps(port_test_utils.test_data), self.SWITCH_IP)
+        status_code, response_data = execute_request(self.PORT_PATH, "POST", json.dumps(PORT_DATA), self.SWITCH_IP)
         assert status_code == httplib.BAD_REQUEST, "Validation failed, is not sending Bad Request error. Status code: %s" % status_code
         info("### Port not modified. Status code is 400 Bad Request  ###\n")
 
@@ -101,7 +94,7 @@ class CreatePortTest (OpsVsiTest):
                 ("trunks", "654, 675", httplib.BAD_REQUEST),
                 ("trunks", [654, 675], httplib.CREATED)
         ]
-        results = port_test_utils.execute_port_operations(data, "PortTypeTest", "POST", self.PATH, self.SWITCH_IP)
+        results = execute_port_operations(data, "PortTypeTest", "POST", self.PATH, self.SWITCH_IP)
 
         assert results, "Unable to execute requests in verify_attribute_type"
 
@@ -129,7 +122,7 @@ class CreatePortTest (OpsVsiTest):
                 ("interfaces", interfaces_out_of_range, httplib.BAD_REQUEST),
                 ("interfaces", ["/rest/v1/system/interfaces/1"], httplib.CREATED)
         ]
-        results = port_test_utils.execute_port_operations(data, "PortRangesTest", "POST", self.PATH, self.SWITCH_IP)
+        results = execute_port_operations(data, "PortRangesTest", "POST", self.PATH, self.SWITCH_IP)
 
         assert results, "Unable to execute requests in verify_attribute_range"
 
@@ -149,7 +142,7 @@ class CreatePortTest (OpsVsiTest):
                 ("vlan_mode", "invalid_value", httplib.BAD_REQUEST),
                 ("vlan_mode", "access", httplib.CREATED)
         ]
-        results = port_test_utils.execute_port_operations(data, "PortValidValueTest", "POST", self.PATH, self.SWITCH_IP)
+        results = execute_port_operations(data, "PortValidValueTest", "POST", self.PATH, self.SWITCH_IP)
 
         assert results, "Unable to execute requests in verify_attribute_value"
 
@@ -163,7 +156,7 @@ class CreatePortTest (OpsVsiTest):
 
         info("\n########## Test to verify missing attribute ##########\n")
 
-        request_data = deepcopy(port_test_utils.test_data)
+        request_data = deepcopy(PORT_DATA)
 
         # Try to POST a port with missing attribute in request data
 
@@ -172,7 +165,7 @@ class CreatePortTest (OpsVsiTest):
         request_data['configuration']['name'] = 'PortMissingAttribute'
         del request_data['configuration']['vlan_mode']
 
-        status_code, response_data = request_test_utils.execute_request(self.PATH, "POST", json.dumps(request_data), self.SWITCH_IP)
+        status_code, response_data = execute_request(self.PATH, "POST", json.dumps(request_data), self.SWITCH_IP)
 
         assert status_code == httplib.BAD_REQUEST, "%s code issued instead of BAD_REQUEST for Port with missing attribute" % status_code
 
@@ -185,7 +178,7 @@ class CreatePortTest (OpsVsiTest):
         request_data['configuration']['name'] = 'PortAllAttributes'
         request_data['configuration']['vlan_mode'] = "access"
 
-        status_code, response_data = request_test_utils.execute_request(self.PATH, "POST", json.dumps(request_data), self.SWITCH_IP)
+        status_code, response_data = execute_request(self.PATH, "POST", json.dumps(request_data), self.SWITCH_IP)
 
         assert status_code == httplib.CREATED, "%s code issued instead of CREATED for Port with all attributes" % status_code
 
@@ -203,7 +196,7 @@ class CreatePortTest (OpsVsiTest):
                 ("unknown_attribute", "unknown_value", httplib.BAD_REQUEST),
                 ("vlan_mode", "access", httplib.CREATED)
         ]
-        results = port_test_utils.execute_port_operations(data, "PortUnknownAttributeTest", "POST", self.PATH, self.SWITCH_IP)
+        results = execute_port_operations(data, "PortUnknownAttributeTest", "POST", self.PATH, self.SWITCH_IP)
 
         assert results, "Unable to execute requests in verify_unknown_attribute"
 
@@ -217,7 +210,7 @@ class CreatePortTest (OpsVsiTest):
 
         info("\n########## Test to verify malformed JSON ##########\n")
 
-        request_data = deepcopy(port_test_utils.test_data)
+        request_data = deepcopy(PORT_DATA)
 
         # Try to POST a port with a malformed JSON in request data
 
@@ -227,7 +220,7 @@ class CreatePortTest (OpsVsiTest):
         json_string = json.dumps(request_data)
         json_string += ","
 
-        status_code, response_data = request_test_utils.execute_request(self.PATH, "POST", json_string, self.SWITCH_IP)
+        status_code, response_data = execute_request(self.PATH, "POST", json_string, self.SWITCH_IP)
 
         assert status_code == httplib.BAD_REQUEST, "%s code issued instead of BAD_REQUEST for Port with umalformed JSON in request data" % status_code
 
@@ -238,7 +231,7 @@ class CreatePortTest (OpsVsiTest):
         request_data['configuration']['name'] = 'PortCorrectJSON'
         json_string = json.dumps(request_data)
 
-        status_code, response_data = request_test_utils.execute_request(self.PATH, "POST", json_string, self.SWITCH_IP)
+        status_code, response_data = execute_request(self.PATH, "POST", json_string, self.SWITCH_IP)
 
         assert status_code == httplib.CREATED, "%s code issued instead of CREATED for Port with correct JSON in request data" % status_code
 
@@ -253,7 +246,6 @@ class Test_CreatePort:
 
     def setup_class (cls):
         Test_CreatePort.test_var = CreatePortTest()
-        Test_CreatePort.test_var.setup_switch_ip()
 
     def teardown_class (cls):
         Test_CreatePort.test_var.net.stop()
