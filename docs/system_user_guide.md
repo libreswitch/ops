@@ -98,5 +98,5 @@ base-2    20.50          normal         normal
 ```
 
 ## CLI
-<!--Provide a link to the CLI command related to the feature. The CLI files will be generated to a CLI directory.  -->
-Click [here](https://openswitch.net/cli_feature_name.html#cli_command_anchor) for the CLI commands related to the system.
+
+Click [here](/documents/user/system_cli) for the CLI commands related to the system.

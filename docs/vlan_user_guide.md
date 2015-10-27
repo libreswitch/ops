@@ -214,8 +214,8 @@ VLAN  Name         Status    Reason        Reserved       Ports
 
 
 ## CLI
-Click [here](https://openswitch.net/cli_feat.html#cli_command_anchor) for the CLI commands related to the VLAN.
+Click [here](/documents/user/VLAN_cli) for the CLI commands related to the VLAN.
 
 
 ## Related features
-When configuring the switch for VLAN, it might also be necessary to configure the [Physical Interface](https://openswitch.net./tbd/other_filefeatures/related_feature1.html#first_anchor) and [LACP](https://openswitch.net./tbd/other_filefeatures/related_feature1.html#first_anchor).
+When configuring the switch for VLAN, it might also be necessary to configure the [Physical Interface](/documents/user/interface_cli) and [LACP](/documents/user/lacp_cli).
