@@ -217,42 +217,6 @@ class ModifyPortTest (OpsVsiTest):
 
         info("\n########## End test to verify attribute valid value ##########\n")
 
-    def verify_missing_attribute(self):
-
-        info("\n########## Test to verify missing attribute ##########\n")
-
-        request_data = deepcopy(PORT_DATA)
-
-        # Delete reference_by from PUT
-        del request_data['referenced_by']
-
-        # Try to PUT a port with missing attribute in request data
-
-        info("\nAttempting to modify a port with missing attribute in request data\n")
-
-        # Delete an attribute to try PUT
-        del request_data['configuration']['vlan_mode']
-
-        status_code, response_data = execute_request(self.PORT_PATH, "PUT", json.dumps(request_data), self.SWITCH_IP)
-
-        assert status_code == httplib.BAD_REQUEST, "%s code issued instead of BAD_REQUEST for Port with missing attribute" % status_code
-
-        info("BAD_REQUEST code received as expected!")
-
-        # Try to PUT a port with all attributes in request data
-
-        info("\nAttempting to modify port with all attributes in request data\n")
-
-        # Re-add deleted attribute
-        request_data['configuration']['vlan_mode'] = "access"
-
-        status_code, response_data = execute_request(self.PORT_PATH, "PUT", json.dumps(request_data), self.SWITCH_IP)
-
-        assert status_code == httplib.OK, "%s code issued instead of OK for Port with all attributes" % status_code
-
-        info("CREATE code received as expected!\n")
-
-        info("\n########## End test to verify missing attribute ##########\n")
 
     def verify_unknown_attribute(self):
 
@@ -336,6 +300,5 @@ class Test_ModifyPort:
         self.test_var.verify_attribute_type()
         self.test_var.verify_attribute_range()
         self.test_var.verify_attribute_value()
-        self.test_var.verify_missing_attribute()
         self.test_var.verify_unknown_attribute()
         self.test_var.verify_malformed_json()

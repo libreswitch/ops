@@ -107,10 +107,8 @@ def restTestSystem(wrkston01):
             "lacp_config": {},
             "dns_servers": [],
             "aaa": {
-                "ssh_publickeyauthentication": "enable",
                 "fallback": "true",
-                "radius": "false",
-                "ssh_passkeyauthentication": "enable"},
+                "radius": "false"},
             "logrotate_config": {},
             "hostname": "openswitch",
             "manager_options": [],
@@ -119,19 +117,12 @@ def restTestSystem(wrkston01):
             "ssl": [],
             "mgmt_intf": {
                 "ip": switchMgmtAddr,
-                "subnet-mask": "24",
+                "subnet_mask": "24",
                 "mode": "static",
                 "name": "eth0"},
             "radius_servers": [],
             "other_config": {
                 "enable-statistics": "true"},
-            "daemons": [
-                "/rest/v1/system/daemons/ops-fand",
-                "/rest/v1/system/daemons/ops-powerd",
-                "/rest/v1/system/daemons/ops-sysd",
-                "/rest/v1/system/daemons/ops-ledd",
-                "/rest/v1/system/deamons/ops-pmd",
-                "/rest/v1/system/daemons/ops-tempd"],
             "bufmon_config": {},
             "external_ids": {},
             "ecmp_config": {},

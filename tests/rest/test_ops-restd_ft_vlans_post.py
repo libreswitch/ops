@@ -329,17 +329,9 @@ class configTest (OpsVsiTest):
         data = {}
         data["name"]         = deepcopy(base_vlan_data)
         data["id"]           = deepcopy(base_vlan_data)
-        data["description"]  = deepcopy(base_vlan_data)
-        data["admin"]        = deepcopy(base_vlan_data)
-        data["other_config"] = deepcopy(base_vlan_data)
-        data["external_ids"] = deepcopy(base_vlan_data)
 
         data["name"]["configuration"].pop("name")
         data["id"]["configuration"].pop("id")
-        data["description"]["configuration"].pop("description")
-        data["admin"]["configuration"].pop("admin")
-        data["other_config"]["configuration"].pop("other_config")
-        data["external_ids"]["configuration"].pop("external_ids")
 
         info("\n########## Executing POST test with missing fields ##########\n")
         info("Testing Path: %s\n" % self.test_path)

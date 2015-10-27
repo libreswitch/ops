@@ -162,8 +162,7 @@ class CreatePortTest (OpsVsiTest):
 
         info("\nAttempting to create a port with missing attribute in request data\n")
 
-        request_data['configuration']['name'] = 'PortMissingAttribute'
-        del request_data['configuration']['vlan_mode']
+        del request_data['configuration']['name']
 
         status_code, response_data = execute_request(self.PATH, "POST", json.dumps(request_data), self.SWITCH_IP)
 
@@ -176,7 +175,6 @@ class CreatePortTest (OpsVsiTest):
         info("\nAttempting to create port with all attributes in request data\n")
 
         request_data['configuration']['name'] = 'PortAllAttributes'
-        request_data['configuration']['vlan_mode'] = "access"
 
         status_code, response_data = execute_request(self.PATH, "POST", json.dumps(request_data), self.SWITCH_IP)
 

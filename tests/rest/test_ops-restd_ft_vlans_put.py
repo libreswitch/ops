@@ -322,41 +322,6 @@ class configTest (OpsVsiTest):
 
         info("########## Executing PUT test with bad \"external_ids\" value DONE ##########\n")
 
-    ###########################################################################
-    #                                                                         #
-    #   Missing fields validation                                             #
-    #                                                                         #
-    ###########################################################################
-    def test_put_vlan_bad_missing_fields(self):
-        data = {}
-        data["description"]  = deepcopy(base_vlan_data)
-        data["admin"]        = deepcopy(base_vlan_data)
-        data["other_config"] = deepcopy(base_vlan_data)
-        data["external_ids"] = deepcopy(base_vlan_data)
-
-        data["description"]["configuration"].pop("description")
-        data["admin"]["configuration"].pop("admin")
-        data["other_config"]["configuration"].pop("other_config")
-        data["external_ids"]["configuration"].pop("external_ids")
-
-        info("\n########## Executing PUT test with missing fields ##########\n")
-        info("Testing Path: %s\n" % self.test_path)
-
-        for field, value in data.iteritems():
-            info("Testing missing field \"%s\" with value: %s\n" % (field, value))
-
-            response_status, response_data = execute_request(self.test_path,
-                                                                                "PUT",
-                                                                                json.dumps(value),
-                                                                                self.switch_ip)
-
-            assert response_status == httplib.BAD_REQUEST, "Response status received: %s\n" % response_status
-            info("Response status received: \"%s\"\n" % response_status)
-
-            assert response_data is not "", "Response data received: %s\n" % response_data
-            info("Response data received: %s\n" % response_data)
-
-        info("########## Executing PUT test with missing fields DONE ##########\n")
 
     ###########################################################################
     #                                                                         #
@@ -378,7 +343,6 @@ class configTest (OpsVsiTest):
         self.test_put_vlan_bad_admin()
         self.test_put_vlan_bad_other_config()
         self.test_put_vlan_bad_external_ids()
-        self.test_put_vlan_bad_missing_fields()
         info("\n########## VLAN PUT Tests DONE ##########\n\n")
 
 class Test_config:
