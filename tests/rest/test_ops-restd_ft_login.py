@@ -64,6 +64,7 @@ class configTest (OpsVsiTest):
         s1 = self.net.switches[0]
         ip_addr = s1.cmd("python -c \"import socket;print\
                          socket.gethostbyname(socket.gethostname())\"")
+        ip_addr = ip_addr.replace('\r\r\n', '')
         conn = httplib.HTTPConnection(ip_addr, 8091)
         url = '/login'
 
@@ -109,6 +110,7 @@ class configTest (OpsVsiTest):
         s1 = self.net.switches[0]
         ip_addr = s1.cmd("python -c \"import socket;print\
                          socket.gethostbyname(socket.gethostname())\"")
+        ip_addr = ip_addr.replace('\r\r\n', '')
         conn = httplib.HTTPConnection(ip_addr, 8091)
         url = '/login'
 
