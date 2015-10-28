@@ -41,7 +41,7 @@ ops-as5712(config)#
 
 2. Enable LLDP globally on the switch with the following command:
 ```
-ops-as5712(config)# feature lldp
+ops-as5712(config)# lldp enable
 ops-as5712(config)#
 ```
 Once LLDP is enabled, the switch begins to transmit advertisements from those ports that are configured to send LLDP packets.

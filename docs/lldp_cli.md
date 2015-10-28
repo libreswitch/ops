@@ -31,7 +31,7 @@ LLDP Commands
 All LLDP configuration commands except `lldp transmission` and `lldp reception` work in config context.
 ### Enable LLDP
 #### Syntax
-`feature lldp`
+`lldp enable`
 #### Description
 This command enables the LLDP (Link Layer Discovery Protocol) feature in the device.
 #### Authority
@@ -41,11 +41,11 @@ No parameters.
 #### Examples
 ```
 ops-as5712# configure terminal
-ops-as5712(config)# feature lldp
+ops-as5712(config)# lldp enable
 ```
 ### Disable LLDP
 #### Syntax
-`no feature lldp`
+`no lldp enable`
 #### Description
 This command disables the LLDP (Link Layer Discovery Protocol) feature in the device.
 #### Authority
@@ -55,7 +55,7 @@ No parameters.
 #### Examples
 ```
 ops-as5712# configure terminal
-ops-as5712(config)# no feature lldp
+ops-as5712(config)# no lldp enable
 ```
 ### Clear LLDP counters  
 #### Syntax
