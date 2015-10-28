@@ -14,7 +14,6 @@ VLAN commands
 		- [Assigning a VLAN to a trunk on the interface](#assigning-a-vlan-to-a-trunk-on-the-interface)
 		- [Removing a VLAN from a trunk on the interface](#removing-a-vlan-from-a-trunk-on-the-interface)
 	- [VLAN context commands](#vlan-context-commands)
-		- [Removing a description](#removing-a-description)
 		- [Turning on a VLAN](#turning-on-a-vlan)
 		- [Turning off a VLAN](#turning-off-a-vlan)
 	- [Global context commands](#global-context-commands-)
@@ -216,50 +215,6 @@ switch(config-lag-if)#no vlan trunk allowed 2
 
 
 ### VLAN context commands
-####  Description
-#### Syntax
-`description <description>`
-
-#### Description
-This command adds a description to the VLAN.
-
-#### Authority
-All users.
-
-#### Parameters
-| Parameter | Status   | Syntax         | Description                           |
-|:-----------|:----------|:----------------:|:---------------------------------------|
-| *description* | Required | Literal | Adds description to the VLAN |
-
-#### Examples
-```
-switch(config)# vlan 3
-switch(config-vlan)#description TrafficFromX
-```
-
-#### Removing a description
-#### Syntax
-no description <description>
-
-#### Description
-This command removes the description from a VLAN.
-
-#### Authority
-All users.
-
-#### Parameters
-| Parameter | Status   | Syntax         | Description                           |
-|:-----------|:----------|:----------------:|:---------------------------------------|
-| *description* | Optional | Literal | Adds description to the VLAN |
-
-
-#### Examples
-```
-switch(config)# vlan 3
-switch(config-vlan)# no description
-```
-
-
 #### Turning on a VLAN
 #### Syntax
 `no shutdown`
