@@ -81,9 +81,9 @@ class mgmtIntfTests(OpsVsiTest):
     # Mgmt Interface updated during bootup.
     def mgmt_intf_updated_during_bootup(self):
         s1 = self.net.switches[0]
-        output = s1.cmd("ovs-vsctl list system")
+        output = s1.ovscmd("ovs-vsctl list system")
         output += s1.cmd("echo")
-        assert 'name="eth0"' in output, "Test to mgmt interface has "\
+        assert 'name=eth0' in output, "Test to mgmt interface has "\
             " updated from image.manifest file failed"
         info("### Successfully verified mgmt interface"
              " has updated from image.manifest file ###\n")
@@ -394,7 +394,7 @@ class mgmtIntfTests(OpsVsiTest):
         output += s1.cmdCLI(" ")
         assert 'dhcp' in output,\
             'Test to change mode from static to dhcp failed'
-        output = s1.cmd("ovs-vsctl list system")
+        output = s1.ovscmd("ovs-vsctl list system")
         output += s1.cmd("echo")
         assert 'ipv6_linklocal' in output,\
             'Test to change mode from static to dhcp failed'
@@ -411,17 +411,19 @@ class mgmtIntfTests(OpsVsiTest):
         s1.cmdCLI("hostname cli")
         cnt = 15
         while cnt:
-            cmd_output = s1.cmd("ovs-vsctl list system")
+            cmd_output = s1.ovscmd("ovs-vsctl list system")
+            hostname = s1.ovscmd("ovs-vsctl get system . "
+                                 "hostname").rstrip('\r\n')
             output = s1.cmd("uname -n")
-            if ("hostname=cli" in cmd_output) and \
-               ("hostname            : cli" in cmd_output) and \
-               ("cli" in output):
+            if "hostname=cli" in cmd_output and \
+               hostname == "cli" and \
+               "cli" in output:
                 break
             else:
                 cnt -= 1
                 sleep(1)
         assert 'hostname=cli' in cmd_output and \
-               'hostname            : cli' in cmd_output and \
+               hostname == 'cli' and \
                'cli' in output,\
                "Test to set hostname through CLI"\
                " has failed"
@@ -434,7 +436,7 @@ class mgmtIntfTests(OpsVsiTest):
         s1.cmd("dhcphostname open-vswitch-new")
         cnt = 15
         while cnt:
-            cmd_output = s1.cmd("ovs-vsctl list system")
+            cmd_output = s1.ovscmd("ovs-vsctl list system")
             output = s1.cmd("uname -n")
             if "dhcp_hostname=open-vswitch-new" in cmd_output:
                 break
