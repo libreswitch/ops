@@ -1634,6 +1634,92 @@
         }
       }
     },
+    "Recursive_Nexthop": {
+      "columns": {
+        "vrf": {
+          "category": "status",
+          "relationship": "m:1",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRF",
+              "refType" : "weak"
+            }
+          },
+          "mutable": false
+        },
+        "rnh_ip": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 49
+            }
+          },
+          "mutable": false
+        },
+         "rnh_from": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set",
+                [
+                  "bgp",
+                  "ldp"
+                ]
+              ]
+            },
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "nh_ips": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 49
+            },
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "nh_metric": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "nh_ports": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType" : "weak"
+            },
+            "min": 0,
+            "max": "unlimited"
+          }
+        }
+      },
+      "indexes": [
+        [
+          "vrf",
+          "rnh_ip"
+        ]
+      ],
+      "isRoot": true
+    },
     "BGP_Route": {
       "columns": {
         "vrf": {
