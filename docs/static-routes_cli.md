@@ -10,7 +10,7 @@
 
 ## Configuration commands
 
-###  ip route
+### ip route
 
 ##### Syntax
 Under the config context
@@ -45,7 +45,7 @@ hostname(config)# ip route 172.16.32.0/24 32
 hostname(config)#
 ```
 
-###  ipv6 route
+### ipv6 route
 
 ##### Syntax
 Under the config context
