@@ -139,7 +139,7 @@ SSH public key authentication is enabled, but user is not able to login.
 - For more information, verify the `auth.log` located at `/var/log/auth.log`.
 
 ## CLI ##
-Click [here](https://openswitch.net/cli_feature_name.html#cli_command_anchor) for the CLI commands related to the AAA feature.
+Click [CLI](/documents/user/AAA_cli) for the CLI commands related to the AAA feature.
 
 ## Related features ##
-The auto provisioning script is used to get ssh public keys. For more information on auto provisioning see [Auto Provisioning](https://openswitch.net./tbd/other_filefeatures/related_feature1.html#first_anchor)
+The auto provisioning script is used to get ssh public keys. For more information on auto provisioning see [Auto Provisioning](/documents/user/autoprovision_user_guide)
