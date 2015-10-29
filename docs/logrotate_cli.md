@@ -2,7 +2,7 @@
 
 ## Contents ##
 
-- [Configuration commands](#configuration-commands-)
+- [Configuration commands](#configuration-commands)
 	- [logrotate period](#logrotate-period)
 	- [logrotate maxsize](#logrotate-maxsize)
 	- [logrotate target](#logrotate-target)
@@ -91,7 +91,7 @@ This parameter specifies the URI of the remote host. The possible values are `tf
 
 #### Examples ####
 ```
-    switch(config)# logrotate target tftp://192.168.1.132 93
+    switch(config)# logrotate target tftp://192.168.1.132
     switch(config)# logrotate target tftp://2001:db8:0:1::128
 ```
 
