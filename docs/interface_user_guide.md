@@ -7,13 +7,13 @@
 - [Configuring the physical interface](#configuring-the-physical-interface)
 	- [Setting up the basic configuration](#setting-up-the-basic-configuration)
 	- [Setting up optional configurations](#setting-up-optional-configurations)
-	- [Verifying the configuration](#verifying-the-configuration)
-		- [Viewing interface information](#viewing-interface-information)
-		- [Viewing snapshot of active configurations.](#viewing-snapshot-of-active-configurations)
-	- [Troubleshooting the configuration](#troubleshooting-the-configuration)
-		- [Condition](#condition)
-		- [Cause](#cause)
-		- [Remedy](#remedy)
+- [Verifying the configuration](#verifying-the-configuration)
+	- [Viewing interface information](#viewing-interface-information)
+	- [Viewing snapshot of active configurations](#viewing-snapshot-of-active-configurations)
+- [Troubleshooting the configuration](#troubleshooting-the-configuration)
+	- [Condition](#condition)
+	- [Cause](#cause)
+	- [Remedy](#remedy)
 - [CLI](#cli)
 - [Related features](#related-features)
 
@@ -133,8 +133,8 @@ ops-as5712(config-if)# no ip address 10.10.10.2/24 secondary
 ops-as5712(config-if)#  no ipv6 address 2001:0db8:85a3:0000:0000:8a2e:0370:7334/24 secondary
 ```
 
-### Verifying the configuration
-##### Viewing interface information
+## Verifying the configuration
+### Viewing interface information
 The `show interface` and `show interface brief` commands display information about the state and configuration of all the interfaces. The information includes details on speed, mtu, packet counts, and so on.
 ```
 ops-as5712# show interface
@@ -216,7 +216,7 @@ Interface                                                          (Mb/s)    Ch#
 ....................................................................................................
   1          ..    eth     ..      down    Administratively down    auto     ..
 ```
-##### Viewing snapshot of active configurations.
+### Viewing snapshot of active configurations
 The `show running-config interface` and `show running-config interface` *`interface`* commands are used to see a snapshot of active configurations for all interfaces and if used with the interface name (*`interface`*), active configurations for a particular interface are displayed.
 ```
 ops-as5712# show running-config interface
@@ -238,16 +238,16 @@ Interface 2
    exit
 ```
 
-### Troubleshooting the configuration
-#### Condition
+## Troubleshooting the configuration
+### Condition
 Unable to set the ipv4/ipv6 address even after enabling the interface.
-#### Cause
+### Cause
 The interface may be configured as an L2.
-#### Remedy
+### Remedy
 Configure the interface as an L3 using the `routing` command. See the Command Reference for more information.
 
 ## CLI
-Click [here](https://openswitch.net/cli_feat.html#cli_command_anchor) to access the CLI commands related to the Physical interface.
+Click [here](/documents/user/interface_cli) to access the CLI commands related to the Physical interface.
 
 ## Related features
 No related features.

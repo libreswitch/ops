@@ -19,13 +19,13 @@ LLDP Commands
 	- [Disable LLDP transmission](#disable-lldp-transmission)
 	- [Enable LLDP reception](#enable-lldp-reception)
 	- [Disable LLDP reception](#disable-lldp-reception)
-- [LLDP Show Commands](#lldp-show-commands-)
+- [LLDP Show Commands](#lldp-show-commands)
 	- [Show LLDP Configuration](#show-lldp-configuration)
 	- [Show LLDP TLV](#show-lldp-tlv)
 	- [Show LLDP Neighbor information](#show-lldp-neighbor-information)
-	- [Show LLDP Neighbor information (Interface)](#show-lldp-neighbor-information-interface)
+	- [Show LLDP neighbor information for the interface](#show-lldp-neighbor-information-for-the-interface)
 	- [Show LLDP Statistics](#show-lldp-statistics)
-	- [Show LLDP Statistics (Interface)](#show-lldp-statistics-interface)
+	- [Show LLDP statistics for the interface](#show-lldp-statistics-for-the-interface)
 
 ## LLDP Configuration Commands
 All LLDP configuration commands except `lldp transmission` and `lldp reception` work in config context.
@@ -43,7 +43,7 @@ No parameters.
 ops-as5712# configure terminal
 ops-as5712(config)# feature lldp
 ```
-### Disable LLDP  
+### Disable LLDP
 #### Syntax
 `no feature lldp`
 #### Description
@@ -136,7 +136,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# lldp management-address 16.93.49.9
 ops-as5712(config)# lldp management-address 2001:db8:85a3::8a2e:370:7334
 ```
-### Remove Management IP address  
+### Remove Management IP address
 #### Syntax
 `no lldp management-address`
 #### Description
@@ -150,7 +150,7 @@ No parameters.
 ops-as5712# configure terminal
 ops-as5712(config)# no lldp management-address
 ```
-### Select TLVs  
+### Select TLVs
 #### Syntax
 `lldp select-tlv (management-address | port-description | port-vlan-id  | port-vlan-name | port-protocol-vlan-id | port-protocol-id | system-capabilities | system-description | system-name)`
 #### Description
@@ -184,7 +184,7 @@ ops-as5712(config)# lldp select-tlv system-capabilities
 ops-as5712(config)# lldp select-tlv system-description
 ops-as5712(config)# lldp select-tlv system-name
 ```
-### Remove TLVs  
+### Remove TLVs
 #### Syntax
 `no lldp select-tlv (management-address | port-description | port-vlan-id  | port-vlan-name | port-protocol-vlan-id | port-protocol-id | system-capabilities | system-description | system-name)`
 #### Description
@@ -218,7 +218,7 @@ ops-as5712(config)# no lldp select-tlv system-capabilities
 ops-as5712(config)# no lldp select-tlv system-description
 ops-as5712(config)# no lldp select-tlv system-name
 ```
-### Set LLDP timer  
+### Set LLDP timer
 #### Syntax
 `lldp timer <time>`
 #### Description
@@ -234,7 +234,7 @@ All users.
 ops-as5712# configure terminal
 ops-as5712(config)# lldp timer 7
 ```
-### Set LLDP timer to default  
+### Set LLDP timer to default
 #### Syntax
 `no lldp timer`
 #### Description
@@ -248,7 +248,7 @@ No parameters.
 ops-as5712# configure terminal
 ops-as5712(config)# no lldp timer
 ```
-### Enable LLDP transmission  
+### Enable LLDP transmission
 #### Syntax
 `lldp transmission`
 #### Description
@@ -263,7 +263,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# interface 1
 ops-as5712(config-if)# lldp transmission
 ```
-### Disable LLDP transmission  
+### Disable LLDP transmission
 #### Syntax
 `no lldp transmission`
 #### Description
@@ -278,7 +278,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# interface 1
 ops-as5712(config-if)# no lldp transmission
 ```
-### Enable LLDP reception  
+### Enable LLDP reception
 #### Syntax
 `lldp reception`
 #### Description
@@ -293,7 +293,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# interface 1
 ops-as5712(config-if)# lldp reception
 ```
-### Disable LLDP reception  
+### Disable LLDP reception
 #### Syntax
 `no lldp reception`
 #### Description
@@ -310,7 +310,7 @@ ops-as5712(config-if)# no lldp reception
 ```
 
 ## LLDP Show Commands
-### Show LLDP Configuration  
+### Show LLDP Configuration
 #### Syntax
 `show lldp configuration`
 #### Description
@@ -350,7 +350,7 @@ Port  Transmission-enabled     Receive-enabled
 ...........
 ...........
 ```
-### Show LLDP TLV  
+### Show LLDP TLV
 #### Syntax
 `show lldp tlv`
 #### Description
@@ -374,7 +374,7 @@ System capabilities
 System description
 System name
 ```
-### Show LLDP Neighbor information  
+### Show LLDP Neighbor information
 #### Syntax
 `show lldp neighbor-info`
 #### Description
@@ -399,7 +399,7 @@ Local Port     Neighbor Chassis-ID      Neighbor Port-ID         TTL
 -----------
 -----------
 ```
-### Show LLDP Neighbor information (Interface)  
+### Show LLDP neighbor information for the interface
 #### Syntax
 `show lldp neighbor-info <interface>`
 #### Description
@@ -426,7 +426,7 @@ Chassis Capabilities Enabled   : Bridge
 Neighbor Port-ID               : 1
 TTL                            : 120
 ```
-### Show LLDP Statistics  
+### Show LLDP statistics
 #### Syntax
 `show lldp statistics`
 #### Description
@@ -451,7 +451,7 @@ Port-ID   Tx-Packets     Rx-packets     Rx-discarded        TLVs-Unknown
 ...........
 ...........
 ```
-### Show LLDP Statistics (Interface)  
+### Show LLDP statistics for the interface
 #### Syntax
 `show lldp statistics <interface>`
 #### Description
