@@ -29,12 +29,16 @@ Error in accessing the URIs supported by the REST API.
 ### Entry point
 
 The URL for accessing REST API documentation rendered on the switch is:
-> http://management_interface_ip_address-or-switch_name:8091/api/index.html
+```ditaa
+    http://management_interface_ip_address-or-switch_name:8091/api/index.html
+```
 
 The default port is 8091. When https is used, the corresponding default port is 18091.
 
 To access details about the supported REST API without running a switch image, see the following website for information:
-> http://api.openswitch.net/rest/dist/index.html
+```ditaa
+    http://api.openswitch.net/rest/dist/index.html
+```
 
 ## CLI ##
 This feature is an alternative to the CLI mechanism as a management interface. It has no CLIs of its own.
