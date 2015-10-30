@@ -26,7 +26,7 @@ Interface commands
 	- [Set ipv6 address for interface](#set-ipv6-address-for-interface)
 	- [Remove ipv6 address for interface](#remove-ipv6-address-for-interface)
 	- [Spilt a QSPF interface](#spilt-a-qspf-interface)
-- [Interface show commands](#interface-show-commands-)
+- [Interface show commands](#interface-show-commands)
 	- [Show all interfaces](#show-all-interfaces)
 	- [Show interface](#show-interface)
 	- [Show transceiver information for all interfaces](#show-transceiver-information-for-all-interfaces)

@@ -88,7 +88,7 @@ Currently IPv6 notifications are not available.
 - The user can start the shell using "start-shell" command and check the IPv6 attributes by running the command `ip addr show`.
 
 ## CLI
-Click [here-TBL](https://openswitch.net/cli_feature_name.html#cli_command_anchor) for the CLI commands related to the named feature.
+Click [here](/documents/user/mgmt_intf_cli) for the CLI commands related to the management interface feature.
 
 ## Related features
 None.

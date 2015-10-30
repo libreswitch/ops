@@ -58,7 +58,6 @@ The REST and CLI APIs provide rich commands for managing the configuration of th
 
 ## CLI
 <!--Provide a link to the CLI command related to the feature. The CLI files will be generated to a CLI directory.  -->
-Click [CLI-TBL](https://openswitch.net/cli_config_persistence_name.html#cli_command_anchor) for the CLI commands related to the named feature.
-config_persistence_CLI.md
+Click [here](/documents/user/config_persistence_cli) for the CLI commands related to the configuration persistence feature.
 ## Related features
 None.
