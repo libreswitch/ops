@@ -44,7 +44,6 @@ class myTopo(Topo):
         "add list of switches"
         for s in irange(1, sws):
             switch = self.addSwitch('s%s' % s)
-
         "Add links between nodes based on custom topo"
         self.addLink('h1', 's1')
 
@@ -54,6 +53,7 @@ class aaaFeatureTest(OpsVsiTest):
         '''
         h1 = self.net.hosts[0]
         switchIP = self.getSwitchIP()
+        print "SwitchIP:" + switchIP
         out = h1.cmd("sed -i '76s/steve/admin/' /etc/freeradius/users")
         out = h1.cmd("sed -i '76s/#admin/admin/' /etc/freeradius/users")
         out = h1.cmd("sed -i '196s/192.168.0.0/"+switchIP+"/' "
@@ -73,6 +73,7 @@ class aaaFeatureTest(OpsVsiTest):
         '''
         s1 = self.net.switches[0]
         host_1_IpAddress = self.getHostIP_1()
+        print "Radius Server:" + host_1_IpAddress
         s1.cmd("mkdir /etc/raddb/")
         s1.cmd("touch /etc/raddb/server")
         sleep(1)
@@ -125,7 +126,6 @@ class aaaFeatureTest(OpsVsiTest):
         ''' This function is to enable local authentication in DB
         with CLI command'''
         s1 = self.net.switches[0]
-
         out = ""
         out += s1.cmd("echo ")
         out = s1.cmdCLI("configure terminal")
@@ -206,6 +206,10 @@ class aaaFeatureTest(OpsVsiTest):
         s1 = self.net.switches[0]
         ssh_newkey = 'Are you sure you want to continue connecting'
         switchIpAddress = self.getSwitchIP()
+        info(".### switchIpAddress: " + switchIpAddress + " ###\n")
+        info(".### Running configuration ###\n")
+        run = s1.cmdCLI("show running-config")
+        print run
         out = ""
         out += s1.cmd("echo ")
         sshkey= "ssh-keygen -R " + switchIpAddress
@@ -247,6 +251,11 @@ class aaaFeatureTest(OpsVsiTest):
         sleep(5)
         ssh_newkey = 'Are you sure you want to continue connecting'
         switchIpAddress = self.getSwitchIP()
+        info(".###switchIpAddress: " + switchIpAddress + " ###\n")
+        info(".### Running configuration ###\n")
+        run = s1.cmdCLI("show running-config")
+        print run
+
         out = ""
         out += s1.cmd("echo ")
         sshkey= "ssh-keygen -R " + switchIpAddress
@@ -290,6 +299,10 @@ class aaaFeatureTest(OpsVsiTest):
 
         ssh_newkey = 'Are you sure you want to continue connecting'
         switchIpAddress = self.getSwitchIP()
+        info(".###switchIpAddress: " + switchIpAddress + " ###\n")
+        info(".### Running configuration ###\n")
+        run = s1.cmdCLI("show running-config")
+        print run
         out = ""
         out += s1.cmd("echo ")
         sshkey= "ssh-keygen -R " + switchIpAddress
