@@ -247,7 +247,7 @@ ops-as5712#
 
 ## CLI
 <!--Provide a link to the CLI command related to the feature. The CLI files will be generated to a CLI directory.  -->
-Click [here](https://openswitch.net/cli_feat.html#cli_command_anchor) for the CLI commands related to the LLDP feature.
+Click [here](/documents/user/lldp_cli) for the CLI commands related to the LLDP feature.
 
 ## Related features
-When configuring the switch for LLDP, it might also be necessary to configure [Physical Interface](https://openswitch.net./tbd/other_filefeatures/related_feature1.html#first_anchor) so that interface to which neighbor is connected will act as expected.
+When configuring the switch for LLDP, it might also be necessary to configure [Physical Interface](/documents/user/interface_user_guide) so that interface to which neighbor is connected will act as expected.
