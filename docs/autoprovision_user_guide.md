@@ -1,6 +1,14 @@
 # Autoprovisioning
 
-[toc]
+- [Overview](#overview)
+- [How to use the feature](#how-to-use-the-feature)
+    - [Setting up the basic configuration](#setting-up-the-basic-configuration)
+    - [Verifying the configuration](#verifying-the-configuration)
+    - [Troubleshooting the configuration](#troubleshooting-the-configuration)
+        - [Condition](#condition)
+        - [Cause](#cause)
+- [CLI](#cli)
+- [Related features](#related-features)
 
 ## Overview ##
 Autoprovisioning (a.k.a Zero Touch Provisioning - ZTP)  is a feature that enables automatic provisioning of switch when it is deployed. Using a DHCP option advertised by DHCP server in the setup, the switch downloads a provisioning script and executes it. The provisioning script can do many things, such as new management users, downloading `ssh` keys, installing a server certificate, etc. This feature is mainly used to download `ssh` keys and add user ids to the switch enabling key based authentication of management users.
@@ -28,7 +36,7 @@ Verify whether DHCP server is correctly configured.
 
 Please verify the provisioning script.
 ## CLI ##
-Click the [Autoprovision CLI-TBL](TO be linked) for the CLI commands related to the named feature.
+Click [ here](/documents/user/autoprovision_CLI) for the CLI commands related to the named feature.
 
 ## Related features ##
 None.

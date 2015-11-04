@@ -1,6 +1,25 @@
 # AAA feature
-# Tabe of contents
-[TOC]
+# Table of contents
+
+- [Overview](#overview)
+- [How to use the feature](#how-to-use-the-feature)
+    - [Scenario 1](#scenario-1)
+        - [Setting up scenario 1 basic configuration](#setting-up-scenario-1-basic-configuration)
+        - [Setting up scenario 1 optional configuration](#setting-up-scenario-1-optional-configuration)
+        - [Verifying scenario 1 configuration](#verifying-scenario-1-configuration)
+        - [Troubleshooting scenario 1 configuration](#troubleshooting-scenario-1-configuration)
+    - [Scenario 2](#scenario-2)
+        - [Setting up scenario 2 basic configuration](#setting-up-scenario-2-basic-configuration)
+        - [Setting up scenario 2 optional configuration](#setting-up-scenario-2-optional-configuration)
+        - [Verifying scenario 2 configuration](#verifying-scenario-2-configuration)
+        - [Troubleshooting scenario 2 configuration](#troubleshooting-scenario-2-configuration)
+    - [Scenario 3](#scenario-3)
+        - [Setting up scenario 3 basic configuration](#setting-up-scenario-3-basic-configuration)
+        - [Setting up scenario 3 optional configuration](#setting-up-scenario-3-optional-configuration)
+        - [Verifying scenario 3 configuration](#verifying-scenario-3-configuration)
+        - [Troubleshooting scenario 3 configuration](#troubleshooting-scenario-3-configuration)
+- [CLI](#cli)
+- [Related features](#related-features)
 
 ## Overview ##
 The AAA feature is used for authenticating users who access the switch management interface using console, SSH or REST. The AAA feature supports the following:
@@ -13,24 +32,24 @@ This feature currently supports user authentication based on user name and passw
 
 ## How to use the feature ##
 ### Scenario 1 ###
-###Setting up the basic configuration
+###Setting up scenario 1 basic configuration
  1. Create user on the switch and configure a password.
  2. Configure the authentication mode. Select one of the following options:
     - local
     - RADIUS.
  3. Configure RADIUS servers.
 
-###Setting up the optional configuration
+###Setting up scenario 1 optional configuration
  1. Change the default value of the shared secret used for communication between the switch and RADIUS server.
  2. Change the default value of the port used for communication with the RADIUS server.
  3. Change the default value of the connection retries.
  4. Change the connection timeout default value.
 
-###Verifying the configuration
+###Verifying scenario 1 configuration
  1. Verify the configuration using `show` command
  2. Verify the configuration using the `show running-config` command for non default values.
 
-###Troubleshooting the configuration
+###Troubleshooting scenario 1 configuration
 ### Case 1
 #### Condition
 The local authentication is configured, but user unable to log in with local password.
@@ -64,22 +83,22 @@ The RADIUS authentication is configured, but user unable to log in with the RADI
 - For more information, verify the `auth.log` located at `/var/log/auth.log`.
 
 ### Scenario 2 ###
-### Setting up the basic configuration
+### Setting up scenario 2 basic configuration
  1. Enable RADIUS authentication.
  2. Enable fallback to local authentication.
  3. Configure the RADIUS server.
 
-### Setting up the optional configuration
+### Setting up scenario 2 optional configuration
  1. Change the default value of the shared secret used for communication between the switch and the RADIUS server.
  2. Change the default value of the port used for communication with the RADIUS server.
  3. Change the default value of the connection retries.
  4. Change the connection timeout default value.
 
-### Verifying the configuration
+### Verifying scenario 2 configuration
  1. Verify using the `show` command.
  2. Verify the configuration using the `show running-config` command for non-default values.
 
-### Troubleshooting the configuration
+### Troubleshooting scenario 2 configuration
 #### Condition
 The RADIUS server is unreachable and user cannot log in with local credentials even though fallback to local is enabled
 
@@ -95,18 +114,18 @@ The RADIUS server is unreachable and user cannot log in with local credentials e
 - For more information, verify the `auth.log` located at `/var/log/auth.log`.
 
 ### Scenario 3 ###
-### Setting up the basic configuration
+### Setting up scenario 3 basic configuration
  1. Create a user on the switch.
  2. Enable a SSH password or a public key authentication method
 
-### Setting up the optional configuration
+### Setting up scenario 3 optional configuration
 N/A
 
-### Verifying the configuration
+### Verifying scenario 3 configuration
  1. Verify the configuration using `show` command
  2. Verify the configuration using the `show running-config` command for non default values.
 
-### Troubleshooting the configuration
+### Troubleshooting scenario 3 configuration
 ### Case 1
 #### Condition
 The SSH password authentication is enabled, but user not able to log in with the password.
@@ -139,7 +158,7 @@ SSH public key authentication is enabled, but user is not able to login.
 - For more information, verify the `auth.log` located at `/var/log/auth.log`.
 
 ## CLI ##
-Click [CLI](/documents/user/AAA_cli) for the CLI commands related to the AAA feature.
+Click [here](/documents/user/AAA_cli) for the CLI commands related to the AAA feature.
 
 ## Related features ##
 The auto provisioning script is used to get ssh public keys. For more information on auto provisioning see [Auto Provisioning](/documents/user/autoprovision_user_guide)
