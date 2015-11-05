@@ -21,11 +21,12 @@ import urllib
 
 from copy import deepcopy
 
-PORT_DATA = {"configuration": {
+PORT_DATA = {
+    "configuration": {
         "name": "Port1",
         "interfaces": ["/rest/v1/system/interfaces/1"],
         "trunks": [413],
-        "ip4_address_secondary": ["192.168.0.1"],
+        "ip4_address_secondary": ["192.168.1.1"],
         "lacp": "active",
         "bond_mode": "l2-src-dst-hash",
         "tag": 654,
@@ -41,18 +42,67 @@ PORT_DATA = {"configuration": {
         "ip4_address": "192.168.0.1",
         "admin": "up"
     },
-    "referenced_by": [{"uri":"/rest/v1/system/bridges/bridge_normal"}]}
+    "referenced_by": [{"uri": "/rest/v1/system/bridges/bridge_normal"}]
+}
+
 
 def get_switch_ip(switch):
-    return switch.cmd("python -c \"import socket; print socket.gethostbyname(socket.gethostname())\"")
+    return switch.cmd("python -c \"import socket;\
+                      print socket.gethostbyname(socket.gethostname())\"")
 
-def create_test_port (ip):
+
+def create_test_port(ip):
     path = "/rest/v1/system/ports"
-    status_code, response_data = execute_request(path, "POST", json.dumps(PORT_DATA), ip)
+    status_code, response_data = execute_request(path,
+                                                 "POST",
+                                                 json.dumps(PORT_DATA),
+                                                 ip)
     return status_code
 
+
+def update_test_port(switch_ip, path, field, new_value):
+    """
+    Update field from existing port:
+        - Perform a GET request to an existing path defined in path
+        - Retrieve Configuration section
+        - Update field with new_value
+        - Perform a PUT request
+    """
+    status_code, response_data = execute_request(path,
+                                                 "GET",
+                                                 None,
+                                                 switch_ip)
+
+    assert status_code is httplib.OK, \
+        "Wrong status code, received: %s\n" % status_code
+    assert response_data is not "", \
+        "Response data received: %s\n" % response_data
+
+    json_data = {}
+
+    try:
+        json_data = json.loads(response_data)
+    except:
+        assert False, "Malformed JSON"
+
+    port_info = {}
+    port_info["configuration"] = json_data["configuration"]
+
+    # update value
+    port_info["configuration"][field] = new_value
+
+    status_code, response_data = execute_request(path,
+                                                 "PUT",
+                                                 json.dumps(port_info),
+                                                 switch_ip)
+    assert status_code == httplib.OK, \
+        "Wrong status code, received: %s\n" % status_code
+    assert response_data is "", \
+        "Response data received: %s\n" % response_data
+
+
 def compare_dict(dict1, dict2):
-    if dict1 == None or dict2 == None:
+    if dict1 is None or dict2 is None:
         return False
 
     if type(dict1) is not dict or type(dict2) is not dict:
@@ -60,13 +110,15 @@ def compare_dict(dict1, dict2):
 
     shared_keys = set(dict2.keys()) & set(dict2.keys())
 
-    if not (len(shared_keys) == len(dict1.keys()) and len(shared_keys) == len(dict2.keys())):
+    if not (len(shared_keys) == len(dict1.keys())
+            and len(shared_keys) == len(dict2.keys())):
         return False
 
     dicts_are_equal = True
     for key in dict1.keys():
         if type(dict1[key]) is dict:
-            dicts_are_equal = dicts_are_equal and compare_dict(dict1[key], dict2[key])
+            dicts_are_equal = dicts_are_equal and compare_dict(dict1[key],
+                                                               dict2[key])
         elif type(dict1[key]) is list:
             intersection = set(dict1[key]) ^ set(dict2[key])
             dicts_are_equal = dicts_are_equal and len(intersection) == 0
@@ -75,7 +127,9 @@ def compare_dict(dict1, dict2):
 
     return dicts_are_equal
 
-def execute_port_operations(data, port_name, http_method, operation_uri, switch_ip):
+
+def execute_port_operations(data, port_name, http_method, operation_uri,
+                            switch_ip):
 
     results = []
 
@@ -86,17 +140,21 @@ def execute_port_operations(data, port_name, http_method, operation_uri, switch_
         expected_code = attribute[2]
 
         request_data = deepcopy(PORT_DATA)
-        request_data['configuration']['name'] = "{0}_{1}_{2}".format(port_name, attribute_name, expected_code)
+        request_data['configuration']['name'] = \
+            "{0}_{1}_{2}".format(port_name, attribute_name, expected_code)
 
         if http_method == 'PUT':
 
             # Create a test port
-            status_code, response_data = execute_request(operation_uri, "POST", json.dumps(request_data), switch_ip)
+            status_code, response_data = \
+                execute_request(operation_uri, "POST",
+                                json.dumps(request_data), switch_ip)
 
             if status_code != httplib.CREATED:
                 return []
 
-            port_uri = operation_uri + "/%s" % request_data['configuration']['name']
+            port_uri = operation_uri + "/%s" % \
+                request_data['configuration']['name']
 
             # Delete reference_by from PUT
             del request_data['referenced_by']
@@ -105,11 +163,16 @@ def execute_port_operations(data, port_name, http_method, operation_uri, switch_
 
         # Execute request
 
-        print "Attempting to {0} a port with value '{1}' ({3}) for attribute '{2}'".format(http_method, attribute_value, attribute_name, type(attribute_value).__name__)
+        print "Attempting to {0} a port with value '{1}' ({3}) for attribute \
+               '{2}'".format(http_method, attribute_value, attribute_name,
+                             type(attribute_value).__name__)
         # Change value for specified attribute
         request_data['configuration'][attribute_name] = attribute_value
         # Execute request
-        status_code, response_data = execute_request(port_uri, http_method, json.dumps(request_data), switch_ip)
+        status_code, response_data = execute_request(port_uri,
+                                                     http_method,
+                                                     json.dumps(request_data),
+                                                     switch_ip)
 
         # Check if status code was as expected
 
@@ -119,6 +182,7 @@ def execute_port_operations(data, port_name, http_method, operation_uri, switch_
             results.append((attribute_name, True, status_code))
 
     return results
+
 
 def execute_request(path, http_method, data, ip, full_response=False):
     headers = {"Content-type": "application/json", "Accept": "text/plain"}
