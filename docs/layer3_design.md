@@ -4,14 +4,14 @@
 
 OpenSwitch is designed to support layer3 features and protocols. To facilitate this, the following capabilities have been added.
 
-- **VRF support**
-- **Layer3 Interfaces**
-- **Static Routes**
-- **Slow-path Routing (Routing in kernel)**
-- **Fast-path Routing (Hardware based routing)**
-- **Equal Cost Multipath (ECMP)**
-- **VLAN Interfaces**
-- **InterVLAN Routing**
+- [**VRF**](#vrf)
+- [**Layer3 Interfaces**](#layer3-interfaces-1)
+- [**Static Routes**](#static-routes)
+- [**Slow-path Routing (Routing in kernel)**](#slow-path-routing)
+- [**Fast-path Routing (Hardware based routing)**](#fast-path-routing)
+- [**Equal Cost Multipath (ECMP)**](#ecmp)
+- [**InterVLAN Routing and VLAN Interfaces**](#intervlan-routing-and-vlan-interfaces)
+- [**High Level Architecture and Design**](#high-level-architecture-and-design)
 
 ## VRF
 Virtual Routing and Forwarding (VRF) is used in switches with multi-tenancy hosting. Each tenant is isolated from the other tenants on the switch. This way a single physical switch can virtually host multiple routers. Each VRF maintains its own routing tables, neighbor tables, physical and virtual interfaces, etc. In the first phase, this support is restricted to only one "default" VRF although the architecture is designed to support multiple VRFs. OpenSwitch leverages the concept of Linux network namespaces to completely isolate VRFs. Namespaces can be used to isolate routing tables, neighbor tables, etc. Extensive information about namespaces is available on the web. For basic reference: http://man7.org/linux/man-pages/man7/namespaces.7.html. OpenSwitch currently has 2 network namespaces: "nonet" and "swns". All the networking daemons i.e. the daemons that is interested in accessing the network interfaces, are started in the "swns" namespace. All other daemons are started inside the "nonet" namespace.
@@ -56,37 +56,37 @@ Multiple components are involved in supporting layer3.
 
 The below diagram highlights how the different components intercommunicate:
 
-    ```ditaa
-    +------------------------+   +---------------------------+
-    |  Management Daemons    |   |   Routing Protocol        |
-    |  (CLI, REST, etc.)     |   |       Daemons             |
-    |                        |   |   (BGP, OSPF, etc.)       |
-    |                        |   |                           |
-    +------------------------+   +------------+--------------+
-    L3 Interfaces|                Protocol    |
-    Static Routes|                Routes      |
-    ECMP Configs |                            |
-    +------------v----------------------------v--------------+
-    |                                                        |
-    |                        OVSDB                           |
-    |                                                        |
-    |                                                        |
-    +-----^--------------^-------------^---------------^-----+
-      Nbr.|       Intf.  |       Route |         Routes|Intf.
-      Info|       Configs|       Info. |         Nbr.  |
-    +-----v-----+  +-----v-----+  +----v------+  +-----v------+
-    |           |  |           |  |           |  |            |
-    |ops-arpmgrd|  | ops-portd |  |ops-zebra  |  | ops-switchd|
-    |           |  |           |  |           |  |            |
-    +----^------+  +-----^-----+  +-----------+  +-----^------+
-     Nbr.|         Intf. |         Routes|             |
-    +----v---------------v---------------v----+  +-----v-----+
-    |                                         |  |           |
-    |                 Kernel                  <--+   ASIC    |
-    |                                         |  |           |
-    +-----------------------------------------+  +-----------+
+```ditaa
++------------------------+   +---------------------------+
+|  Management Daemons    |   |   Routing Protocol        |
+|  (CLI, REST, etc.)     |   |       Daemons             |
+|                        |   |   (BGP, OSPF, etc.)       |
+|                        |   |                           |
++------------------------+   +------------+--------------+
+L3 Interfaces|                Protocol    |
+Static Routes|                Routes      |
+ECMP Configs |                            |
++------------v----------------------------v--------------+
+|                                                        |
+|                        OVSDB                           |
+|                                                        |
+|                                                        |
++-----^--------------^-------------^---------------^-----+
+  Nbr.|       Intf.  |       Route |         Routes|Intf.
+  Info|       Configs|       Info. |         Nbr.  |
++-----v-----+  +-----v-----+  +----v------+  +-----v------+
+|           |  |           |  |           |  |            |
+|ops-arpmgrd|  | ops-portd |  |ops-zebra  |  | ops-switchd|
+|           |  |           |  |           |  |            |
++----^------+  +-----^-----+  +-----------+  +-----^------+
+ Nbr.|         Intf. |         Routes|             |
++----v---------------v---------------v----+  +-----v-----+
+|                                         |  |           |
+|                 Kernel                  <--+   ASIC    |
+|                                         |  |           |
++-----------------------------------------+  +-----------+
 
-    ```
+```
 
 The role of each of these components is explained below
 
