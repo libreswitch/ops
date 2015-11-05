@@ -24,7 +24,7 @@
 Getting Started
 ===============
 
-The information below shows you how to participate in the OpenSwitch Community.
+The information below shows you how to participate in the OpenSwitch community.
 
 Staying In Touch With the Community
 ===================================
@@ -35,7 +35,7 @@ or on IRC.
 Mailing Lists
 -------------
 
-The OpenSwitch community uses Google Groups for mailing list communications.
+The OpenSwitch community has a mailing [list](http://lists.openswitch.net) communications.
 Please subscribe to this mailing list to stay current with discussions around
 OpenSwitch development.
 
@@ -50,7 +50,7 @@ Sending Your First Patch For Review
 To submit your first patch:
 
 1. To submit patches and develop for OpenSwitch, you must have a [github](https://github.com/)
-account. Please create an account if you do not already have one.
+ account. Please create an account if you do not already have one.
 2. Log in to the [OpenSwitch gerrit system](http://review.openswitch.net/) using your github account.
 3. Add your public SSH key to your account so you can submit patches using
   gerrit-review.
