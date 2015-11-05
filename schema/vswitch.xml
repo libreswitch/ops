@@ -773,6 +773,10 @@
             hash calculation.
             Default is true.
         </column>
+        <column name="ecmp_config" key="resilient_hash_enabled" type='{"type": "boolean"}'>
+            Determines whether ECMP hashing preserves traffic flows when ECMP group membership changes.
+            Default is true.
+        </column>
     </group>
 
     <group title="Common Columns">

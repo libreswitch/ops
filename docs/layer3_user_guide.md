@@ -3,7 +3,7 @@
 ## Overview
 This document provides a step-by-step reference for configuration of basic layer3 functionality and features.
 
-* [Layer 3 Interfaces](#layer3-Interfaces)
+* [Layer 3 Interfaces](#layer3-interfaces)
 * [Static routes](#static-routes)
 * [ECMP](#ecmp)
 * [Internal VLAN Management](#internal-vlan-management)
@@ -131,7 +131,7 @@ ops-as5712#
 ```
 
 ## ECMP
-ECMP capability in OpenSwitch is currently available for IPv4 subnets. ECMP can be enabled/disabled at the system level. By default ECMP is enabled.
+ECMP capability in OpenSwitch is currently available for IPv4 and IPv6 routes. ECMP can be enabled/disabled at the system level. By default ECMP is enabled.
 
 To disable ECMP on OpenSwitch:
 ```
@@ -171,6 +171,18 @@ ops-as5712(config)# ip ecmp load-balance ?
   src-port  Load balancing by source port
 ```
 
+If the platform supports it, OpenSwitch will enable "resilient ECMP" by default to preserve in-flight traffic flows when ECMP group membership changes.
+To disable resilient ECMP, use the following commands:
+```
+ops-as5712# configure terminal
+ops-as5712(config)# ip ecmp load-balance resilient disable
+```
+To re-enable resilient ECMP:
+```
+ops-as5712# configure terminal
+ops-as5712(config)# no ip ecmp load-balance resilient disable
+```
+
 To see the complete ECMP configuration:
 ```
 ops-as5712# show ip ecmp
@@ -179,6 +191,7 @@ ECMP Configuration
 ---------------------
 
 ECMP Status        : Enabled
+Resilient Hashing  : Enabled
 
 ECMP Load Balancing by
 ------------------------
