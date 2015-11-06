@@ -196,3 +196,17 @@ def execute_request(path, http_method, data, ip, full_response=False):
         return response, response_data
     else:
         return status_code, response_data
+
+
+def create_test_ports(ip, num_ports):
+    path = "/rest/v1/system/ports"
+
+    data = deepcopy(PORT_DATA)
+    for port in range(num_ports):
+        data["configuration"]["name"] = "Port%s" % port
+        status_code, response_data = execute_request(path, "POST",
+                                                     json.dumps(data), ip)
+        if status_code != httplib.CREATED:
+            return status_code
+
+    return httplib.CREATED
