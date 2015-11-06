@@ -75,9 +75,9 @@ def create_test_port(ip):
     return status_code
 
 
-def update_test_port(switch_ip, path, field, new_value):
+def update_test_field(switch_ip, path, field, new_value):
     """
-    Update field from existing port:
+    Update field from existing table:
         - Perform a GET request to an existing path defined in path
         - Retrieve Configuration section
         - Update field with new_value

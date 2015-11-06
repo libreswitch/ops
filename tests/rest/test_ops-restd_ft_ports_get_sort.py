@@ -176,7 +176,7 @@ class QuerySortPortTest (OpsVsiTest):
             else:
                 interfaces = ["/rest/v1/system/interfaces/%s" % i]
 
-            update_test_port(self.SWITCH_IP, self.PATH + "/Port-%s" % i,
+            update_test_field(self.SWITCH_IP, self.PATH + "/Port-%s" % i,
                              "interfaces", interfaces)
             expected_values.append(interfaces)
 
@@ -200,7 +200,7 @@ class QuerySortPortTest (OpsVsiTest):
                 trunks = [NUM_FAKE_PORTS + 1 - i]
             else:
                 trunks = [i]
-            update_test_port(
+            update_test_field(
                 self.SWITCH_IP, self.PATH + "/Port-%s" % i, "trunks", trunks)
             expected_values.append(trunks)
 
@@ -268,7 +268,7 @@ class QuerySortPortTest (OpsVsiTest):
         values = ["active", "passive", "off"]
         for i in range(1, NUM_FAKE_PORTS + 1):
             value = values[(i - 1) % len(values)]
-            update_test_port(
+            update_test_field(
                 self.SWITCH_IP, self.PATH + "/Port-%s" % i, "lacp", value)
             expected_values.append(value)
 
@@ -291,7 +291,7 @@ class QuerySortPortTest (OpsVsiTest):
         values = ["l2-src-dst-hash", "l3-src-dst-hash"]
         for i in range(1, NUM_FAKE_PORTS + 1):
             value = values[(i - 1) % len(values)]
-            update_test_port(
+            update_test_field(
                 self.SWITCH_IP, self.PATH + "/Port-%s" % i, "bond_mode", value)
             expected_values.append(value)
 
@@ -314,7 +314,7 @@ class QuerySortPortTest (OpsVsiTest):
         values = fill_with_function(random.randint(1, 4094), NUM_FAKE_PORTS)
         for i in range(1, NUM_FAKE_PORTS + 1):
             value = values[(i - 1)]
-            update_test_port(
+            update_test_field(
                 self.SWITCH_IP, self.PATH + "/Port-%s" % i, "tag", value)
             expected_values.append(value)
 
@@ -337,7 +337,7 @@ class QuerySortPortTest (OpsVsiTest):
         values = ["trunk", "access", "native-tagged", "native-untagged"]
         for i in range(1, NUM_FAKE_PORTS + 1):
             value = values[(i - 1) % len(values)]
-            update_test_port(
+            update_test_field(
                 self.SWITCH_IP, self.PATH + "/Port-%s" % i, "vlan_mode", value)
             expected_values.append(value)
 
@@ -361,7 +361,7 @@ class QuerySortPortTest (OpsVsiTest):
 
         for i in range(1, NUM_FAKE_PORTS + 1):
             value = values[i - 1]
-            update_test_port(
+            update_test_field(
                 self.SWITCH_IP, self.PATH + "/Port-%s" % i, "mac", value)
             expected_values.append(value)
 
@@ -385,7 +385,7 @@ class QuerySortPortTest (OpsVsiTest):
         values = fill_with_function(random_mac(), NUM_FAKE_PORTS)
         for i in range(1, NUM_FAKE_PORTS + 1):
             value = values[i - 1]
-            update_test_port(self.SWITCH_IP, self.PATH + "/Port-%s" % i,
+            update_test_field(self.SWITCH_IP, self.PATH + "/Port-%s" % i,
                              "bond_active_slave", value)
             expected_values.append(value)
 
@@ -410,7 +410,7 @@ class QuerySortPortTest (OpsVsiTest):
         values = fill_with_function(random_ip6_address(), NUM_FAKE_PORTS)
         for i in range(1, NUM_FAKE_PORTS + 1):
             value = values[i - 1]
-            update_test_port(self.SWITCH_IP, self.PATH + "/Port-%s" % i,
+            update_test_field(self.SWITCH_IP, self.PATH + "/Port-%s" % i,
                              "ip6_address", value)
             expected_values.append(value)
 
@@ -434,7 +434,7 @@ class QuerySortPortTest (OpsVsiTest):
         values = fill_with_function(random_ip6_address(), NUM_FAKE_PORTS)
         for i in range(1, NUM_FAKE_PORTS + 1):
             value = values[i - 1]
-            update_test_port(self.SWITCH_IP, self.PATH + "/Port-%s" % i,
+            update_test_field(self.SWITCH_IP, self.PATH + "/Port-%s" % i,
                              "ip6_address_secondary", [value])
             expected_values.append(value)
 
@@ -459,7 +459,7 @@ class QuerySortPortTest (OpsVsiTest):
         values = ["up", "down"]
         for i in range(1, NUM_FAKE_PORTS + 1):
             value = values[(i - 1) % len(values)]
-            update_test_port(
+            update_test_field(
                 self.SWITCH_IP, self.PATH + "/Port-%s" % i, "admin", value)
             expected_values.append(value)
 
@@ -484,7 +484,7 @@ class QuerySortPortTest (OpsVsiTest):
         for i in range(1, NUM_FAKE_PORTS + 1):
             port = "Port-%s" % i
             admin_value = admin_values[(i - 1) % len(admin_values)]
-            update_test_port(
+            update_test_field(
                 self.SWITCH_IP, self.PATH + "/" + port, "admin", admin_value)
             expected_dict = {"admin": admin_value, "name": port}
             expected_values.append(expected_dict)

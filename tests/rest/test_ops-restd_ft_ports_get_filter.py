@@ -95,10 +95,10 @@ class QueryFilterPortTest (OpsVsiTest):
         # Update port values
         ######################################################################
         for port in test_ports:
-            update_test_port(self.switch_ip,
-                             self.path + port,
-                             test_field,
-                             test_new_value)
+            update_test_field(self.switch_ip,
+                              self.path + port,
+                              test_field,
+                              test_new_value)
 
         #######################################################################
         # Query for the updated port
@@ -142,10 +142,10 @@ class QueryFilterPortTest (OpsVsiTest):
         # Restore default value
         #######################################################################
         for port in test_ports:
-            update_test_port(self.switch_ip,
-                             self.path + port,
-                             test_field,
-                             test_old_value)
+            update_test_field(self.switch_ip,
+                              self.path + port,
+                              test_field,
+                              test_old_value)
 
         info("########## End Test Filter interface ##########\n")
 
@@ -164,10 +164,10 @@ class QueryFilterPortTest (OpsVsiTest):
         # Update values
         #######################################################################
         for port in test_ports:
-            update_test_port(self.switch_ip,
-                             self.path + port,
-                             test_field,
-                             test_new_value)
+            update_test_field(self.switch_ip,
+                              self.path + port,
+                              test_field,
+                              test_new_value)
 
         #######################################################################
         # Query for the updated port
@@ -211,10 +211,10 @@ class QueryFilterPortTest (OpsVsiTest):
         # Restore default value
         #######################################################################
         for port in test_ports:
-            update_test_port(self.switch_ip,
-                             self.path + port,
-                             test_field,
-                             test_old_value)
+            update_test_field(self.switch_ip,
+                              self.path + port,
+                              test_field,
+                              test_old_value)
 
         info("########## End Filter Trunks ##########\n")
 
@@ -274,15 +274,15 @@ class QueryFilterPortTest (OpsVsiTest):
         ######################################################################
         # Update values
         ######################################################################
-        update_test_port(self.switch_ip,
-                         self.path + "/Port-1",
-                         test_field,
-                         ["passive"])
+        update_test_field(self.switch_ip,
+                          self.path + "/Port-1",
+                          test_field,
+                          ["passive"])
 
-        update_test_port(self.switch_ip,
-                         self.path + "/Port-2",
-                         test_field,
-                         ["off"])
+        update_test_field(self.switch_ip,
+                          self.path + "/Port-2",
+                          test_field,
+                          ["off"])
 
         ######################################################################
         # Query for the updated ports
@@ -327,15 +327,15 @@ class QueryFilterPortTest (OpsVsiTest):
         #######################################################################
         # Restore default value
         #######################################################################
-        update_test_port(self.switch_ip,
-                         self.path + "/Port-2",
-                         test_field,
-                         ["active"])
+        update_test_field(self.switch_ip,
+                          self.path + "/Port-2",
+                          test_field,
+                          ["active"])
 
-        update_test_port(self.switch_ip,
-                         self.path + "/Port-3",
-                         test_field,
-                         ["active"])
+        update_test_field(self.switch_ip,
+                          self.path + "/Port-3",
+                          test_field,
+                          ["active"])
 
         info("########## End Test Filter Lacp ##########\n")
 
@@ -354,10 +354,10 @@ class QueryFilterPortTest (OpsVsiTest):
         # Update values
         #######################################################################
         for port in test_ports:
-            update_test_port(self.switch_ip,
-                             self.path + port,
-                             test_field,
-                             test_new_value)
+            update_test_field(self.switch_ip,
+                              self.path + port,
+                              test_field,
+                              test_new_value)
 
         #######################################################################
         # Query for the updated ports
@@ -401,10 +401,10 @@ class QueryFilterPortTest (OpsVsiTest):
         # Restore default value
         #######################################################################
         for port in test_ports:
-            update_test_port(self.switch_ip,
-                             self.path + port,
-                             test_field,
-                             test_old_value)
+            update_test_field(self.switch_ip,
+                              self.path + port,
+                              test_field,
+                              test_old_value)
 
         info("########## End Filter bond_mode ##########\n")
 
@@ -423,10 +423,10 @@ class QueryFilterPortTest (OpsVsiTest):
         # Update values
         #######################################################################
         for port in test_ports:
-            update_test_port(self.switch_ip,
-                             self.path + port,
-                             test_field,
-                             test_new_value)
+            update_test_field(self.switch_ip,
+                              self.path + port,
+                              test_field,
+                              test_new_value)
 
         #######################################################################
         # Query for the updated port
@@ -470,10 +470,10 @@ class QueryFilterPortTest (OpsVsiTest):
         # Restore default value
         #######################################################################
         for port in test_ports:
-            update_test_port(self.switch_ip,
-                             self.path + port,
-                             test_field,
-                             test_old_value)
+            update_test_field(self.switch_ip,
+                              self.path + port,
+                              test_field,
+                              test_old_value)
 
         info("########## End Test Filter Bond Active Slave ##########\n")
 
@@ -492,10 +492,10 @@ class QueryFilterPortTest (OpsVsiTest):
         # Update values
         #######################################################################
         for port in test_ports:
-            update_test_port(self.switch_ip,
-                             self.path + port,
-                             test_field,
-                             test_new_value)
+            update_test_field(self.switch_ip,
+                              self.path + port,
+                              test_field,
+                              test_new_value)
 
         #######################################################################
         # Query for the updated port
@@ -539,10 +539,10 @@ class QueryFilterPortTest (OpsVsiTest):
         # Restore default value
         #######################################################################
         for port in test_ports:
-            update_test_port(self.switch_ip,
-                             self.path + port,
-                             test_field,
-                             test_old_value)
+            update_test_field(self.switch_ip,
+                              self.path + port,
+                              test_field,
+                              test_old_value)
 
         info("########## End Test Filter Tag ##########\n")
 
@@ -561,10 +561,10 @@ class QueryFilterPortTest (OpsVsiTest):
         # Update values
         #######################################################################
         for i in range(0, updated_ports):
-            update_test_port(self.switch_ip,
-                             self.path + test_ports[i],
-                             test_field,
-                             test_new_value[i])
+            update_test_field(self.switch_ip,
+                              self.path + test_ports[i],
+                              test_field,
+                              test_new_value[i])
 
         #######################################################################
         # Query for the updated ports
@@ -608,10 +608,10 @@ class QueryFilterPortTest (OpsVsiTest):
         # Restore default value
         #######################################################################
         for port in test_ports:
-            update_test_port(self.switch_ip,
-                             self.path + port,
-                             test_field,
-                             test_old_value)
+            update_test_field(self.switch_ip,
+                              self.path + port,
+                              test_field,
+                              test_old_value)
 
         info("########## End Test Filter vlan_mode ##########\n")
 
@@ -702,10 +702,10 @@ class QueryFilterPortTest (OpsVsiTest):
         # Update values
         #######################################################################
         for port in test_ports:
-            update_test_port(self.switch_ip,
-                             self.path + port,
-                             test_field,
-                             test_new_value)
+            update_test_field(self.switch_ip,
+                              self.path + port,
+                              test_field,
+                              test_new_value)
 
         #######################################################################
         # Query for the updated ports
@@ -749,10 +749,10 @@ class QueryFilterPortTest (OpsVsiTest):
         # Restore default value
         #######################################################################
         for port in test_ports:
-            update_test_port(self.switch_ip,
-                             self.path + port,
-                             test_field,
-                             test_old_value)
+            update_test_field(self.switch_ip,
+                              self.path + port,
+                              test_field,
+                              test_old_value)
 
         info("########## End Test Filter Admin ##########\n")
 
