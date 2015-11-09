@@ -54,7 +54,7 @@ FAKE_VLAN_DATA = """
     "configuration": {
         "name": "%(name)s",
         "id": 1,
-        "description": "test vlan",
+        "description": "test_vlan",
         "admin": ["up"],
         "other_config": {},
         "external_ids": {}

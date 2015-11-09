@@ -145,7 +145,7 @@ class configTest(OpsVsiTest):
         expected_configuration_data = {}
         expected_configuration_data["name"] = "%s" % fake_vlan
         expected_configuration_data["id"] = 1
-        expected_configuration_data["description"] = "test vlan"
+        expected_configuration_data["description"] = "test_vlan"
         expected_configuration_data["admin"] = "up"
         expected_configuration_data["other_config"] = {}
         expected_configuration_data["external_ids"] = {}
