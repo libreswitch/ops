@@ -49,8 +49,7 @@ Sending Your First Patch For Review
 
 To submit your first patch:
 
-1. To submit patches and develop for OpenSwitch, you must have a [github](https://github.com/)
- account. Please create an account if you do not already have one.
+1. To submit patches and develop for OpenSwitch, you must have a [github](https://github.com/) account. Please create an account if you do not already have one.
 2. Log in to the [OpenSwitch gerrit system](http://review.openswitch.net/) using your github account.
 3. Add your public SSH key to your account so you can submit patches using
   gerrit-review.

@@ -1,7 +1,7 @@
 # Frequently Asked Questions
 
 **1. What is OpenSwitch?**
-**Answer:**	OpenSwitch is an open source fully-featured L2/L3, Linux-based, modular and modern network operating system
+**Answer:**	OpenSwitch is a modern, modular, Linux-based,  full-featured, open source network operating system, with  a robust L2/L3 environment.
 
 **2.	Why are open source operating system platforms important?**
 **Answer:**	The next natural step in the evolution of DC network disaggregation is to move to an open source operating system, which gives users and developers control over their networks and freedom from the costs and limitations of packaged software.
