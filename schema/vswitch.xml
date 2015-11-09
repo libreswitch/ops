@@ -2432,6 +2432,9 @@
       <column name="status">
         Key-value pairs that report port status.
       </column>
+      <column name="status" key="error">
+        Human readable error description.
+      </column>
       <column name="status" key="bond_hw_handle">
         Unique identifier of the LAG from the data path's perspective.
         This key value should be treated as opaque handle by application
