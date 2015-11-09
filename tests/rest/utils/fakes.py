@@ -103,7 +103,7 @@ def create_fake_port(path, switch_ip, port_index):
          port_index)
 
 
-def create_fake_vlan(path, switch_ip, bridge_name, fake_vlan_name):
+def create_fake_vlan(path, switch_ip, fake_vlan_name):
     data = FAKE_VLAN_DATA % {"name": fake_vlan_name}
 
     info("\n---------- Creating fake vlan (%s) ----------\n" %

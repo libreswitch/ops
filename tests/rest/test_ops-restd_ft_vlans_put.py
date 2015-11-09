@@ -384,7 +384,6 @@ class configTest(OpsVsiTest):
         create_fake_bridge(self.path, self.switch_ip, self.fake_bridge)
         create_fake_vlan("%s/%s/vlans" % (self.path, self.fake_bridge),
                          self.switch_ip,
-                         self.fake_bridge,
                          self.fake_vlan)
 
         self.test_put_vlan()
