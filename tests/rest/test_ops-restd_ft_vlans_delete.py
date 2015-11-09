@@ -79,7 +79,8 @@ class configTest(OpsVsiTest):
 
         create_fake_vlan("%s/%s/vlans" % (self.path, self.fake_bridge),
                          self.switch_ip,
-                         fake_vlan)
+                         fake_vlan,
+                         1)
 
         #######################################################################
         # GET added VLAN

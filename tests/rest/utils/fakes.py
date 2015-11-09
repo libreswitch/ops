@@ -53,7 +53,7 @@ FAKE_VLAN_DATA = """
 {
     "configuration": {
         "name": "%(name)s",
-        "id": 1,
+        "id": %(id)s,
         "description": "test_vlan",
         "admin": ["up"],
         "other_config": {},
@@ -103,8 +103,8 @@ def create_fake_port(path, switch_ip, port_index):
          port_index)
 
 
-def create_fake_vlan(path, switch_ip, fake_vlan_name):
-    data = FAKE_VLAN_DATA % {"name": fake_vlan_name}
+def create_fake_vlan(path, switch_ip, fake_vlan_name, vlan_id):
+    data = FAKE_VLAN_DATA % {"name": fake_vlan_name, "id": vlan_id}
 
     info("\n---------- Creating fake vlan (%s) ----------\n" %
          fake_vlan_name)

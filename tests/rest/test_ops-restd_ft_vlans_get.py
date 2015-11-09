@@ -116,7 +116,7 @@ class configTest(OpsVsiTest):
                                                       fake_vlan)]
         path = "%s/%s/vlans" % (self.path, self.fake_bridge)
 
-        create_fake_vlan(path, self.switch_ip, fake_vlan)
+        create_fake_vlan(path, self.switch_ip, fake_vlan, 1)
 
         info("\n########## Executing GET for /system/bridges/{id}/vlans "
              "(VLAN added) ##########\n")
@@ -152,7 +152,8 @@ class configTest(OpsVsiTest):
 
         create_fake_vlan("%s/%s/vlans" % (self.path, self.fake_bridge),
                          self.switch_ip,
-                         fake_vlan)
+                         fake_vlan,
+                         1)
 
         info("\n########## Executing GET for /system/bridges/{id}/vlans/ "
              "{id} ##########\n")
@@ -181,7 +182,8 @@ class configTest(OpsVsiTest):
 
         create_fake_vlan("%s/%s/vlans" % (self.path, self.fake_bridge),
                          self.switch_ip,
-                         fake_vlan)
+                         fake_vlan,
+                         1)
 
         info("\n########## Executing GET for /system/bridges/{id}/vlans/{id} "
              "##########\n")
