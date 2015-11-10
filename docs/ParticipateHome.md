@@ -61,4 +61,4 @@ To submit your first patch:
   all commits.
 7. Push your changes using "git review".
 
-For more detail, please see [Getting Started](develop/develophome#gettingstart)
+For more detail, please see [Getting Started](http://www.openswitch.net/develop/develophome#gettingstart)
