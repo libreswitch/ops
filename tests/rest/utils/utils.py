@@ -18,6 +18,7 @@
 import json
 import httplib
 import urllib
+import random
 
 from copy import deepcopy
 
@@ -224,3 +225,44 @@ def create_test_ports(ip, num_ports):
             return status_code
 
     return httplib.CREATED
+
+
+def query_object(switch_ip, path):
+    """
+    Query a port
+    """
+    status_code, response_data = execute_request(path, "GET", None, switch_ip)
+    assert status_code == httplib.OK, "Wrong status code %s " % status_code
+
+    assert response_data is not None, "Response data is empty"
+
+    json_data = {}
+    try:
+        json_data = json.loads(response_data)
+    except:
+        assert False, "Malformed JSON"
+
+    return json_data
+
+
+def fill_with_function(f, n):
+    list = [f for i in xrange(n)]
+    return list
+
+
+def random_mac():
+    random.seed()
+    mac = "%02x:%02x:%02x:%02x:%02x:%02x" % (random.randint(0, 255),
+                                             random.randint(0, 255),
+                                             random.randint(0, 255),
+                                             random.randint(0, 255),
+                                             random.randint(0, 255),
+                                             random.randint(0, 255))
+    return mac
+
+
+def random_ip6_address():
+    random.seed()
+    ipv6 = ':'.join('{:x}'.format(random.randint(0, 2 ** 16 - 1))
+                    for i in range(8))
+    return ipv6
