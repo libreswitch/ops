@@ -53,9 +53,6 @@ def verifyVlanState(dut, status, numberToFind):
     LogOutput('info', "Verifying vlan state")
     devRetStruct = ShowVlan(deviceObj=dut)
     returnData = devRetStruct.valueGet()
-    returnBuffer = devRetStruct.buffer()
-    print returnData
-    print returnBuffer
     for dictionary in returnData:
         if dictionary['VLAN'] == numberToFind and \
                 dictionary['Status'] == status:
@@ -67,9 +64,6 @@ def verifyVlanReason(dut, pReason, numberToFind):
     LogOutput('info', "Verifying vlan reason")
     devRetStruct = ShowVlan(deviceObj=dut)
     returnData = devRetStruct.valueGet()
-    returnBuffer = devRetStruct.buffer()
-    print returnData
-    print returnBuffer
     for dictionary in returnData:
         if dictionary['VLAN'] == numberToFind and \
                 dictionary['Reason'] == pReason:
@@ -271,7 +265,6 @@ class Test_vlan_state_reason_transition:
             assert(False)
         else:
             LogOutput('info', "Passed adding vlan " + str(4))
-
 
     def test_verifyConfVlans(self):
         LogOutput('info', "############################################")
