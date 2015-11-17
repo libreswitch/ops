@@ -207,6 +207,48 @@ class QueryPortPaginationTest(OpsVsiTest):
         info("### Expected remainder ports are returned " +
              "using large limit ###\n")
 
+    def test_pagination_offset_limit_non_plural(self):
+        info("### Attempting to fetch single port with offset and limit " +
+             "present ###\n")
+
+        status_code, response_data = execute_request(self.PATH +
+                                                     "/bridge_normal?depth=1" +
+                                                     ";offset=0;limit=10",
+                                                     "GET", None,
+                                                     self.SWITCH_IP)
+
+        assert status_code == httplib.BAD_REQUEST, \
+            "Wrong status code %s " % status_code
+        info("### Status code is BAD_REQUEST ###\n")
+
+    def test_pagination_offset_only_non_plural(self):
+        info("### Attempting to fetch single port with offset " +
+             "present ###\n")
+
+        status_code, response_data = execute_request(self.PATH +
+                                                     "/bridge_normal?depth=1" +
+                                                     ";offset=5",
+                                                     "GET", None,
+                                                     self.SWITCH_IP)
+
+        assert status_code == httplib.BAD_REQUEST, \
+            "Wrong status code %s " % status_code
+        info("### Status code is BAD_REQUEST ###\n")
+
+    def test_pagination_limit_only_non_plural(self):
+        info("### Attempting to fetch single port with offset " +
+             "present ###\n")
+
+        status_code, response_data = execute_request(self.PATH +
+                                                     "/bridge_normal?depth=1" +
+                                                     ";limit=5",
+                                                     "GET", None,
+                                                     self.SWITCH_IP)
+
+        assert status_code == httplib.BAD_REQUEST, \
+            "Wrong status code %s " % status_code
+        info("### Status code is BAD_REQUEST ###\n")
+
     def test_pagination_indexes(self):
         info("\n########## Test to validate pagination indexes of GET" +
              " request results ##########\n")
@@ -236,6 +278,15 @@ class QueryPortPaginationTest(OpsVsiTest):
         # Test (offset + limit) > total ports
         # Ports from offset to the end should be returned
         self.test_pagination_offset_remainder(path)
+
+        # Test offset and limit present for non-plural resource
+        self.test_pagination_offset_limit_non_plural()
+
+        # Test offset present for non-plural resource
+        self.test_pagination_offset_only_non_plural()
+
+        # Test limit present for non-plural resource
+        self.test_pagination_limit_only_non_plural()
 
         info("\n########## End test to validate pagination indexes of GET" +
              " request results ##########\n")
