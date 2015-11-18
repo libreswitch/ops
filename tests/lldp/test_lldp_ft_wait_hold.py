@@ -294,9 +294,10 @@ def lldp_wait_hold(**kwargs):
     retCode = devIntRetStruct.returnCode()
     assert retCode == 0, "Failed to enter config prompt"
 
-    LogOutput('info', "\nConfiguring no feature lldp on SW2")
-    devIntRetStruct = device2.DeviceInteract(command="no feature lldp")
+    LogOutput('info', "\nConfiguring no lldp enable on SW2")
+    devIntRetStruct = device2.DeviceInteract(command="no lldp enable")
     retCode = devIntRetStruct.get('returnCode')
+
     assert retCode == 0, "Failed to disable feature lldp"
 
     # Exiting configuration terminal
