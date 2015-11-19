@@ -2379,7 +2379,9 @@
                 "set",
                 [
                   "system",
-                  "internal"
+                  "internal",
+                  "vlansubint",
+                  "loopback"
                 ]
               ]
             }
@@ -2459,6 +2461,23 @@
             },
             "min": 0,
             "max": 4
+          }
+        },
+        "subintf_parent": {
+          "category": "configuration",
+          "relationship": "m:1",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4094
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Interface"
+            },
+            "min": 0,
+            "max": "unlimited"
           }
         },
         "lldp_neighbor_info": {

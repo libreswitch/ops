@@ -2085,6 +2085,18 @@
           ``local interface.''  It does not make sense to bond an internal
           interface, so the terms ``port'' and ``interface'' are often used
           imprecisely for internal interfaces.</dd>
+
+          <dt><code>vlansubint</code></dt>
+          <dd>A sub-interface created for a physical interface.
+          Sub-interfaces are used for router-on-stick configurations and
+          to allow separation of traffic on a L3 physical interface based on
+          dot1q encapsulation VLAN and apply policies on them.</dd>
+
+          <dt><code>loopback</code></dt>
+          <dd>A loopback interface is a virtual interface, supporting
+          IPv4/IPv6 address configuration, that remains up until it is
+          deleted by administrator. Loopback interface IP address is used
+          as router-id and source address by many protocols.</dd>
        </dl>
       </column>
     </group>
@@ -2748,6 +2760,11 @@
     </column>
     <column name="split_children">
       For a split parent interface, this is the reference to the list of children <ref table="Interface"/>s.
+    </column>
+    <column name="subintf_parent" keyname="name">
+      For the Layer3 subinterfaces created, this column keeps the reference to
+      the parent interface <ref table="Interface"/> as a key:value pair of
+      dot1q encapsulation vlan id and the uuid of parent interface row entry.
     </column>
     </group>
 
