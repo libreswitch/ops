@@ -2205,9 +2205,11 @@
         "id": {
           "category": "configuration",
           "type": {
-            "key": { "type": "integer",
-                     "minInteger": 1,
-                     "maxInteger": 4094}
+            "key": {
+          "type": "integer",
+          "minInteger": 1,
+          "maxInteger": 4094
+        }
           },
           "mutable": false
         },
