@@ -1,46 +1,52 @@
-import json
-from types import *
+#!/usr/bin/env python
+'''
+Strips all keys in DROP_KEYS from input-schema and writes the resulting
+OpenvSwitch-ready schema to output-schema.
+'''
+
 import sys
-import subprocess
+from subprocess import Popen, PIPE
+from collections import OrderedDict
+import json
 
-def delete_keys(objname, keys):
-    if type(objname) is not DictType:
-        return
+DROP_KEYS = ('category', 'relationship')
 
-    for key in keys:
+def delete_keys(objname):
+    for key in DROP_KEYS:
         objname.pop(key, None)
     for key, value in objname.iteritems():
-        delete_keys(value, keys)
+        if type(value) == OrderedDict:
+            delete_keys(value)
 
-if __name__ == '__main__':
+#
+# main
+#
+if len(sys.argv) < 3:
+    print("Usage: sanitize.py input-schema output-schema")
+    sys.exit(1)
 
-    exit
-    # read the json ovs schema
-    with open(sys.argv[1]) as x: f = x.read()
-    ovsschema =  json.loads(f)
+orig_schema, ovs_schema = sys.argv[1:3]
 
-    # delete the keys
-    delete_keys(ovsschema, ['category', 'relationship'])
+f = open(orig_schema).read()
+schema = json.loads(f, object_pairs_hook=OrderedDict)
 
-    if 'cksum' in ovsschema:
-        ovsschema.pop('cksum')
-    if len(sys.argv) < 3:
-        print("Error: Script needs 2 argument (input-schema output-schema)")
-    else:
-        with open(sys.argv[2], 'w') as fp:
-            json.dump(ovsschema, fp, sort_keys = True, indent=4, separators=(',', ': '))
-            fp.write('\n')
+delete_keys(schema)
+# Remove any top-level "cksum" present in the input
+schema.pop("cksum", None)
 
-        # calculates the new check sum
-        cksum =  subprocess.Popen(['cksum', sys.argv[2]], stdout=subprocess.PIPE)
-        output, err = cksum.communicate()
-        csa = output.split(' ')
-        csa.pop()
-        str1 = " "
-        ovsschema['cksum'] = str1.join(csa)
-        print(output)
+# Calculate new checksum.
+schema_text = json.dumps(schema, indent=2, separators=(',', ': ')) + '\n'
+cksum_pipe = Popen('cksum', stdin=PIPE, stdout=PIPE)
+output, err = cksum_pipe.communicate(input=schema_text)
 
-        # dump the json, give the option to sort it and save it to a new file
-        with open(sys.argv[2], 'w') as fp:
-            json.dump(ovsschema, fp, sort_keys = True, indent=4, separators=(',', ': '))
-            fp.write('\n')
+# Keep the 'cksum' key at the top of the OrderedDict so that the JSON
+# output will have it at the start, and the broken validation code in
+# openvswitch still works.
+cksum = ' '.join(output.split()[:2])
+schema_cksum = OrderedDict([('cksum', cksum)])
+schema_cksum.update(schema)
+
+# Rewrite with cksum field added.
+with open(ovs_schema, 'w') as fp:
+    json.dump(schema_cksum, fp, indent=2, separators=(',', ': '))
+    fp.write('\n')
