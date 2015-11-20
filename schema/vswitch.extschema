@@ -2778,7 +2778,7 @@
           "mutable": false
         },
         "state": {
-          "category": "status",
+          "category": "configuration",
           "type": {
             "key": {
               "type": "string",

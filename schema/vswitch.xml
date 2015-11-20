@@ -2797,12 +2797,15 @@
   <table name="LED" title="LEDs on various subsystems">
     <group title="Configuration">
       <column name="id">
+        Logical name of the LED.
       </column>
       <column name="state">
+        State of the LED controls the lighting behavior.
       </column>
     </group>
    <group title="Status">
       <column name="status" >
+        Status of the LED is the current operational status.
       </column>
    </group>
    <group title="Common Columns">
