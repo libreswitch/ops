@@ -26,6 +26,7 @@ LLDP Commands
 	- [Show LLDP neighbor information for the interface](#show-lldp-neighbor-information-for-the-interface)
 	- [Show LLDP Statistics](#show-lldp-statistics)
 	- [Show LLDP statistics for the interface](#show-lldp-statistics-for-the-interface)
+	- [Show LLDP local device information](#show-lldp-local-device-information)
 
 ## LLDP Configuration Commands
 All LLDP configuration commands except `lldp transmission` and `lldp reception` work in config context.
@@ -57,7 +58,7 @@ No parameters.
 ops-as5712# configure terminal
 ops-as5712(config)# no lldp enable
 ```
-### Clear LLDP counters  
+### Clear LLDP counters
 #### Syntax
 `lldp clear counters`
 #### Description
@@ -71,7 +72,7 @@ No parameters.
 ops-as5712# configure terminal
 ops-as5712(config)# lldp clear counters
 ```
-### Clear LLDP neighbor details  
+### Clear LLDP neighbor details
 #### Syntax
 `lldp clear neighbors`
 #### Description
@@ -85,7 +86,7 @@ No parameters.
 ops-as5712# configure terminal
 ops-as5712(config)# lldp clear neighbors
 ```
-### Set LLDP holdtime  
+### Set LLDP holdtime
 <!--Change the value of the anchor tag above, so this command can be directly linked. -->
 #### Syntax
 `lldp holdtime <time>`
@@ -102,7 +103,7 @@ All users.
 ops-as5712# configure terminal
 ops-as5712(config)# lldp holdtime 5
 ```
-### Set LLDP holdtime to default  
+### Set LLDP holdtime to default
 #### Syntax
 `no lldp holdtime`
 #### Description
@@ -421,6 +422,7 @@ Neighbor entries age-out       : 0
 Neighbor Chassis-Name          : HP-3800-24G-PoEP-2XG
 Neighbor Chassis-Description   : HP J9587A 3800-24G-PoE+-2XG Switch, revision KA.15.15.0006, ROM KA.15.09 (/ws/swbuildm/rel_nashville_qaoff/code/build/tam(swbuildm_rel_nashville_qaoff_rel_nashville))
 Neighbor Chassis-ID            : 10:60:4b:39:3e:80
+Management-Address             : 192.168.1.1
 Chassis Capabilities Available : Bridge, Router
 Chassis Capabilities Enabled   : Bridge
 Neighbor Port-ID               : 1
@@ -473,4 +475,123 @@ Packets transmitted :20
 Packets received :23
 Packets received and discarded :0
 Packets received and unrecognized :0
+```
+
+### Show LLDP local device information
+#### Syntax
+`show lldp local-device`
+#### Description
+This command displays information advertised by the switch if LLDP feature is enabled by user.
+#### Authority
+All users.
+#### Parameters
+No parameters.
+#### Examples
+If all ports are administratively down and link state is down, only global info will be displayed.
+```
+ops-as5712# show lldp local-device
+Global Data
+---------------
+
+Chasis-id              : 48:0f:cf:af:50:c9
+System Name            : switch
+System Description     : OpenSwitch 0.1.0 (basil) Linux 3.9.11 #1 SMP Fri Sep 11 19:46:19 UTC 2015 x86_64
+Management Address     : 120.92.155.52
+Capabilities Available : Bridge, Router
+Capabilities Enabled   : Bridge, Router
+TTL                    : 120
+
+```
+
+If port 1 is administratively down and the link state is up, global info and only active port details are displayed.
+```
+Global Data
+---------------
+
+Chasis-id              : 48:0f:cf:af:50:c9
+System Name            : switch
+System Description     : OpenSwitch 0.1.0 (basil) Linux 3.9.11 #1 SMP Fri Sep 11 19:46:19 UTC 2015 x86_64
+Management Address     : 120.92.155.52
+Capabilities Available : Bridge, Router
+Capabilities Enabled   : Bridge, Router
+TTL                    : 120
+
+Port Based Data:
+----------------
+
+Port-ID           : 1
+Port-Description  : "1"
+
+```
+If the VLANs are configured on the active ports, the VLAN-Id and VLAN name are displayed along with port details.
+
+The VLAN is configured in access mode (vlan access 100).
+
+```
+Global Data
+---------------
+
+Chasis-id              : 48:0f:cf:af:50:c9
+System Name            : switch
+System Description     : OpenSwitch 0.1.0 (basil) Linux 3.9.11 #1 SMP Fri Sep 11 19:46:19 UTC 2015 x86_64
+Management Address     : 120.92.155.52
+Capabilities Available : Bridge, Router
+Capabilities Enabled   : Bridge, Router
+TTL                    : 120
+
+Port Based Data:
+----------------
+
+Port-ID           : 1
+Port-Description  : "1"
+Port VLAN Id      : 100
+VLAN-Ids          : 100
+VLAN Name         : VLAN100
+
+```
+The VLAN is configured in trunk mode (vlan trunk 200 300).
+```
+Global Data
+---------------
+
+Chasis-id              : 48:0f:cf:af:50:c9
+System Name            : switch
+System Description     : OpenSwitch 0.1.0 (basil) Linux 3.9.11 #1 SMP Fri Sep 11 19:46:19 UTC 2015 x86_64
+Management Address     : 120.92.155.52
+Capabilities Available : Bridge, Router
+Capabilities Enabled   : Bridge, Router
+TTL                    : 120
+
+Port Based Data:
+----------------
+
+Port-ID           : 1
+Port-Description  : "1"
+Port VLAN Id      :
+VLAN-Ids          : 200, 300
+VLAN Name         : VLAN200, VLAN300
+
+```
+The VLAN is configured in native tagged or untagged mode (vlan native 100, vlan trunk 200 300).
+```
+Global Data
+---------------
+
+Chasis-id              : 48:0f:cf:af:50:c9
+System Name            : switch
+System Description     : OpenSwitch 0.1.0 (basil) Linux 3.9.11 #1 SMP Fri Sep 11 19:46:19 UTC 2015 x86_64
+Management Address     : 120.92.155.52
+Capabilities Available : Bridge, Router
+Capabilities Enabled   : Bridge, Router
+TTL                    : 120
+
+Port Based Data:
+----------------
+
+Port-ID           : 1
+Port-Description  : "1"
+Port VLAN Id      : 100
+VLAN-Ids          : 100, 200, 300
+VLAN Name         : VLAN100, VLAN200, VLAN300
+
 ```
