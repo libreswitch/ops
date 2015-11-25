@@ -102,6 +102,10 @@
       <column name="asset_tag_number">
       </column>
 
+      <column name="sflow">
+        sFlow(R) configuration.
+      </column>
+
       <column name="other_config" key="stats-update-interval"
               type='{"type": "integer", "minInteger": 5000}'>
         <p>
@@ -2103,7 +2107,10 @@
         port's actual MAC address, nor will setting it change the port's actual
         MAC address.
       </column>
-
+      <column name="other_config" key="sflow-enabled" type='{"type": "boolean"}'>
+        Determines whether sflow sampling is enabled on this port.
+        Default is true.
+      </column>
    </group>
 
     <group title="Port Status">
@@ -3365,6 +3372,87 @@
 
       <column name="external_ids"/>
     </group>
+  </table>
+
+  <table name="sFlow">
+    <p>A set of sFlow(R) configurations.  sFlow is a protocol for remote
+    monitoring of switches.</p>
+
+    <column name="name">
+      sFlow identifier for the configuration. Should be alphanumeric.
+    </column>
+
+    <column name="targets">
+      sFlow collectors in the form
+      <code><var>ip</var>:<var>port</var></code>.
+      Port defaults to 6343 if not specified.
+      Can have multiple collectors. Atleast one target has to be
+      configured for sflow to be enabled. Collectors can only be reached over
+      vrf_default.
+    </column>
+
+    <column name="sampling">
+      Specifies the rate at which packets should be sampled and sent
+      to the collector. If not specified, rate defaults to 4096, which means
+      one out of 4096 packets, on average, will be sent to the collector.
+    </column>
+
+    <column name="sampling_per_speed">
+      The sampling rate can be configured per interface-speed (in Mbps) which
+      means the rate will be applied only for interfaces that match the speed.
+      For example, `sflow sampling 1024 1G` means a sampling rate of 1024 is
+      applied to all the 1Gig interfaces on the system. If interface-speed is
+      not specified, the global rate is applied on the interface.
+    </column>
+    <column name="sampling_per_speed" key="1G">
+      Sampling rate for the 1 Gigabit interfaces.
+    </column>
+    <column name="sampling_per_speed" key="10G">
+      Sampling rate for the 10 Gigabit interfaces.
+    </column>
+    <column name="sampling_per_speed" key="40G">
+      Sampling rate for the 40 Gigabit interfaces.
+    </column>
+    <column name="sampling_per_speed" key="100G">
+      Sampling rate for the 100 Gigabit interfaces.
+    </column>
+
+    <column name="polling">
+      Specifies the interval at which counter statistics are send to the
+      collector. If not specified, interval defaults to 30 seconds
+    </column>
+
+    <column name="header">
+      Number of bytes of a sampled packet to send to the collector.
+      If not specified, the default is 128 bytes.
+    </column>
+
+    <column name="max_datagram">
+      Maximum number of bytes that will be send in the sflow datagram.
+      If not specified, the default is 1400 bytes.
+    </column>
+
+    <column name="agent">
+      Name of the network device whose IP address should be reported as the
+      ``agent address'' to collectors.  If not specified, the agent IP is
+      derived from the first interface in alphabetical order.
+    </column>
+
+    <column name="agent_addr_family">
+      Address type of agent address reported. If agent interface has both
+      IPv4 and IPv6 address configured, then this column selects which address
+      will be used. Defaults to IPv4.
+    </column>
+
+    <column name="external_ids"/>
+
+    <column name="statistics">
+      Key value pairs that has sampling statistics.
+    </column>
+    <column name="statistics" key="num_sampled_pkts">
+      Total number of sampled packets sent to the collector.
+    </column>
+
   </table>
 
   <table name="CLI_Alias">
