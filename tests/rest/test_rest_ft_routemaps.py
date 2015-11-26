@@ -26,6 +26,9 @@ topoDict = {"topoExecution": 3000,
             "topoLinkFilter": "lnk01:dut01:interface:eth0"}
 switchMgmtAddr = "10.10.10.2"
 restClientAddr = "10.10.10.3"
+broadcast = "10.10.10.255"
+netmask = "255.255.255.0"
+subnetMaskBits = 24
 
 
 def switch_reboot(dut01):
@@ -39,29 +42,23 @@ def switch_reboot(dut01):
 def config_rest_environment(dut01, wrkston01):
     global switchMgmtAddr
     global restClientAddr
-    retStruct = GetLinuxInterfaceIp(deviceObj=dut01)
-    assert retStruct.returnCode() == 0, 'Failed to get linux\
-    interface ip on switch'
-    info('### Successful in getting linux interface ip on the switch ###\n')
-    switchIpAddr = retStruct.data
-    if switchIpAddr == "":
-        switchIpAddr = "172.17.0.253"
-    if switchIpAddr is not None or switchIpAddr != "":
-        switchMgmtAddr = switchIpAddr
+
     retStruct = InterfaceIpConfig(deviceObj=dut01,
                                   interface="mgmt",
-                                  addr=switchMgmtAddr, mask=24, config=True)
+                                  addr=switchMgmtAddr,
+                                  mask=subnetMaskBits,
+                                  config=True)
     assert retStruct.returnCode() == 0, 'Failed to configure IP on switchport'
     info('### Successfully configured ip on switch port ###\n')
     cmdOut = dut01.cmdVtysh(command="show run")
     info('### Running config of the switch:\n' + cmdOut + ' ###\n')
     info('### Configuring workstations ###\n')
     retStruct = wrkston01.NetworkConfig(
-        ipAddr=restClientAddr,
-        netMask="255.255.255.0",
-        broadcast="140.1.2.255",
-        interface=wrkston01.linkPortMapping['lnk01'],
-        config=True)
+                                ipAddr=restClientAddr,
+                                netMask=netmask,
+                                broadcast=broadcast,
+                                interface=wrkston01.linkPortMapping['lnk01'],
+                                config=True)
     assert retStruct.returnCode() == 0, 'Failed to configure IP on workstation'
     info('### Successfully configured IP on workstation ###\n')
     cmdOut = wrkston01.cmd("ifconfig " + wrkston01.linkPortMapping['lnk01'])
@@ -70,18 +67,18 @@ def config_rest_environment(dut01, wrkston01):
     assert retStruct.returnCode() == 0, 'Failed to get linux\
     interface ip on switch'
     info('### Successful in getting linux interface ip on workstation ###\n')
-    switchIpAddr = retStruct.data
+
     retStruct = returnStruct(returnCode=0)
     return retStruct
 
 
 def deviceCleanup(dut01, wrkston01):
     retStruct = wrkston01.NetworkConfig(
-        ipAddr=restClientAddr,
-        netMask="255.255.255.0",
-        broadcast="140.1.2.255",
-        interface=wrkston01.linkPortMapping['lnk01'],
-        config=False)
+                                ipAddr=restClientAddr,
+                                netMask=netmask,
+                                broadcast=broadcast,
+                                interface=wrkston01.linkPortMapping['lnk01'],
+                                config=False)
     assert retStruct.returnCode() == 0, 'Failed to unconfigure IP address\
     on workstation 1'
     info('### Successfully unconfigured ip on Workstation 1 ###\n')
@@ -89,7 +86,9 @@ def deviceCleanup(dut01, wrkston01):
     info('### Ifconfig info for workstation 1:\n' + cmdOut + ' ###')
     retStruct = InterfaceIpConfig(deviceObj=dut01,
                                   interface="mgmt",
-                                  addr=switchMgmtAddr, mask=24, config=False)
+                                  addr=switchMgmtAddr,
+                                  mask=subnetMaskBits,
+                                  config=False)
     assert retStruct.returnCode() == 0, 'Failed to unconfigure IP address on\
     dut01 port'
     info('### Unconfigured IP address on dut01 port " ###\n')
@@ -100,10 +99,9 @@ def deviceCleanup(dut01, wrkston01):
 
 
 def restTestRoutemaps(wrkston01):
-    retStruct = wrkston01.RestCmd(
-        switch_ip=switchMgmtAddr,
-        url="/rest/v1/system/route_maps",
-        method="GET")
+    retStruct = wrkston01.RestCmd(switch_ip=switchMgmtAddr,
+                                  url="/rest/v1/system/route_maps",
+                                  method="GET")
     assert retStruct.returnCode(
     ) == 0, 'Failed to Execute rest command \
     "GET for url=/rest/v1/system/route_maps"'
