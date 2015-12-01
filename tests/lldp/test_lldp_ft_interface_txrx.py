@@ -36,6 +36,8 @@ def lldp_interface_txrx(**kwargs):
     device1 = kwargs.get('device1',None)
     device2 = kwargs.get('device2',None)
 
+    device1.commandErrorCheck = 0
+    device2.commandErrorCheck = 0
     #Defining the test steps
     LogOutput('info', "\n\nCase 1:\nSW 1 : lldp tx and rx enabled on link 1")
     LogOutput('info', "\n\nCase 2:\nSW 1 : lldp tx disabled on link 2")
@@ -442,19 +444,19 @@ def lldp_interface_txrx(**kwargs):
             break
         else:
             # Dump out the ovs-vsctl interface information
+            device1.setDefaultContext(context="linux")
             LogOutput('info', "Didn't receive integer value for Neightbor_portID, dumping ovs-vsctl interface stats...")
             devCmd = "ovs-vsctl list interface "\
-                + str(device1.linkPortMapping['lnk01'])\
-                + " | grep lldp_neighbor_info"
+                + str(device1.linkPortMapping['lnk01'])
             neighbor_output = device1.cmd(devCmd)
             opstestfw.LogOutput('info', "ovs-vsctl list interface output:\n"
-                                + neighbor_output)
+                                + str(neighbor_output))
             devCmd = "ip netns exec swns ifconfig "\
                 + str(device1.linkPortMapping['lnk01'])
             ifconfig_output = device1.cmd(devCmd)
             opstestfw.LogOutput('info', devCmd
                                 + " output\n" 
-                                + ifconfig_output)
+                                + str(ifconfig_output))
             Sleep(seconds=10, message="Delay")
     device1.setDefaultContext(context="vtyShell")
     #assert int((lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())==1, "Case Failed, No Neighbor is present for SW1 on Link 1"
@@ -481,19 +483,19 @@ def lldp_interface_txrx(**kwargs):
             break
         else:
             # Dump out the ovs-vsctl interface information
+            device2.setDefaultContext(context="linux")
             LogOutput('info', "Didn't receive integer value for Neightbor_portID, dumping ovs-vsctl interface stats...")
             devCmd = "ovs-vsctl list interface "\
-                + str(device2.linkPortMapping['lnk01'])\
-                + " | grep lldp_neighbor_info"
+                + str(device2.linkPortMapping['lnk01'])
             neighbor_output = device2.cmd(devCmd)
             opstestfw.LogOutput('info', "ovs-vsctl list interface output:\n"
-                                + neighbor_output)
+                                + str(neighbor_output))
             devCmd = "ip netns exec swns ifconfig "\
                 + str(device2.linkPortMapping['lnk01'])
             ifconfig_output = device2.cmd(devCmd)
             opstestfw.LogOutput('info', devCmd
                                 + " output\n"
-                                + ifconfig_output)
+                                + str(ifconfig_output))
             Sleep(seconds=10, message="Delay")
     device2.setDefaultContext(context="vtyShell")
     #assert int((lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())==1, "Case Failed, No Neighbor is present for SW2 on link 1"
@@ -524,19 +526,19 @@ def lldp_interface_txrx(**kwargs):
             break
         else:
             # Dump out the ovs-vsctl interface information
+            device1.setDefaultContext(context="linux")
             LogOutput('info', "Didn't receive integer value for Neightbor_portID, dumping ovs-vsctl interface stats...")
             devCmd = "ovs-vsctl list interface "\
-                + str(device1.linkPortMapping['lnk02'])\
-                + " | grep lldp_neighbor_info"
+                + str(device1.linkPortMapping['lnk02'])
             neighbor_output = device1.cmd(devCmd)
             opstestfw.LogOutput('info', "ovs-vsctl list interface output:\n"
-                                + neighbor_output)
+                                + str(neighbor_output))
             devCmd = "ip netns exec swns ifconfig "\
                 + str(device1.linkPortMapping['lnk02'])
             ifconfig_output = device1.cmd(devCmd)
             opstestfw.LogOutput('info', devCmd
                                 + " output\n"
-                                + ifconfig_output)
+                                + str(ifconfig_output))
             Sleep(seconds=10, message="Delay")
     device1.setDefaultContext(context="vtyShell")
     #assert int((lnk02PrtStats[device1.linkPortMapping['lnk02']]['Neighbor_portID']).rstrip())==2, "Case Failed, No Neighbor present for SW1 on Link 2"
@@ -565,19 +567,19 @@ def lldp_interface_txrx(**kwargs):
             break
         else:
             # Dump out the ovs-vsctl interface information
+            device2.setDefaultContext(context="linux")
             LogOutput('info', "Didn't receive integer value for Neightbor_portID, dumping ovs-vsctl interface stats...")
             devCmd = "ovs-vsctl list interface "\
-                + str(device2.linkPortMapping['lnk02'])\
-                + " | grep lldp_neighbor_info"
+                + str(device2.linkPortMapping['lnk02'])
             neighbor_output = device2.cmd(devCmd)
             opstestfw.LogOutput('info', "ovs-vsctl list interface output:\n"
-                                + neighbor_output)
+                                + str(neighbor_output))
             devCmd = "ip netns exec swns ifconfig "\
                 + str(device2.linkPortMapping['lnk02'])
             ifconfig_output = device2.cmd(devCmd)
             opstestfw.LogOutput('info', devCmd
                                 + " output\n"
-                                + ifconfig_output)
+                                + str(ifconfig_output))
             Sleep(seconds=10, message="Delay")
     device2.setDefaultContext(context="vtyShell")
     assert (lnk02PrtStats[device2.linkPortMapping['lnk02']]['Neighbor_portID']).rstrip()=="", "Case Failed, Neighbor is present for SW2 Link 2"    
@@ -611,19 +613,19 @@ def lldp_interface_txrx(**kwargs):
             break
         else:
             # Dump out the ovs-vsctl interface information
+            device1.setDefaultContext(context="linux")
             LogOutput('info', "Didn't receive integer value for Neightbor_portID, dumping ovs-vsctl interface stats...")
             devCmd = "ovs-vsctl list interface "\
-                + str(device1.linkPortMapping['lnk03'])\
-                + " | grep lldp_neighbor_info"
+                + str(device1.linkPortMapping['lnk03'])
             neighbor_output = device1.cmd(devCmd)
             opstestfw.LogOutput('info', "ovs-vsctl list interface output:\n"
-                                + neighbor_output)
+                                + str(neighbor_output))
             devCmd = "ip netns exec swns ifconfig "\
                 + str(device1.linkPortMapping['lnk03'])
             ifconfig_output = device1.cmd(devCmd)
             opstestfw.LogOutput('info', devCmd
                                 + " output\n"
-                                + ifconfig_output)
+                                + str(ifconfig_output))
             Sleep(seconds=10, message="Delay")
     device1.setDefaultContext(context="vtyShell")
     assert (lnk03PrtStats[device1.linkPortMapping['lnk03']]['Neighbor_portID']).rstrip()=="", "Case Failed, Neighbor present for SW1 Link 3"
@@ -653,19 +655,19 @@ def lldp_interface_txrx(**kwargs):
             break
         else:
             # Dump out the ovs-vsctl interface information
+            device2.setDefaultContext(context="linux")
             LogOutput('info', "Didn't receive integer value for Neightbor_portID, dumping ovs-vsctl interface stats...")
             devCmd = "ovs-vsctl list interface "\
-                + str(device2.linkPortMapping['lnk03'])\
-                + " | grep lldp_neighbor_info"
+                + str(device2.linkPortMapping['lnk03'])
             neighbor_output = device2.cmd(devCmd)
             opstestfw.LogOutput('info', "ovs-vsctl list interface output:\n"
-                                + neighbor_output)
+                                + str(neighbor_output))
             devCmd = "ip netns exec swns ifconfig "\
                 + str(device2.linkPortMapping['lnk03'])
             ifconfig_output = device2.cmd(devCmd)
             opstestfw.LogOutput('info', devCmd
                                 + " output\n"
-                                + ifconfig_output)
+                                + str(ifconfig_output))
             Sleep(seconds=10, message="Delay")
     device2.setDefaultContext(context="vtyShell")
     #assert int((lnk03PrtStats[device2.linkPortMapping['lnk03']]['Neighbor_portID']).rstrip())==3, "Case Passed, No Neighbor is present for SW2 on Link 3"
@@ -698,19 +700,19 @@ def lldp_interface_txrx(**kwargs):
             break;
         else:
             # Dump out the ovs-vsctl interface information
+            device1.setDefaultContext(context="linux")
             LogOutput('info', "Didn't receive integer value for Neightbor_portID, dumping ovs-vsctl interface stats...")
             devCmd = "ovs-vsctl list interface "\
-                + str(device1.linkPortMapping['lnk04'])\
-                + " | grep lldp_neighbor_info"
+                + str(device1.linkPortMapping['lnk04'])
             neighbor_output = device1.cmd(devCmd)
             opstestfw.LogOutput('info', "ovs-vsctl list interface output:\n"
-                                + neighbor_output)
+                                + str(neighbor_output))
             devCmd = "ip netns exec swns ifconfig "\
                 + str(device1.linkPortMapping['lnk04'])
             ifconfig_output = device1.cmd(devCmd)
             opstestfw.LogOutput('info', devCmd
                                 + " output\n"
-                                + ifconfig_output)
+                                + str(ifconfig_output))
             Sleep(seconds=10, message="Delay")
     device1.setDefaultContext(context="vtyShell")
     assert (lnk04PrtStats[device1.linkPortMapping['lnk04']]['Neighbor_portID']).rstrip()=="", "Case Failed, Neighbor is present for SW1 on Link 4"
@@ -737,19 +739,19 @@ def lldp_interface_txrx(**kwargs):
             break
         else:
             # Dump out the ovs-vsctl interface information
+            device2.setDefaultContext(context="linux")
             LogOutput('info', "Didn't receive integer value for Neightbor_portID, dumping ovs-vsctl interface stats...")
             devCmd = "ovs-vsctl list interface "\
-                + str(device2.linkPortMapping['lnk04'])\
-                + " | grep lldp_neighbor_info"
+                + str(device2.linkPortMapping['lnk04'])
             neighbor_output = device2.cmd(devCmd)
             opstestfw.LogOutput('info', "ovs-vsctl list interface output:\n"
-                                + neighbor_output)
+                                + str(neighbor_output))
             devCmd = "ip netns exec swns ifconfig "\
                 + str(device2.linkPortMapping['lnk04'])
             ifconfig_output = device2.cmd(devCmd)
             opstestfw.LogOutput('info', devCmd
                                 + " output\n"
-                                + ifconfig_output)
+                                + str(ifconfig_output))
             Sleep(seconds=10, message="Delay")
     device2.setDefaultContext(context="vtyShell")
     assert (lnk04PrtStats[device2.linkPortMapping['lnk04']]['Neighbor_portID']).rstrip()=="", "Case Failed, Neighbor is present for SW1 on Link 4"
