@@ -162,6 +162,15 @@
         </column>
       </group>
 
+    <group title="SFTP Server Configurations">
+        <column name="other_config" key="sftp_server_enable"
+                type='{"type": "boolean"}'>
+        Set this value to <code>true</code> to enable SFTP server
+        and to set to <code>false</code> to disable it. If not set, SFTP server
+        would be disabled by default.
+       </column>
+    </group>
+
     <group title="Source Interface Selection Configurations">
         <column name="other_config" key="tftp_source"
                 type='{"type": "string", "maxLength":256}'>
