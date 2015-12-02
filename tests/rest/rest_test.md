@@ -15,6 +15,10 @@ REST API Test Cases
 - [Create a port](#create-a-port)
 - [Update a port](#update-a-port)
 - [Delete a port](#delete-a-port)
+- [Query interface using recursive GET](#query-interface-using-recursive-get)
+- [Query port with pagination](#query-port-with-pagination)
+- [Sort ports by field](#sort-ports-by-field)
+- [Sort ports by field combination](#sort-ports-by-field-combination)
 
 ##  REST API put, get methods for URL "/rest/v1/system"
 ### Objective
@@ -1201,3 +1205,575 @@ The test is passing for "deleting an existing port" when the following occurs:
 -The HTTP response is not equal to 404 NOT FOUND when doing a GET request on "/rest/v1/system/ports/Port1".
 
 The test case is failing for "deleting a non-existent port" when the HTTP response is not equal to 404 NOT FOUND.
+
+
+## Query interface using recursive GET
+
+### Objective
+The test case verifies queries for:
+
+- All interfaces with depth equals zero
+- All interfaces with no depth parameter
+- A specific interface with depth equals one
+- A specific interface with depth equals two
+- A specific interface with negative depth value
+- A specific interface with string depth value
+- An interface with specific URI with depth equals one
+- An interface with specific URI with depth equals two
+- An interface with specific URI with negative depth value
+- An interface with specific URI with string depth value
+- An interface with specific URI with depth equals zero
+- An interface with specific URI with no depth parameter
+
+###  Requirements
+
+- OpenSwitch
+- Ubuntu Workstation
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has an interface with the name 50-1 and with the following configuration data:
+
+```
+{
+"configuration": {
+"other_config": {},
+"name": "50-1",
+"split_parent": ["/rest/v1/system/interfaces/50"],
+"options": {},
+"split_children": [],
+"external_ids": {},
+"type": "system",
+"user_config": {}
+}
+}
+```
+
+### Description
+The test case validates the recursivity through the standard REST API GET method.
+
+1. Verify if returns a list of interface URIs by using depth equals zero.
+
+ - a. Execute the GET request over /rest/v1/system/interfaces?depth=0.
+ - b. Verify if the HTTP response is 200 OK.
+ - c. Confirm that the returned interface list has at least one element.
+ - d. Ensure that URI /rest/v1/system/interfaces/50 is in the response data.
+
+2. Verify if returns a list of interface URIs by not using depth parameter.
+
+ - a. Execute the GET request over /rest/v1/system/interfaces
+ - b. Verify if the HTTP response is 200 OK.
+ - c. Confirm that the returned interface list has at least one element.
+ - d. Ensure that URI /rest/v1/system/interfaces/50 is in the response data.
+
+3. Verify if returns an interface and first level data.
+
+ - a. Execute the GET request over /rest/v1/system/interfaces?depth=1;name=50-1
+ - b. Verify if the HTTP response is 200 OK.
+ - c. Validate the first level depth returned interface object has Configuration, Statistics and Status keys present.
+ - d. Ensure that inner data has the URI /rest/v1/system/interfaces/50 in the response data.
+
+4. Verify if returns an interface and second level data.
+
+ - a. Execute the GET request over /rest/v1/system/interfaces?depth=2;name=50-1
+ - b. Verify if the HTTP response is 200 OK.
+ - c. Validate the first level depth returned interface object has Configuration, Statistics and Status keys present.
+ - d. Validate the second level depth returned interface object has Configuration, Statistics and Status keys present.
+ - e. Ensure that second level of depth inner data has the URIs /rest/v1/system/interfaces/50-{1..4} in the response data.
+
+5. Verify if response has a BAD_REQUEST status code by using a negative depth value.
+
+ - a. Execute the GET request over /rest/v1/system/interfaces?depth=-1
+ - b. Verify if the HTTP response is 400 BAD_REQUEST.
+
+6. Verify if response has a BAD_REQUEST status code by using a string depth value.
+
+ - a. Execute the GET request over /rest/v1/system/interfaces?depth=a
+ - b. Verify if the HTTP response is 400 BAD_REQUEST.
+
+7. Verify if returns an interface with specific URI and data in first level of depth.
+
+ - a. Execute the GET request over /rest/v1/system/interfaces/50-1?depth=1
+ - b. Verify if the HTTP response is 200 OK.
+ - c. Validate the first level depth returned interface object has Configuration, Statistics and Status keys present.
+ - d. Ensure that inner data has the URI /rest/v1/system/interfaces/50 in the response data.
+
+8. Verify if returns an interface with specific URI and data in second level of depth.
+
+ - a. Execute the GET request over /rest/v1/system/interfaces/50-1?depth=2
+ - b. Verify if the HTTP response is 200 OK.
+ - c. Validate the first level depth returned interface object has Configuration, Statistics and Status keys present.
+ - d. Validate the second level depth returned interface object has Configuration, Statistics and Status keys present.
+ - e. Ensure that second level of depth inner data has the URIs /rest/v1/system/interfaces/50-{1..4} in the response data.
+
+9. Verify if returns a BAD_REQUEST status code by using a negative depth value with an specific URI.
+
+ - a. Execute the GET request over /rest/v1/system/interfaces/50-1?depth=-1
+ - b. Verify if the HTTP response is 400 BAD_REQUEST.
+
+10. Verify if returns a BAD_REQUEST status code by using a string depth value with an specific URI.
+
+ - a. Execute the GET request over /rest/v1/system/interfaces/50-1?depth=a
+ - b. Verify if the HTTP response is 400 BAD_REQUEST.
+
+11. Verify if returns an interface with specific URI by using depth equals zero.
+
+ - a. Execute the GET request over /rest/v1/system/interfaces/50-1?depth=0
+ - b. Verify if the HTTP response is 200 OK.
+ - c. Validate the first level depth returned interface object has Configuration, Statistics and Status keys present.
+ - d. Ensure that inner data has the URI /rest/v1/system/interfaces/50 in the response data.
+
+12. Verify if returns an interface with specific URI by not using depth parameter.
+
+ - a. Execute the GET request over /rest/v1/system/interfaces/50-1
+ - b. Verify if the HTTP response is 200 OK.
+ - c. Validate the first level depth returned interface object has Configuration, Statistics and Status keys present.
+ - d. Ensure that inner data has the URI /rest/v1/system/interfaces/50 in the response data.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Querying an interface with the specified correct parameters in each step:
+      - A 200 OK HTTP response.
+      - The correct data is returned.
+      - The data for the first and second level of depth is as expected according to the parameters.
+
+- Querying an interface list with the specified correct parameters in each step:
+      - A 200 OK HTTP response.
+      - The data is in the interface list returned as expected.
+
+- Querying an interface list with the specified incorrect parameters, such as negative depth or invalid character such a string, results in a BAD_REQUEST.
+
+- Querying an interface with the specified name and depth parameter equals zero returns a 400 BAD_REQUEST
+
+#### Test fail criteria
+
+This test fails when:
+
+- Querying an interface with the specified correct parameters in each step:
+      - A 200 OK HTTP response is not received.
+      - The incorrect data is returned.
+      - The data for the first and second level of depth is not as expected according to the parameters.
+
+- Querying an interface list with the specified correct parameters in each step:
+      - A 200 OK HTTP response is not received.
+      - The data is not in the interface list returned.
+
+- Querying an interface list with the specified incorrect parameters, such as negative depth or invalid character such a string, results in anything other than BAD_REQUEST.
+
+- Querying an interface with the specified name and depth parameter equals zero returns anything other than BAD_REQUEST
+
+
+## Query port with pagination
+
+### Objective
+The test case verifies:
+
+1. Query all ports with no pagination offset set
+2. Query all ports with no pagination limit set
+3. Query all ports with no pagination offset or limit set
+4. Query all ports with negative pagination offset set
+5. Query all ports with negative pagination limit set
+6. Query all ports with pagination offset set greater than data set's size
+7. Query all ports with pagination offset + limit greater than data set's size
+8. Query specific a port with only pagination offset set
+9. Query specific a port with only pagination limit set
+10. Query specific a port with both pagination offset and limit set
+11. Query first 10 ports using pagination indexes
+11. Query last 10 ports using pagination indexes
+
+
+###  Requirements
+
+Period after exist
+Depth is set to 1 in all queries
+Port list is sorted by name
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has 100 ports (plus the default port named bridge_normal) with the name in the format PortN where N is a number between 0 and 99, each port has the following configuration data:
+
+```
+{
+    "configuration": {
+        "name": "PortN",
+        "interfaces": ["/rest/v1/system/interfaces/1"],
+        "trunks": [413],
+        "ip4_address_secondary": ["192.168.1.1"],
+        "lacp": "active",
+        "bond_mode": "l2-src-dst-hash",
+        "tag": 654,
+        "vlan_mode": "trunk",
+        "ip6_address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+        "external_ids": {"extid1key": "extid1value"},
+        "bond_options": {"key1": "value1"},
+        "mac": "01:23:45:67:89:ab",
+        "other_config": {"cfg-1key": "cfg1val"},
+        "bond_active_slave": "null",
+        "ip6_address_secondary": ["01:23:45:67:89:ab"],
+        "vlan_options": {"opt1key": "opt2val"},
+        "ip4_address": "192.168.0.1",
+        "admin": "up"
+    },
+    "referenced_by": [{"uri": "/rest/v1/system/bridges/bridge_normal"}]
+}
+
+```
+
+### Description
+
+1. Query all ports with no pagination offset set
+
+- a. Execute a GET request over /rest/v1/system/ports with the following parameters: "?depth=1;sort=name;limit=5"
+- b. Verify if the HTTP response is 200 OK.
+- c. Confirm that the returned port list has exactly 5 elements
+- d. Ensure the first port in the list is 'bridge_normal', which means offset defaulted to 0
+
+2. Query all ports with no pagination limit set
+
+- a. Execute a GET request over /rest/v1/system/ports with the following parameters: "?depth=1;sort=name;offset=91"
+- b. Verify if the HTTP response is 200 OK.
+- c. Confirm that the returned port list has exactly 10 elements
+- d. Ensure the first port in the list is 'Port90' and the last one is 'Port99, which means limit defaulted to the remainder size
+
+3. Query all ports with no pagination offset or limit set
+
+- a. Execute a GET request over /rest/v1/system/ports with the following parameters: "?depth=1;sort=name"
+- b. Verify if the HTTP response is 200 OK.
+- c. Confirm that the returned port list has exactly 101 elements
+
+4. Query all ports with negative pagination offset set
+
+- a. Execute a GET request over /rest/v1/system/ports with the following parameters: "?depth=1;sort=name;offset=-1;limit=10"
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+
+5. Query all ports with negative pagination limit set
+
+- a. Execute a GET request over /rest/v1/system/ports with the following parameters: "?depth=1;sort=name;offset=5;limit=-1"
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+
+6. Query all ports with pagination offset set greater than data set's size
+
+- a. Execute a GET request over /rest/v1/system/ports with the following parameters: "?depth=1;sort=name;offset=200"
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+
+7. Query all ports with pagination offset + limit greater than data set's size
+
+- a. Execute a GET request over /rest/v1/system/ports with the following parameters: "?depth=1;sort=name;offset=91;limit=20"
+- b. Verify if the HTTP response is 200 OK.
+- c. Confirm that the returned port list has exactly 10 elements
+- d. Ensure the first port in the list is 'Port90' and the last one is 'Port99, which means limit defaulted to the remainder size
+
+8. Query specific a port with only pagination offset set
+
+- a. Execute a GET request over /rest/v1/system/ports/bridge_normal with the following parameters: "?depth=1;offset=5"
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+
+9. Query specific a port with only pagination limit set
+
+- a. Execute a GET request over /rest/v1/system/ports/bridge_normal with the following parameters: "?depth=1;limit=10"
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+
+10. Query specific a port with both pagination offset and limit set
+
+- a. Execute a GET request over /rest/v1/system/ports/bridge_normal with the following parameters: "?depth=1;offset=0;limit=10"
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+
+11. Query first 10 ports using pagination indexes
+
+- a. Execute a GET request over /rest/v1/system/ports with the following parameters: "?depth=1;sort=name;offset=0;limit=10"
+- b. Verify if the HTTP response is 200 OK.
+- c. Confirm that the returned port list has exactly 10 elements
+- d. Ensure the first port in the list is 'bridge_normal' and the last one is 'Port16'
+
+11. Query last 10 ports using pagination indexes
+
+- a. Execute a GET request over /rest/v1/system/ports with the following parameters: "?depth=1;sort=name;offset=91;limit=10"
+- b. Verify if the HTTP response is 200 OK.
+- c. Confirm that the returned port list has exactly 10 elements
+- d. Ensure the first port in the list is 'Port90' and the last one is 'Port99'
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Querying a port list with the specified correct parameters in each step:
+      - A 200 OK HTTP response.
+      - The correct number of ports is returned.
+      - The first and last ports in the list is as expected according to the parameters.
+
+- Querying a port list with the specified incorrect parameters, such as negative indexes or out of range indexes, results in a BAD_REQUEST.
+
+- Querying bridge_normal with pagination parameters returns a 400 BAD_REQUEST
+
+#### Test fail criteria
+
+This test fails when:
+
+- Querying a port list with the specified correct parameters in each step:
+      - A 200 OK HTTP response is not received.
+      - An incorrect number of ports is returned.
+      - The first and last ports in the list are not as expected according to the parameters.
+
+- Querying a port list with the specified incorrect parameters, such as negative indexes or out of range indexes, results in anything other than BAD_REQUEST.
+
+- Querying bridge_normal with pagination parameters returns anything other than BAD_REQUEST
+
+
+## Sort ports by field
+
+### Objective
+
+This test case verifies if the port list retrieved is sorted by a field.
+
+### Requirements
+
+Period after exist
+Depth is set to 1 in all queries
+
+### Setup
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** with 10 ports with the following configuration data:
+Where index is a number between 1 and 10.
+```
+{
+    "configuration": {
+        "name": "Port-(index)",
+        "interfaces": ["/rest/v1/system/interfaces/1"],
+        "trunks": [413],
+        "ip4_address_secondary": ["192.168.1.{index}"],
+        "lacp": ["active"],
+        "bond_mode": ["l2-src-dst-hash"],
+        "tag": 654,
+        "vlan_mode": "trunk",
+        "ip6_address": ["2001:0db8:85a3:0000:0000:8a2e:0370:{index with format 0000}"],
+        "external_ids": {"extid1key": "extid1value"},
+        "bond_options": {"key1": "value1"},
+        "mac": ["01:23:45:67:89:(index_hex)"],
+        "other_config": {"cfg-1key": "cfg1val"},
+        "bond_active_slave": "null",
+        "ip6_address_secondary": \
+            ["2001:0db8:85a3:0000:0000:8a2e:0371:{index with format 0000}"],
+        "vlan_options": {"opt1key": "opt2val"},
+        "ip4_address": "192.168.0.{index}",
+        "admin": "up"
+    },
+    "referenced_by": [{"uri": "/rest/v1/system/bridges/bridge_normal"}]
+}
+```
+
+### Description
+
+Allowed sort fields:
+```
+name
+interfaces
+trunks
+ip4_address
+ip4_address_secondary
+lacp
+bond_mode
+tag
+vlan_mode
+mac
+bond_active_slave
+ip6_address
+ip6_address_secondary
+admin
+```
+
+Sort by allowed sort field (ascending mode)
+
+For each allowed sort field exececute the following steps:
+1. Execute a GET request on /rest/v1/system/ports?depth=1;sort={field_name} and verify that response is 200 OK.
+2. Verify if the result is being ordered by the provided field name
+
+Sort by allowed sort field (descending mode)
+
+For each allowed sort field exececute the following steps:
+1. Execute a GET request on /rest/v1/system/ports?depth=1;sort=-{field_name} and verify that response is 200 OK.
+2. Verify if the result is being ordered by the provided field name
+
+### Test result criteria
+
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- The HTTP response is 200 OK.
+- The response has 10 ports
+- The ports are sorted ascending/descending by the field name
+
+#### Test fail criteria
+
+This test fails when:
+
+- The HTTP response is not equal to 200 OK.
+- The response doesn't have 10 ports
+- The port aren't sorted ascending/descending by the field name
+
+
+## Sort ports by field combination
+
+### Objective
+
+This test case verifies if the port list retrieved is sorted ascending/descending by a combination of fields.
+
+### Requirements
+
+Period after exist
+Depth is set to 1 in all queries
+
+### Setup
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** with 10 ports with the following configuration data:
+Where index is a number between 1 and 10.
+```
+{
+    "configuration": {
+        "name": "Port-(index)",
+        "interfaces": ["/rest/v1/system/interfaces/1"],
+        "trunks": [413],
+        "ip4_address_secondary": ["192.168.1.{index}"],
+        "lacp": ["active"],
+        "bond_mode": ["l2-src-dst-hash"],
+        "tag": 654,
+        "vlan_mode": "trunk",
+        "ip6_address": ["2001:0db8:85a3:0000:0000:8a2e:0370:{index with format 0000}"],
+        "external_ids": {"extid1key": "extid1value"},
+        "bond_options": {"key1": "value1"},
+        "mac": ["01:23:45:67:89:(index_hex)"],
+        "other_config": {"cfg-1key": "cfg1val"},
+        "bond_active_slave": "null",
+        "ip6_address_secondary": \
+            ["2001:0db8:85a3:0000:0000:8a2e:0371:{index with format 0000}"],
+        "vlan_options": {"opt1key": "opt2val"},
+        "ip4_address": "192.168.0.{index}",
+        "admin": "up"
+    },
+    "referenced_by": [{"uri": "/rest/v1/system/bridges/bridge_normal"}]
+}
+```
+The admin field of each port has the following values:
+```
+Port1: 	 admin = "up"
+Port2: 	 admin = "down"
+Port3: 	 admin = "up"
+Port4: 	 admin = "down"
+Port5: 	 admin = "up"
+Port6: 	 admin = "down"
+Port7: 	 admin = "up"
+Port8: 	 admin = "down"
+Port9: 	 admin = "up"
+Port10:	 admin = "down"
+```
+
+### Description
+Sort by admin and name (Ascending mode)
+
+1. Execute a GET request on /rest/v1/system/ports?depth=1;sort=admin,name and verify that response is 200 OK.
+2. Verify if the result is being ordered by the provided fields. First by admin and the by name.
+
+Sort by admin and name (Descending mode)
+
+1. Execute a GET request on /rest/v1/system/ports?depth=1;sort=-admin,name and verify that response is 200 OK.
+2. Verify if the result is being ordered by the provided fields. First by admin and the by name.
+
+### Test result criteria
+
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- The HTTP response is 200 OK.
+- The response has 10 ports
+- The result is sorted ascending/descending by the combination of fields
+
+Expected result when sort mode is ascending:
+```
+admin = down, name = Port10
+admin = down, name = Port2
+admin = down, name = Port4
+admin = down, name = Port6
+admin = down, name = Port8
+admin = up, name = Port1
+admin = up, name = Port3
+admin = up, name = Port5
+admin = up, name = Port7
+admin = up, name = Port9
+```
+
+Expected result when sort mode is descending:
+```
+admin = up, name = Port9
+admin = up, name = Port7
+admin = up, name = Port5
+admin = up, name = Port3
+admin = up, name = Port1
+admin = down, name = Port8
+admin = down, name = Port6
+admin = down, name = Port4
+admin = down, name = Port2
+admin = down, name = Port10
+```
+
+#### Test fail criteria
+
+The test fails when:
+
+- The HTTP response is not 200 OK.
+- The response doesn't have 10 ports
+- The result is not sorted ascending/descending by the combination of fields
