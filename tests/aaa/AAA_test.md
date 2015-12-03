@@ -1,9 +1,23 @@
 # AAA Feature Test Cases
 
-The following test cases verify AAA configuration in :
+The following test cases verify AAA configuration :
 
-[TOC]
+- [Test Cases](#test-cases)
+	- [Verify login with local authentication](#verify-login-with-local-authentication)
+		- [Test case 1.01 : Verify local authentication](#test-case-1.01-:-verify-local-authentication)
+		- [Test case 1.02 : Verify local authentication with wrong password](#test-case-1.02-:-verify-local-authentication-with-wrong-password)
+	- [Verify login with RADIUS server authentication](#verify-login-with-radius-server-authentication)
+		- [Test case 2.01 : Verify RADIUS authentication with RADIUS credentials](#test-case-2.01-:-verify-radius-authentication-with-radius-credentials)
+		- [Test case 2.02 : Verify RADIUS authentication with wrong RADIUS credentials](#test-case-2.02-:-verify-radius-authentication-with-wrong-radius-credentials)
+	- [Verify fallback to local authentication](#verify-fallback-to-local-authentication)
+		- [Test case 3.01 : Verify fallback to local authentication](#test-case-3.01-:-verify-fallback-to-local-authentication)
+	- [Verify secondary RADIUS server authentication](#verify-secondary-radius-server-authentication)
+		- [Test case 4.01 : Verify authentication with secondary RADIUS server](#test-case-4.01-:-verify-authentication-with-secondary-radius-server)
+	- [Verify SSH authentication method](#verify-ssh-authentication-method)
+		- [Test case 5.01 : Verify SSH public key authentication](#test-case-5.01-:-verify-ssh-public-key-authentication)
+		- [Test case 5.02 : Verify SSH password authentication](#test-case-5.02-:-verify-ssh-password-authentication)
 
+#Test Cases #
 ##  Verify login with local authentication ##
 ### Objective ###
 To configure local authentication and log in with local credentials.
@@ -82,7 +96,7 @@ User is not able to login with wrong RADIUS credentials.
 #### Test Fail Criteria ####
 User is able to login with wrong RADIUS credentials.
 
-##  Verify fallback to local authentication.##
+##  Verify fallback to local authentication##
 ### Objective ###
 Configure RADIUS server and make it un reachable, then authentication falls back to local.
 ### Requirements ###
@@ -115,7 +129,7 @@ User is be able to login with local credentials.
 #### Test Fail Criteria ####
 User is not able to login with local credentials.
 
-##  Verify secondary RADIUS server authentication.##
+##  Verify secondary RADIUS server authentication##
 ### Objective ###
 Configure two RADIUS servers and make first RADIUS server un reachable. Then authentication should happen through secondary RADIUS server.
 ### Requirements ###
@@ -147,7 +161,7 @@ User is be able to login with secondary RADIUS server credentials.
 #### Test Fail Criteria ####
 User is not able to login with secondary RADIUS server credentials.
 
-##  Verify SSH authentication method.##
+##  Verify SSH authentication method##
 ### Objective ###
 Configure SSH authentication method to be either password authentication or public key authentication. Then verify if user authentication is successful.
 ### Requirements ###
