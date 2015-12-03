@@ -162,6 +162,17 @@
         </column>
       </group>
 
+    <group title="Source Interface Selection Configurations">
+        <column name="other_config" key="tftp_source"
+                type='{"type": "string", "maxLength":256}'>
+          Provides source interface or IP address for tftp client. If not present, regular routing rules take place.
+        </column>
+
+        <column name="other_config" key="protocols_source"
+                type='{"type": "string", "maxLength":256}'>
+          Overrides source interface or IP address for all the protocols that support it. If not present, regular routing rules take place.
+        </column>
+      </group>
 
     <group title="LACP Configurations">
       <column name="lacp_config" key="lacp-system-id">
