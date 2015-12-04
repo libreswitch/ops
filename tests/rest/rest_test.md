@@ -872,6 +872,43 @@ Period after exist.
 2. Execute a GET request with /rest/v1/system/ports/Port1 and verify that the response is 200 OK.
 3. confirm that the configuration response data from Step 2 is the same as the configuration data from Step 1.
 
+#### Update port using If-Match
+1. Execute a GET request with /rest/v1/system/ports/Port1 and verify that the response is 200 OK.
+2. Read the entity tag provided by the server
+3. Set the "tag" value to:
+```
+"tag": 601
+```
+4. Execute a PUT request with /rest/v1/system/ports/Port1 including and If-Match Header using entity tag read at step 2
+5. Verify that the response is 200 OK
+6. Confirm that tag value was updated
+
+#### Update port using If-Match (star as etag)
+1. Set the "tag" value to:
+```
+"tag": 602
+```
+2. Execute a PUT request with /rest/v1/system/ports/Port1 including an If-Match Header using '"*"' as entity tag
+3. Verify that the response is 200 OK
+4. Confirm that tag value was updated
+
+#### Update port using If-Match change applied
+1. Execute a GET request with /rest/v1/system/ports/Port1 and verify that the response is 200 OK.
+2. Read the entity tag provided by the server
+2. Execute a PUT request with /rest/v1/system/ports/Port1 including and If-Match Header using entity tag different than the one read at step 2
+3. Verify that the response is 204 NO CONTENT
+
+#### Update port using If-Match Precondition Failed
+1. Execute a GET request with /rest/v1/system/ports/Port1 and verify that the response is 200 OK.
+2. Read the entity tag provided by the server
+3. Set the "tag" value to:
+```
+"tag": 603
+```
+2. Execute a PUT request with /rest/v1/system/ports/Port1 including and If-Match Header using entity tag different than the one read at step 2
+3. Verify that the response is 412 PRECONDITION FAILED
+
+
 #### Update port name
 
 1. Set the name of the port to "Port2"
@@ -998,7 +1035,7 @@ Period after exist.
 2. Execute a PUT request with /rest/v1/system/ports/Port1 and with the port data changed.
 3. Verify that the HTTP response is 400 BAD REQUEST.
 
-##### Valid range for arry type
+##### Valid range for array type
 
 1. Change the "interfaces" value to:
 ```
@@ -1061,6 +1098,20 @@ The test is passing for "updating a port" when the following results occur:
 - The HTTP response is 200 OK when executing a GET request with /rest/v1/system/ports/Port1.
 - The configuration data posted is the same as that of the retrieved port.
 
+The test is passing for "updating a port using If-Match" when the following results occur:
+- The HTTP response is 200 OK.
+- The HTTP response is 200 OK when executing a GET request with /rest/v1/system/ports/Port1.
+- The configuration data posted is the same as that of the retrieved port.
+
+The test is passing for "updating a port using If-Match and * as etag" when the following results occur:
+- The HTTP response is 200 OK.
+- The HTTP response is 200 OK when executing a GET request with /rest/v1/system/ports/Port1.
+- The configuration data posted is the same as that of the retrieved port.
+
+The test is passing for "updating a port using If-Match and a change already applied" when the The HTTP response is 200 OK.
+
+The test is passing for "updating a port using If-Match and a not matching etag" when the The HTTP response is 412 PRECONDITION FAILED
+
 The test is passing for "updating a port with the same name as another port" when the HTTP response is 400 BAD REQUEST.
 
 The test is passing for "updating a port with a valid string type" when the HTTP response is 200 OK.
@@ -1096,6 +1147,20 @@ The test is failing for "updating a port" when the following occurs:
 - The HTTP response is not equal to 200 OK.
 - The HTTP response is not equal to 200 OK when executing a GET request with /rest/v1/system/ports/Port1.
 - The configuration data posted is not the same as the data on the retrieved port.
+
+The test is failing for "updating a port using If-Match" when the following results occur:
+- The HTTP response is not equal to 200 OK.
+- The HTTP response is not equal to 200 OK when executing a GET request with /rest/v1/system/ports/Port1.
+- The configuration data posted is not the same as that of the retrieved port.
+
+The test is failing for "updating a port using If-Match and * as etag" when the following results occur:
+- The HTTP response is 200 OK.
+- The HTTP response is 200 OK when executing a GET request with /rest/v1/system/ports/Port1.
+- The configuration data posted is the same as that of the retrieved port.
+
+The test is failing for "updating a port using If-Match and a change already applied" when the The HTTP response is not equal to 204 NOT CONTENT.
+
+The test is failing for "updating a port using If-Match and a not matching etag" when the The HTTP response is not equal to 412 PRECONDITION FAILED
 
 The test is failing for "updating a port with the same name as another port" when the HTTP response is not equal to 400 BAD REQUEST.
 
@@ -1183,6 +1248,7 @@ Period after exist.
 2. Execute a GET request on /rest/v1/system/ports and verify that the port is being deleted from the port list.
 3. Execute a GET request on /rest/v1/ports/system/Port1 and verify that the HTTP response is 404 NOT FOUND.
 4. Execute a DELETE request on /rest/v1/system/ports/Port2 and ensure that the  HTTP response is 404 NOT FOUND.
+5. Execute a DELETE request on  /rest/v1/system/ports/Port1 using Conditional request If-Match and verify HTTP response is 412 PRECONDITION_FAILED and 204 NOT_CONTENT
 
 ### Test result criteria
 
@@ -1193,7 +1259,10 @@ The test is passing for "deleting an existing port" when the following occurs:
 - The HTTP response is 204 NOT CONTENT.
 - There is no URI "/rest/v1/system/ports/Port1" in the port list that is returned from the /rest/v1/system/ports URI.
 - When doing a GET request on "/rest/v1/system/ports/Port1", the HTTP response is 404 NOT FOUND.
-
+- The HTTP response is 412 PRECONDITION FAILED if Conditional request If-Match provided entity tag does not match the Port entity-tag
+- The HTTP response is 204 NOT CONTENT if Conditional request If-Match provided entity tag matches the Port entity-tag
+- There is no URI "/rest/v1/system/ports/Port1" in the port list that is returned from the /rest/v1/system/ports URI.
+- When doing a GET request on "/rest/v1/system/ports/Port1", the HTTP response is 404 NOT FOUND.
 The test case is passing for "deleting a non-existent" port when the HTTP response is 404 NOT FOUND 1284.
 
 #### Test fail criteria

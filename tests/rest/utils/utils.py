@@ -199,9 +199,10 @@ def execute_port_operations(data, port_name, http_method, operation_uri,
 
     return results
 
-
-def execute_request(path, http_method, data, ip, full_response=False):
+def execute_request(path, http_method, data, ip, full_response=False, xtra_header=None):
     headers = {"Content-type": "application/json", "Accept": "text/plain"}
+    if xtra_header:
+       headers.update(xtra_header)
     conn = httplib.HTTPConnection(ip, 8091)
     conn.request(http_method, path, data, headers)
     response = conn.getresponse()

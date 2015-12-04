@@ -68,6 +68,40 @@ class DeletePortTest (OpsVsiTest):
 
         info("\n########## End Test delete Port ##########\n")
 
+    def delete_port_if_match (self):
+        info("\n########## Test delete Port if-match ##########\n")
+
+        status_code, response_data = execute_request(self.PATH, "POST", json.dumps(PORT_DATA), self.SWITCH_IP)
+        assert status_code == httplib.CREATED, "Error creating a Port. Status code: %s Response data: %s " % (status_code, response_data)
+        info("### Port Created. Status code is 201 CREATED  ###\n")
+
+        response, response_data = execute_request(self.PORT_PATH, "GET", None, self.SWITCH_IP, True)
+        status_code = response.status
+        assert status_code == httplib.OK, "Port %s doesn't exists" % self.PORT_PATH
+
+        etag = response.getheader("Etag")
+        if etag:
+            wrong_etag = etag[::-1]
+        else:
+            wrong_etag = '"abcdef"'
+
+        status_code, response_data = execute_request(self.PORT_PATH, "DELETE", None, self.SWITCH_IP, False, {'If-Match':wrong_etag})
+        assert status_code == httplib.PRECONDITION_FAILED, "Is not sending Precondition failed code. Status code: %s" % status_code
+        info("### Status code is 412 Precondition Failed  ###\n")
+
+        status_code, response_data = execute_request(self.PORT_PATH, "DELETE", None, self.SWITCH_IP, False, {'If-Match':etag})
+        assert status_code == httplib.NO_CONTENT, "Is not sending No Content status code. Status code: %s" % status_code
+        info("### Status code is 204 No Content  ###\n")
+
+        new_path = self.PATH + "/Port2"
+        status_code, response_data = execute_request(new_path, "DELETE", None, self.SWITCH_IP, False, {'If-Match':etag})
+
+        assert status_code == httplib.NOT_FOUND, "Validation failed, is not sending Not Found error. Status code: %s" % status_code
+        info("### Status code is 404 Not Found  ###\n")
+
+        info("\n########## End Test delete Port if-match ##########\n")
+
+
     def verify_deleted_port_from_port_list(self):
         info("\n########## Test Verify if Port is been deleted from port list ##########\n")
         # Verify if port has been deleted from the list
@@ -131,3 +165,7 @@ class Test_DeletePort:
         self.test_var.verify_deleted_port_from_port_list()
         self.test_var.verify_deleted_port()
         self.test_var.delete_non_existent_port()
+
+        self.test_var.delete_port_if_match()
+        self.test_var.verify_deleted_port_from_port_list()
+        self.test_var.verify_deleted_port()
