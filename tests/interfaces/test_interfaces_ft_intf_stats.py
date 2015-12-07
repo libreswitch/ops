@@ -214,24 +214,68 @@ class Test_template:
         i1 = self.vtyconn.cmd("show interface 1")
         i1_new = self.parse_stats(i1)
 
+        # Per request, will put retry loops around tx and rx stats.
         # Verify RX bytes
+        for iteration in range(0, 5):
+            if (i1_new['rx_bytes'] - self.i1_stat['rx_bytes']) >= \
+                (PING_CNT * PING_BYTES):
+                break
+            LogOutput('info',
+                      "Retrying statistic - waiting for rx_bytes to update")
+            Sleep(seconds=5, message="\nWaiting")
+            # grab stats again
+            i1 = self.vtyconn.cmd("show interface 1")
+            i1_new = self.parse_stats(i1)
+        # If we have hit this assert, we have an issue
         assert (i1_new['rx_bytes'] - self.i1_stat['rx_bytes']) >= \
                 (PING_CNT * PING_BYTES), \
                 "rx_bytes wrong. Was %d, is %d" % (self.i1_stat['rx_bytes'], \
                                                    i1_new['rx_bytes'])
 
         # Verify TX bytes
+        for iteration in range(0, 5):
+            if (i1_new['tx_bytes'] - self.i1_stat['tx_bytes']) >= \
+                (PING_CNT * PING_BYTES):
+                break;
+            LogOutput('info',
+                      "Retrying statistic - waiting for tx_bytes to update")
+            Sleep(seconds=5, message="\nWaiting")
+            # grab stats again
+            i1 = self.vtyconn.cmd("show interface 1")
+            i1_new = self.parse_stats(i1)
+
+        # If we have hit this assert, we have an issue
         assert (i1_new['tx_bytes'] - self.i1_stat['tx_bytes']) >= \
                 (PING_CNT * PING_BYTES), \
                 "tx_bytes wrong. Was %d, is %d" % (self.i1_stat['tx_bytes'], \
                                                    i1_new['tx_bytes'])
 
         # Verify RX packets
+        for iteration in range(0, 5):
+            if (i1_new['rx_packets'] - self.i1_stat['rx_packets']) >= PING_CNT:
+                break
+            LogOutput('info',
+                      "Retrying statistic - waiting for rx_packets to update")
+            Sleep(seconds=5, message="\nWaiting")
+            # grab stats again
+            i1 = self.vtyconn.cmd("show interface 1")
+            i1_new = self.parse_stats(i1)
+        # If we have hit this assert, we have an issue
         assert (i1_new['rx_packets'] - self.i1_stat['rx_packets']) >= PING_CNT, \
                 "rx_packets wrong. Was %d, is %d" % (self.i1_stat['rx_packets'], \
                                                    i1_new['rx_packets'])
 
         # Verify TX packets
+        for iteration in range(0, 5):
+            if (i1_new['tx_packets'] - self.i1_stat['tx_packets']) >= PING_CNT:
+                break
+            LogOutput('info',
+                      "Retrying statistic - waiting for tx_packets to update")
+            Sleep(seconds=5, message="\nWaiting")
+            # grab stats again
+            i1 = self.vtyconn.cmd("show interface 1")
+            i1_new = self.parse_stats(i1)
+        # If we have hit this assert, we have an issue
         assert (i1_new['tx_packets'] - self.i1_stat['tx_packets']) >= PING_CNT, \
                 "tx_packets wrong. Was %d, is %d" % (self.i1_stat['tx_packets'], \
                                                    i1_new['tx_packets'])
@@ -308,6 +352,7 @@ class Test_template:
         rc = self.vtyconn.cmd("exit")
         rc = self.vtyconn.cmd("exit")
 
+        Sleep(seconds=10, message="\nWaiting")
         # Baseline the statistics
         LogOutput('info', "Baselining the statistics")
         self.baseline_stats()
