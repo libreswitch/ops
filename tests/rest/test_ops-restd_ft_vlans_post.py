@@ -27,9 +27,11 @@ import urllib
 
 from utils.fakes import *
 from utils.utils import *
+from utils.swagger_test_utility import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
+switch_ip = ""
 
 base_vlan_data = {
     "configuration": {
@@ -76,6 +78,7 @@ class configTest(OpsVsiTest):
 
         self.path = "/rest/v1/system/bridges"
         self.switch_ip = get_switch_ip(self.net.switches[0])
+        switch_ip = self.switch_ip
         self.switch_port = 8091
         self.test_path = "%s/%s/vlans" % (self.path, self.fake_bridge)
 
@@ -522,3 +525,4 @@ class Test_config:
 
     def test_run(self):
         self.test_var.run_all()
+        swagger_model_verification(switch_ip, "/system/bridges/{pid}/vlans", "POST", base_vlan_data)

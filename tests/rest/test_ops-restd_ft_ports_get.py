@@ -26,9 +26,12 @@ import httplib
 import urllib
 
 from utils.utils import *
+from utils.swagger_test_utility import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
+response_get_id = ""
+switch_ip = ""
 
 class myTopo(Topo):
     def build (self, hsts=0, sws=1, **_opts):
@@ -38,6 +41,7 @@ class myTopo(Topo):
 
 class QueryPortTest (OpsVsiTest):
     def setupNet (self):
+        global switch_ip
         self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
                                        sws=NUM_OF_SWITCHES,
                                        hopts=self.getHostOpts(),
@@ -49,6 +53,7 @@ class QueryPortTest (OpsVsiTest):
                                        build=True)
 
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
+        switch_ip = self.SWITCH_IP
         self.PATH = "/rest/v1/system/ports"
         self.PORT_PATH = self.PATH + "/Port1"
 
@@ -78,6 +83,8 @@ class QueryPortTest (OpsVsiTest):
         info("\n########## End Test to Validate first GET all Ports request ##########\n")
 
     def query_port (self):
+        global response_get_id
+
         info("\n########## Test to Validate first GET single Port request ##########\n")
 
         status_code, response_data = execute_request(self.PORT_PATH, "GET", None, self.SWITCH_IP)
@@ -91,6 +98,7 @@ class QueryPortTest (OpsVsiTest):
         json_data = {}
         try:
             json_data = json.loads(response_data)
+            response_get_id = json_data
         except:
             assert False, "Malformed JSON"
 
@@ -143,3 +151,5 @@ class Test_QueryPort:
         self.test_var.query_all_ports()
         self.test_var.query_port()
         self.test_var.query_non_existent_port()
+        print "type = %s\nresponse_get_id = %s" % (type(response_get_id), response_get_id)
+        swagger_model_verification(switch_ip, "/system/ports/{id}", "GET_ID", response_get_id)
