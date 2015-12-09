@@ -78,12 +78,12 @@ class ModifyPortTest (OpsVsiTest):
         put_data["vlan_mode"] = "access"
         put_data["ip6_address"] = "2001:0db8:85a3:0000:0000:8a2e:0370:8225"
         put_data["external_ids"] = {"extid2key": "extid2value"}
-        put_data["bond_options"] = {"key2": "value2"}
+        put_data["bond_options"] = {}
         put_data["mac"] = "01:23:45:63:90:ab"
         put_data["other_config"] = {"cfg-2key": "cfg2val"}
         put_data["bond_active_slave"] = "slave1"
         put_data["ip6_address_secondary"] = ["2001:0db8:85a3:0000:0000:8a2e:0370:7224"]
-        put_data["vlan_options"] = {"opt1key": "opt3val"}
+        put_data["vlan_options"] = {}
         put_data["ip4_address"] = "192.168.1.2"
 
         status_code, response_data = execute_request(self.PORT_PATH, "PUT", json.dumps({'configuration': put_data}), self.SWITCH_IP)

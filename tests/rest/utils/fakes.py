@@ -35,13 +35,13 @@ FAKE_PORT_DATA = """
         "vlan_mode": "trunk",
         "ip6_address": ["2001:0db8:85a3:0000:0000:8a2e:0370:%(index)04d"],
         "external_ids": {"extid1key": "extid1value"},
-        "bond_options": {"key1": "value1"},
+        "bond_options": {},
         "mac": ["01:23:45:67:89:%(index)02x"],
         "other_config": {"cfg-1key": "cfg1val"},
         "bond_active_slave": "null",
         "ip6_address_secondary": \
             ["2001:0db8:85a3:0000:0000:8a2e:0371:%(index)04d"],
-        "vlan_options": {"opt1key": "opt2val"},
+        "vlan_options": {},
         "ip4_address": "192.168.0.%(index)s",
         "admin": "up"
     },
