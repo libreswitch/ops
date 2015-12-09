@@ -1361,7 +1361,7 @@ The test case validates the recursivity through the standard REST API GET method
  - b. Verify if the HTTP response is 200 OK.
  - c. Validate the first level depth returned interface object has Configuration, Statistics and Status keys present.
  - d. Validate the second level depth returned interface object has Configuration, Statistics and Status keys present.
- - e. Ensure that second level of depth inner data has the URIs /rest/v1/system/interfaces/50-{1..4} in the response data.
+ - e. Ensure that second level of depth inner data has the URIs /rest/v1/system/interfaces/50-{1-4} in the response data.
 
 5. Verify if response has a BAD_REQUEST status code by using a negative depth value.
 
@@ -1386,7 +1386,7 @@ The test case validates the recursivity through the standard REST API GET method
  - b. Verify if the HTTP response is 200 OK.
  - c. Validate the first level depth returned interface object has Configuration, Statistics and Status keys present.
  - d. Validate the second level depth returned interface object has Configuration, Statistics and Status keys present.
- - e. Ensure that second level of depth inner data has the URIs /rest/v1/system/interfaces/50-{1..4} in the response data.
+ - e. Ensure that second level of depth inner data has the URIs /rest/v1/system/interfaces/50-{1-4} in the response data.
 
 9. Verify if returns a BAD_REQUEST status code by using a negative depth value with an specific URI.
 
