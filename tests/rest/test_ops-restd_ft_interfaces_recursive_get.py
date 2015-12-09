@@ -118,6 +118,7 @@ class QueryInterfaceDepthTest(OpsVsiTest):
                 "configuration":
                 {
                     "split_parent": [],
+                    "subintf_parent" : [],
                     "name": "50",
                     "other_config": {},
                     "user_config": {},

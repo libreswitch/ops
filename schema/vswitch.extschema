@@ -2465,7 +2465,7 @@
         },
         "subintf_parent": {
           "category": "configuration",
-          "relationship": "m:1",
+          "relationship": "reference",
           "type": {
             "key": {
               "type": "integer",

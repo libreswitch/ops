@@ -52,6 +52,7 @@ INTERFACE_DATA = {
         "other_config": {},
         "name": "50-1",
         "split_parent": ["/rest/v1/system/interfaces/50"],
+        "subintf_parent" : [],
         "options": {},
         "split_children": [],
         "external_ids": {},
