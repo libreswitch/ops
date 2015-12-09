@@ -18,6 +18,7 @@
 import json
 import httplib
 import random
+import urllib
 
 from copy import deepcopy
 
@@ -257,6 +258,23 @@ def random_ip6_address():
     ipv6 = ':'.join('{:x}'.format(random.randint(0, 2 ** 16 - 1))
                     for i in range(8))
     return ipv6
+
+
+def login(dut, user_name, user_password):
+    conn = httplib.HTTPConnection(dut.SWITCH_IP, 8091)
+    url = '/login'
+
+    body = {'username': user_name, 'password': user_password}
+    headers = {"Content-type": "application/x-www-form-urlencoded",
+               "Accept": "text/plain"}
+    conn.request('POST', url, urllib.urlencode(body), headers)
+    response = conn.getresponse()
+    dut.HEADERS = {'Cookie': response.getheader('set-cookie')}
+
+    if not dut.HEADERS['Cookie'] is None:
+        return True
+    else:
+        return False
 
 
 def get_json(response_data):
