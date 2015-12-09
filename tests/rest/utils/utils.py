@@ -257,3 +257,23 @@ def random_ip6_address():
     ipv6 = ':'.join('{:x}'.format(random.randint(0, 2 ** 16 - 1))
                     for i in range(8))
     return ipv6
+
+
+def get_json(response_data):
+    json_data = {}
+    try:
+        json_data = json.loads(response_data)
+    except:
+        assert False, "Malformed JSON"
+
+    return json_data
+
+
+def validate_keys_complete_object(json_data):
+    assert json_data["configuration"] is not None, \
+        "configuration key is not present"
+    assert json_data["statistics"] is not None, \
+        "statistics key is not present"
+    assert json_data["status"] is not None, "status key is not present"
+
+    return True
