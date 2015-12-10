@@ -47,21 +47,6 @@ PORT_DATA = {
 }
 
 
-INTERFACE_DATA = {
-    "configuration": {
-        "other_config": {},
-        "name": "50-1",
-        "split_parent": ["/rest/v1/system/interfaces/50"],
-        "subintf_parent" : [],
-        "options": {},
-        "split_children": [],
-        "external_ids": {},
-        "type": "system",
-        "user_config": {}
-    },
-    "referenced_by": [{"uri": "/rest/v1/system/interfaces?depth=1;name=50-1"}]}
-
-
 def get_switch_ip(switch):
     return switch.cmd("python -c \"import socket;\
                       print socket.gethostbyname(socket.gethostname())\"")
