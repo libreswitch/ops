@@ -26,12 +26,9 @@ import urllib
 
 from utils.utils import *
 from copy import deepcopy
-from utils.swagger_test_utility import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
-switch_ip = ""
-Schema_Path =    "/system/ports"
 
 class myTopo(Topo):
     def build (self, hsts=0, sws=1, **_opts):
@@ -41,7 +38,6 @@ class myTopo(Topo):
 
 class CreatePortTest (OpsVsiTest):
     def setupNet (self):
-        global switch_ip
         self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
                                        sws=NUM_OF_SWITCHES,
                                        hopts=self.getHostOpts(),
@@ -53,7 +49,6 @@ class CreatePortTest (OpsVsiTest):
                                        build=True)
 
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
-        switch_ip = self.SWITCH_IP
         self.PATH = "/rest/v1/system/ports"
         self.PORT_PATH = self.PATH + "/Port1"
 
@@ -271,4 +266,3 @@ class Test_CreatePort:
         self.test_var.verify_missing_attribute()
         self.test_var.verify_unknown_attribute()
         self.test_var.verify_malformed_json()
-        swagger_model_verification(switch_ip, Schema_Path, "POST", PORT_DATA)

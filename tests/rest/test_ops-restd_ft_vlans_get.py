@@ -26,12 +26,9 @@ import urllib
 
 from utils.fakes import *
 from utils.utils import *
-from utils.swagger_test_utility import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
-switch_ip = ""
-response_get_id = ""
 
 
 class myTopo(Topo):
@@ -57,7 +54,6 @@ class configTest(OpsVsiTest):
 
         self.path = "/rest/v1/system/bridges"
         self.switch_ip = get_switch_ip(self.net.switches[0])
-        switch_ip = self.switch_ip
         self.switch_port = 8091
 
     ###########################################################################
@@ -143,7 +139,6 @@ class configTest(OpsVsiTest):
              "(VLAN added) DONE ##########\n")
 
     def test_get_system_bridges_id_vlans_id(self):
-        global response_get_id
         fake_vlan = "fake_vlan_3"
         path = "%s/%s/vlans/%s" % (self.path, self.fake_bridge, fake_vlan)
 
@@ -169,7 +164,6 @@ class configTest(OpsVsiTest):
                                                          None,
                                                          self.switch_ip)
         expected_response = json.loads(response_data)
-        response_get_id = expected_response
 
         assert response_status == httplib.OK, \
             "Response status received: %s\n" % response_status
@@ -248,5 +242,3 @@ class Test_config:
 
     def test_run(self):
         self.test_var.run_all()
-        print "response data %s" % response_get_id
-        swagger_model_verification(switch_ip, "/system/bridges/{pid}/vlans/{id}", "GET_ID", response_get_id)
