@@ -17,7 +17,6 @@
 
 import json
 import httplib
-import urllib
 import random
 
 from copy import deepcopy
@@ -184,12 +183,17 @@ def execute_port_operations(data, port_name, http_method, operation_uri,
 
     return results
 
-def execute_request(path, http_method, data, ip, full_response=False, xtra_header=None):
+
+def execute_request(path, http_method, data, ip, full_response=False,
+                    xtra_header=None):
+
+    url = path.replace(';', '&')
+
     headers = {"Content-type": "application/json", "Accept": "text/plain"}
     if xtra_header:
-       headers.update(xtra_header)
+        headers.update(xtra_header)
     conn = httplib.HTTPConnection(ip, 8091)
-    conn.request(http_method, path, data, headers)
+    conn.request(http_method, url, data, headers)
     response = conn.getresponse()
     status_code, response_data = response.status, response.read()
     conn.close()
