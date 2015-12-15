@@ -110,10 +110,13 @@ class ModifyPortTest (OpsVsiTest):
     def modify_port_if_match (self):
         info("\n##########  Test to Validate Modify Port using if-match ##########\n")
         # 1 - Query port
-        response, response_data = execute_request(self.PORT_PATH, "GET", None, self.SWITCH_IP, True)
+        selector_sufix = "?selector=configuration"
+        cond_path = self.PORT_PATH + selector_sufix
+
+        response, response_data = execute_request(cond_path, "GET", None, self.SWITCH_IP, True)
         status_code = response.status
         etag = response.getheader("Etag")
-        assert status_code == httplib.OK, "Port %s doesn't exists" % self.PORT_PATH
+        assert status_code == httplib.OK, "Port %s doesn't exists" % cond_path
 
         pre_put_get_data = {}
         try:
@@ -127,13 +130,13 @@ class ModifyPortTest (OpsVsiTest):
         put_data["tag"] = 601
 
         #add If-Match: etag to the request
-        status_code, response_data = execute_request(self.PORT_PATH, "PUT", json.dumps({'configuration': put_data}) , self.SWITCH_IP, False, {"If-Match":etag})
+        status_code, response_data = execute_request(cond_path, "PUT", json.dumps({'configuration': put_data}) , self.SWITCH_IP, False, {"If-Match":etag})
         assert status_code == httplib.OK, "Error modifying a Port using if-match option. Status code: %s Response data: %s " % (status_code, response_data)
         info("### Port Modified. Status code 200 OK  ###\n")
 
         # 3 - Verify Modified data
-        status_code, response_data = execute_request(self.PORT_PATH, "GET", None, self.SWITCH_IP)
-        assert status_code == httplib.OK, "Port %s doesn't exists" % self.PORT_PATH
+        status_code, response_data = execute_request(cond_path, "GET", None, self.SWITCH_IP)
+        assert status_code == httplib.OK, "Port %s doesn't exists" % cond_path
         post_put_data = {}
         try:
             post_put_get_data = json.loads(response_data)
@@ -151,8 +154,11 @@ class ModifyPortTest (OpsVsiTest):
     def modify_port_if_match_star (self):
         info("\n########## Test to Validate Modify Port with * as etag   ##########\n")
         # 1 - Query port
-        status_code, response_data = execute_request(self.PORT_PATH, "GET", None, self.SWITCH_IP)
-        assert status_code == httplib.OK, "Port %s doesn't exists" % self.PORT_PATH
+        selector_sufix = "?selector=configuration"
+        cond_path = self.PORT_PATH + selector_sufix
+
+        status_code, response_data = execute_request(cond_path, "GET", None, self.SWITCH_IP)
+        assert status_code == httplib.OK, "Port %s doesn't exists" % cond_path
 
         pre_put_get_data = {}
         try:
@@ -166,13 +172,13 @@ class ModifyPortTest (OpsVsiTest):
         put_data["tag"] = 602
 
         #add If-Match: '"*"' to the request
-        status_code, response_data = execute_request(self.PORT_PATH, "PUT", json.dumps({'configuration': put_data}) , self.SWITCH_IP, False, {'"If-Match"':'"*"'})
+        status_code, response_data = execute_request(cond_path, "PUT", json.dumps({'configuration': put_data}) , self.SWITCH_IP, False, {'"If-Match"':'"*"'})
         assert status_code == httplib.OK, "Error modifying a Port using if-match option. Status code: %s Response data: %s " % (status_code, response_data)
         info("### Port Modified. Status code 200 OK  ###\n")
 
         # 3 - Verify Modified data
-        status_code, response_data = execute_request(self.PORT_PATH, "GET", None, self.SWITCH_IP)
-        assert status_code == httplib.OK, "Port %s doesn't exists" % self.PORT_PATH
+        status_code, response_data = execute_request(cond_path, "GET", None, self.SWITCH_IP)
+        assert status_code == httplib.OK, "Port %s doesn't exists" % cond_path
         post_put_data = {}
         try:
             post_put_get_data = json.loads(response_data)
@@ -190,10 +196,13 @@ class ModifyPortTest (OpsVsiTest):
     def modify_port_if_match_change_applied (self):
         info("\n########## Test to Validate Modify Port with If-Match - change applied   ##########\n")
         # 1 - Query port
-        response, response_data = execute_request(self.PORT_PATH, "GET", None, self.SWITCH_IP, True)
+        selector_sufix = "?selector=configuration"
+        cond_path = self.PORT_PATH + selector_sufix
+
+        response, response_data = execute_request(cond_path, "GET", None, self.SWITCH_IP, True)
         status_code = response.status
         etag = response.getheader("Etag")
-        assert status_code == httplib.OK, "Port %s doesn't exists" % self.PORT_PATH
+        assert status_code == httplib.OK, "Port %s doesn't exists" % cond_path
 
         pre_put_get_data = {}
         try:
@@ -210,13 +219,13 @@ class ModifyPortTest (OpsVsiTest):
             etag = '"abcdef"'
         info(etag)
 
-        status_code, response_data = execute_request(self.PORT_PATH, "PUT", json.dumps({'configuration': put_data}) , self.SWITCH_IP, False, {'If-Match' : etag})
+        status_code, response_data = execute_request(cond_path, "PUT", json.dumps({'configuration': put_data}) , self.SWITCH_IP, False, {'If-Match' : etag})
         assert status_code == httplib.OK, "Error modifying a Port using if-match option. Status code: %s Response data: %s " % (status_code, response_data)
         info("### Port Modified. Status code 200 OK  ###\n")
 
         # 3 - Verify Modified data
-        status_code, response_data = execute_request(self.PORT_PATH, "GET", None, self.SWITCH_IP)
-        assert status_code == httplib.OK, "Port %s doesn't exists" % self.PORT_PATH
+        status_code, response_data = execute_request(cond_path, "GET", None, self.SWITCH_IP)
+        assert status_code == httplib.OK, "Port %s doesn't exists" % cond_path
         post_put_data = {}
         try:
             post_put_get_data = json.loads(response_data)
@@ -234,10 +243,13 @@ class ModifyPortTest (OpsVsiTest):
     def modify_port_if_match_precondition_failed(self):
         info("\n########## Test to Validate Modify Port - Precondition failed   ##########\n")
         # 1 - Query port
-        response, response_data = execute_request(self.PORT_PATH, "GET", None, self.SWITCH_IP, True)
+        selector_sufix = "?selector=configuration"
+        cond_path = self.PORT_PATH + selector_sufix
+
+        response, response_data = execute_request(cond_path, "GET", None, self.SWITCH_IP, True)
         status_code = response.status
         etag = response.getheader("Etag")
-        assert status_code == httplib.OK, "Port %s doesn't exists" % self.PORT_PATH
+        assert status_code == httplib.OK, "Port %s doesn't exists" % cond_path
         info("rec etag = %s", etag)
         pre_put_get_data = {}
         try:
@@ -254,7 +266,7 @@ class ModifyPortTest (OpsVsiTest):
         else:
             etag = '"abcdef"'
 
-        status_code, response_data = execute_request(self.PORT_PATH, "PUT", json.dumps({'configuration': put_data}) , self.SWITCH_IP, False, {"If-Match":etag})
+        status_code, response_data = execute_request(cond_path, "PUT", json.dumps({'configuration': put_data}) , self.SWITCH_IP, False, {"If-Match":etag})
         assert status_code == httplib.PRECONDITION_FAILED, "Error modifying a Port using if-match(precondition failed) option. Status code: %s Response data: %s " % (status_code, response_data)
         info("### Port no Modified. Status code 412 OK  ###\n")
 
