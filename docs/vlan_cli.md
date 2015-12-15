@@ -16,7 +16,7 @@ VLAN commands
 	- [VLAN context commands](#vlan-context-commands)
 		- [Turning on a VLAN](#turning-on-a-vlan)
 		- [Turning off a VLAN](#turning-off-a-vlan)
-	- [Global context commands](#global-context-commands-)
+	- [Global context commands](#global-context-commands)
 		- [Creating a VLAN](#creating-a-vlan)
 		- [Deleting a VLAN](#deleting-a-vlan)
 - [VLAN display commands](#vlan-display-commands)
@@ -24,7 +24,7 @@ VLAN commands
 	- [Displaying a VLAN detail](#displaying-a-vlan-detail)
 
 
-##  VLAN configuration commands
+## VLAN configuration commands
 ### Interface context commands
 #### Assigning an interface to access mode VLAN
 ####Syntax
