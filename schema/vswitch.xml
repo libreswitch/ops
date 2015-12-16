@@ -2655,6 +2655,13 @@
         negotiations <ref table="Interface"/>s with numerically lower
         priorities are preferred for aggregation.
       </column>
+
+      <column name="other_config" key="lacp-aggregation-key"
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+        The LACP aggregation key of this <ref table="Interface"/>. <ref
+        table="Interface"/>s with different aggregation keys may not be active
+        within a given <ref table="Port"/> at the same time.
+      </column>
     </group>
 
     <group title="User Configuration">
