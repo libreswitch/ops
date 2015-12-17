@@ -111,7 +111,6 @@ def restTestSystem(wrkston01):
             "logrotate_config": {},
             "hostname": "openswitch",
             "manager_options": [],
-            "subsystems": ["/rest/v1/system/subsystems/base"],
             "asset_tag_number": "",
             "ssl": [],
             "mgmt_intf": {

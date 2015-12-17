@@ -5,7 +5,7 @@
     "System": {
       "columns": {
         "subsystems": {
-          "category": "configuration",
+          "category": "status",
           "relationship": "1:m",
           "type": {
             "key": {
