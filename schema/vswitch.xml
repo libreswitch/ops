@@ -298,6 +298,17 @@
           Default value is 4.
         </p>
       </column>
+
+      <column name="other_config" key="lldp_reinit"
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 10}'>
+        <p>
+          The amount of time in seconds to wait before performing LLDP
+          initialization on any interface.
+        </p>
+        <p>
+          Default value is 2.
+        </p>
+      </column>
    </group>
 
    </group>
