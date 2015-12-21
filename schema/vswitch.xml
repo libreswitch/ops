@@ -613,6 +613,12 @@
         are true or false based on the user request for authentication. If
         fallback=true, fall to local authentication if radius server is not reachable.
       </column>
+      <column name="aaa" key="ssh_passkeyauthentication_enable" type='{"type": "boolean"}'>
+        Controls whether ssh password based authentication is enabled. Default is true.
+      </column>
+      <column name="aaa" key="ssh_publickeyauthentication_enable" type='{"type": "boolean"}'>
+        Controls whether ssh public key authentication is enabled. Default is true.
+      </column>
       <column name="manager_options">
         Database clients to which the OpenSwitch database server should
         connect or to which it should listen, along with options for how these
