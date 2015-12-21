@@ -9,6 +9,8 @@ LLDP Commands
 	- [Clear LLDP neighbor details](#clear-lldp-neighbor-details)
 	- [Set LLDP holdtime](#set-lldp-holdtime)
 	- [Set LLDP holdtime to default](#set-lldp-holdtime-to-default)
+	- [Set LLDP reinit delay](#set-lldp-reinit-delay)
+	- [Set LLDP reinit delay to default](#set-lldp-reinit-delay-to-default)
 	- [Set Management IP address](#set-management-ip-address)
 	- [Remove Management IP address](#remove-management-ip-address)
 	- [Select TLVs](#select-tlvs)
@@ -117,6 +119,38 @@ No parameters.
 ops-as5712# configure terminal
 ops-as5712(config)# no lldp holdtime
 ```
+
+### Set LLDP reinit delay
+#### Syntax
+`lldp reinit <time>`
+#### Description
+This command sets the amount of time (in seconds) to wait before performing LLDP initialization on any interface.
+#### Authority
+All users.
+#### Parameters
+| Parameter | Status   | Syntax         | Description                           |
+|:-----------|:----------|:----------------:|:---------------------------------------|
+| *time* | Required | 1-10 | Select reinit delay between 1 and 10 seconds.
+#### Examples
+```
+ops-as5712# configure terminal
+ops-as5712(config)# lldp reinit 5
+```
+### Set LLDP reinit delay to default
+#### Syntax
+`no lldp reinit`
+#### Description
+This command resets to default value the amount of time to wait before performing LLDP initialization on any interface. The default value is 2 seconds.
+#### Authority
+All users.
+#### Parameters
+No parameters.
+#### Examples
+```
+ops-as5712# configure terminal
+ops-as5712(config)# no lldp reinit
+```
+
 ### Set Management IP address
 #### Syntax
 `lldp management-address ( <ipv4_address> | <ipv6_address>)`
@@ -422,7 +456,7 @@ Neighbor entries age-out       : 0
 Neighbor Chassis-Name          : HP-3800-24G-PoEP-2XG
 Neighbor Chassis-Description   : HP J9587A 3800-24G-PoE+-2XG Switch, revision KA.15.15.0006, ROM KA.15.09 (/ws/swbuildm/rel_nashville_qaoff/code/build/tam(swbuildm_rel_nashville_qaoff_rel_nashville))
 Neighbor Chassis-ID            : 10:60:4b:39:3e:80
-Management-Address             : 192.168.1.1
+Neighbor Management-Address    : 192.168.1.1
 Chassis Capabilities Available : Bridge, Router
 Chassis Capabilities Enabled   : Bridge
 Neighbor Port-ID               : 1
@@ -493,7 +527,7 @@ ops-as5712# show lldp local-device
 Global Data
 ---------------
 
-Chasis-id              : 48:0f:cf:af:50:c9
+Chassis-id             : 48:0f:cf:af:50:c9
 System Name            : switch
 System Description     : OpenSwitch 0.1.0 (basil) Linux 3.9.11 #1 SMP Fri Sep 11 19:46:19 UTC 2015 x86_64
 Management Address     : 120.92.155.52
@@ -508,7 +542,7 @@ If port 1 is administratively down and the link state is up, global info and onl
 Global Data
 ---------------
 
-Chasis-id              : 48:0f:cf:af:50:c9
+Chassis-id             : 48:0f:cf:af:50:c9
 System Name            : switch
 System Description     : OpenSwitch 0.1.0 (basil) Linux 3.9.11 #1 SMP Fri Sep 11 19:46:19 UTC 2015 x86_64
 Management Address     : 120.92.155.52
@@ -531,7 +565,7 @@ The VLAN is configured in access mode (vlan access 100).
 Global Data
 ---------------
 
-Chasis-id              : 48:0f:cf:af:50:c9
+Chassis-id             : 48:0f:cf:af:50:c9
 System Name            : switch
 System Description     : OpenSwitch 0.1.0 (basil) Linux 3.9.11 #1 SMP Fri Sep 11 19:46:19 UTC 2015 x86_64
 Management Address     : 120.92.155.52
@@ -554,7 +588,7 @@ The VLAN is configured in trunk mode (vlan trunk 200 300).
 Global Data
 ---------------
 
-Chasis-id              : 48:0f:cf:af:50:c9
+Chassis-id             : 48:0f:cf:af:50:c9
 System Name            : switch
 System Description     : OpenSwitch 0.1.0 (basil) Linux 3.9.11 #1 SMP Fri Sep 11 19:46:19 UTC 2015 x86_64
 Management Address     : 120.92.155.52
@@ -577,7 +611,7 @@ The VLAN is configured in native tagged or untagged mode (vlan native 100, vlan 
 Global Data
 ---------------
 
-Chasis-id              : 48:0f:cf:af:50:c9
+Chassis-id             : 48:0f:cf:af:50:c9
 System Name            : switch
 System Description     : OpenSwitch 0.1.0 (basil) Linux 3.9.11 #1 SMP Fri Sep 11 19:46:19 UTC 2015 x86_64
 Management Address     : 120.92.155.52

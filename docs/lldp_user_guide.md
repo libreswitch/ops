@@ -13,6 +13,7 @@ LLDP
 		- [Viewing LLDP Neighbors](#viewing-lldp-neighbors)
 		- [Viewing LLDP statistics](#viewing-lldp-statistics)
 		- [Viewing LLDP TLVs](#viewing-lldp-tlvs)
+		- [Viewing LLDP local device information](#viewing-lldp-local-device-information)
 	- [Troubleshooting the configuration](#troubleshooting-the-configuration)
 - [CLI](#cli)
 - [Related features](#related-features)
@@ -83,14 +84,26 @@ ops-as5712(config)# no lldp holdtime
 ops-as5712(config)#
 ```
 
-3. Setting the ip to be used in the Management Address TLV.
-The `lldp management-address` command specifies the ip to be used in  management address LLDP type-length-value (TLV) triplets.
+3. Set the LLDP reinitialization delay value.
+The `lldp reinit` command sets the amount of time to wait before performing LLDP initialization on any interface.
+```
+ops-as5712(config)# lldp reinit 5
+ops-as5712(config)#
+```
+The `no lldp reinit` command reverts the reinitialization delay value to its default of two seconds.
+```
+ops-as5712(config)# no lldp reinit
+ops-as5712(config)#
+```
+
+4. Set the IP address to be used in the Management Address TLV.
+The `lldp management-address` command specifies the IP address used in the management address LLDP type-length-value (TLV) triplets. If this command is not configured, the IP address assigned to the management interface will be used in the management address LLDP type-length-value (TLV) triplets.
 ```
 ops-as5712(config)# lldp management-address 16.93.49.1
 ops-as5712(config)#
 ```
 
-4. Select LLDP TLV.
+5. Select LLDP TLV.
 The `lldp select-tlv` command configures the type, length, and value (TLV) to send and receive in LLDP packets. The `no lldp select-tlv` command removes the TLV configuration.
 ```
 ops-as5712(config)# lldp select-tlv system-capabilities
@@ -99,14 +112,14 @@ ops-as5712(config)# lldp select-tlv port-description
 ops-as5712(config)#
 ```
 
-5. Clearing the LLDP Counters.
+6. Clearing the LLDP Counters.
 The `lldp clear counters` command resets the LLDP traffic counters to zero.
 ```
 ops-as5712(config)# lldp clear counters
 ops-as5712(config)#
 ```
 
-6. Clearing the LLDP neighbor information.
+7. Clearing the LLDP neighbor information.
 The `lldp clear neighbors` command clears neighbor information.
 ```
 ops-as5712(config)# lldp clear neighbors
@@ -213,7 +226,7 @@ ops-as5712#
 ```
 
 ##### Viewing LLDP TLVs
-The 'show lldp tlv' command displays the LLDP TLVs to be sent and received.
+The `show lldp tlv` command displays the LLDP TLVs to be sent and received.
 ```
 ops-as5712# show lld tlv
 
@@ -228,6 +241,32 @@ System capabilities
 System description
 System name
 ops-as5712#
+```
+
+##### Viewing LLDP local device information
+The `show lldp local-device` command displays the information advertised by the switch if the LLDP feature is enabled by the user. For example:
+```
+ops-as5712# show lldp local-device
+
+Global Data
+---------------
+
+Chassis-id              : 48:0f:cf:af:50:c9
+System Name            : switch
+Systen Description     : OpenSwitch 0.1.0 (basil) Linux 3.9.11 #1 SMP Fri Sep 11 19:46:19 UTC 2015 x86_64
+Management Address     : 120.92.155.52
+Capabilities Available : Bridge, Router
+Capabilities Enabled   : Bridge, Router
+TTL                    : 120
+
+Port Based Data:
+----------------
+
+Port-ID           : 1
+Port-Description  : "1"
+Port VLAN Id      : 100
+VLAN-Ids          : 100
+VLAN Name         : VLAN100
 ```
 
 ### Troubleshooting the configuration
