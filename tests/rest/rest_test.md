@@ -12,7 +12,8 @@ REST API Test Cases
 - [REST API login authentication](#rest-api-login-authentication)
 - [REST API startup config verify](#rest-api-startup-config-verify)
 - [REST API get method for users](#rest-api-get-method-for-users)
-- [REST API delete method for a user](#rest-api-delete-method-for-a-user)
+- [REST API delete method for users](#rest-api-delete-method-for-users)
+- [REST API put method for users](#rest-api-put-method-for-users)
 - [Query port](#query-port)
 - [Create a port](#create-a-port)
 - [Update a port](#update-a-port)
@@ -423,7 +424,7 @@ This tests passes by meeting the following criteria:
 - A 400 BAD REQUEST HTTP response.
 - The incorrect data is returned.
 
-##  REST API delete method for a user
+##  REST API delete method for users
 
 ### Objective
 The objective of the test case is to validate the "/rest/v1/system/users/{id}" through the standard RESTAPI DELETE method.
@@ -511,6 +512,158 @@ This test fails when:
 - Deleting a user who is not part of the ovsdb_users group, the following error message or anything other than a `400 BAD REQUEST` HTTP response is displayed:
 
  A `204 NO CONTENT` HTTP response.
+
+##  REST API put method for users
+
+### Objective
+The objective of the test case is to validate the "/rest/v1/system/users/{id}" through the standard RESTAPI PUT method.
+
+### Requirements
+The requirements for this test case are:
+- OpenSwitch
+- Ubuntu Workstation
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** must have a user to test with the following configuration data:
+
+```
+{
+    "configuration":
+    {
+        "username": "test_user_0"
+        "password": "test"
+    }
+}
+```
+
+### Description
+The test case validates the "/rest/v1/system/users/{id}" through the standard RESTAPI PUT method.
+
+1. Verify that the request passes when trying to update the password of a user, who is also part of ovsdb_users group but is not logged in.
+ a. Execute the PUT request over /rest/v1/system/users/{id} with the following data:
+```
+{
+        "configuration":
+        {
+            "password": "test_password"
+        }
+}
+```
+ b. Verify if the HTTP response is `200 OK`.
+ c. Confirm that the user can log in with the new password.
+
+2. Verify that the request fails when trying to update a user with an empty password, and the user is part of the ovsdb_users group.
+ a. Execute the PUT request over /rest/v1/system/users/{id} with the following data:
+```
+{
+        "configuration":
+        {
+            "password": ""
+        }
+}
+```
+ b. Verify if the HTTP response is `400 BAD REQUEST`.
+ c. Confirm that the user can still log in with the current password.
+
+3. Verify that the request fails when trying to update a nonexistent user.
+ a. Execute the PUT request over /rest/v1/system/users/{id} with the following data:
+```
+{
+        "configuration":
+        {
+            "password": "test_password"
+        }
+}
+```
+ b. Verify if the HTTP response is `400 BAD REQUEST`.
+
+4. Verify that the request fails after trying to update the password of a user who is not part of the ovsdb_users group.
+ a. Execute the PUT request over /rest/v1/system/users/{id} with the following data:
+```
+{
+        "configuration":
+        {
+            "password": "test_password"
+        }
+}
+```
+ b. Verify if the HTTP response is `400 BAD REQUEST`.
+
+5. Verify that the request fails after trying to update the password of a user who is part of the ovsdb_users group and then try to log in with the old password.
+ a. Execute the PUT request over /rest/v1/system/users/{id} with the following data:
+```
+{
+        "configuration":
+        {
+            "password": "test_password"
+        }
+}
+```
+ b. Verify if the HTTP response is `200 OK`.
+ c. Confirm that the user cannot log in with the old password.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- The following message is displayed when trying to update a valid user that has a proper password and is part of ovsb_users group:
+
+ A `200 OK` HTTP response.
+
+- The following error message is displayed when trying to update a valid user that has an incorrect password and is part of ovsb_users group:
+
+ A `400 BAD REQUEST` HTTP response.
+
+- The following error message is displayed when trying to update a nonexistent user:
+
+ A `400 BAD REQUEST` HTTP response.
+
+- The following error message is displayed when trying to update a authorized user that has a valid password but is not part of ovsb_users group:
+
+ A `400 BAD REQUEST` HTTP response.
+
+- The following error message is displayed when trying to log in with the old password instead of the recently updated password:
+
+ A `400 BAD REQUEST` HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- The following error message is displayed when trying to update an authorized user that has a proper password and is part of ovsb_users group:
+
+Anything other than  a `200 OK` HTTP response.
+
+- The following message is displayed when trying to update a valid user that has an incorrect password and is a part of ovsb_users group:
+
+Anything other than  a `400 BAD REQUEST` HTTP response.
+
+- The following message is displayed when trying to update an nonexistent user:
+
+Anything other than  a `400 BAD REQUEST` HTTP response.
+
+- The following message is displayed when trying to update an authorized user that has a valid password, but is not part of ovsb_users group:
+
+Anything other than  a `400 BAD REQUEST` HTTP response.
+
+- The following message is displayed when trying to log in with an old password instead of the recently updated password:
+
+Anything other than  a `400 BAD REQUEST` HTTP response.
 
 REST API ports Resource test cases
 ==================================
@@ -2004,4 +2157,3 @@ The test fails when:
 - The HTTP response is not 200 OK.
 - The response doesn't have 10 ports
 - The result is not sorted ascending/descending by the combination of fields
-
