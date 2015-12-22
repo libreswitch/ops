@@ -12,16 +12,17 @@ REST API Test Cases
 - [REST API login authentication](#rest-api-login-authentication)
 - [REST API startup config verify](#rest-api-startup-config-verify)
 - [REST API get method for users](#rest-api-get-method-for-users)
+- [REST API post method for users](#rest-api-post-method-for-users)
 - [REST API delete method for users](#rest-api-delete-method-for-users)
 - [REST API put method for users](#rest-api-put-method-for-users)
-- [Query port](#query-port)
-- [Create a port](#create-a-port)
-- [Update a port](#update-a-port)
-- [Delete a port](#delete-a-port)
-- [Query interface using recursive GET](#query-interface-using-recursive-get)
-- [Query port with pagination](#query-port-with-pagination)
-- [Sort ports by field](#sort-ports-by-field)
-- [Sort ports by field combination](#sort-ports-by-field-combination)
+- [REST API get method for ports](#rest-api-get-method-for-ports)
+- [REST API post method for ports](#rest-api-post-method-for-ports)
+- [REST API put method for ports](#rest-api-put-method-for-ports)
+- [REST API delete method for ports](#rest-api-delete-method-for-ports)
+- [REST API get method with recursion support for interfaces](#rest-api-get-method-with-recursion-for-interfaces)
+- [REST API get method with pagination for ports](#rest-api-get-method-with-pagination-for-ports]
+- [REST API get method and sort by field for ports](#rest-api-get-method-and-sort-by-field-for-ports)
+- [REST API get method and sort by field combination for ports](#rest-api-get-method-and-sort-by-field-combination-for-ports)
 
 ##  REST API put, get methods for system
 ### Objective
@@ -424,6 +425,258 @@ This tests passes by meeting the following criteria:
 - A 400 BAD REQUEST HTTP response.
 - The incorrect data is returned.
 
+## REST API post method for users
+
+### Objective
+The objective of the test is to validate the "/rest/v1/system/users" through the standard REST-API POST method
+
+### Requirements
+The requirements for this test case are:
+- OpenSwitch
+- Ubuntu Workstation
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+### Description
+The test case validates the "/rest/v1/system/users" through the standard REST-API POST method.
+
+1. Verify that the request passes when trying to create a new user with a valid username and password.
+ - a. Execute the POST request over /rest/v1/system/users with the following data:
+```
+{
+    "configuration":
+        {
+        "username": "test_user",
+        "password": "test_password"
+        }
+}
+```
+ - b. Verify if the HTTP response is 201 CREATED.
+ - c. Execute a GET request over /rest/v1/system/users.
+ - d. Confirm that the user is in the returned user list.
+
+2. Verify that the request passes when trying to create a new user with a 32 characters username:
+ - a. Execute the POST request over /rest/v1/system/users with the following data:
+```
+{
+    "configuration":
+        {
+        "username": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "password": "test_password"
+        }
+}
+```
+ - b. Verify if the HTTP response is 201 CREATED.
+ - c. Execute a GET request over /rest/v1/system/users.
+ - d. Confirm that the user is in the returned user list.
+
+3. Verify that the request fails when trying to create a new user with an empty username:
+
+ - a. Execute the POST request over /rest/v1/system/users with the following data:
+```
+{
+    "configuration":
+        {
+        "username": "",
+        "password": "test_password"
+        }
+}
+```
+ - b. Verify if the HTTP response is 400 BAD REQUEST.
+
+4. Verify that the request fails when trying to create a new user with a space as username:
+
+ - a. Execute the POST request over /rest/v1/system/users with the following data:
+```
+{
+    "configuration":
+        {
+        "username": " ",
+        "password": "test_password"
+        }
+}
+```
+ - b. Verify if the HTTP response is 400 BAD REQUEST.
+
+5. Verify that the request fails when trying to create a new user with an username longer than 32 characters:
+
+ - a. Execute the POST request over /rest/v1/system/users with the following data:
+```
+{
+    "configuration":
+        {
+        "username": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "password": "test_password"
+        }
+}
+```
+ - b. Verify if the HTTP response is 400 BAD REQUEST.
+
+6. Verify that the request fails when trying to create a new user with an username that contains the following not allowed symbols: #(){}[]?\~/+-*=|^$%.;,:"´
+
+ - a. Execute the POST request over /rest/v1/system/users with each of the not allowed symbols
+ - b. Verify if the HTTP response is 400 BAD REQUEST.
+
+7. Verify that the request passes when trying to create a new user with a long password
+
+ - a. Execute the POST request over /rest/v1/system/users with the following data:
+```
+{
+    "configuration":
+        {
+        "username": "test_user",
+        "password": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+}
+```
+ - b. Verify if the HTTP response is 201 CREATED.
+ - c. Execute a GET request over /rest/v1/system/users.
+ - d. Confirm that the user is in the returned user list.
+
+8. Verify that the request fails when trying to create a new user with a empty username and password
+
+ - a. Execute the POST request over /rest/v1/system/users with the following data:
+```
+{
+    "configuration":
+        {
+        "username": "",
+        "password": ""
+        }
+}
+```
+ - b. Verify if the HTTP response is 400 BAD REQUEST.
+
+9. Verify that the request fails when trying to create a new user with a valid username and empty password
+
+ - a. Execute the POST request over /rest/v1/system/users with the following data:
+```
+{
+    "configuration":
+        {
+        "username": "test_user",
+        "password": ""
+        }
+}
+```
+ - b. Verify if the HTTP response is 400 BAD REQUEST.
+
+10. Verify that the request fails when trying to create an existent user
+
+ - a. Execute the POST request over /rest/v1/system/users with the following data:
+```
+{
+    "configuration":
+        {
+        "username": "existent_user",
+        "password": "password"
+        }
+}
+```
+ - b. Execute the POST request over /rest/v1/system/users with the same data that (a):
+ - c. Verify if the HTTP response is 400 BAD REQUEST.
+
+11. Verify that the request passes when trying to create two user with the same password and check if hashed password is different in the shadow file.
+
+ - a. Execute the POST request over /rest/v1/system/users with the following data:
+```
+{
+    "configuration":
+        {
+        "username": "test_user_pass_1",
+        "password": "same_password"
+        }
+}
+```
+ - b. Verify if the HTTP response is 201 CREATED.
+ - c. Execute the POST request over /rest/v1/system/users with the following data:
+```
+{
+    "configuration":
+        {
+        "username": "test_user_pass_2",
+        "password": "same_password"
+        }
+}
+```
+ - d. Verify if the HTTP response is 201 CREATED.
+ - e. Execute a GET request over /rest/v1/system/users.
+ - f. Confirm that the users is in the returned user list.
+ - g. Read the /etc/shadow file and the users hashed password.
+ - h. Verify if both hashed password are different.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- The following message is displayed when trying to create a valid user:
+
+ A `201 CREATED` HTTP response.
+
+- The following error message is displayed when trying to create an user with and invalid username (empty, a space, invalid characters, more than 32 characters)
+
+ A `400 BAD REQUEST` HTTP response.
+
+- The following message is displayed when trying to create an user with a long password.
+
+ A `201 CREATED` HTTP response.
+
+- The following error message is displayed when trying to create an user with an empty username and password
+
+ A `400 BAD REQUEST` HTTP response.
+
+- The following error message is displayed when trying to create an user with a valid username and empty password
+
+ A `400 BAD REQUEST` HTTP response.
+
+- The following error message is displayed when trying to create an existent user
+
+ A `400 BAD REQUEST` HTTP response.
+
+- Creating two users with the differents usernames and same password, both users have the different hashed passwords in the /etc/shadow file.
+
+#### Test fail criteria
+
+This test fails when:
+
+- The following message or anything other than `201 CREATED` is displayed when trying to create user with a valid username:
+
+ A `201 CREATED` HTTP response.
+
+- The following error message or anything other than `400 BAD REQUEST` is displayed when trying to create an user with an invalid username (empty, a space, invalid characters, more than 32 characters)
+
+ A `400 BAD REQUEST` HTTP response.
+
+- The following message or anything other than `201 CREATED` is displayed when trying to create user with a long password:
+
+ A `201 CREATED` HTTP response.
+
+- The following error message or anything other than `400 BAD REQUEST` is displayed when trying to create user with an empty username and password:
+
+ A `400 BAD REQUEST` HTTP response.
+
+- The following error message or anything other than `400 BAD REQUEST` is displayed when trying to create user with a valid username and empty password:
+
+ A `400 BAD REQUEST` HTTP response.
+
+- The following error message or anything other than `400 BAD REQUEST` is displayed when trying to create user an existent user:
+
+ A `400 BAD REQUEST` HTTP response.
+
+- Creating two users with the differents usernames and same password, both users have the same hashed passwords in the /etc/shadow file.
+
 ##  REST API delete method for users
 
 ### Objective
@@ -491,7 +744,7 @@ This test passes by meeting the following criteria:
 
  A `400 BAD REQUEST` HTTP response.
 
-- The following error message is displayed when trying to delete a user who is not part of ovsdb_users group:
+- The following error message is displayed when trying to delete an user who is not part of ovsdb_users group:
 
  A `400 BAD REQUEST` HTTP response.
 
@@ -509,7 +762,7 @@ This test fails when:
 
 - Deleting a nonexistent user anything other than a `400 BAD REQUEST` HTTP response is displayed.
 
-- Deleting a user who is not part of the ovsdb_users group, the following error message or anything other than a `400 BAD REQUEST` HTTP response is displayed:
+- Deleting an user who is not part of the ovsdb_users group, the following error message or anything other than a `400 BAD REQUEST` HTTP response is displayed:
 
  A `204 NO CONTENT` HTTP response.
 
@@ -538,7 +791,7 @@ The requirements for this test case are:
 
 #### Test setup
 
-** Switch 1 ** must have a user to test with the following configuration data:
+** Switch 1 ** must have an user to test with the following configuration data:
 
 ```
 {
@@ -553,7 +806,7 @@ The requirements for this test case are:
 ### Description
 The test case validates the "/rest/v1/system/users/{id}" through the standard RESTAPI PUT method.
 
-1. Verify that the request passes when trying to update the password of a user, who is also part of ovsdb_users group but is not logged in.
+1. Verify that the request passes when trying to update the password of an user, who is also part of ovsdb_users group but is not logged in.
  a. Execute the PUT request over /rest/v1/system/users/{id} with the following data:
 ```
 {
@@ -566,7 +819,7 @@ The test case validates the "/rest/v1/system/users/{id}" through the standard RE
  b. Verify if the HTTP response is `200 OK`.
  c. Confirm that the user can log in with the new password.
 
-2. Verify that the request fails when trying to update a user with an empty password, and the user is part of the ovsdb_users group.
+2. Verify that the request fails when trying to update an user with an empty password, and the user is part of the ovsdb_users group.
  a. Execute the PUT request over /rest/v1/system/users/{id} with the following data:
 ```
 {
@@ -591,7 +844,7 @@ The test case validates the "/rest/v1/system/users/{id}" through the standard RE
 ```
  b. Verify if the HTTP response is `400 BAD REQUEST`.
 
-4. Verify that the request fails after trying to update the password of a user who is not part of the ovsdb_users group.
+4. Verify that the request fails after trying to update the password of an user who is not part of the ovsdb_users group.
  a. Execute the PUT request over /rest/v1/system/users/{id} with the following data:
 ```
 {
@@ -603,7 +856,7 @@ The test case validates the "/rest/v1/system/users/{id}" through the standard RE
 ```
  b. Verify if the HTTP response is `400 BAD REQUEST`.
 
-5. Verify that the request fails after trying to update the password of a user who is part of the ovsdb_users group and then try to log in with the old password.
+5. Verify that the request fails after trying to update the password of an user who is part of the ovsdb_users group and then try to log in with the old password.
  a. Execute the PUT request over /rest/v1/system/users/{id} with the following data:
 ```
 {
@@ -668,7 +921,7 @@ Anything other than  a `400 BAD REQUEST` HTTP response.
 REST API ports Resource test cases
 ==================================
 
-## Query port
+## REST API get method for ports
 
 ### Objective
 The test case verifies queries for:
@@ -777,7 +1030,7 @@ This test fails when:
 
 - Querying for a non-existent port and the HTTP response is not equal to 404 NOT FOUND.
 
-## Create a port
+## REST API post method for ports
 
 ### Objective
 
@@ -1093,7 +1346,7 @@ The test is failing for "creating a new port with malformed json data" when the 
 The test is failing for "creating a new port with well-formed json data" when the HTTP response is not equal to 201 CREATED.
 
 
-## Update a port
+## REST API put method for ports
 
 ### Objective
 
@@ -1502,7 +1755,7 @@ The test is failing for "updating a port with malformed json data" when the HTTP
 The test is failing for "updating a port with well-formed json data" when the HTTP response is not equal to 200 OK.
 
 
-## Delete a port
+## REST API delete method for ports
 
 ### Objective
 
@@ -1587,7 +1840,7 @@ The test is passing for "deleting an existing port" when the following occurs:
 The test case is failing for "deleting a non-existent port" when the HTTP response is not equal to 404 NOT FOUND.
 
 
-## Query interface using recursive GET
+## REST API get method with recursion for interfaces
 
 ### Objective
 The test case verifies queries for:
@@ -1759,7 +2012,7 @@ This test fails when:
 - Querying an interface with the specified name and depth parameter equals zero returns anything other than BAD_REQUEST
 
 
-## Query port with pagination
+## REST API get method with pagination for ports
 
 ### Objective
 The test case verifies:
@@ -1929,7 +2182,7 @@ This test fails when:
 - Querying bridge_normal with pagination parameters returns anything other than BAD_REQUEST
 
 
-## Sort ports by field
+## REST API get method and sort by field for ports
 
 ### Objective
 
@@ -2034,7 +2287,7 @@ This test fails when:
 - The port aren't sorted ascending/descending by the field name
 
 
-## Sort ports by field combination
+## REST API get method and sort by field combination for ports
 
 ### Objective
 

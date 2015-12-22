@@ -21,6 +21,7 @@ import random
 import urllib
 
 from copy import deepcopy
+from string import rstrip
 
 PORT_DATA = {
     "configuration": {
@@ -48,8 +49,10 @@ PORT_DATA = {
 
 
 def get_switch_ip(switch):
-    return switch.cmd("python -c \"import socket;\
-                      print socket.gethostbyname(socket.gethostname())\"")
+    switch_ip = switch.cmd("python -c \"import socket;\
+                            print socket.gethostbyname(socket.gethostname())\"")
+    switch_ip = switch_ip.rstrip("\r\n")
+    return switch_ip
 
 
 def create_test_port(ip):
