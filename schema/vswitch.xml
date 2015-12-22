@@ -553,6 +553,21 @@
         </p>
       </column>
 
+      <column name="software_info" key="os_name">
+        <p>
+          This column is used for the software info. The value of the key
+          'os_name' will identify the operating system, without a version
+          component, and suitable for presentation to the user. If not set,
+          defaults to <code>os_name=OpenSwitch</code>. Example:
+          <code>os_name=Fedora</code> or
+          <code>os_name="Debian GNU/Linux"</code>.  This is equivalent of
+          <code>NAME</code> variable of the <code>/etc/os-release</code>
+          file.  Please refer to
+          <code>http://www.freedesktop.org/software/systemd/man/os-release.html</code>
+          for more detailed information.
+        </p>
+      </column>
+
       <column name="software_info" key="bios_release_date">
       </column>
 
