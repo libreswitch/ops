@@ -74,7 +74,7 @@ class myTopo (Topo):
 
 ###############################################################################
 #                                                                             #
-#   Common Tests topology                                                     #
+#   Filter bridge_normal VLANs by name                                        #
 #                                                                             #
 ###############################################################################
 class FilterVlanTestByName (OpsVsiTest):
@@ -336,7 +336,7 @@ class TestGetFilterVlanByDescription:
 
 ###############################################################################
 #                                                                             #
-#   Common Tests topology                                                     #
+#   Filter bridge_normal VLANs by admin                                       #
 #                                                                             #
 ###############################################################################
 class FilterVlanByAdmin (OpsVsiTest):

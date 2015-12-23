@@ -71,7 +71,7 @@ class QueryDefaultBridgeNormal(OpsVsiTest):
         expected_data = ["/rest/v1/system/bridges/%s" % DEFAULT_BRIDGE]
         path = "/rest/v1/system/bridges"
 
-        info("\n########## Executing GET for /system/bridges ##########\n")
+        info("\n########## Executing GET to /system/bridges ##########\n")
         info("Testing Path: %s\n" % path)
 
         response_status, response_data = execute_request(path,
@@ -86,7 +86,7 @@ class QueryDefaultBridgeNormal(OpsVsiTest):
             "Response data received: %s\n" % response_data
         info("Response data received: %s\n" % response_data)
 
-        info("########## Executing GET for /system/bridges DONE ##########\n")
+        info("########## Executing GET to /system/bridges DONE ##########\n")
 
 
 class TestGetDefaultBridgeNormal:
@@ -138,7 +138,7 @@ class QueryNoVlansAssociated(OpsVsiTest):
     def test(self):
         path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
 
-        info("\n########## Executing GET for /system/bridges/{id}/vlans "
+        info("\n########## Executing GET to /system/bridges/{id}/vlans "
              "(No VLANs added) ##########\n")
         info("Testing path: %s\n" % path)
 
@@ -154,7 +154,7 @@ class QueryNoVlansAssociated(OpsVsiTest):
         assert json.loads(response_data) == []
         info("Response data received: %s\n" % response_data)
 
-        info("########## Executing GET for /system/bridges/{id}/vlans "
+        info("########## Executing GET to /system/bridges/{id}/vlans "
              "(No VLANs added) DONE ##########\n")
 
 
@@ -186,7 +186,7 @@ class TestGetNoVlansAssociated:
 
 ###############################################################################
 #                                                                             #
-#   VLANs Associated to bridge_normal                                         #
+#   Retrieve VLANs Associated from bridge_normal                              #
 #                                                                             #
 ###############################################################################
 class QueryVlansAssociated(OpsVsiTest):
@@ -211,7 +211,7 @@ class QueryVlansAssociated(OpsVsiTest):
         expected_data = ["%s/%s" % (self.vlan_path, self.vlan_name)]
         path = self.vlan_path
 
-        info("\n########## Executing GET for /system/bridges/{id}/vlans "
+        info("\n########## Executing GET to /system/bridges/{id}/vlans "
              "(VLAN added) ##########\n")
         info("Testing path: %s\n" % path)
 
@@ -228,7 +228,7 @@ class QueryVlansAssociated(OpsVsiTest):
             "Response data received: %s\n" % response_data
         info("Response data received: %s" % response_data)
 
-        info("########## Executing GET for /system/bridges/{id}/vlans "
+        info("########## Executing GET to /system/bridges/{id}/vlans "
              "(VLAN added) DONE ##########\n")
 
 
@@ -265,7 +265,7 @@ class TestGetVlansAssociated:
 
 ###############################################################################
 #                                                                             #
-#   Retrieve VLAN by name from fake_bridge                                    #
+#   Retrieve VLAN by name from bridge_normal                                  #
 #                                                                             #
 ###############################################################################
 class QueryVlanByName(OpsVsiTest):
@@ -297,7 +297,7 @@ class QueryVlanByName(OpsVsiTest):
         expected_configuration_data["other_config"] = {}
         expected_configuration_data["external_ids"] = {}
 
-        info("\n########## Executing GET for /system/bridges/{id}/vlans/ "
+        info("\n########## Executing GET to /system/bridges/{id}/vlans/ "
              "{id} ##########\n")
         info("Testing path: %s\n" % path)
 
@@ -315,7 +315,7 @@ class QueryVlanByName(OpsVsiTest):
                             expected_configuration_data), \
             "Response data received: %s\n" % response_data
 
-        info("########## Executing GET for /system/bridges/{id}/vlans/{id} "
+        info("########## Executing GET to /system/bridges/{id}/vlans/{id} "
              "DONE ##########\n")
 
 
@@ -352,7 +352,7 @@ class TestGetVlanByName:
 
 ###############################################################################
 #                                                                             #
-#   Query VLAN by name not associated to fake_bridge                          #
+#   Retrieve VLAN by name not associated from bridge_normal                   #
 #                                                                             #
 ###############################################################################
 class QueryNonExistentVlanByName(OpsVsiTest):
@@ -375,7 +375,7 @@ class QueryNonExistentVlanByName(OpsVsiTest):
     def test(self):
         path = "%s/%s" % (self.vlan_path, self.vlan_name)
 
-        info("\n########## Executing GET for /system/bridges/{id}/vlans/{id} "
+        info("\n########## Executing GET to /system/bridges/{id}/vlans/{id} "
              "##########\n")
         info("Testing path: %s\n" % path)
 
@@ -392,7 +392,7 @@ class QueryNonExistentVlanByName(OpsVsiTest):
             "Response data received: %s" % response_data
         info("Response data received: %s\n" % response_data)
 
-        info("########## Executing GET for /system/bridges/{id}/vlans/{id} "
+        info("########## Executing GET to /system/bridges/{id}/vlans/{id} "
              "DONE ##########\n")
 
 

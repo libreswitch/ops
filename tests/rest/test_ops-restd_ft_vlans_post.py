@@ -35,7 +35,7 @@ base_vlan_data = {
     "configuration": {
         "name": "test",
         "id": 1,
-        "description": "test vlan",
+        "description": "test_vlan",
         "admin": ["up"],
         "other_config": {},
         "external_ids": {}
@@ -69,7 +69,7 @@ class myTopo(Topo):
 
 ###############################################################################
 #                                                                             #
-#   Create a fake vlan to fake_bridge                                         #
+#   Create a fake vlan to bridge_normal                                       #
 #                                                                             #
 ###############################################################################
 class CreateBasicVlan(OpsVsiTest):
@@ -150,7 +150,7 @@ class TestPostBasicVlan:
 
 ###############################################################################
 #                                                                             #
-#   Create a VLAN to fake_bridge using an invalid name                        #
+#   Create a VLAN to bridge_normal using an invalid name                      #
 #                                                                             #
 ###############################################################################
 class CreateVlanInvalidName(OpsVsiTest):
@@ -237,7 +237,7 @@ class TestPostVlanInvalidName:
 
 ###############################################################################
 #                                                                             #
-#   Create a VLAN to fake_bridge using an invalid ID                          #
+#   Create a VLAN to bridge_normal using an invalid ID                        #
 #                                                                             #
 ###############################################################################
 class CreateVlanInvalidId(OpsVsiTest):
@@ -324,7 +324,7 @@ class TestPostVlanInvalidId:
 
 ###############################################################################
 #                                                                             #
-#   Create a VLAN to fake_bridge using an invalid description                 #
+#   Create a VLAN to bridge_normal using an invalid description               #
 #                                                                             #
 ###############################################################################
 class CreateVlanInvalidDescription(OpsVsiTest):
@@ -412,7 +412,7 @@ class TestPostVlanInvalidDescription:
 
 ###############################################################################
 #                                                                             #
-#   Create a VLAN to fake_bridge using an invalid admin                       #
+#   Create a VLAN to bridge_normal using an invalid admin                     #
 #                                                                             #
 ###############################################################################
 class CreateVlanInvalidAdmin(OpsVsiTest):
@@ -499,7 +499,7 @@ class TestPostVlanInvalidAdmin:
 
 ###############################################################################
 #                                                                             #
-#   Create a VLAN to fake_bridge using an invalid other_config                #
+#   Create a VLAN to bridge_normal using an invalid other_config              #
 #                                                                             #
 ###############################################################################
 class CreateVlanInvalidOtherConfig(OpsVsiTest):
@@ -587,7 +587,7 @@ class TestPostVlanInvalidOtherConfig:
 
 ###############################################################################
 #                                                                             #
-#   Create a VLAN to fake_bridge using an invalid external_ids                #
+#   Create a VLAN to bridge_normal using an invalid external_ids              #
 #                                                                             #
 ###############################################################################
 class CreateVlanInvalidExternalIds(OpsVsiTest):
@@ -675,7 +675,7 @@ class TestPostVlanInvalidExternalIds:
 
 ###############################################################################
 #                                                                             #
-#   Create a VLAN to fake_bridge with missing fields                          #
+#   Create a VLAN to bridge_normal with missing fields                        #
 #                                                                             #
 ###############################################################################
 class CreateVlanMissingFields(OpsVsiTest):
@@ -755,7 +755,7 @@ class TestPostVlanMissingFields:
 
 ###############################################################################
 #                                                                             #
-#   Create a VLAN that already exits                                          #
+#   Create a VLAN that already exits to bridge_normal                         #
 #                                                                             #
 ###############################################################################
 class CreateVlanDuplicated(OpsVsiTest):
