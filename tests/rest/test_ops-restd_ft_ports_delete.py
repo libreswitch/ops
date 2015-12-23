@@ -168,7 +168,6 @@ class Test_DeletePort:
         self.test_var.verify_deleted_port()
         self.test_var.delete_non_existent_port()
         # If Match Tests
-        # TODO Fix this test because it fails randomly
-        # self.test_var.delete_port_if_match()
-        # self.test_var.verify_deleted_port_from_port_list()
-        # self.test_var.verify_deleted_port()
+        self.test_var.delete_port_if_match()
+        self.test_var.verify_deleted_port_from_port_list()
+        self.test_var.verify_deleted_port()
