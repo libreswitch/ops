@@ -17,7 +17,7 @@ System commands
 
 
 ## System configuration commands
-###  Setting the fan speed
+### Setting the fan speed
 #### Syntax
 `fan-speed < normal | slow | medium | fast | maximum >`
 

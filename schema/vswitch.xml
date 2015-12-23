@@ -146,6 +146,18 @@
         </p>
       </column>
 
+      <column name="other_config" key="cli_session_timeout"
+              type='{"type": "integer", "minInteger": 0, "maxInteger": 43200}'>
+        <p>
+            This key specifies cli idle session timeout in minutes.
+            Set this value to 0 to disable session timeout.
+        </p>
+        <p>
+            Default value is 30.
+        </p>
+      </column>
+
+
       <group title="TFTP Server Configurations">
         <column name="other_config" key="tftp_server_enable"
                 type='{"type": "boolean"}'>
@@ -161,6 +173,15 @@
           would be enabled. This config is valid only if TFTP server is enabled.
         </column>
       </group>
+
+    <group title="SFTP Server Configurations">
+        <column name="other_config" key="sftp_server_enable"
+                type='{"type": "boolean"}'>
+        Set this value to <code>true</code> to enable SFTP server
+        and to set to <code>false</code> to disable it. If not set, SFTP server
+        would be disabled by default.
+       </column>
+    </group>
 
     <group title="Source Interface Selection Configurations">
         <column name="other_config" key="tftp_source"
@@ -591,6 +612,12 @@
         This column used for AAA feature. The valid values for the key 'fallback'
         are true or false based on the user request for authentication. If
         fallback=true, fall to local authentication if radius server is not reachable.
+      </column>
+      <column name="aaa" key="ssh_passkeyauthentication_enable" type='{"type": "boolean"}'>
+        Controls whether ssh password based authentication is enabled. Default is true.
+      </column>
+      <column name="aaa" key="ssh_publickeyauthentication_enable" type='{"type": "boolean"}'>
+        Controls whether ssh public key authentication is enabled. Default is true.
       </column>
       <column name="manager_options">
         Database clients to which the OpenSwitch database server should
@@ -2627,6 +2654,13 @@
         The LACP port priority of this <ref table="Interface"/>.  In LACP
         negotiations <ref table="Interface"/>s with numerically lower
         priorities are preferred for aggregation.
+      </column>
+
+      <column name="other_config" key="lacp-aggregation-key"
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+        The LACP aggregation key of this <ref table="Interface"/>. <ref
+        table="Interface"/>s with different aggregation keys may not be active
+        within a given <ref table="Port"/> at the same time.
       </column>
     </group>
 

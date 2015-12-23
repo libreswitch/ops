@@ -2,15 +2,17 @@ REST API Test Cases
 ===================
 
 ## Contents
-- [REST API put, get methods for URL "/rest/v1/system"](#rest-api-put-get-methods-for-url-restv1system)
-- [REST API get method for URl "/rest/v1/system/subsystems"](#rest-api-get-method-for-url-restv1systemsubsystems)
-- [REST API put, get, delete methods for URL "/rest/v1/system/interfaces/{id}"](#rest-api-put-get-delete-methods-for-url-restv1systeminterfacesid)
-- [REST API get method for URL "/rest/v1/system/vrfs"](#rest-api-get-method-for-url-restv1systemvrfs)
-- [REST API get method for URL "/rest/v1/system/route_maps/{id}"](#rest-api-get-method-for-url-restv1systemroutemapsid)
-- [REST API get method for URL "/rest/v1/system/interfaces"](#rest-api-get-method-for-url-restv1systeminterfaces)
+- [REST API put, get methods for system](#rest-api-put,-get-methods-for-system)
+- [REST API get method for subsystems](#rest-api-get-method-for-subsystems)
+- [REST API put, get, delete methods for an interface](#rest-api-put,-get,-delete-methods-for-an-interface)
+- [REST API get method for VRFS](#rest-api-get-method-for-vrfs)
+- [REST API get method for route maps](#rest-api-get-method-for-route-maps)
+- [REST API get method for interfaces](#rest-api-get-method-for-interfaces)
 - [REST API put method with invalid data for URLs](#rest-api-put-method-with-invalid-data-for-urls)
 - [REST API login authentication](#rest-api-login-authentication)
 - [REST API startup config verify](#rest-api-startup-config-verify)
+- [REST API get method for users](#rest-api-get-method-for-users)
+- [REST API delete method for a user](#rest-api-delete-method-for-a-user)
 - [Query port](#query-port)
 - [Create a port](#create-a-port)
 - [Update a port](#update-a-port)
@@ -20,7 +22,7 @@ REST API Test Cases
 - [Sort ports by field](#sort-ports-by-field)
 - [Sort ports by field combination](#sort-ports-by-field-combination)
 
-##  REST API put, get methods for URL "/rest/v1/system"
+##  REST API put, get methods for system
 ### Objective
 The objective of the test case is to configure the system through the Standard REST API PUT Method.
 ### Requirements
@@ -40,6 +42,8 @@ The requirements for this test case are:
 ### Description
 Configure the system through the Standard REST API PUT method.
 
+** URL "/rest/v1/system" **
+
 > **STEPS:**
 
 > 1. Connect OpenSwitch to the Ubuntu workstation as shown in the topology diagram.
@@ -58,7 +62,7 @@ Configure the system through the Standard REST API PUT method.
 - The first test fails if the standard REST API PUT method does not return HTTP code 200 for the URI "/rest/v1/system".
 - The second test fails if the standard REST API GET method does not return HTTP code 200 for the URI "/rest/v1/system" or the returned data is not identical to the data used for PUT.
 
-##  REST API get method for URl "/rest/v1/system/subsystems"
+##  REST API get method for subsystems
 ### Objective
 The objective of the test case is to validate the subsystem through the standard REST API GET method.
 ### Requirements
@@ -78,6 +82,8 @@ The requirements for this test case are:
 ### Description
 This test case validates the subsystem through the standard REST API GET method.
 
+** URL "/rest/v1/system/subsystems" **
+
 > **STEPS:**
 
 > 1. Connect OpenSwitch to the Ubuntu workstation as shown in the topology diagram.
@@ -92,7 +98,7 @@ The test passes if the standard REST API GET method returns HTTP code 200 for th
 #### Test fail criteria
 The test case is fails if the standard REST API GET method does not return the HTTP code 200 for the URI "/rest/v1/system/subsystems".
 
-##  REST API put, get, delete methods for URL "/rest/v1/system/interfaces/{id}"
+##  REST API put, get, delete methods for an interface
 ### Objective
 The objective of the test case is to validate the "/rest/v1/system/interfaces/{id}" through the standard REST API GET method.
 ### Requirements
@@ -142,7 +148,7 @@ The objective of the test case is to validate the "/rest/v1/system/interfaces/{i
 - The third test fails if the standard REST API DELETE method does not return HTTP code 204 for the URI "/rest/v1/system/interfaces/{id}".
 - The fourth test fails if the standard REST API GET method returns HTTP code 200 OK for the URI "/rest/v1/system/interfaces/{id}".
 
-##  REST API get method for URL "/rest/v1/system/vrfs"
+##  REST API get method for VRFS
 ### Objective
 The objective of this test case is to validate the "/rest/v1/system/vrfs" through the standard REST API GET method.
 ### Requirements
@@ -176,7 +182,7 @@ The test case is passes if the standard REST API GET method returns HTTP code 20
 #### Test fail criteria
 The test case fails if the standard REST API GET method does not return HTTP code 200 for the URI "/rest/v1/system/vrfs".
 
-##  REST API get method for URL "/rest/v1/system/route_maps/{id}"
+##  REST API get method for route maps
 ### Objective
 The objective of this test case is to validate the "/rest/v1/system/route_maps/{id}" through the standard REST API GET method.
 ### Requirements
@@ -195,6 +201,7 @@ The requirements for this test case are:
 ```
 ### Description
 The test case validates the "/rest/v1/system/route_maps/{id}" through the standard REST API GET method.
+
 > **STEPS:**
 
 > 1. Connect OpenSwitch to the Ubuntu workstation as shown in the topology diagram.
@@ -209,7 +216,7 @@ This test case passes if the standard REST API GET method returns HTTP code 200 
 #### Test fail criteria
 This test case fails if the standard REST API GET method does not return HTTP code 200 for the URI "/rest/v1/system/route_maps/{id}".
 
-##  REST API get method for URL "/rest/v1/system/interfaces"
+##  REST API get method for interfaces
 ### Objective
 The objective of the test case is to validate the "/rest/v1/system/interfaces" through the standard RESTAPI GET method.
 ### Requirements
@@ -353,6 +360,157 @@ Verify that the REST API startup configuration works.
 #### Test fail criteria
 - The first test fails if the standard REST API PUT method does not return HTTP code 200 for the URI "/rest/v1/system".
 - The second test fails if the standard REST API GET method does not return HTTP code 200 for the URI "/rest/v1/system" or the returned data is not identical to the data used for PUT.
+
+##  REST API get method for users
+
+### Objective
+The objective of the test case is to validate the "/rest/v1/system/users" through the standard RESTAPI GET method.
+
+### Requirements
+The requirements for this test case are:
+
+- OpenSwitch
+- Ubuntu Workstation
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+### Description
+
+The test case validates the "/rest/v1/system/users" through the standard RESTAPI GET method.
+
+1. Verify if the GET method returns a json object with a list of users by creating 100 new users that are part of ovsdb_users group.
+ - a. Execute the GET request over /rest/v1/system/users.
+ - b. Verify if the HTTP response is 200 OK.
+ - c. Confirm that the returned user list has the expected data.
+
+2. Verify if the GET method returns a json object with a list of users by creating 11 new users and only 10 are part of ovsdb_users group.
+ - a. Execute the GET request over /rest/v1/system/users.
+ - b. Verify if the HTTP response is 200 OK.
+ - c. Confirm that the returned user list has the expected data.
+
+3. Verify if the GET method returns a json object with a list of users by creating 10 new users that are part of ovsdb_users group and have extra arguments in the creation command.
+ - a. Execute the GET request over /rest/v1/system/users.
+ - b. Verify if the HTTP response is 200 OK.
+ - c. Confirm that the returned user list has the expected data.
+
+4. Verify if the GET method returns a json object with the default user.
+ - a. Execute the GET request over /rest/v1/system/users.
+ - b. Verify if the HTTP response is 200 OK.
+ - c. Confirm that the returned user list has the expected data.
+
+
+### Test result criteria
+#### Test pass criteria
+
+This tests passes by meeting the following criteria:
+
+- A 200 OK HTTP response.
+- The correct data is returned.
+
+#### Test fail criteria
+
+- A 400 BAD REQUEST HTTP response.
+- The incorrect data is returned.
+
+##  REST API delete method for a user
+
+### Objective
+The objective of the test case is to validate the "/rest/v1/system/users/{id}" through the standard RESTAPI DELETE method.
+
+### Requirements
+The requirements for this test case are:
+- OpenSwitch
+- Ubuntu Workstation
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+### Description
+The test case validates the "/rest/v1/system/users/{id}" through the standard RESTAPI DELETE method.
+
+1. Verify that the request passes when trying to delete a new user who is part of ovsdb_users group and is not logged in.
+ - a. Execute the DELETE request over /rest/v1/system/users/{id}.
+ - b. Verify if the HTTP response is 204 NO CONTENT.
+ - c. Confirm that the returned user list has the expected data.
+
+2. Verify that the request fails when trying to delete a new user who is part of ovsdb_users group and is logged in.
+ - a. Execute the DELETE request over /rest/v1/system/users/{id}.
+ - b. Verify if the HTTP response is 400 BAD REQUEST.
+ - c. Confirm that the returned user list has the expected data.
+
+3. Verify that the request fails when trying to delete the current user and is logged in.
+ - a. Execute the DELETE request over /rest/v1/system/users/{id}.
+ - b. Verify if the HTTP response is 400 BAD REQUEST.
+ - c. Confirm that the returned user list has the expected data.
+
+4. Verify that the request fails after trying to delete a nonexistent user.
+ - a. Execute the DELETE request over /rest/v1/system/users/{id}.
+ - b. Verify if the HTTP response is 400 BAD REQUEST.
+
+5. Verify that the request fails after trying to delete a new user who is not part of the ovsdb_users group.
+ - a. Execute the DELETE request over /rest/v1/system/users/{id}.
+ - b. Verify if the HTTP response is 400 BAD REQUEST.
+ - c. Confirm that the returned user list has the expected data.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- The following error message is displayed when trying to delete a valid user that is currently not logged:
+
+ A `204 NO CONTENT` HTTP response.
+
+- The following error message is displayed when trying to delete a valid user currently logged in:
+
+ A `400 BAD REQUEST` HTTP response.
+
+- The following error message is displayed when trying to delete a nonexistent user:
+
+ A `400 BAD REQUEST` HTTP response.
+
+- The following error message is displayed when trying to delete a user who is not part of ovsdb_users group:
+
+ A `400 BAD REQUEST` HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- The following error message or anything other than `204 NO CONTENT` is displayed when trying to delete a valid user currently not logged:
+
+ A `400 BAD REQUEST` HTTP response.
+
+- Deleting a valid user currently logged in, the following error message or anything other than `400 BAD REQUEST`is displayed:
+
+ A `204 NO CONTENT` HTTP response.
+
+- Deleting a nonexistent user anything other than a `400 BAD REQUEST` HTTP response is displayed.
+
+- Deleting a user who is not part of the ovsdb_users group, the following error message or anything other than a `400 BAD REQUEST` HTTP response is displayed:
+
+ A `204 NO CONTENT` HTTP response.
 
 REST API ports Resource test cases
 ==================================
@@ -1846,3 +2004,4 @@ The test fails when:
 - The HTTP response is not 200 OK.
 - The response doesn't have 10 ports
 - The result is not sorted ascending/descending by the combination of fields
+
