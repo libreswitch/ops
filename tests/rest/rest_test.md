@@ -20,9 +20,36 @@ REST API Test Cases
 - [REST API put method for ports](#rest-api-put-method-for-ports)
 - [REST API delete method for ports](#rest-api-delete-method-for-ports)
 - [REST API get method with recursion support for interfaces](#rest-api-get-method-with-recursion-for-interfaces)
-- [REST API get method with pagination for ports](#rest-api-get-method-with-pagination-for-ports]
+- [REST API get method with pagination for ports](#rest-api-get-method-with-pagination-for-ports)
 - [REST API get method and sort by field for ports](#rest-api-get-method-and-sort-by-field-for-ports)
 - [REST API get method and sort by field combination for ports](#rest-api-get-method-and-sort-by-field-combination-for-ports)
+- [REST API VLANs Resource test cases](#rest-api-vlans-resource-test-cases)
+    - [Query Bridge Normal](#query-bridge-normal)
+    - [Query existent VLANs](#query-existent-vlans)
+    - [Query existent VLAN by name](#query-existent-vlan-by-name)
+    - [Query non-existent VLAN by name](#query-non-existent-vlan-by-name)
+    - [Create VLAN](#create-vlan)
+    - [Create VLAN using an invalid name](#create-vlan-using-an-invalid-name)
+    - [Create VLAN using an invalid ID](#create-vlan-using-an-invalid-id)
+    - [Create VLAN using an invalid Description](#create-vlan-using-an-invalid-description)
+    - [Create VLAN using an invalid Admin](#create-vlan-using-an-invalid-admin)
+    - [Create VLAN using an invalid Other_Config](#create-vlan-using-an-invalid-other_config)
+    - [Create VLAN using an invalid External_IDS](#create-vlan-using-an-invalid-external_ids)
+    - [Create VLAN with missing fields](#create-vlan-with-missing-fields)
+    - [Create a duplicated VLAN](#create-a-duplicated-vlan)
+    - [Update VLAN name](#update-vlan-name)
+    - [Update VLAN using an invalid name](#update-vlan-using-an-invalid-name)
+    - [Update VLAN using an invalid ID](#update-vlan-using-an-invalid-id)
+    - [Update VLAN using an invalid Description](#update-vlan-using-an-invalid-description)
+    - [Update VLAN using an invalid Admin](#update-vlan-using-an-invalid-admin)
+    - [Update VLAN using an invalid Other_Config](#update-vlan-using-an-invalid-other_config)
+    - [Update VLAN using an invalid External_IDS](#update-vlan-using-an-invalid-external_ids)
+    - [Update VLAN with missing fields](#update-vlan-with-missing-fields)
+    - [Delete non-existent VLAN](#delete-non-existent-vlan)
+    - [Query VLANs filtered by name](#query-vlans-filtered-by-name)
+    - [Query VLANs filtered by ID](#query-vlans-filtered-by-id)
+    - [Query VLANs filtered by Description](#query-vlans-filtered-by-description)
+    - [Query VLANs filtered by Admin](#query-vlans-filtered-by-admin)
 
 ##  REST API put, get methods for system
 ### Objective
@@ -2410,3 +2437,2931 @@ The test fails when:
 - The HTTP response is not 200 OK.
 - The response doesn't have 10 ports
 - The result is not sorted ascending/descending by the combination of fields
+
+REST API VLANs Resource test cases
+==================================
+
+## Query Bridge Normal
+
+### Objective
+The test case verifies queries for:
+
+- Bridge Normal is present
+
+###  Requirements
+
+Bridge Normal exists
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+
+### Description
+
+1. Verify if bridge_normal was created sucessfully.
+
+- a. Execute the GET request over /rest/v1/system/bridges.
+- b. Verify if the HTTP response is 200 OK.
+- c. Verify if the response data is not empty.
+- d. Verify if /rest/v1/system/bridges/bridge_normal is returned within the response data.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Querying bridges for:
+    -A 200 OK HTTP response.
+    -At least one bridge in the bridge list.
+    -A URI "/rest/v1/system/bridges/bridge_normal" in the bridge list returned from the "/rest/v1/system/bridges" URI.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Querying a bridge for:
+    - An HTTP response is not equal to 200 OK
+    - A GET request to "/rest/v1/system/bridges" and "/rest/v1/system/bridges/bridge_normal" is in the Bridges URI list.
+
+## Query non-existent VLANs
+
+### Objective
+The test case verifies queries for:
+
+- Non-existent VLANs in bridge_normal
+
+###  Requirements
+
+- Bridge Normal exists
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+
+### Description
+
+1. Verify if VLAN was queried sucessfully.
+
+- a. Execute the GET request over "/rest/v1/system/bridges/bridge_normal".
+- b. Verify if the HTTP response is 200 OK.
+- c. Verify if the HTTP response data is empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+-Querying VLANs for:
+    -A 200 OK HTTP response.
+    -No VLANs in VLANs URI list.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Querying a VLAN for:
+    - An HTTP response is not equal to 200 OK
+    - A GET request to "rest/v1/system/bridges/bridge_normal" and the VLANs URI list is not empty.
+
+## Query existent VLANs
+
+### Objective
+The test case verifies queries for:
+
+- Existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+- A test VLAN added to bridge normal
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+** Switch 1 ** a test VLAN has to be addded with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "fake_vlan",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+1. Verify if VLAN was queried sucessfully.
+
+- a. Execute the GET request over "/rest/v1/system/bridges/bridge_normal".
+- b. Verify if the HTTP response is 200 OK.
+- c. Verify if the HTTP response is not empty.
+- d. Verify if "/rest/v1/system/bridges/bridge_normal/vlans/fake_vlan" is in the VLAN URI list.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Querying VLAN for:
+    -A 200 OK HTTP response.
+    -Correct data is returned within the response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Querying a VLAN for:
+    - An HTTP response is not equal to 200 OK
+    - A GET request to "rest/v1/system/bridges/bridge_normal" and "/rest/v1/system/bridges/bridge_normal/vlans/fake_vlan" is not within VLANs URI list.
+
+## Query existent VLAN by name
+
+### Objective
+The test case verifies queries for:
+
+- Existent VLANs with name specified
+
+###  Requirements
+
+- Bridge Normal exists
+- A test VLAN added to bridge normal
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+** Switch 1 ** a test VLAN has to be addded with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "fake_vlan",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+1. Verify if VLAN was queried sucessfully.
+
+- a. Execute the GET request over "/rest/v1/system/bridges/bridge_normal/vlans/fake_vlan".
+- b. Verify if the HTTP response is 200 OK.
+- c. Verify if the HTTP response is not empty.
+- d. Verify if the HTTP response data equals test VLAN in the "Configuration" section.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Querying VLANs for:
+    - A 200 OK HTTP response.
+    - Correct data is returned within the response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Querying a VLAN for:
+    - An HTTP response is not equal to 200 OK
+    - A GET request to "rest/v1/system/bridges/bridge_normal" and info about "/rest/v1/system/bridges/bridge_normal/vlans/fake_vlan" is not within the HTTP response.
+
+## Query non-existent VLAN by name
+
+### Objective
+The test case verifies queries for:
+
+- Non-existent VLAN with name specified
+
+###  Requirements
+
+- Bridge Normal exists
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+
+### Description
+
+1. Verify if VLAN was queried unsucessfully.
+
+- a. Execute the GET request over "/rest/v1/system/bridges/bridge_normal/vlans/not_found".
+- b. Verify if the HTTP response is 404 NOT_FOUND.
+- c. Verify if the HTTP response is empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Querying VLANs for:
+    - A 404 NOT_FOUND HTTP response.
+    - No VLAN is returned with the HTTP response data.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Querying a VLAN for:
+   - An HTTP response is not equal to 404 NOT_FOUND
+   - A GET request to "rest/v1/system/bridges/bridge_normal/vlans/not_found" and there is at least one VLAN in the HTTP response.
+
+## Create VLAN
+
+### Objective
+The test case verifies creation for:
+
+- A non-existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+
+### Description
+
+1. Verify if VLAN was created sucessfully.
+
+The new VLAN will have the following configuration:
+
+```
+{
+    "configuration": {
+        "name": "fake_vlan",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+- a. Execute the POST request over "/rest/v1/system/bridges/bridge_normal/vlans".
+- b. Verify if the HTTP response is 201 CREATED.
+- c. Verify if the HTTP response is empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Creating VLAN for:
+    - An  HTTP 201 CREATED response.
+    - A POST request to "/rest/v1/system/bridges/bridge_normal/vlans/" and there is an empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Creating a VLAN for:
+    - An HTTP response is not equal to 201 CREATED
+    - A POST request to "rest/v1/system/bridges/bridge_normal/vlans/" and there is an error in the HTTP response.
+
+## Create VLAN using an invalid name
+
+### Objective
+The test case verifies creation for:
+
+- A non-existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+
+### Description
+
+1. Verify if VLAN was created unsucessfully.
+
+The new VLAN will have the following configurations:
+
+#### Using an int
+```
+{
+    "configuration": {
+        "name": 1,
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+#### Using an empty dictionary
+```
+{
+    "configuration": {
+        "name": {},
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using an empty array
+```
+{
+    "configuration": {
+        "name": [],
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using multiple string in an array
+```
+{
+    "configuration": {
+        "name": ["test_vlan_1", "test_vlan_2"],
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+##### Using None
+```
+{
+    "configuration": {
+        "name": None,
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using a boolean
+```
+{
+    "configuration": {
+        "name": True,
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+- a. Execute the POST request over "/rest/v1/system/bridges/bridge_normal/vlans" using each configuration.
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+- c. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Creating VLAN for:
+    -An HTTP 400 BAD_REQUEST response.
+    -A POST request to "/rest/v1/system/bridges/bridge_normal/vlans/" and there is a non-empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Creating a VLAN for:
+    - An HTTP response is not equal to 400 BAD_REQUEST
+    - A POST request to "rest/v1/system/bridges/bridge_normal/vlans/" and there is no error in the HTTP response.
+
+## Create VLAN using an invalid ID
+
+### Objective
+The test case verifies creation for:
+
+- A non-existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+
+### Description
+
+1. Verify if VLAN was created unsucessfully.
+
+The new VLAN will have the following configurations:
+
+#### Using an string
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": "id",
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+#### Using an empty dictionary
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": {},
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using an empty array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": [],
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using one string in an array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": ["id"],
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using multiple string in an array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": ["test_vlan_1", "test_vlan_2"],
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using None
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": None,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using a boolean
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": True,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+- a. Execute the POST request over "/rest/v1/system/bridges/bridge_normal/vlans" using each configuration.
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+- c. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Creating VLAN for:
+    -A  HTTP 400 BAD_REQUEST response.
+    -A POST request to "/rest/v1/system/bridges/bridge_normal/vlans/" and there is a non-empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Creating a VLAN for:
+    - An HTTP response is not equal to 400 BAD_REQUEST
+    - A POST request to "rest/v1/system/bridges/bridge_normal/vlans/" and there is no error in the HTTP response.
+
+## Create VLAN using an invalid Description
+
+### Objective
+The test case verifies creation for:
+
+- A non-existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+
+### Description
+
+1. Verify if VLAN was created unsucessfully.
+
+The new VLAN will have the following configurations:
+
+#### Using an int
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": 1,
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+#### Using an empty dictionary
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": {},
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using an empty array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": [],
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using multiple string in an array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": ["test_vlan_1", "test_vlan_2"],
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+##### Using None
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": None,
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using a boolean
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": True,
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+- a. Execute the POST request over "/rest/v1/system/bridges/bridge_normal/vlans" using each configuration.
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+- c. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Creating VLANs for:
+    -A  HTTP 400 BAD_REQUEST response.
+    -A POST request to "/rest/v1/system/bridges/bridge_normal/vlans/" and there is a non-empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Creating a VLAN for:
+    - An HTTP response is not equal to 400 BAD_REQUEST
+    - A POST request to "rest/v1/system/bridges/bridge_normal/vlans/" and there is no error in the HTTP response.
+
+## Create VLAN using an invalid Admin
+
+### Objective
+The test case verifies creation for:
+
+- A non-existen VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+
+### Description
+
+1. Verify if VLAN was created unsucessfully.
+
+The new VLAN will have the following configurations:
+
+#### Using an int
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": 1,
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+#### Using an invalid string
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": "admin",
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using an empty array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": [],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using an invalid string in array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": [],
+        "description": "test_vlan",
+        "admin": ["admin"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using multiple string in an array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["test_vlan_1", "test_vlan_2"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using None
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": None,
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using a boolean
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": True,
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+- a. Execute the POST request over "/rest/v1/system/bridges/bridge_normal/vlans" using each configuration.
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+- c. Verify if the the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Creating VLANs for:
+      -An HTTP 400 BAD_REQUEST response.
+      -A POST request to "/rest/v1/system/bridges/bridge_normal/vlans/" and there is a non-empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Creating a VLAN for:
+   - An HTTP response is not equal to 400 BAD_REQUEST
+   - A POST request to "rest/v1/system/bridges/bridge_normal/vlans/" and there is no error in the HTTP response.
+
+## Create VLAN using an invalid Other_Config
+
+### Objective
+The test case verifies creation for:
+
+- A non-existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+
+### Description
+
+1. Verify if VLAN was created unsucessfully.
+
+The new VLAN will have the following configurations:
+
+#### Using an int
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": 1,
+        "external_ids": {}
+    }
+}
+```
+
+#### Using a string
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": "other_config",
+        "external_ids": {}
+    }
+}
+```
+
+##### Using an empty array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": [],
+        "external_ids": {}
+    }
+}
+```
+
+##### Using one string in array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": ["other_config"],
+        "external_ids": {}
+    }
+}
+```
+
+##### Using multiple string in an array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": ["test_vlan_1", "test_vlan_2"],
+        "external_ids": {}
+    }
+}
+```
+
+##### Using None
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": None,
+        "external_ids": {}
+    }
+}
+```
+
+##### Using a boolean
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": True,
+        "external_ids": {}
+    }
+}
+```
+
+- a. Execute the POST request over "/rest/v1/system/bridges/bridge_normal/vlans" using each configuration.
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+- c. Verify if the HTTP response data is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Creating VLANs for:
+    -An HTTP 400 BAD_REQUEST response.
+    -A POST request to "/rest/v1/system/bridges/bridge_normal/vlans/" and there is a non-empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Creating a VLAN for:
+    - An HTTP response is not equal to 400 BAD_REQUEST
+    - A POST request to "rest/v1/system/bridges/bridge_normal/vlans/" and there is no error in the HTTP response.
+
+## Create VLAN using an invalid External_IDS
+
+### Objective
+The test case verifies creation for:
+
+- A non-existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+
+### Description
+
+1. Verify if VLAN was created unsucessfully.
+
+The new VLAN will have the following configurations:
+
+#### Using an int
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": 1
+    }
+}
+```
+
+#### Using a string
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": "other_config"
+    }
+}
+```
+
+##### Using an empty array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": []
+    }
+}
+```
+
+##### Using one string in array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": ["other_config"]
+    }
+}
+```
+
+##### Using multiple string in an array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": ["test_vlan_1", "test_vlan_2"]
+    }
+}
+```
+
+##### Using None
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": None
+    }
+}
+```
+
+##### Using a boolean
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": True
+    }
+}
+```
+
+- a. Execute the POST request over "/rest/v1/system/bridges/bridge_normal/vlans" using each configuration.
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+- c. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Creating VLAN for:
+    -An HTTP 400 BAD_REQUEST response.
+    -A POST request to "/rest/v1/system/bridges/bridge_normal/vlans/" and there is a non-empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Creating a VLAN for:
+    - An HTTP response is not equal to 400 BAD_REQUEST
+    - A POST request to "rest/v1/system/bridges/bridge_normal/vlans/" and there is no error in the HTTP response.
+
+## Create VLAN with missing fields
+
+### Objective
+The test case verifies creation for:
+
+- A non-existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+
+### Description
+
+1. Verify if VLAN was created unsucessfully.
+
+The new VLAN will have the following configurations:
+
+#### Without name
+```
+{
+    "configuration": {
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+#### Without ID
+```
+{
+    "configuration": {
+        "name": "test",
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+- a. Execute the POST request over "/rest/v1/system/bridges/bridge_normal/vlans" using each configuration.
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+- c. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Creating VLANs for:
+    -An HTTP 400 BAD_REQUEST response.
+    -A POST request to "/rest/v1/system/bridges/bridge_normal/vlans/" and there is a non-empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Creating a VLAN for:
+    - An HTTP response is not equal to 400 BAD_REQUEST
+    - A POST request to "rest/v1/system/bridges/bridge_normal/vlans/" and there is no error in the HTTP response.
+
+## Create a duplicated VLAN
+
+### Objective
+The test case verifies creation for:
+
+- An existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+
+### Description
+
+1. Verify if VLAN was created unsucessfully.
+
+- a. Execute the POST request over "/rest/v1/system/bridges/bridge_normal/vlans" using the following configuration:
+
+```
+{
+    "configuration": {
+        "name": "fake_vlan",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+- b. Verify if the HTTP response is 201 CREATED.
+- c. Verify if the HTTP response is empty.
+- d. Execute the POST request again from above.
+- e. Verify if the HTTP response is 400 BAD_REQUEST.
+- f. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Creating VLAN for:
+    -An HTTP 200 CREATED response the first time.
+    -A POST request to "/rest/v1/system/bridges/bridge_normal/vlans/" and there is an empty HTTP response.
+
+- Creating the same VLAN for:
+    -An HTTP 400 BAD_REQUEST response.
+    -A POST request to "/rest/v1/system/bridges/bridge_normal/vlans/" and there is a non-empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Creating a VLAN for:
+    - An HTTP response is not equal to 200 CREATED
+    - A POST request to "rest/v1/system/bridges/bridge_normal/vlans/" and there is an error in the HTTP response.
+
+- Creating a VLAN for:
+    - An HTTP response is not equal to 400 BAD_REQUEST
+    - A POST request to "rest/v1/system/bridges/bridge_normal/vlans/" and there is no error in the HTTP response.
+
+## Update VLAN name
+
+### Objective
+The test case verifies updates for:
+
+- An existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+- A test VLAN added to bridge normal
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+** Switch 1 ** a test VLAN has to be addded with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+1. Verify if VLAN was updated sucessfully.
+
+- a. Execute the PUT request over "/rest/v1/system/bridges/bridge_normal/vlans/test" with the name field with "fake_vlan".
+- b. Verify if the HTTP response is 200 OK.
+- c. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Updating VLAN for:
+    -A 200 OK HTTP response.
+    -The HTTP response is empty.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Updating a VLAN for:
+    - An HTTP response is not equal to 200 OK
+    - A PUT request to "rest/v1/system/bridges/bridge_normal/vlans/test" and the HTTP response is not empty.
+
+## Update VLAN using an invalid name
+
+### Objective
+The test case verifies updates for:
+
+- An existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+- A test VLAN added
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+** Switch 1 ** a test VLAN has to be addded with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+1. Verify if VLAN was updated unsucessfully.
+
+The new VLAN will have the following configurations:
+
+#### Using an int
+```
+{
+    "configuration": {
+        "name": 1,
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+#### Using an empty dictionary
+```
+{
+    "configuration": {
+        "name": {},
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using an empty array
+```
+{
+    "configuration": {
+        "name": [],
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using multiple string in an array
+```
+{
+    "configuration": {
+        "name": ["test_vlan_1", "test_vlan_2"],
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+##### Using None
+```
+{
+    "configuration": {
+        "name": None,
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using a boolean
+```
+{
+    "configuration": {
+        "name": True,
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+- a. Execute the PUT request over "/rest/v1/system/bridges/bridge_normal/vlans/test" with each configuration.
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+- c. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Updating VLAN for:
+    - An HTTP 400 BAD_REQUEST response.
+    - A PUT request to "/rest/v1/system/bridges/bridge_normal/vlans/test" and there is a non-empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Updating a VLAN for:
+    - An HTTP response is not equal to 400 BAD_REQUEST
+    - A PUT request to "rest/v1/system/bridges/bridge_normal/vlans/test" and there is no error in the HTTP response.
+
+## Update VLAN using an invalid ID
+
+### Objective
+The test case verifies updates for:
+
+- An existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+- A test VLAN added
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+** Switch 1 ** a test VLAN has to be addded with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+1. Verify if VLAN was updated unsucessfully.
+
+The new VLAN will have the following configurations:
+
+#### Using an string
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": "id",
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+#### Using an empty dictionary
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": {},
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using an empty array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": [],
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using one string in an array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": ["id"],
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using multiple string in an array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": ["test_vlan_1", "test_vlan_2"],
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using None
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": None,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using a boolean
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": True,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+- a. Execute the PUT request over "/rest/v1/system/bridges/bridge_normal/vlans/test" with each configuration.
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+- c. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Updating VLAN for:
+    - An HTTP 400 BAD_REQUEST response.
+    - A PUT request to "/rest/v1/system/bridges/bridge_normal/vlans/test" and there is a non-empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Updating a VLAN for:
+    - An HTTP response is not equal to 400 BAD_REQUEST
+    - A PUT request to "rest/v1/system/bridges/bridge_normal/vlans/test" and there is no error in the HTTP response.
+
+## Update VLAN using an invalid Description
+
+### Objective
+The test case verifies updates for:
+
+- An existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+- A test VLAN added
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+** Switch 1 ** a test VLAN has to be addded with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+1. Verify if VLAN was updated unsucessfully.
+
+The new VLAN will have the following configurations:
+
+#### Using an int
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": 1,
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+#### Using an empty dictionary
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": {},
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using an empty array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": [],
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using multiple string in an array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": ["test_vlan_1", "test_vlan_2"],
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+##### Using None
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": None,
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using a boolean
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": True,
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+- a. Execute the PUT request over "/rest/v1/system/bridges/bridge_normal/vlans/test" with each configuration.
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+- c. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Updating VLANs for:
+    - An HTTP 400 BAD_REQUEST response.
+    - A PUT request to "/rest/v1/system/bridges/bridge_normal/vlans/test" and there is a non-empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Updating a VLAN for:
+    - An HTTP response is not equal to 400 BAD_REQUEST
+    - A PUT request to "rest/v1/system/bridges/bridge_normal/vlans/test" and there is no error in the HTTP response.
+
+## Update VLAN using an invalid Admin
+
+### Objective
+The test case verifies updates for:
+
+- An existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+- A test VLAN added
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+** Switch 1 ** a test VLAN has to be addded with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+1. Verify if VLAN was updated unsucessfully.
+
+The new VLAN will have the following configurations:
+
+#### Using an int
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": 1,
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+#### Using an invalid string
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": "admin",
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using an empty array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": [],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using an invalid string in array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": [],
+        "description": "test_vlan",
+        "admin": ["admin"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using multiple string in an array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["test_vlan_1", "test_vlan_2"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using None
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": None,
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+##### Using a boolean
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": True,
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+- a. Execute the PUT request over "/rest/v1/system/bridges/bridge_normal/vlans/test" using each configuration.
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+- c. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Updating VLANs for:
+    - An HTTP 400 BAD_REQUEST response.
+    - A PUT request to "/rest/v1/system/bridges/bridge_normal/vlans/test" and there is a non-empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Updating a VLAN for:
+    - An HTTP response is not equal to 400 BAD_REQUEST
+    - A PUT request to "rest/v1/system/bridges/bridge_normal/vlans/test" and there is no error in the HTTP response.
+
+## Update VLAN using an invalid Other_Config
+
+### Objective
+The test case verifies updates for:
+
+- An existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+- A test VLAN added
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+** Switch 1 ** a test VLAN has to be addded with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+1. Verify if VLAN was updated unsucessfully.
+
+The new VLAN will have the following configurations:
+
+#### Using an int
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": 1,
+        "external_ids": {}
+    }
+}
+```
+
+#### Using a string
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": "other_config",
+        "external_ids": {}
+    }
+}
+```
+
+##### Using an empty array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": [],
+        "external_ids": {}
+    }
+}
+```
+
+##### Using one string in array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": ["other_config"],
+        "external_ids": {}
+    }
+}
+```
+
+##### Using multiple string in an array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": ["test_vlan_1", "test_vlan_2"],
+        "external_ids": {}
+    }
+}
+```
+
+##### Using None
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": None,
+        "external_ids": {}
+    }
+}
+```
+
+##### Using a boolean
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": True,
+        "external_ids": {}
+    }
+}
+```
+
+- a. Execute the PUT request over "/rest/v1/system/bridges/bridge_normal/vlans/test" using each configuration.
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+- c. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Updating VLAN for:
+    - An HTTP 400 BAD_REQUEST response.
+    - A PUT request to "/rest/v1/system/bridges/bridge_normal/vlans/test" and there is a non-empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Updating a VLAN for:
+    - An HTTP response is not equal to 400 BAD_REQUEST
+    - A PUT request to "rest/v1/system/bridges/bridge_normal/vlans/test" and there is no error in the HTTP response.
+
+## Update VLAN using an invalid External_IDS
+
+### Objective
+The test case verifies updates for:
+
+- An existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+- A test VLAN added
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+** Switch 1 ** a test VLAN has to be addded with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+1. Verify if VLAN was updated unsucessfully.
+
+The new VLAN will have the following configurations:
+
+#### Using an int
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": 1
+    }
+}
+```
+
+#### Using a string
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": "other_config"
+    }
+}
+```
+
+##### Using an empty array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": []
+    }
+}
+```
+
+##### Using one string in array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": ["other_config"]
+    }
+}
+```
+
+##### Using multiple string in an array
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": ["test_vlan_1", "test_vlan_2"]
+    }
+}
+```
+
+##### Using None
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": None
+    }
+}
+```
+
+##### Using a boolean
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": True
+    }
+}
+```
+
+- a. Execute the PUT request over "/rest/v1/system/bridges/bridge_normal/vlans/test" using each configuration.
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+- c. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Updating VLAN for:
+    - An HTTP 400 BAD_REQUEST response.
+    - A PUT request to "/rest/v1/system/bridges/bridge_normal/vlans/test" and there is a non-empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Updating a VLAN for:
+    - An HTTP response is not equal to 400 BAD_REQUEST
+    - A PUT request to "rest/v1/system/bridges/bridge_normal/vlans/test" and there is no error in the HTTP response.
+
+## Update VLAN with missing fields
+
+### Objective
+The test case verifies updates for:
+
+- An existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+- A test VLAN added
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+** Switch 1 ** a test VLAN has to be addded with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+1. Verify if VLAN was updated unsucessfully.
+
+The new VLAN will have the following configurations:
+
+#### Without name
+```
+{
+    "configuration": {
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+#### Without ID
+```
+{
+    "configuration": {
+        "name": "test",
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+- a. Execute the PUT request over "/rest/v1/system/bridges/bridge_normal/vlans/test" with each configuration.
+- b. Verify if the HTTP response is 400 BAD_REQUEST.
+- c. Confirm that the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Updating VLANs for:
+    - An HTTP 400 BAD_REQUEST response.
+    - A PUT request to "/rest/v1/system/bridges/bridge_normal/vlans/test" and there is a non-empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Updating a VLAN for:
+    - An HTTP response is not equal to 400 BAD_REQUEST
+    - A PUT request to "rest/v1/system/bridges/bridge_normal/vlans/test" and there is no error in the HTTP response.
+
+## Delete non-existent VLAN
+
+### Objective
+The test case verifies deletes for:
+
+- A non-existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+
+### Description
+
+1. Verify if non-existent VLAN was not deleted.
+
+- a. Execute the DELETE request over "/rest/v1/system/bridges/bridge_normal/vlans/not_found".
+- b. Verify if the HTTP response is 404 NOT_FOUND.
+- c. Verify if the HTTP response is empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Deleting VLAN for:
+    - An HTTP 404 NOT_FOUND response.
+    - A DELETE request to "/rest/v1/system/bridges/bridge_normal/vlans/not_dounf" and there is a empty HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Deleting VLAN for:
+    - An HTTP response is not equal to 404 NOT_FOUND
+    - A DELETE request to "rest/v1/system/bridges/bridge_normal/vlans/not_found" and there is a non-empty HTTP response.
+
+## Query VLANs filtered by name
+
+### Objective
+The test case verifies queries for:
+
+- An existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+- 10 test VLANs added to bridge normal
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+** Switch 1 ** 10 test VLANs have to be addded with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "Vlan-<number>",
+        "id": <number>,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+The "number" will be from 1 to 10 respectively.
+
+### Description
+
+1. Verify if VLAN was queried sucessfully
+
+- a. Execute the GET request over "/rest/v1/system/bridges/bridge_normal/vlans?depth=1;name=Vlan-<number>" for each VLAN added.
+- b. Verify if the HTTP response is 200 OK.
+- c. Verify if the HTTP response is not empty.
+- d. Verify if the HTTP response contains one VLAN.
+- e. Verify if the retrieved VLAN name is correct.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Querying VLAN for:
+    - A 200 OK HTTP response.
+    - Correct data is returned within the response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Querying VLAN for:
+    - An HTTP response is not equal to 200 OK
+    - A GET request to "rest/v1/system/bridges/bridge_normal/vlans?depth=1;name=Vlan-<number>" and the test VLAN is not within the HTTP response.
+
+## Query VLANs filtered by ID
+
+### Objective
+The test case verifies queries for:
+
+- An existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+- 10 test VLANs added to bridge normal
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+** Switch 1 ** 10 test VLANs have to be addded with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "Vlan-<number>",
+        "id": <number>,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+The "number" will be from 1 to 10 respectively.
+
+### Description
+
+1. Verify if the test VLAN is filtered by name
+
+- a. Execute the GET request over "/rest/v1/system/bridges/bridge_normal/vlans?depth=1;id=<number>" for each VLAN added.
+- b. Verify if the HTTP response is 200 OK.
+- c. Verify if the HTTP response is not empty.
+- d. Verify if the HTTP response contains one VLAN.
+- e. Verify if the retrieved VLAN id is correct.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+-Querying VLAN for:
+    - A 200 OK HTTP response.
+    - Correct data is returned within the response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Querying VLAN for:
+    - An HTTP response is not equal to 200 OK
+    - A GET request to "rest/v1/system/bridges/bridge_normal/vlans?depth=1;id=Vlan-<number>" and the test VLAN is not within the HTTP response.
+
+## Query VLANs filtered by Description
+
+### Objective
+The test case verifies queries for:
+
+- An existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+- 10 test VLANs added to bridge normal
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+** Switch 1 ** 10 test VLANs have to be addded with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "Vlan-<number>",
+        "id": <number>,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+** Switch 1 ** 5 VLANs (from 1 to 5) descriptions have to modified with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "Vlan-<number>",
+        "id": <number>,
+        "description": "fake_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+The "number" will be from 1 to 10 respectively.
+
+### Description
+
+1. Verify if VLAN was queried sucessfully.
+
+- a. Execute the GET request over "/rest/v1/system/bridges/bridge_normal/vlans?depth=1;description=fake_vlan" for each VLAN modified.
+- b. Verify if the HTTP response is 200 OK.
+- c. Verify if the HTTP response is not empty.
+- d. Verify if the HTTP response contains five VLANs.
+- e. Verify if the retrieved VLANs description are correct.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Querying VLAN for:
+    - A 200 OK HTTP response.
+    - Correct data is returned within the response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Querying VLAN for:
+    - An HTTP response is not equal to 200 OK
+    - A GET request to "rest/v1/system/bridges/bridge_normal/vlans?depth=1;description=fake_vlan" and the test VLANs are not within the HTTP response.
+
+## Query VLANs filtered by Admin
+
+### Objective
+The test case verifies queries for:
+
+- An existent VLAN
+
+###  Requirements
+
+- Bridge Normal exists
+- 10 test VLANs added to bridge normal
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default
+** Switch 1 ** 10 test VLANs have to be addded with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "Vlan-<number>",
+        "id": <number>,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+** Switch 1 ** 5 VLANs (from 1 to 5) descriptions have to modified with the following configuration
+
+```
+{
+    "configuration": {
+        "name": "Vlan-<number>",
+        "id": <number>,
+        "description": "test_vlan",
+        "admin": ["down"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+The "number" will be from 1 to 10 respectively.
+
+### Description
+
+1. Verify if VLAN was queried sucessfully
+
+- a. Execute the GET request over "/rest/v1/system/bridges/bridge_normal/vlans?depth=1;admin=down" for each VLAN modified.
+- b. Verify if the HTTP response is 200 OK.
+- c. Verify if the HTTP response is not empty.
+- d. Verify if the HTTP response contains five VLANs.
+- e. Verify if the retrieved VLANs description are correct.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Querying VLAN for:
+    - A 200 OK HTTP response.
+    - Correct data is returned within the response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Querying VLAN for:
+    - An HTTP response is not equal to 200 OK
+    - A GET request to "rest/v1/system/bridges/bridge_normal/vlans?depth=1;admin=down" and the test VLANs are not within the HTTP response.
