@@ -1,4 +1,4 @@
-Interface commands
+Interface Commands
 ======
 
 ## Contents
@@ -21,11 +21,11 @@ Interface commands
 	- [Set flowcontrol to default](#set-flowcontrol-to-default)
 	- [Set autonegotiation state](#set-autonegotiation-state)
 	- [Set autonegotiation to default](#set-autonegotiation-to-default)
-	- [Set ipv4 address for interface](#set-ipv4-address-for-interface)
-	- [Remove ipv4 address for interface](#remove-ipv4-address-for-interface)
-	- [Set ipv6 address for interface](#set-ipv6-address-for-interface)
-	- [Remove ipv6 address for interface](#remove-ipv6-address-for-interface)
-	- [Spilt a QSPF interface](#spilt-a-qspf-interface)
+	- [Set IPv4 address for an interface](#set-ipv4-address-for-interface)
+	- [Remove IPv4 address for an interface](#remove-ipv4-address-for-interface)
+	- [Set IPv6 address for an interface](#set-ipv6-address-for-interface)
+	- [Remove IPv6 address for an interface](#remove-ipv6-address-for-interface)
+	- [Split a QSPF interface](#spilt-a-qspf-interface)
 - [Interface show commands](#interface-show-commands)
 	- [Show all interfaces](#show-all-interfaces)
 	- [Show interface](#show-interface)
@@ -35,18 +35,18 @@ Interface commands
 	- [Show interface running configuration](#show-interface-running-configuration)
 
 ## Interface configuration commands
-In vtysh every command belongs to a particular context. All interface configuration commands, except `interface`, works in interface context.
+In vtysh every command belongs to a particular context. All interface configuration commands, except `interface`, work in the interface context.
 ### Change to interface context
 #### Syntax
 `interface <interface>`
 #### Description
-This command changes vtysh context to interface. This command works in config context.
+This command changes the vtysh context to interface. This command works in the config context.
 #### Authority
 All users.
 #### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------|:---------------------------------------|
-| *interface* | Required | System defined | Name of the interface. System defined. |
+| *interface* | Required | System defined | Name of the interface. |
 #### Examples
 ```
 ops-as5712# configure terminal
@@ -61,8 +61,8 @@ This command sets the description for an interface.
 #### Authority
 All users.
 #### Parameters
-| Parameter | Status   | Syntax         | Description                           |
-|:-----------|:----------|:----------------:|:---------------------------------------|
+| Parameter | Status | Syntax | Description |
+|:-----------|:----------|:----------------:|:--------------------------|
 | *description* | Required | - | String describing the interface. |
 #### Examples
 ```
@@ -85,7 +85,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# interface 1
 ops-as5712(config-if)# no description
 ```
-### Enable interface  
+### Enable interface
 #### Syntax
 `no shutdown`
 #### Description
@@ -153,15 +153,15 @@ This command sets the operating speed of an interface.
 #### Authority
 All users.
 #### Parameters
-Choose one of the following parameters as speed.
+Choose one of the following parameters as the speed:
 
-| Parameter | Description |
-|:-----------|:----------------:|:---------------------------------------|
-| **auto** | Speed set to auto mode. |
-| **1000** | Speed set to 1 Gbps. |
-| **10000** | Speed set to 10 Gbps. |
-| **100000** | Speed set to 100 Gbps. |
-| **40000** | Speed set to 40 Gbps. |
+| Parameter | Status | Syntax | Description |
+|:-----------|:----------|:----------------:|:--------------------------|
+| **auto** | Required | Literal | Speed set to auto mode. |
+| **1000** | Required | Literal | Speed set to 1 Gbps. |
+| **10000** | Required | Literal | Speed set to 10 Gbps. |
+| **100000** | Required | Literal | Speed set to 100 Gbps. |
+| **40000** | Required | Literal | Speed set to 40 Gbps. |
 #### Examples
 ```
 ops-as5712# configure terminal
@@ -187,16 +187,16 @@ ops-as5712(config-if)# no speed
 #### Syntax
 `mtu (auto|<value>)`
 #### Description
-This command sets the MTU(maximum transmission unit) of an interface.
+This command sets the MTU (maximum transmission unit) of an interface.
 #### Authority
 All users.
 #### Parameters
-Choose one of the following parameters as MTU.
+Choose one of the following parameters as the MTU:
 
-| Parameter | Syntax         | Description                           |
-|:-----------|:----------------:|:---------------------------------------|
-| **auto** | Literal | MTU set to auto mode. |
-| *value* | 576-16360 | MTU value between 576 and 16360 bytes.
+| Parameter | Status | Syntax | Description |
+|:-----------|:----------|:----------------:|:--------------------------|
+| **auto** | Required | Literal | MTU set to auto mode. |
+| *value* | Required | 576-16360 | MTU value between 576 and 16360 bytes.
 #### Examples
 ```
 ops-as5712# configure terminal
@@ -208,7 +208,7 @@ ops-as5712(config-if)# mtu 580
 #### Syntax
 `no mtu`
 #### Description
-This command sets the MTU(maximum transmission unit) of an interface to default. The default setting is 'auto'.
+This command sets the MTU (maximum transmission unit) of an interface to default. The default setting is 'auto'.
 #### Authority
 All users.
 #### Parameters
@@ -228,12 +228,12 @@ This command sets the duplexity of an interface from among half duplex and full 
 #### Authority
 All users.
 #### Parameters
-Choose one of the following parameters as duplexity.
+Choose one of the following parameters as duplexity:
 
-| Parameter | Description|
-|:-----------|:---------------------------------------|
-| **half** | Choose mode as half duplex. |
-| **full** | Choose mode as full duplex.
+| Parameter | Status | Syntax | Description |
+|:-----------|:----------|:----------------:|:--------------------------|
+| **half** | Required | Literal | Set mode as half duplex. |
+| **full** | Required | Literal | Set mode as full duplex. |
 #### Examples
 ```
 ops-as5712# configure terminal
@@ -244,7 +244,7 @@ ops-as5712(config-if)# duplex half
 #### Syntax
 `no duplex`
 #### Description
-This command sets the duplexity of an interface to it's default. The default mode is 'full'.
+This command sets the duplexity of an interface to default. The default mode is 'full'.
 #### Authority
 All users.
 #### Parameters
@@ -259,23 +259,23 @@ ops-as5712(config-if)# no duplex
 #### Syntax
 `flowcontrol (receive|send) (off|on)`
 #### Description
-This command enables flow control, for sending and receiving pause frames.
+This command enables flow control for sending and receiving pause frames.
 #### Authority
 All users.
 #### Parameters
-Choose one of the following parameters to select whether to set flow control to receive pause frames or send pause frames.
+Choose one of the following parameters to set flow control to receive pause frames or send pause frames:
 
-| Parameter 1| Description|
-|:-----------|:---------------------------------------|
-| **receive** |Select the status for receiving pause frames. |
-| **send** | Select the status for sending pause frames.
+| Parameter 1 | Status | Syntax | Description |
+|:-----------|:----------|:----------------:|:--------------------------|
+| **receive** | Required | Literal | Select the status for receiving pause frames. |
+| **send** | Required | Literal |Select the status for sending pause frames. |
 
-Choose one of the parameters to either switch flow control on or off.
+Choose one of the following parameters to either switch flow control on or off:
 
-| Parameter 2| Description|
-|:-----------|:----------|:----------------:|:---------------------------------------|
-| **off** | Select this to switch off flow control for above parameter. |
-| **on** | Select this to switch on flow control for above parameter.
+| Parameter 2 | Status | Syntax | Description |
+|:-----------|:----------|:----------------:|:--------------------------|
+| **off** | Required | Literal | Switches flow control off for above parameter. |
+| **on** | Required | Literal | Switches flow control on for above parameter. |
 #### Examples
 ```
 ops-as5712# configure terminal
@@ -287,16 +287,16 @@ ops-as5712(config-if)# flowcontrol send on
 #### Syntax
 `no flowcontrol (receive|send)`
 #### Description
-This command sets the flow control to default. The default is flow control 'off'.
+This command sets the flow control to default. The default is 'off'.
 #### Authority
 All users.
 #### Parameters
-Choose one of the following parameters to select whether to disable, 'receive' flow control or 'send' flow control.
+Choose one of the following parameters to select whether to disable 'receive' flow control or 'send' flow control:
 
-| Parameter | Description                           |
-|:-----------|:---------------------------------------|
-| **receive** |Select the status for receiving pause frames. |
-| **send** |Select the status for sending pause frames.
+| Parameter | Status | Syntax | Description |
+|:-----------|:----------|:----------------:|:--------------------------|
+| **receive** | Required | Literal | Select the status for receiving pause frames. |
+| **send** | Required | Literal | Select the status for sending pause frames. |
 #### Examples
 ```
 ops-as5712# configure terminal
@@ -312,12 +312,12 @@ This command sets the autonegotiation state of the interface.
 #### Authority
 All users.
 #### Parameters
-Choose one of the following parameters to switch the autonegotiation state, on or off.
+Choose one of the following parameters to switch the autonegotiation state on or off:
 
-| Parameter| Description |
-|:-----------|:----------|:----------------:|:---------------------------------------|
-| **off** |Switch off auto negotiation. |
-| **on** | Switch on auto negotiation.
+| Parameter | Status | Syntax | Description |
+|:-----------|:----------|:----------------:|:--------------------------|
+| **off** | Required | Literal | Switch off auto negotiation. |
+| **on** | Required | Literal | Switch on auto negotiation. |
 #### Examples
 ```
 ops-as5712# configure terminal
@@ -328,7 +328,7 @@ ops-as5712(config-if)# autonegotiation on
 #### Syntax
 `no autonegotiation`
 #### Description
-This command sets the autonegotiation state to default.
+This command sets the autonegotiation state to default. The default is off.
 #### Authority
 All users.
 #### Parameters
@@ -339,18 +339,18 @@ ops-as5712# configure terminal
 ops-as5712(config)# interface 1
 ops-as5712(config-if)# no autonegotiation
 ```
-### Set ipv4 address for interface
+### Set IPv4 address for an interface
 #### Syntax
 `ip address <ipv4_address/mask> [secondary]`
 #### Description
-This command sets the ipv4 address for an interface. This command only works when interface is configured as L3.
+This command sets the IPv4 address for an interface. This command only works when the interface is configured as L3.
 #### Authority
 All users.
 #### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------:|:---------------------------------------|
-| *ipv4_address/mask* | Required | A.B.C.D/M | IPV4 address with mask for the interface |
-| **secondary** | Optional| Literal  | Select this if IPV4 address is secondary address.
+| *ipv4_address/mask* | Required | A.B.C.D/M | IPv4 address with mask for the interface. |
+| **secondary** | Optional| Literal  | Select this if the IPv4 address is a secondary address. |
 #### Examples
 ```
 ops-as5712# configure terminal
@@ -358,18 +358,18 @@ ops-as5712(config)# interface 1
 ops-as5712(config-if)# ip address 16.93.50.2/24
 ops-as5712(config-if)# ip address 16.93.50.3/24 secondary
 ```
-### Remove ipv4 address for interface
+### Remove IPv4 address for an interface
 #### Syntax
 `no ip address <ipv4_address/mask> [secondary]`
 #### Description
-This command removes the ipv4 address associated with an interface. This command works only when the interface is configured as L3.
+This command removes the IPv4 address associated with an interface. This command works only when the interface is configured as L3.
 #### Authority
 All users.
 #### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------:|:---------------------------------------|
-| *ipv4_address/mask* | Required | A.B.C.D/M | IPV4 address with mask for the interface |
-| **secondary** | Optional| Literal  | Select this if IPV4 address is secondary address.
+| *ipv4_address/mask* | Required | A.B.C.D/M | IPv4 address with mask for the interface. |
+| **secondary** | Optional| Literal  | Select this if the  IPV4 address is a secondary address. |
 #### Examples
 ```
 ops-as5712# configure terminal
@@ -378,18 +378,18 @@ ops-as5712(config-if)# no ip address 16.93.50.2/24
 ops-as5712(config-if)# no ip address 16.93.50.3/24 secondary
 ```
 
-### Set ipv6 address for interface
+### Set IPv6 address for an interface
 #### Syntax
 `ipv6 address <ipv6_address/mask> [secondary]`
 #### Description
-This command sets the ipv6 address for an interface. This command only works when the interface is configured as L3.
+This command sets the IPv6 address for an interface. This command only works when the interface is configured as L3.
 #### Authority
 All users.
 #### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------:|:---------------------------------------|
-| *ipv6_address/mask* | Required | X:X::X:X/M | IPV6 address with mask for the interface |
-| **secondary** | Optional| Literal  | Select this if IPV6 address is secondary address.
+| *ipv6_address/mask* | Required | X:X::X:X/M | IPv6 address with mask for the interface. |
+| **secondary** | Optional| Literal  | Select this if the IPv6 address is a secondary address. |
 #### Examples
 ```
 ops-as5712# configure terminal
@@ -397,18 +397,18 @@ ops-as5712(config)# interface 1
 ops-as5712(config-if)# ipv6 address 2001:0db8:85a3:0000:0000:8a2e:0370:7334/24
 ops-as5712(config-if)# ipv6 address 2001:0db8:85a3:0000:0000:8a2e:0370:733/24 secondary
 ```
-### Remove ipv6 address for interface
+### Remove IPv6 address for an interface
 #### Syntax
 `no ipv6 address <ipv6_address/mask> [secondary]`
 #### Description
-This command removes the ipv6 address associated with the interface. This command only works when the interface is configured as L3.
+This command removes the IPv6 address associated with an interface. This command only works when the interface is configured as L3.
 #### Authority
 All users.
 #### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------:|:---------------------------------------|
-| *ipv6_address/mask* | Required | X:X::X:X/M | IPV6 address with mask for the interface |
-| **secondary** | Optional| Literal  | Select this if IPV6 address is secondary address.
+| *ipv6_address/mask* | Required | X:X::X:X/M | IPv6 address with mask for the interface. |
+| **secondary** | Optional| Literal  | Select this if the IPv6 address is a secondary address.
 #### Examples
 ```
 ops-as5712# configure terminal
@@ -416,12 +416,14 @@ ops-as5712(config)# interface 1
 ops-as5712(config-if)# no ipv6 address 2001:0db8:85a3:0000:0000:8a2e:0370:7334/24
 ops-as5712(config-if)# no ipv6 address 2001:0db8:85a3:0000:0000:8a2e:0370:733/24 secondary
 ```
-### Spilt a QSPF interface  
+### Split a QSPF interface
 #### Syntax
 `[no] split`
 #### Description
 The `split` command, splits a QSPF interface to work as four 10Gb interfaces. The QSPF interface must support splitter cables in order to split the interfaces.
+
 The `no split` command combines the split QSPF interface to work as one 40Gb interface.
+
 The split interface names are appended with '-1','-2','-3' and '-4'. For example, if the QSPF interface name is 54 then the split interface names are 54-1, 54-2, 54-3 and 54-4.
 #### Authority
 All users.
@@ -448,7 +450,7 @@ All users.
 #### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------:|:---------------------------------------|
-| **brief** | Optional| Literal  | Select this for format the output in tabular format.
+| **brief** | Optional| Literal  | Select this to display the output in tabular format. |
 #### Examples
 ```
 ops-as5712# show interface
@@ -512,8 +514,8 @@ All users.
 #### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------:|:---------------------------------------|
-| *interface* | Required | System defined | Name of the interface. System defined. |
-| **brief** | Optional| Literal  | Select this for format the output in tabular format.
+| *interface* | Required | System defined | Name of the interface. |
+| **brief** | Optional| Literal  | Select this to display the output in tabular format. |
 #### Examples
 ```
 ops-as5712# show interface 1
@@ -545,13 +547,13 @@ Interface                                                            (Mb/s)    C
 #### Syntax
 `show interface transceiver [brief]`
 #### Description
-This command displays information about various pluggable modules (or fixed interfaces) present in the switch.
+This command displays information about pluggable modules or fixed interfaces present in the switch.
 #### Authority
 All users.
 #### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------:|:---------------------------------------|
-| **brief** | Optional| Literal  | Select this for format the output in tabular format.
+| **brief** | Optional| Literal  | Select this to display the output in tabular format. |
 #### Examples
 ```
 ops-as5712# show interface transceiver
@@ -599,8 +601,8 @@ All users.
 #### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------:|:---------------------------------------|
-| *interface* | Required | System defined | Name of the interface. System defined. |
-| **brief** | Optional| Literal  | Select this for format the output in tabular format.
+| *interface* | Required | System defined | Name of the interface. |
+| **brief** | Optional| Literal  | Select this to display the output in tabular format. |
 #### Examples
 ```
 ops-as5712# show interface 1 transceiver
@@ -646,6 +648,22 @@ Interface 1
 .............
 .............
 ```
+
+```
+ops-as5712# show running-config interface
+interface bridge_normal
+   no shutdown
+   no routing
+   exit
+interface 2
+   no shutdown
+   lag 100
+   exit
+interface lag 100
+   no routing
+   lacp mode active
+```
+
 ### Show interface running configuration
 #### Syntax
 `show running-config interface <interface>`
@@ -656,7 +674,7 @@ All users.
 #### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------:|:---------------------------------------|
-| *interface* | Required | System defined | Name of the interface. System defined.
+| *interface* | Required | System defined | Name of the interface. |
 #### Examples
 ```
 ops-as5712# show running-config interface 2
@@ -665,4 +683,11 @@ Interface 2
    speed 40000
    autonegotiation on
    exit
+```
+
+```
+ops-as5712# do show running-config interface lag100
+interface lag 100
+   no routing
+   lacp mode active
 ```
