@@ -818,6 +818,49 @@
         }
       }
     },
+    "Filter_List": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        },
+        "action": {
+          "category": "configuration",
+          "type": {
+           "key": {
+              "type": "string",
+              "enum": [
+                "set",
+                [
+                  "permit",
+                  "deny"
+                ]
+              ]
+            }
+          }
+        },
+        "match": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true
+    },
     "Prefix_List": {
       "columns": {
         "name": {
@@ -890,8 +933,8 @@
           "type": {
             "key": {
               "type": "integer",
-              "minInteger": 1,
-              "maxInteger": 32
+              "minInteger": 0,
+              "maxInteger": 128
             },
             "min": 0,
             "max": 1
@@ -902,8 +945,8 @@
           "type": {
             "key": {
               "type": "integer",
-              "minInteger": 1,
-              "maxInteger": 32
+              "minInteger": 0,
+              "maxInteger": 128
             },
             "min": 0,
             "max": 1
@@ -953,7 +996,66 @@
         }
       }
     },
-
+    "Community_Filter" : {
+      "columns" : {
+        "name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        },
+        "match": {
+          "category": "configuration",
+          "type": {
+            "key": {
+             "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "action": {
+          "category": "configuration",
+          "type": {
+           "key": {
+              "type": "string",
+              "enum": [
+                "set",
+                [
+                  "permit",
+                  "deny"
+                ]
+              ]
+            }
+          }
+        },
+        "type": {
+          "category": "configuration",
+          "type": {
+           "key": {
+              "type": "string",
+              "enum": [
+                "set",
+                [
+                  "extcommunity-list",
+                  "community-list"
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true
+    },
     "Route": {
       "columns": {
         "vrf": {
@@ -1315,7 +1417,26 @@
             "max": "unlimited"
           }
         },
-
+        "fast_external_failover": {
+         "category": "configuration",
+         "type": {
+           "key": {
+             "type": "boolean"
+           },
+           "min": 0,
+           "max": 1
+         }
+       },
+       "log_neighbor_changes": {
+         "category": "configuration",
+         "type": {
+           "key": {
+             "type": "boolean"
+           },
+           "min": 0,
+           "max": 1
+         }
+       },
        "status": {
           "category": "status",
           "type": {
@@ -1493,6 +1614,39 @@
             "max": 1
           }
         },
+        "ebgp_multihop": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "ttl_security_hops": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 254
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "update_source": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
         "maximum_prefix_limit": {
           "category": "configuration",
           "type": {
@@ -1500,33 +1654,6 @@
               "type": "integer",
               "minInteger": 1,
               "maxInteger": 4294967295
-            },
-            "min": 0,
-            "max": 1
-          }
-        },
-        "capability": {
-          "category": "configuration",
-          "type": {
-            "key": {
-              "type": "string",
-              "enum": [
-                "set",
-                [
-                  "dynamic",
-                  "orf"
-                ]
-              ]
-            },
-            "min": 0,
-            "max": 1
-          }
-        },
-        "override_capability": {
-          "category": "configuration",
-          "type": {
-            "key": {
-              "type": "boolean"
             },
             "min": 0,
             "max": 1
@@ -1548,16 +1675,6 @@
             "key": {
               "type": "string",
               "maxLength": 80
-            },
-            "min": 0,
-            "max": 1
-          }
-        },
-        "strict_capability_match": {
-          "category": "configuration",
-          "type": {
-            "key": {
-              "type": "boolean"
             },
             "min": 0,
             "max": 1
@@ -1591,6 +1708,50 @@
             "max": "unlimited"
           },
           "ephemeral": true
+        },
+        "filter_lists": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set",
+                [
+                  "in",
+                  "out"
+                ]
+              ]
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Filter_List"
+            },
+            "min": 0,
+            "max": 2
+          }
+        },
+        "prefix_lists": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set",
+                [
+                  "in",
+                  "out"
+                ]
+              ]
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Prefix_List"
+            },
+            "min": 0,
+            "max": 2
+          }
         },
         "route_maps": {
           "category": "configuration",
