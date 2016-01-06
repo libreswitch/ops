@@ -2222,6 +2222,17 @@
             rate of once every 30 seconds.
           </p>
         </column>
+
+        <column name="other_config" key="lacp-fallback"
+          type='{"type": "boolean"}'>
+          <p>
+            The LACP fallback which should be used on this <ref table="Port"/>.
+            Set this value to <code>true</code> to enable always one interface active
+            and set to <code>false</code> to block all interfaces when LACP = off.
+            If not specified, lacp-fallback is assumed to be false.
+          </p>
+        </column>
+
       </group>
     </group>
    <group title="L3 Configuration">
