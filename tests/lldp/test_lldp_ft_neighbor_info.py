@@ -31,9 +31,9 @@ MGMT_INTF_IP6_MASK = "64"
 topoDict = {"topoExecution": 1000,
             "topoTarget": "dut01 dut02",
             "topoDevices": "dut01 dut02",
-            "topoLinks": "lnk01: dut01: dut02",
-            "topoFilters": "dut01: system-category: switch,\
-            dut02: system-category: switch"}
+            "topoLinks": "lnk01:dut01:dut02",
+            "topoFilters": "dut01:system-category:switch,\
+            dut02:system-category:switch"}
 
 
 def lldp_neighbor_info(**kwargs):
