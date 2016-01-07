@@ -42,7 +42,8 @@ PORT_DATA = {
         "ip6_address_secondary": ["01:23:45:67:89:ab"],
         "vlan_options": {},
         "ip4_address": "192.168.0.1",
-        "admin": "up"
+        "admin": "up",
+        "qos_config": {}
     },
     "referenced_by": [{"uri": "/rest/v1/system/bridges/bridge_normal"}]
 }

@@ -198,6 +198,39 @@
             "max": "unlimited"
           }
         },
+        "qos_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "qos_dscp_map_entries": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "QoS_DSCP_Map_Entry"
+            },
+            "min": 0,
+            "max": 64
+          }
+        },
+        "qos_cos_map_entries": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "QoS_COS_Map_Entry"
+            },
+            "min": 0,
+            "max": 8
+          }
+        },
         "other_config": {
           "category": "configuration",
           "type": {
@@ -2516,6 +2549,15 @@
             "max": "unlimited"
           }
         },
+        "qos_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
         "other_config": {
           "category": "configuration",
           "type": {
@@ -3966,6 +4008,122 @@
         ]
       ],
       "isRoot": true
+    },
+    "QoS_DSCP_Map_Entry": {
+      "columns": {
+        "code_point": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 63
+            }
+          }
+        },
+        "local_priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 7
+            }
+          }
+        },
+        "priority_code_point": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 7
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "color": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": ["set", ["green", "yellow", "red"] ]
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "description": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "min": 0,
+            "max": 1
+          }
+        }
+      },
+      "indexes": [
+        [
+          "code_point"
+        ]
+      ],
+      "maxRows": 64
+    },
+    "QoS_COS_Map_Entry": {
+      "columns": {
+        "code_point": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 7
+            }
+          }
+        },
+        "local_priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 7
+            }
+          }
+        },
+        "color": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": ["set", ["green", "yellow", "red"] ]
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "description": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "min": 0,
+            "max": 1
+          }
+        }
+      },
+      "indexes": [
+        [
+          "code_point"
+        ]
+      ],
+      "maxRows": 8
     }
   }
 }
