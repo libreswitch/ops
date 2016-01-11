@@ -201,7 +201,7 @@ def configure(**kwargs):
     LogOutput('info', retBuffer)
 
     cmdOut = host1.cmd("netstat -rn")
-    LogOutput('info', "IPv4 Route table for workstation 1:\n" + cmdOut)
+    LogOutput('info', "IPv4 Route table for workstation 1:\n" + str(cmdOut))
 
 
 def ping_basic(**kwargs):
