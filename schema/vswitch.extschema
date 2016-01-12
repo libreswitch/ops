@@ -692,6 +692,16 @@
             "max": 1
           }
         },
+        "status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true
+        },
         "other_config": {
           "category": "configuration",
           "type": {
