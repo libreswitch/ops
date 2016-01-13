@@ -98,6 +98,16 @@
           "category": "configuration",
           "type": "string"
         },
+        "domain_name":{
+          "category": "configuration",
+          "type": {
+            "key": {
+            "type": "string"
+            },
+          "min": 0,
+          "max": 1
+          }
+        },
         "dns_servers": {
           "category": "configuration",
           "type": {

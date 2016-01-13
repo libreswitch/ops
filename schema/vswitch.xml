@@ -96,6 +96,10 @@
       <column name="hostname">
       </column>
 
+      <column name="domain_name">
+        Domain name as configured by the user.
+      </column>
+
       <column name="dns_servers">
       </column>
 
@@ -385,6 +389,14 @@
       </column>
       <column name="mgmt_intf_status" key="dhcp_hostname">
         Holds hostname configured by dhcp client.
+      </column>
+      <column name="mgmt_intf_status" key="domain_name">
+        This key contains the domain name configured for the system.
+        It can be configured by the user or through dhcp messages.
+        If none of these are present the key itself ceases to exist.
+      </column>
+      <column name="mgmt_intf_status" key="dhcp_domain_name">
+        The domain name as it was received from dhcp.
       </column>
       <column name="ntp_status">
         This column holds the global status information for NTP.
