@@ -1,19 +1,35 @@
-#LACP
+# LACP
 
-## Overview  ##
-LACP is one method of bundling several physical interfaces to form one logical interface. LACP exchanges are made between **actors** and **partners**. An **actor** is the local interface in an LACP exchange. A **partner** is the remote interface in an LACP exchange. LACP is defined in IEEE 802.3ad, Aggregation of Multiple Link Segments.
+## Contents
+- [Overview](#overview)
+- [Prerequisites](#prerequisites)
+- [Configuring LACP](#configuring-lacp)
+	- [Creating and adding interfaces to LAG](#creating-and-adding-interfaces-to-lag)
+	- [Removing interfaces and deleting LAG](#removing-interfaces-and-deleting-lag)
+	- [Setting up LACP global parameters](#setting-up-lacp-global-parameters)
+	- [Setting up LAG parameters](#setting-up-lag-parameters)
+	- [Setting up interface LACP parameters](#setting-up-interface-lacp-parameters)
+	- [Verifying the configuration](#verifying-the-configuration)
+		- [Viewing LACP global information](#viewing-lacp-global-information)
+		- [Viewing LACP aggregate information](#viewing-lacp-aggregate-information)
+		- [Viewing LACP interface details](#viewing-lacp-interface-details)
+- [CLI](#cli)
+- [Related features](#related-features)
 
-- In **dynamic mode**, local LAGs are aware of partner switch LAGs. Interfaces configured as dynamic LAGs are designated as active or passive.
+## Overview
+The Link Aggregation Control Protocol (LACP) is one method of bundling several physical interfaces to form one logical interface. LACP exchanges are made between **actors** and **partners**. An **actor** is the local interface in an LACP exchange. A **partner** is the remote interface in an LACP exchange. LACP is defined in IEEE 802.3ad, Aggregation of Multiple Link Segments.
+
+- In **dynamic mode**, local Link Aggregation Groups (LAGs) are aware of partner switch LAGs. Interfaces configured as dynamic LAGs are designated as active or passive.
 — **Active** interfaces initiate LACP negotiations by sending LACP PDUs when forming a channel with an interface on the remote switch.
 — **Passive** interfaces participate in LACP negotiations initiated by remote switch, but are not allowed to initiate such negotiations.
 
 - In **static** mode, switch LAGs are created without the awareness of their partner switch LAGs. Packets may drop when  LAG static aggregate configurations differ between switches. The switch aggregates static links without LACP negotiation.
 
-## Prerequisites  ##
+## Prerequisites
 All the switch interfaces (at least the interfaces that are connected to other devices) must be administratively up.
 
-## Configuring LACP ##
-###Creating and adding interfaces to LAG ###
+## Configuring LACP
+### Creating and adding interfaces to LAG
 1. Configure the terminal to change the vtysh context to config context with the following commands:
 ```
 ops-xxxx# configure terminal
@@ -35,7 +51,7 @@ ops-xxxx(config-if)# lag 100
 ops-xxxx(config-if)#
 ```
 
-###Removing interfaces and deleting LAG ###
+### Removing interfaces and deleting LAG
 1. Configure the terminal to change the vtysh context to config context with the following commands:
 ```
 ops-xxxx# configure terminal
@@ -55,7 +71,7 @@ ops-xxxx(config-if)# no lag 100
 ops-xxxx(config-if)#
 ```
 
-###Setting up LACP global parameters ###
+### Setting up LACP global parameters
 
 1. Setting the LACP **system priority**.
 ```
@@ -69,7 +85,7 @@ ops-xxxx(config)#
 ```
 In LACP negotiations, link status decisions are made by the system with the numerically lower priority.
 
-###Setting up LAG parameters ###
+### Setting up LAG parameters
 
 1. Setting the LACP **mode**.
 LACP mode allows values **active**, **passive** and **off**.  The default value is **off**.
@@ -80,12 +96,10 @@ ops-xxxx(config-lag-if)# lacp mode passive
 ops-xxxx(config-lag-if)# no lacp mode {active / passive}
 ```
 2. Setting the **hash type**.
-Hash type takes value **l2-src-dst** or **l3-src-dst** to control the selection of a interface from a group of aggregate interfaces with which to transmit a frame.
+Hash type takes value **l2-src-dst**, **l2vid-src-dst**, **l3-src-dst** or **l4-src-dst** to control the selection of a interface from a group of aggregate interfaces with which to transmit a frame.
 The default hash type is **l3-src-dst**.
 ```
 ops-xxxx(config-lag-if)# hash l2-src-dst
-no form of 'hash l2-src-dst' sets the hash type to l3-src-dst.
-ops-xxxx(config-lag-if)# no hash l2-src-dst
 ```
 
 3.  Setting the LACP **rate**.
@@ -97,7 +111,7 @@ no form of 'lacp rate fast' sets the rate to slow.
 ops-xxxx(config-lag-if)# no lacp rate fast
 ```
 
-###Setting up interface LACP parameters ###
+### Setting up interface LACP parameters
 
 1. Setting the LACP **port-id**.
 The LACP port-id is used in LACP negotiations to identify individual ports participating in aggregation.
@@ -113,8 +127,8 @@ The LACP port-priority takes values in the range of 1 to 65535.
 ops-xxxx(config-if)# lacp port-priority 100
 ```
 
-###Verifying the configuration  ###
-#####Viewing LACP global information
+### Verifying the configuration
+##### Viewing LACP global information
 The `show lacp configuration` command displays global LACP configuration information.
 ```
 ops-xxxx# show lacp configuration
@@ -122,7 +136,7 @@ System-id       : 70:72:cf:ef:fc:d9
 System-priority : 65534
 ```
 
-#####Viewing LACP aggregate information
+##### Viewing LACP aggregate information
 The `show lacp aggregates` command displays information about all LACP aggregates.
 
 ```
@@ -153,7 +167,7 @@ Hash                    : l3-src-dst
 Aggregate mode          : off
 ```
 
-#####Viewing LACP interface details
+##### Viewing LACP interface details
 The `show lacp interfaces` command displays LACP interface configuration.
 
 ```
@@ -188,8 +202,7 @@ Aggregate-name : lag200
 2
 ```
 
-## CLI  ##
-<!--Provide a link to the CLI command related to the feature. The CLI files will be generated to a CLI directory.  -->
+## CLI
 Click [here](/documents/user/lacp_cli) for the CLI commands related to the LACP feature.
-## Related features  ##
-When configuring the switch for LACP, it might also be necessary to configure the Physical Interface. [Physical Interface](/documents/user/interface_user_guide) .
+## Related features
+When configuring the switch for LACP, it might also be necessary to configure the physical interface. [Physical Interface](/documents/user/interface_user_guide).

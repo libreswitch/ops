@@ -34,7 +34,7 @@
 ```
 
 ##### Description
-This command creates a LAG interface represented by an ID.
+This command creates a Link Aggregation Group (LAG) interface represented by an ID.
 
 ##### Authority
 all users
@@ -80,7 +80,7 @@ switch(config)# no interface lag 100
 ```
 
 ##### Description
-This command sets an LACP system priority.
+This command sets a Link Aggregation Control Protocol (LACP) system priority.
 
 ##### Authority
 all users
@@ -258,11 +258,10 @@ switch(config-lag-if)# no lacp mode active
 
 #### Configuring hash type
 ##### Syntax
-    hash l2-src-dst
+    hash {l2-src-dst/l2vid-src-dst/l3-src-dst/l4-src-dst}
 
 ##### Description
-This command sets an LACP hash type to l2-src-dst. The default is l3-src-dst.
-The **no** form of the command sets an LACP hash type to l3-src-dst.
+This command sets an LACP hash type to l2-src-dst, l2vid-src-dst, l3-src-dst or l4-src-dst. The default is l3-src-dst.
 
 ##### Authority
 all users
@@ -275,7 +274,6 @@ no parameters.
 ```
 switch(config)# interface lag 1
 switch(config-lag-if)# hash l2-src-dst
-switch(config-lag-if)# no hash l2-src-dst
 ```
 
 #### Configuring LACP fallback mode
@@ -359,7 +357,7 @@ System-priority : 65534
 ```
 
 #### Description
-This command displays all LACP aggregate information if no parameter is passed. If a LAG name is passed as an argument, it shows information of the specified LAG
+This command displays all LACP aggregate information if no parameter is passed. If a LAG name is passed as an argument, it shows information of the specified LAG.
 
 #### Authority
 all users
