@@ -1366,6 +1366,7 @@
         },
          "redistribute": {
           "category": "configuration",
+          "relationship": "reference",
           "type": {
             "key": {
               "type": "string",
@@ -1373,12 +1374,17 @@
                 "set",
                 [
                   "connected",
-                  "static"
+                  "static",
+                  "ospf"
                 ]
               ]
             },
+            "value": {
+              "type": "uuid",
+              "refTable": "Route_Map"
+            },
             "min": 0,
-            "max": 2
+            "max": 3
           }
         },
         "always_compare_med": {
