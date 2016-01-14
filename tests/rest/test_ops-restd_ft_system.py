@@ -27,6 +27,10 @@ import urllib
 
 from utils.utils import *
 
+patchdisable = pytest.mark.skipif(True,
+                                  reason="Disabling until PATCH " + \
+                                  "support is merged")
+
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 
@@ -54,7 +58,7 @@ class systemTest(OpsVsiTest):
         self.SWITCH_PORT = 8091
         self.PATH = "/rest/v1/system"
 
-    def call_system_get(self):
+    def test_call_system_get(self):
         info("\n########## Executing GET request on %s ##########\n" % self.PATH)
 
         # # Execute GET
@@ -79,7 +83,7 @@ class systemTest(OpsVsiTest):
 
         info("\n########## Finished executing GET request on %s ##########\n" % self.PATH)
 
-    def call_system_options(self):
+    def test_call_system_options(self):
         info("\n########## Executing OPTIONS request on %s ##########\n" % self.PATH)
 
         # # Execute OPTIONS
@@ -91,20 +95,20 @@ class systemTest(OpsVsiTest):
         # # Check expected options are correct
 
         # TODO change these to propper expected values after correct OPTIONS is implemented
-        expected_allow = ["DELETE", "GET", "OPTIONS", "POST", "PUT"]
+        expected_allow = ["DELETE", "GET", "OPTIONS", "POST", "PUT", "PATCH"]
         response_allow = response.getheader("allow").split(", ")
 
         assert expected_allow == response_allow, "OPTIONS: unexpected 'allow' options"
 
         # TODO change these to propper expected values after correct OPTIONS is implemented
-        expected_access_control_allow_methods = ["DELETE", "GET", "OPTIONS", "POST", "PUT"]
+        expected_access_control_allow_methods = ["DELETE", "GET", "OPTIONS", "POST", "PUT", "PATCH"]
         response_access_control_allow_methods = response.getheader("access-control-allow-methods").split(", ")
 
         assert expected_access_control_allow_methods == response_access_control_allow_methods, "OPTIONS: unexpected 'access-control-allow-methods' options"
 
         info("\n########## Finished executing OPTIONS request on %s ##########\n" % self.PATH)
 
-    def call_system_put(self):
+    def test_call_system_put(self):
         info("\n########## Executing PUT request on %s ##########\n" % self.PATH)
 
         # # Get initial data
@@ -195,12 +199,6 @@ class systemTest(OpsVsiTest):
             'target': ''
         })
 
-        # FIXME these should be re-added once they are in the schema
-        if 'ssh_publickeyauthentication' in put_data['aaa']:
-            del put_data['aaa']['ssh_publickeyauthentication']
-        if 'ssh_passkeyauthentication' in put_data['aaa']:
-            del put_data['aaa']['ssh_passkeyauthentication']
-
         response, json_string = execute_request(self.PATH, "PUT", json.dumps({'configuration': put_data}), self.SWITCH_IP, True)
 
         assert response.status == httplib.OK, "PUT request failed: {0} {1}".format(response.status, response.reason)
@@ -257,7 +255,12 @@ class Test_system:
     def __del__ (self):
         del self.test_var
 
-    def test_run (self):
-        self.test_var.call_system_get()
-        self.test_var.call_system_options()
-        self.test_var.call_system_put()
+    def test_run_call_sytem_get (self):
+        self.test_var.test_call_system_get()
+
+    @patchdisable
+    def test_run_call_sytem_options (self):
+        self.test_var.test_call_system_options()
+
+    def test_run_call_sytem_put (self):
+        self.test_var.test_call_system_put()
