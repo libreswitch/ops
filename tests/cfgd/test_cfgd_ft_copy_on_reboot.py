@@ -194,7 +194,7 @@ class cfgdTest(OpsVsiTest):
         output += switch.cmdCLI("end")
         debug(output)
 
-        if "hostname \"CT-TEST\"" in output:
+        if "hostname CT-TEST" in output:
             info("\n### Passed: copy running to startup"
                  " configuration on bootup ###")
         else:

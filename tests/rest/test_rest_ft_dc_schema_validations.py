@@ -17,9 +17,8 @@ import json
 from opstestfw.switch.CLI import *
 from opstestfw import *
 
-# The test case verifies that the custom validation framework is able to
-# invoke a BGP create custom validator upon a REST/DC request and return
-# an error response upon an invalid request.
+# The test case verifies that the schema validations are able to
+# detect invalid data in the PUT request for declarative configuration.
 #
 # The following topology is used:
 #
@@ -43,24 +42,9 @@ restClientAddr = "10.10.10.3"
 broadcast = "10.10.10.255"
 netmask = "255.255.255.0"
 subnetMaskBits = 24
-post_url = "/rest/v1/system/vrfs/vrf_default/bgp_routers"
-dc_put_url = "/rest/v1/system/full-configuration?type=running"
+put_url = "/rest/v1/system/full-configuration?type=running"
 
-bgp1_post_data = {
-    "configuration": {
-        "always_compare_med": True,
-        "asn": 6001
-    }
-}
-
-bgp2_post_data = {
-    "configuration": {
-        "always_compare_med": True,
-        "asn": 6002
-    }
-}
-
-dc_put_data = {
+put_data = {
     "Interface": {
         "49": {
             "name": "49",
@@ -99,18 +83,6 @@ dc_put_data = {
     }
 }
 
-dc_invalid_bgp_configs = {
-    "bgp_routers": {
-        "6001": {
-            "always_compare_med": True
-        },
-        "6002": {
-            "always_compare_med": True
-        }
-    },
-    "name": "vrf_default"
-}
-
 
 def switch_reboot(dut01):
     # Reboot switch
@@ -129,9 +101,6 @@ def config_rest_environment(dut01, wrkston01):
 
     assert retStruct.returnCode() == 0, 'Failed to configure IP on switchport'
     info('### Successfully configured ip on switch port ###\n')
-
-    cmdOut = dut01.cmdVtysh(command="show run")
-    info('### Running config of the switch: ###\n' + cmdOut)
 
     info('### Configuring workstations ###\n')
     retStruct = wrkston01.NetworkConfig(
@@ -179,124 +148,70 @@ def deviceCleanup(dut01, wrkston01):
     assert retStruct.returnCode() == 0, 'Failed to clean on dut01 port'
     info('### Unconfigured IP address on dut01 port ###\n')
 
-    cmdOut = dut01.cmdVtysh(command="show run")
-    info('### Running config of the switch: ###\n' + cmdOut)
-
     retStruct = returnStruct(returnCode=0)
     return retStruct
 
 
-def restTestCustomValidatorValidPost(wrkston01):
-    info("### Testing valid POST request ###\n")
-    info("### Creating the first BGP should be successful ###\n")
+def restTestDcValidData(wrkston01):
+    info("### Testing DC schema validations using VALID data ###\n")
     retStruct = wrkston01.RestCmd(switch_ip=switchMgmtAddr,
-                                  url=post_url,
-                                  method="POST",
-                                  data=bgp1_post_data)
-
-    assert retStruct.returnCode() == 0, "Failed to POST for url=%s" % post_url
-    info("### Successfully executed POST for url=%s ###\n" % post_url)
-
-    assert retStruct.data['http_retcode'].find('201') != -1, \
-        'REST POST failed.\n' + retStruct.data['response_body']
-    info("### Received successful HTTP status code ###\n")
-
-    retStruct = returnStruct(returnCode=0)
-    return retStruct
-
-
-def restTestCustomValidatorInvalidPost(wrkston01):
-    info("### Testing invalid POST request ###\n")
-    info("### Creating another BGP is not allowed ###\n")
-    retStruct = wrkston01.RestCmd(switch_ip=switchMgmtAddr,
-                                  url=post_url,
-                                  method="POST",
-                                  data=bgp2_post_data)
-
-    assert retStruct.returnCode() == 0, "Failed to POST for url=%s" % post_url
-    info("### Successfully executed POST for url=%s ###\n" % post_url)
-
-    assert retStruct.data['http_retcode'].find('201') == -1, \
-        'REST POST unexpectedly passed.\n' + retStruct.data['response_body']
-    info("### Received expected non-successful HTTP status code ###\n")
-
-    response_body = json.loads(retStruct.data["response_body"])
-    assert "code" in response_body, 'Error does not contain an error code\n'
-    info("### Successfully retrieved validation error code ###\n")
-
-    print response_body["message"]
-    assert "exceeded" in response_body["message"], \
-        'Error does not contain resources exceeded error\n'
-    info("### Successfully retrieved validation error message ###\n")
-
-    retStruct = returnStruct(returnCode=0)
-    return retStruct
-
-
-def restDeleteBgpRouter(wrkston01):
-    delete_url = post_url + "/6001"
-    info("### Cleanup by deleting BGP router ###\n")
-    retStruct = wrkston01.RestCmd(switch_ip=switchMgmtAddr,
-                                  url=delete_url,
-                                  method="DELETE")
-
-    assert retStruct.returnCode() == 0, \
-        "Failed to DELETE for url=%s" % delete_url
-    info("### Successfully executed DELETE for url=%s ###\n" % delete_url)
-
-    assert retStruct.data['http_retcode'].find('204') != -1, \
-        'REST DELETE failed.\n' + retStruct.data['response_body']
-    info("### Received successful HTTP status code ###\n")
-
-    retStruct = returnStruct(returnCode=0)
-    return retStruct
-
-
-def dcTestCustomValidatorValidPut(wrkston01):
-    info("### Testing valid DC PUT request ###\n")
-    retStruct = wrkston01.RestCmd(switch_ip=switchMgmtAddr,
-                                  url=dc_put_url,
+                                  url=put_url,
                                   method="PUT",
-                                  data=dc_put_data)
+                                  data=put_data)
 
     assert retStruct.returnCode() == 0, "Failed to PUT for url=%s" % post_url
-    info("### Successfully executed PUT for url=%s ###\n" % post_url)
+    info("### Successfully executed PUT for url=%s ###\n" % put_url)
 
     assert retStruct.data['http_retcode'].find('200') != -1, \
-        'REST PUT passed.\n' + retStruct.data['response_body']
+           'PUT request failed.\n' + retStruct.data['response_body']
     info("### Received successful HTTP status code ###\n")
 
     retStruct = returnStruct(returnCode=0)
     return retStruct
 
 
-def dcTestCustomValidatorInvalidPut(wrkston01):
-    info("### Testing invalid PUT request ###\n")
-    info("### Adding invalid number of BGP routers ###\n")
-    dc_put_data["System"]["vrfs"]["vrf_default"] = dc_invalid_bgp_configs
+def restTestDcInvalidData(wrkston01):
+    info("### Testing DC schema validations using INVALID data ###\n")
+    erroneous_fields = []
+
+    info("### Removing mandatory field hostname from System ###\n")
+    field = "hostname"
+    del put_data["System"][field]
+    erroneous_fields.append(field)
+
+    info("### Setting an invalid port reference for bridge_normal ###\n")
+    field = "ports"
+    put_data["System"]["bridges"]["bridge_normal"][field] = ["p2"]
+    erroneous_fields.append(field)
+
+    info("### Changing the type of Interface name to an incorrect type ###\n")
+    field = "name"
+    put_data["Interface"]["49"][field] = 1
+    erroneous_fields.append(field)
+
+    info("### Setting an out of range value for Port trunks ###\n")
+    field = "trunks"
+    put_data["Port"]["p1"][field] = [0]
+    erroneous_fields.append(field)
 
     retStruct = wrkston01.RestCmd(switch_ip=switchMgmtAddr,
-                                  url=dc_put_url,
+                                  url=put_url,
                                   method="PUT",
-                                  data=dc_put_data)
+                                  data=put_data)
 
-    assert retStruct.returnCode() == 0, "Failed to PUT for url=%s" % post_url
-    info("### Successfully executed PUT for url=%s ###\n" % post_url)
+    assert retStruct.returnCode() == 0, "Failed to PUT for url=%s" % put_url
+    info("### Successfully executed PUT for url=%s ###\n" % put_url)
 
-    assert retStruct.data['http_retcode'].find('200') == -1, \
-        'REST PUT unexpectedly passed.\n' + retStruct.data['response_body']
+    assert retStruct.data['http_retcode'].find('400') != -1, \
+           'Expecting an error response.\n' + retStruct.data['response_body']
     info("### Received expected non-successful HTTP status code ###\n")
 
-    response_body = json.loads(retStruct.data["response_body"])
-    response_error = response_body["error"][0]
+    info("### Verifying there was an error for each tampered field ###\n")
+    response_body = json.loads(retStruct.data["response_body"].strip())
 
-    print response_error
-    assert "code" in response_error, 'Error does not contain an error code'
-    info("### Successfully retrieved validation error code ###")
-
-    assert "exceeded" in response_error["message"], \
-        'Error does not contain resources exceeded error\n'
-    info("### Successfully retrieved validation error message ###\n")
+    assert len(response_body["error"]) >= len(erroneous_fields), \
+           'The number of errors in the response does not match\n'
+    info("### Received the expected number of errors ###\n")
 
     retStruct = returnStruct(returnCode=0)
     return retStruct
@@ -335,36 +250,19 @@ class Test_ft_framework_rest:
         assert retStruct.returnCode() == 0, 'Failed to config REST environment'
         info('### Successful in config REST environment test ###\n')
 
-    def test_restTestCustomValidators(self):
-        info('########################################################\n')
-        info('######   Testing REST Custom Validators Framework   ####\n')
-        info('########################################################\n')
+    def test_restTestDcSchemaValidations(self):
+        info('##################################################\n')
+        info('######   Testing REST DC Schema Validations   ####\n')
+        info('##################################################\n')
         wrkston01Obj = self.topoObj.deviceObjGet(device="wrkston01")
 
-        retStruct = restTestCustomValidatorValidPost(wrkston01Obj)
-        assert retStruct.returnCode() == 0, 'Failed to test REST valid post'
+        retStruct = restTestDcValidData(wrkston01Obj)
+        assert retStruct.returnCode() == 0, 'Failed to test DC valid data'
 
-        retStruct = restTestCustomValidatorInvalidPost(wrkston01Obj)
-        assert retStruct.returnCode() == 0, 'Failed to test REST invalid post'
+        retStruct = restTestDcInvalidData(wrkston01Obj)
+        assert retStruct.returnCode() == 0, 'Failed to test DC invalid data'
 
-        retStruct = restDeleteBgpRouter(wrkston01Obj)
-        assert retStruct.returnCode() == 0, 'Failed to delete BGP resource'
-
-        info('### Successful in testing REST custom validators ###\n')
-
-    def test_declarativeConfigTestCustomValidators(self):
-        info('########################################################\n')
-        info('######   Testing DC Custom Validators Framework   ######\n')
-        info('########################################################\n')
-        wrkston01Obj = self.topoObj.deviceObjGet(device="wrkston01")
-
-        retStruct = dcTestCustomValidatorValidPut(wrkston01Obj)
-        assert retStruct.returnCode() == 0, 'Failed to test DC valid post'
-
-        retStruct = dcTestCustomValidatorInvalidPut(wrkston01Obj)
-        assert retStruct.returnCode() == 0, 'Failed to test DC invalid post'
-
-        info('### Successful in testing DC custom validators ###\n')
+        info('### Successful in testing DC Schema Validations ###\n')
 
     def test_clean_up_devices(self):
         info('#######################################################\n')

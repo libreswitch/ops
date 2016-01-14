@@ -23,6 +23,7 @@ DEFAULT_USER = "admin"
 DEFAULT_USER_GRP = "ovsdb_users"
 CLI_PROMPT = "/usr/bin/vtysh"
 BASH_PROMPT = "/usr/bin/bash"
+SHADOW_CMD = "echo $(</etc/shadow awk -v user=%s -F : 'user == $1 {print $2}')"
 
 
 def create_user(dut, user_prefix, password, user_group, user_prompt, num):

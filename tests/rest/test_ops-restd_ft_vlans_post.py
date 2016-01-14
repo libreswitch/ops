@@ -35,7 +35,7 @@ base_vlan_data = {
     "configuration": {
         "name": "test",
         "id": 1,
-        "description": "test vlan",
+        "description": "test_vlan",
         "admin": ["up"],
         "other_config": {},
         "external_ids": {}
@@ -52,7 +52,14 @@ test_vlan_data["multiple_string"] = deepcopy(base_vlan_data)
 test_vlan_data["None"] = deepcopy(base_vlan_data)
 test_vlan_data["boolean"] = deepcopy(base_vlan_data)
 
+default_bridge = "bridge_normal"
 
+
+###############################################################################
+#                                                                             #
+#   Common Tests topology                                                     #
+#                                                                             #
+###############################################################################
 class myTopo(Topo):
     def build(self, hsts=0, sws=1, **_opts):
         self.hsts = hsts
@@ -60,9 +67,13 @@ class myTopo(Topo):
         switch = self.addSwitch("s1")
 
 
-class configTest(OpsVsiTest):
+###############################################################################
+#                                                                             #
+#   Create a fake vlan to bridge_normal                                       #
+#                                                                             #
+###############################################################################
+class CreateBasicVlan(OpsVsiTest):
     def setupNet(self):
-        self.fake_bridge = "fake_bridge"
 
         self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
                                        sws=NUM_OF_SWITCHES,
@@ -76,21 +87,13 @@ class configTest(OpsVsiTest):
 
         self.path = "/rest/v1/system/bridges"
         self.switch_ip = get_switch_ip(self.net.switches[0])
-        self.switch_port = 8091
-        self.test_path = "%s/%s/vlans" % (self.path, self.fake_bridge)
+        self.vlan_path = "%s/%s/vlans" % (self.path, default_bridge)
 
-    ###########################################################################
-    #                                                                         #
-    #   Basic validation                                                      #
-    #                                                                         #
-    ###########################################################################
-    def test_post_vlan(self):
-        fake_vlan = "fake_vlan_1"
-
+    def test(self):
         data = """
                {
                    "configuration": {
-                       "name": "%s",
+                       "name": "fake_vlan_1",
                        "id": 1,
                        "description": "test vlan",
                        "admin": ["up"],
@@ -98,12 +101,12 @@ class configTest(OpsVsiTest):
                        "external_ids": {}
                    }
                }
-               """ % fake_vlan
+               """
 
         info("\n########## Executing POST to /system/bridges ##########\n")
-        info("Testing Path: %s\n" % self.test_path)
+        info("Testing Path: %s\n" % self.vlan_path)
 
-        response_status, response_data = execute_request(self.test_path,
+        response_status, response_data = execute_request(self.vlan_path,
                                                          "POST",
                                                          data,
                                                          self.switch_ip)
@@ -118,13 +121,55 @@ class configTest(OpsVsiTest):
 
         info("########## Executing POST to /system/bridges DONE ##########\n")
 
-    ###########################################################################
-    #                                                                         #
-    #   Name validation                                                       #
-    #                                                                         #
-    ###########################################################################
-    def test_post_vlan_bad_name(self):
-        fake_vlan = "fake_vlan_2"
+
+class TestPostBasicVlan:
+    def setup(self):
+        pass
+
+    def teardown(self):
+        pass
+
+    def setup_class(cls):
+        TestPostBasicVlan.test_var = CreateBasicVlan()
+
+    def teardown_class(cls):
+        TestPostBasicVlan.test_var.net.stop()
+
+    def setup_method(self, method):
+        pass
+
+    def teardown_method(self, method):
+        pass
+
+    def __del__(self):
+        del self.test_var
+
+    def test_run(self):
+        self.test_var.test()
+
+
+###############################################################################
+#                                                                             #
+#   Create a VLAN to bridge_normal using an invalid name                      #
+#                                                                             #
+###############################################################################
+class CreateVlanInvalidName(OpsVsiTest):
+    def setupNet(self):
+        self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
+                                       sws=NUM_OF_SWITCHES,
+                                       hopts=self.getHostOpts(),
+                                       sopts=self.getSwitchOpts()),
+                           switch=VsiOpenSwitch,
+                           host=None,
+                           link=None,
+                           controller=None,
+                           build=True)
+
+        self.path = "/rest/v1/system/bridges"
+        self.switch_ip = get_switch_ip(self.net.switches[0])
+        self.vlan_path = "%s/%s/vlans" % (self.path, default_bridge)
+
+    def test(self):
         data = deepcopy(test_vlan_data)
 
         # Remove same type keys
@@ -141,13 +186,13 @@ class configTest(OpsVsiTest):
 
         info("\n########## Executing POST test with bad \"name\" "
              "value ##########\n")
-        info("Testing Path: %s\n" % self.test_path)
+        info("Testing Path: %s\n" % self.vlan_path)
 
         for field, value in data.iteritems():
             info("Testing field \"name\" as [%s] with value: %s\n" % (field,
                                                                       value))
 
-            response_status, response_data = execute_request(self.test_path,
+            response_status, response_data = execute_request(self.vlan_path,
                                                              "POST",
                                                              json.dumps(value),
                                                              self.switch_ip)
@@ -163,13 +208,55 @@ class configTest(OpsVsiTest):
         info("########## Executing POST test with bad \"name\" value "
              "DONE ##########\n")
 
-    ###########################################################################
-    #                                                                         #
-    #   Id validation                                                         #
-    #                                                                         #
-    ###########################################################################
-    def test_post_vlan_bad_id(self):
-        fake_vlan = "fake_vlan_3"
+
+class TestPostVlanInvalidName:
+    def setup(self):
+        pass
+
+    def teardown(self):
+        pass
+
+    def setup_class(cls):
+        TestPostVlanInvalidName.test_var = CreateVlanInvalidName()
+
+    def teardown_class(cls):
+        TestPostVlanInvalidName.test_var.net.stop()
+
+    def setup_method(self, method):
+        pass
+
+    def teardown_method(self, method):
+        pass
+
+    def __del__(self):
+        del self.test_var
+
+    def test_run(self):
+        self.test_var.test()
+
+
+###############################################################################
+#                                                                             #
+#   Create a VLAN to bridge_normal using an invalid ID                        #
+#                                                                             #
+###############################################################################
+class CreateVlanInvalidId(OpsVsiTest):
+    def setupNet(self):
+        self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
+                                       sws=NUM_OF_SWITCHES,
+                                       hopts=self.getHostOpts(),
+                                       sopts=self.getSwitchOpts()),
+                           switch=VsiOpenSwitch,
+                           host=None,
+                           link=None,
+                           controller=None,
+                           build=True)
+
+        self.path = "/rest/v1/system/bridges"
+        self.switch_ip = get_switch_ip(self.net.switches[0])
+        self.vlan_path = "%s/%s/vlans" % (self.path, default_bridge)
+
+    def test(self):
         data = deepcopy(test_vlan_data)
 
         # Remove same type keys
@@ -186,13 +273,13 @@ class configTest(OpsVsiTest):
 
         info("\n########## Executing POST test with bad \"id\" value "
              "##########\n")
-        info("Testing Path: %s\n" % self.test_path)
+        info("Testing Path: %s\n" % self.vlan_path)
 
         for field, value in data.iteritems():
             info("Testing field \"id\" as [%s] with value: %s\n" % (field,
                                                                     value))
 
-            response_status, response_data = execute_request(self.test_path,
+            response_status, response_data = execute_request(self.vlan_path,
                                                              "POST",
                                                              json.dumps(value),
                                                              self.switch_ip)
@@ -208,13 +295,55 @@ class configTest(OpsVsiTest):
         info("########## Executing POST test with bad \"id\" value DONE "
              "##########\n")
 
-    ###########################################################################
-    #                                                                         #
-    #   Description validation                                                #
-    #                                                                         #
-    ###########################################################################
-    def test_post_vlan_bad_description(self):
-        fake_vlan = "fake_vlan_4"
+
+class TestPostVlanInvalidId:
+    def setup(self):
+        pass
+
+    def teardown(self):
+        pass
+
+    def setup_class(cls):
+        TestPostVlanInvalidId.test_var = CreateVlanInvalidId()
+
+    def teardown_class(cls):
+        TestPostVlanInvalidId.test_var.net.stop()
+
+    def setup_method(self, method):
+        pass
+
+    def teardown_method(self, method):
+        pass
+
+    def __del__(self):
+        del self.test_var
+
+    def test_run(self):
+        self.test_var.test()
+
+
+###############################################################################
+#                                                                             #
+#   Create a VLAN to bridge_normal using an invalid description               #
+#                                                                             #
+###############################################################################
+class CreateVlanInvalidDescription(OpsVsiTest):
+    def setupNet(self):
+        self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
+                                       sws=NUM_OF_SWITCHES,
+                                       hopts=self.getHostOpts(),
+                                       sopts=self.getSwitchOpts()),
+                           switch=VsiOpenSwitch,
+                           host=None,
+                           link=None,
+                           controller=None,
+                           build=True)
+
+        self.path = "/rest/v1/system/bridges"
+        self.switch_ip = get_switch_ip(self.net.switches[0])
+        self.vlan_path = "%s/%s/vlans" % (self.path, default_bridge)
+
+    def test(self):
         data = deepcopy(test_vlan_data)
 
         # Remove same type keys
@@ -231,13 +360,13 @@ class configTest(OpsVsiTest):
 
         info("\n########## Executing POST test with bad \"description\" "
              "value ##########\n")
-        info("Testing Path: %s\n" % self.test_path)
+        info("Testing Path: %s\n" % self.vlan_path)
 
         for field, value in data.iteritems():
             info("Testing field \"description\" as [%s] with value: "
                  "%s\n" % (field, value))
 
-            response_status, response_data = execute_request(self.test_path,
+            response_status, response_data = execute_request(self.vlan_path,
                                                              "POST",
                                                              json.dumps(value),
                                                              self.switch_ip)
@@ -253,13 +382,56 @@ class configTest(OpsVsiTest):
         info("########## Executing POST test with bad \"description\" value "
              "DONE ##########\n")
 
-    ###########################################################################
-    #                                                                         #
-    #   Admin validation                                                      #
-    #                                                                         #
-    ###########################################################################
-    def test_post_vlan_bad_admin(self):
-        fake_vlan = "fake_vlan_5"
+
+class TestPostVlanInvalidDescription:
+    def setup(self):
+        pass
+
+    def teardown(self):
+        pass
+
+    def setup_class(cls):
+        TestPostVlanInvalidDescription.test_var = \
+            CreateVlanInvalidDescription()
+
+    def teardown_class(cls):
+        TestPostVlanInvalidDescription.test_var.net.stop()
+
+    def setup_method(self, method):
+        pass
+
+    def teardown_method(self, method):
+        pass
+
+    def __del__(self):
+        del self.test_var
+
+    def test_run(self):
+        self.test_var.test()
+
+
+###############################################################################
+#                                                                             #
+#   Create a VLAN to bridge_normal using an invalid admin                     #
+#                                                                             #
+###############################################################################
+class CreateVlanInvalidAdmin(OpsVsiTest):
+    def setupNet(self):
+        self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
+                                       sws=NUM_OF_SWITCHES,
+                                       hopts=self.getHostOpts(),
+                                       sopts=self.getSwitchOpts()),
+                           switch=VsiOpenSwitch,
+                           host=None,
+                           link=None,
+                           controller=None,
+                           build=True)
+
+        self.path = "/rest/v1/system/bridges"
+        self.switch_ip = get_switch_ip(self.net.switches[0])
+        self.vlan_path = "%s/%s/vlans" % (self.path, default_bridge)
+
+    def test(self):
         data = deepcopy(test_vlan_data)
 
         # Remove same type keys
@@ -276,13 +448,13 @@ class configTest(OpsVsiTest):
 
         info("\n########## Executing POST test with bad \"admin\" value "
              "##########\n")
-        info("Testing Path: %s\n" % self.test_path)
+        info("Testing Path: %s\n" % self.vlan_path)
 
         for field, value in data.iteritems():
             info("Testing field \"admin\" as %s with value: %s\n" % (field,
                                                                      value))
 
-            response_status, response_data = execute_request(self.test_path,
+            response_status, response_data = execute_request(self.vlan_path,
                                                              "POST",
                                                              json.dumps(value),
                                                              self.switch_ip)
@@ -298,13 +470,55 @@ class configTest(OpsVsiTest):
         info("########## Executing POST test with bad \"admin\" value "
              "DONE ##########\n")
 
-    ###########################################################################
-    #                                                                         #
-    #   Other_Config validation                                               #
-    #                                                                         #
-    ###########################################################################
-    def test_post_vlan_bad_other_config(self):
-        fake_vlan = "fake_vlan_6"
+
+class TestPostVlanInvalidAdmin:
+    def setup(self):
+        pass
+
+    def teardown(self):
+        pass
+
+    def setup_class(cls):
+        TestPostVlanInvalidAdmin.test_var = CreateVlanInvalidAdmin()
+
+    def teardown_class(cls):
+        TestPostVlanInvalidAdmin.test_var.net.stop()
+
+    def setup_method(self, method):
+        pass
+
+    def teardown_method(self, method):
+        pass
+
+    def __del__(self):
+        del self.test_var
+
+    def test_run(self):
+        self.test_var.test()
+
+
+###############################################################################
+#                                                                             #
+#   Create a VLAN to bridge_normal using an invalid other_config              #
+#                                                                             #
+###############################################################################
+class CreateVlanInvalidOtherConfig(OpsVsiTest):
+    def setupNet(self):
+        self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
+                                       sws=NUM_OF_SWITCHES,
+                                       hopts=self.getHostOpts(),
+                                       sopts=self.getSwitchOpts()),
+                           switch=VsiOpenSwitch,
+                           host=None,
+                           link=None,
+                           controller=None,
+                           build=True)
+
+        self.path = "/rest/v1/system/bridges"
+        self.switch_ip = get_switch_ip(self.net.switches[0])
+        self.vlan_path = "%s/%s/vlans" % (self.path, default_bridge)
+
+    def test(self):
         data = deepcopy(test_vlan_data)
 
         # Remove same type keys
@@ -321,13 +535,13 @@ class configTest(OpsVsiTest):
 
         info("\n########## Executing POST test with bad \"other_config\" "
              "value ##########\n")
-        info("Testing Path: %s\n" % self.test_path)
+        info("Testing Path: %s\n" % self.vlan_path)
 
         for field, value in data.iteritems():
             info("Testing field \"other_config\" as [%s] with value: "
                  "%s\n" % (field, value))
 
-            response_status, response_data = execute_request(self.test_path,
+            response_status, response_data = execute_request(self.vlan_path,
                                                              "POST",
                                                              json.dumps(value),
                                                              self.switch_ip)
@@ -343,13 +557,56 @@ class configTest(OpsVsiTest):
         info("########## Executing POST test with bad \"other_config\" value "
              "DONE ##########\n")
 
-    ###########################################################################
-    #                                                                         #
-    #   External_ids validation                                               #
-    #                                                                         #
-    ###########################################################################
-    def test_post_vlan_bad_external_ids(self):
-        fake_vlan = "fake_vlan_7"
+
+class TestPostVlanInvalidOtherConfig:
+    def setup(self):
+        pass
+
+    def teardown(self):
+        pass
+
+    def setup_class(cls):
+        TestPostVlanInvalidOtherConfig.test_var = \
+            CreateVlanInvalidOtherConfig()
+
+    def teardown_class(cls):
+        TestPostVlanInvalidOtherConfig.test_var.net.stop()
+
+    def setup_method(self, method):
+        pass
+
+    def teardown_method(self, method):
+        pass
+
+    def __del__(self):
+        del self.test_var
+
+    def test_run(self):
+        self.test_var.test()
+
+
+###############################################################################
+#                                                                             #
+#   Create a VLAN to bridge_normal using an invalid external_ids              #
+#                                                                             #
+###############################################################################
+class CreateVlanInvalidExternalIds(OpsVsiTest):
+    def setupNet(self):
+        self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
+                                       sws=NUM_OF_SWITCHES,
+                                       hopts=self.getHostOpts(),
+                                       sopts=self.getSwitchOpts()),
+                           switch=VsiOpenSwitch,
+                           host=None,
+                           link=None,
+                           controller=None,
+                           build=True)
+
+        self.path = "/rest/v1/system/bridges"
+        self.switch_ip = get_switch_ip(self.net.switches[0])
+        self.vlan_path = "%s/%s/vlans" % (self.path, default_bridge)
+
+    def test(self):
         data = deepcopy(test_vlan_data)
 
         # Remove same type keys
@@ -366,13 +623,13 @@ class configTest(OpsVsiTest):
 
         info("\n########## Executing POST test with bad \"external_ids\" "
              "value ##########\n")
-        info("Testing Path: %s\n" % self.test_path)
+        info("Testing Path: %s\n" % self.vlan_path)
 
         for field, value in data.iteritems():
             info("Testing field \"external_ids\" as %s with value: "
                  "%s\n" % (field, value))
 
-            response_status, response_data = execute_request(self.test_path,
+            response_status, response_data = execute_request(self.vlan_path,
                                                              "POST",
                                                              json.dumps(value),
                                                              self.switch_ip)
@@ -388,14 +645,56 @@ class configTest(OpsVsiTest):
         info("########## Executing POST test with bad \"external_ids\" value "
              "DONE ##########\n")
 
-    ###########################################################################
-    #                                                                         #
-    #   Missing fields validation                                             #
-    #                                                                         #
-    ###########################################################################
-    def test_post_vlan_bad_missing_fields(self):
-        fake_vlan = "fake_vlan_8"
 
+class TestPostVlanInvalidExternalIds:
+    def setup(self):
+        pass
+
+    def teardown(self):
+        pass
+
+    def setup_class(cls):
+        TestPostVlanInvalidExternalIds.test_var = \
+            CreateVlanInvalidExternalIds()
+
+    def teardown_class(cls):
+        TestPostVlanInvalidExternalIds.test_var.net.stop()
+
+    def setup_method(self, method):
+        pass
+
+    def teardown_method(self, method):
+        pass
+
+    def __del__(self):
+        del self.test_var
+
+    def test_run(self):
+        self.test_var.test()
+
+
+###############################################################################
+#                                                                             #
+#   Create a VLAN to bridge_normal with missing fields                        #
+#                                                                             #
+###############################################################################
+class CreateVlanMissingFields(OpsVsiTest):
+    def setupNet(self):
+        self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
+                                       sws=NUM_OF_SWITCHES,
+                                       hopts=self.getHostOpts(),
+                                       sopts=self.getSwitchOpts()),
+                           switch=VsiOpenSwitch,
+                           host=None,
+                           link=None,
+                           controller=None,
+                           build=True)
+
+        self.path = "/rest/v1/system/bridges"
+        self.switch_ip = get_switch_ip(self.net.switches[0])
+        self.vlan_path = "%s/%s/vlans" % (self.path, default_bridge)
+
+    def test(self):
         data = {}
         data["name"] = deepcopy(base_vlan_data)
         data["id"] = deepcopy(base_vlan_data)
@@ -405,13 +704,13 @@ class configTest(OpsVsiTest):
 
         info("\n########## Executing POST test with missing fields "
              "##########\n")
-        info("Testing Path: %s\n" % self.test_path)
+        info("Testing Path: %s\n" % self.vlan_path)
 
         for field, value in data.iteritems():
             info("Testing missing field \"%s\" with value: %s\n" % (field,
                                                                     value))
 
-            response_status, response_data = execute_request(self.test_path,
+            response_status, response_data = execute_request(self.vlan_path,
                                                              "POST",
                                                              json.dumps(value),
                                                              self.switch_ip)
@@ -427,18 +726,59 @@ class configTest(OpsVsiTest):
         info("########## Executing POST test with missing fields DONE "
              "##########\n")
 
-    ###########################################################################
-    #                                                                         #
-    #   Duplicated VLAN validation                                            #
-    #                                                                         #
-    ###########################################################################
-    def test_post_vlan_duplicated(self):
-        fake_vlan = "fake_vlan_9"
 
+class TestPostVlanMissingFields:
+    def setup(self):
+        pass
+
+    def teardown(self):
+        pass
+
+    def setup_class(cls):
+        TestPostVlanMissingFields.test_var = CreateVlanMissingFields()
+
+    def teardown_class(cls):
+        TestPostVlanMissingFields.test_var.net.stop()
+
+    def setup_method(self, method):
+        pass
+
+    def teardown_method(self, method):
+        pass
+
+    def __del__(self):
+        del self.test_var
+
+    def test_run(self):
+        self.test_var.test()
+
+
+###############################################################################
+#                                                                             #
+#   Create a VLAN that already exits to bridge_normal                         #
+#                                                                             #
+###############################################################################
+class CreateVlanDuplicated(OpsVsiTest):
+    def setupNet(self):
+        self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
+                                       sws=NUM_OF_SWITCHES,
+                                       hopts=self.getHostOpts(),
+                                       sopts=self.getSwitchOpts()),
+                           switch=VsiOpenSwitch,
+                           host=None,
+                           link=None,
+                           controller=None,
+                           build=True)
+
+        self.path = "/rest/v1/system/bridges"
+        self.switch_ip = get_switch_ip(self.net.switches[0])
+        self.vlan_path = "%s/%s/vlans" % (self.path, default_bridge)
+
+    def test(self):
         data = """
                {
                    "configuration": {
-                       "name": "%s",
+                       "name": "fake_vlan",
                        "id": 1,
                        "description": "test vlan",
                        "admin": ["up"],
@@ -446,13 +786,13 @@ class configTest(OpsVsiTest):
                        "external_ids": {}
                    }
                }
-               """ % fake_vlan
+               """
 
         info("\n########## Executing POST to test duplicated VLAN "
              "##########\n")
-        info("Testing Path: %s\n" % self.test_path)
+        info("Testing Path: %s\n" % self.vlan_path)
 
-        response_status, response_data = execute_request(self.test_path,
+        response_status, response_data = execute_request(self.vlan_path,
                                                          "POST",
                                                          data,
                                                          self.switch_ip)
@@ -466,8 +806,7 @@ class configTest(OpsVsiTest):
         info("Response data received: %s\n" % response_data)
 
         # Create duplicated
-        info("Creating VLAN duplicate: %s\n" % fake_vlan)
-        response_status, response_data = execute_request(self.test_path,
+        response_status, response_data = execute_request(self.vlan_path,
                                                          "POST",
                                                          data,
                                                          self.switch_ip)
@@ -483,22 +822,8 @@ class configTest(OpsVsiTest):
         info("########## Executing POST to test duplicated VLAN DONE "
              "##########\n")
 
-    def run_all(self):
-        info("\n########## Starting VLAN POST tests ##########\n")
-        create_fake_bridge(self.path, self.switch_ip, self.fake_bridge)
-        self.test_post_vlan()
-        self.test_post_vlan_bad_name()
-        self.test_post_vlan_bad_id()
-        self.test_post_vlan_bad_description()
-        self.test_post_vlan_bad_admin()
-        self.test_post_vlan_bad_other_config()
-        self.test_post_vlan_bad_external_ids()
-        self.test_post_vlan_bad_missing_fields()
-        self.test_post_vlan_duplicated()
-        info("\n########## VLAN POST Tests DONE ##########\n\n")
 
-
-class Test_config:
+class TestPostDuplicated:
     def setup(self):
         pass
 
@@ -506,10 +831,10 @@ class Test_config:
         pass
 
     def setup_class(cls):
-        Test_config.test_var = configTest()
+        TestPostDuplicated.test_var = CreateVlanDuplicated()
 
     def teardown_class(cls):
-        Test_config.test_var.net.stop()
+        TestPostDuplicated.test_var.net.stop()
 
     def setup_method(self, method):
         pass
@@ -521,4 +846,4 @@ class Test_config:
         del self.test_var
 
     def test_run(self):
-        self.test_var.run_all()
+        self.test_var.test()

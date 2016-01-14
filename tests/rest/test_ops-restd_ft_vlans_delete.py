@@ -31,7 +31,14 @@ from utils.utils import *
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 
+DEFAULT_BRIDGE = "bridge_normal"
 
+
+###############################################################################
+#                                                                             #
+#   Common Tests topology                                                     #
+#                                                                             #
+###############################################################################
 class myTopo(Topo):
     def build(self, hsts=0, sws=1, **_opts):
         self.hsts = hsts
@@ -39,10 +46,13 @@ class myTopo(Topo):
         switch = self.addSwitch("s1")
 
 
-class configTest(OpsVsiTest):
+###############################################################################
+#                                                                             #
+#   Basic Delete for non-existent VLAN                                        #
+#                                                                             #
+###############################################################################
+class DeleteNonExistentVlan(OpsVsiTest):
     def setupNet(self):
-        self.fake_bridge = "fake_bridge"
-
         self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
                                        sws=NUM_OF_SWITCHES,
                                        hopts=self.getHostOpts(),
@@ -55,59 +65,87 @@ class configTest(OpsVsiTest):
 
         self.path = "/rest/v1/system/bridges"
         self.switch_ip = get_switch_ip(self.net.switches[0])
-        self.switch_port = 8091
-        self.test_path = "%s/%s/vlans" % (self.path, self.fake_bridge)
+        self.vlan_name = "not_found"
+        self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
 
-    ###########################################################################
-    #                                                                         #
-    #   Basic validation                                                      #
-    #                                                                         #
-    ###########################################################################
-    def test_delete_vlan(self):
-        fake_vlan = "fake_vlan_1"
-        delete_path = "%s/%s" % (self.test_path, fake_vlan)
-        expected_data = \
-            ["/rest/v1/system/bridges/%s/vlans/%s" % (self.fake_bridge,
-                                                      fake_vlan)]
+    def test(self):
+        delete_path = "%s/%s" % (self.vlan_path, self.vlan_name)
+        info("\n########## Executing DELETE for %s ##########\n" %
+             self.vlan_path)
 
-        #######################################################################
-        # POST bridge and VLAN
-        #######################################################################
-        create_fake_bridge(self.path,
-                           self.switch_ip,
-                           self.fake_bridge)
-
-        create_fake_vlan("%s/%s/vlans" % (self.path, self.fake_bridge),
-                         self.switch_ip,
-                         fake_vlan,
-                         1)
-
-        #######################################################################
-        # GET added VLAN
-        #######################################################################
-        info("\n########## Executing GET to %s ##########\n" % self.test_path)
-        info("Testing Path: %s\n" % self.test_path)
-
-        response_status, response_data = execute_request(self.test_path,
-                                                         "GET",
+        response_status, response_data = execute_request(delete_path,
+                                                         "DELETE",
                                                          None,
                                                          self.switch_ip)
 
-        assert response_status == httplib.OK, \
+        assert response_status == httplib.NOT_FOUND, \
             "Response status received: %s\n" % response_status
         info("Response status received: \"%s\"\n" % response_status)
 
-        assert json.loads(response_data) == expected_data, \
+        assert response_data is "", \
             "Response data received: %s\n" % response_data
         info("Response data received: %s\n" % response_data)
 
-        info("########## Executing GET to %s DONE "
-             "##########\n" % self.test_path)
+        info("########## Executing DELETE for %s DONE "
+             "##########\n" % self.vlan_path)
+
+
+class TestDeleteNonExistentVlan:
+    def setup(self):
+        pass
+
+    def teardown(self):
+        pass
+
+    def setup_class(cls):
+        TestDeleteNonExistentVlan.test_var = DeleteNonExistentVlan()
+
+    def teardown_class(cls):
+        TestDeleteNonExistentVlan.test_var.net.stop()
+
+    def setup_method(self, method):
+        pass
+
+    def teardown_method(self, method):
+        pass
+
+    def __del__(self):
+        del self.test_var
+
+    def test_run(self):
+        self.test_var.test()
+
+
+###############################################################################
+#                                                                             #
+#   Basic Delete for existent VLAN                                            #
+#                                                                             #
+###############################################################################
+class DeleteExistentVlan(OpsVsiTest):
+    def setupNet(self):
+        self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
+                                       sws=NUM_OF_SWITCHES,
+                                       hopts=self.getHostOpts(),
+                                       sopts=self.getSwitchOpts()),
+                           switch=VsiOpenSwitch,
+                           host=None,
+                           link=None,
+                           controller=None,
+                           build=True)
+
+        self.path = "/rest/v1/system/bridges"
+        self.switch_ip = get_switch_ip(self.net.switches[0])
+        self.vlan_id = 1
+        self.vlan_name = "fake_vlan"
+        self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
+
+    def test(self):
+        delete_path = "%s/%s" % (self.vlan_path, self.vlan_name)
 
         #######################################################################
         # DELETE added VLAN
         #######################################################################
-        info("\n########## Executing DELETE to %s ##########\n" % delete_path)
+        info("\n########## Executing DELETE for %s ##########\n" % delete_path)
 
         response_status, response_data = execute_request(delete_path,
                                                          "DELETE",
@@ -122,16 +160,16 @@ class configTest(OpsVsiTest):
             "Response data received: %s\n" % response_data
         info("Response data received: %s\n" % response_data)
 
-        info("########## Executing DELETE to %s DONE "
+        info("########## Executing DELETE for %s DONE "
              "##########\n" % delete_path)
 
         #######################################################################
         # GET existing VLANs
         #######################################################################
-        info("\n########## Executing GET to %s ##########\n" % self.test_path)
-        info("Testing Path: %s\n" % self.test_path)
+        info("\n########## Executing GET for %s ##########\n" % self.vlan_path)
+        info("Testing Path: %s\n" % self.vlan_path)
 
-        response_status, response_data = execute_request(self.test_path,
+        response_status, response_data = execute_request(self.vlan_path,
                                                          "GET",
                                                          None,
                                                          self.switch_ip)
@@ -144,16 +182,11 @@ class configTest(OpsVsiTest):
             "Response data received: %s\n" % response_data
         info("Response data received: %s\n" % response_data)
 
-        info("########## Executing GET to %s DONE "
-             "##########\n" % self.test_path)
-
-    def run_all(self):
-        info("\n########## Starting VLAN DELETE tests ##########\n")
-        self.test_delete_vlan()
-        info("\n########## VLAN DELETE Tests DONE ##########\n\n")
+        info("########## Executing GET for %s DONE "
+             "##########\n" % self.vlan_path)
 
 
-class Test_config:
+class TestDeleteExistentVlan:
     def setup(self):
         pass
 
@@ -161,10 +194,15 @@ class Test_config:
         pass
 
     def setup_class(cls):
-        Test_config.test_var = configTest()
+        TestDeleteExistentVlan.test_var = DeleteExistentVlan()
+
+        create_fake_vlan(TestDeleteExistentVlan.test_var.vlan_path,
+                         TestDeleteExistentVlan.test_var.switch_ip,
+                         TestDeleteExistentVlan.test_var.vlan_name,
+                         TestDeleteExistentVlan.test_var.vlan_id)
 
     def teardown_class(cls):
-        Test_config.test_var.net.stop()
+        TestDeleteExistentVlan.test_var.net.stop()
 
     def setup_method(self, method):
         pass
@@ -176,4 +214,4 @@ class Test_config:
         del self.test_var
 
     def test_run(self):
-        self.test_var.run_all()
+        self.test_var.test()

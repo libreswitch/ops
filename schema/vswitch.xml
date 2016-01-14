@@ -102,6 +102,10 @@
       <column name="asset_tag_number">
       </column>
 
+      <column name="sflow">
+        sFlow(R) configuration.
+      </column>
+
       <column name="other_config" key="stats-update-interval"
               type='{"type": "integer", "minInteger": 5000}'>
         <p>
@@ -292,6 +296,17 @@
         </p>
         <p>
           Default value is 4.
+        </p>
+      </column>
+
+      <column name="other_config" key="lldp_reinit"
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 10}'>
+        <p>
+          The amount of time in seconds to wait before performing LLDP
+          initialization on any interface.
+        </p>
+        <p>
+          Default value is 2.
         </p>
       </column>
    </group>
@@ -1116,7 +1131,19 @@
       </column>
    </group>
   </table>
-
+  <table name="Filter_List" title="Filter List">
+    <group title="IP AS Path filter List Configuration">
+      <column name="name">
+        Name of the filter list.
+      </column>
+      <column name="action">
+        Action to either "permit" or "deny".
+      </column>
+      <column name="match">
+      Specify POSIX regex expression to match.
+      </column>
+    </group>
+  </table>
   <table name="Prefix_List" title="Prefix List">
     <group title="Global IP Address Prefix List Configuration">
       <column name="name">
@@ -1160,7 +1187,22 @@
       </column>
    </group>
   </table>
-
+  <table name="Community_Filter" title="Community Filter">
+   <group title="Global Community and Extended Community Configuration">
+     <column name="name">
+       Name of the list.
+     </column>
+     <column name="match">
+       Regular expression.
+     </column>
+     <column name="action">
+       There are two types, either "permit" or "deny".
+     </column>
+     <column name="type">
+       There are two types, either "extcommunity-list" or "community-list".
+     </column>
+   </group>
+  </table>
   <table name="Route" title="Routes Information Base">
     <p>
       Global routes information base within an <ref table="System"/>.
@@ -1463,9 +1505,7 @@
       Default is 180 seconds.
       </column>
       <column name="redistribute">
-      Allows redistribution of routes from various protocols.
-      For example: static, connected. Enabling of redistribution protocols is not mutually
-      exclusive.
+      Specifies which protocol rooutes should be redistributed into BGP.
       </column>
       <column name="always_compare_med">
       Compares MED (Multi-Exit Discriminitor) from different neighbors.
@@ -1483,6 +1523,14 @@
       <column name="bgp_neighbors" keyname="ip_or_group_name">
         BGP neighbors or neighbor groups, keyed by IP for the former or any
 	string name for the latter.
+      </column>
+      <column name="fast_external_failover">
+        Enables fast external failover for BGP directly connected peering sessions.
+        Default is false.
+      </column>
+      <column name="log_neighbor_changes">
+        Enables logging of BGP neighbor status changes.
+        Default is false.
       </column>
     </group>
    <group title="Status">
@@ -1564,17 +1612,22 @@
       Minimum interval between sending BGP routing updates. Range: 0-600 seconds.
       </column>
 
+      <column name="ebgp_multihop">
+      If set to "true", allows BGP connections with peers that are not directly connected.
+      Default is "false".
+      </column>
+
+      <column name="ttl_security_hops">
+      Specifies the maximum number of hops to the BGP peer.
+      </column>
+
+      <column name="update_source">
+      Specifies the source-address to establish BGP connections to neighbors.
+      </column>
+
       <column name="maximum_prefix_limit">
       Maximum number of prefixes that can be accepted on a BGP peer
       session. When the limit is exceeded, a system log message is logged.
-      </column>
-
-      <column name="capability">
-      Advertise dynamic/ORF capabilities to the peer.
-      </column>
-
-      <column name="override_capability">
-      Override capability negotiation result.
       </column>
 
       <column name="inbound_soft_reconfiguration">
@@ -1595,12 +1648,32 @@
       The password for this entry.
       </column>
 
-      <column name="strict_capability_match">
-      Strict capability negotiation match.
-      </column>
-
       <column name="timers">
       BGP per neighbor timers - Connect timer/Keep-alive Interval.
+      </column>
+
+      <column name="filter_lists">
+      Name and direction of the filter lists.
+      </column>
+
+      <column name="filter_lists" key="in">
+      Filter list associated with incoming routes.
+      </column>
+
+      <column name="filter_lists" key="out">
+      Filter list associated with outbound routes.
+      </column>
+
+      <column name="prefix_lists">
+      Name and direction of the prefix lists.
+      </column>
+
+      <column name="prefix_lists" key="in">
+      Prefix list associated with incoming routes.
+      </column>
+
+      <column name="prefix_lists" key="out">
+      Prefix list associated with outbound routes.
       </column>
 
       <column name="route_maps">
@@ -2045,7 +2118,10 @@
         port's actual MAC address, nor will setting it change the port's actual
         MAC address.
       </column>
-
+      <column name="other_config" key="sflow-enabled" type='{"type": "boolean"}'>
+        Determines whether sflow sampling is enabled on this port.
+        Default is true.
+      </column>
    </group>
 
     <group title="Port Status">
@@ -3307,6 +3383,87 @@
 
       <column name="external_ids"/>
     </group>
+  </table>
+
+  <table name="sFlow">
+    <p>A set of sFlow(R) configurations.  sFlow is a protocol for remote
+    monitoring of switches.</p>
+
+    <column name="name">
+      sFlow identifier for the configuration. Should be alphanumeric.
+    </column>
+
+    <column name="targets">
+      sFlow collectors in the form
+      <code><var>ip</var>:<var>port</var></code>.
+      Port defaults to 6343 if not specified.
+      Can have multiple collectors. Atleast one target has to be
+      configured for sflow to be enabled. Collectors can only be reached over
+      vrf_default.
+    </column>
+
+    <column name="sampling">
+      Specifies the rate at which packets should be sampled and sent
+      to the collector. If not specified, rate defaults to 4096, which means
+      one out of 4096 packets, on average, will be sent to the collector.
+    </column>
+
+    <column name="sampling_per_speed">
+      The sampling rate can be configured per interface-speed (in Mbps) which
+      means the rate will be applied only for interfaces that match the speed.
+      For example, `sflow sampling 1024 1G` means a sampling rate of 1024 is
+      applied to all the 1Gig interfaces on the system. If interface-speed is
+      not specified, the global rate is applied on the interface.
+    </column>
+    <column name="sampling_per_speed" key="1G">
+      Sampling rate for the 1 Gigabit interfaces.
+    </column>
+    <column name="sampling_per_speed" key="10G">
+      Sampling rate for the 10 Gigabit interfaces.
+    </column>
+    <column name="sampling_per_speed" key="40G">
+      Sampling rate for the 40 Gigabit interfaces.
+    </column>
+    <column name="sampling_per_speed" key="100G">
+      Sampling rate for the 100 Gigabit interfaces.
+    </column>
+
+    <column name="polling">
+      Specifies the interval at which counter statistics are send to the
+      collector. If not specified, interval defaults to 30 seconds
+    </column>
+
+    <column name="header">
+      Number of bytes of a sampled packet to send to the collector.
+      If not specified, the default is 128 bytes.
+    </column>
+
+    <column name="max_datagram">
+      Maximum number of bytes that will be send in the sflow datagram.
+      If not specified, the default is 1400 bytes.
+    </column>
+
+    <column name="agent">
+      Name of the network device whose IP address should be reported as the
+      ``agent address'' to collectors.  If not specified, the agent IP is
+      derived from the first interface in alphabetical order.
+    </column>
+
+    <column name="agent_addr_family">
+      Address type of agent address reported. If agent interface has both
+      IPv4 and IPv6 address configured, then this column selects which address
+      will be used. Defaults to IPv4.
+    </column>
+
+    <column name="external_ids"/>
+
+    <column name="statistics">
+      Key value pairs that has sampling statistics.
+    </column>
+    <column name="statistics" key="num_sampled_pkts">
+      Total number of sampled packets sent to the collector.
+    </column>
+
   </table>
 
   <table name="CLI_Alias">
