@@ -17,7 +17,6 @@
 
 import pytest
 import re
-from smart.util import pexpect
 from opstestfw import *
 from opstestfw.switch.CLI import *
 from opstestfw.switch import *
@@ -43,7 +42,9 @@ topoDict = {"topoExecution": 1000,
             "topoDevices": "dut01 dut02",
             "topoLinks":  "lnk01:dut01:dut02",
             "topoFilters": "dut01:system-category:switch,\
-                            dut02:system-category:switch"}
+                            dut02:system-category:switch",
+            "topoLinkFilter": "lnk01:dut01:interface:eth0,\
+                              lnk01:dut02:interface:eth0"}
 
 
 # Enter VTYSH
@@ -63,7 +64,7 @@ def sftpServerConfigTest(**kwargs):
 
     dut01 = kwargs.get('switchObj', None)
     condition = kwargs.get('cond', None)
-    opsuccess = False
+    # opsuccess = False
 
     retStruct = dut01.VtyshShell(enter=True)
     retCode = retStruct.returnCode()
@@ -98,7 +99,7 @@ def sftpServerConfigTest(**kwargs):
     assert retCode == 0, "Failed to enable/disable SFTP server"
 
     dut01.DeviceInteract(command="end")
-
+    returnCls = returnStruct(returnCode=0)
     return returnCls
 
 
@@ -171,12 +172,8 @@ def sftpClientGet(**kwargs):
 
     hostip = "10.1.1.2"
     cmd = copy+" "+username+" "+hostip+" "+srcpath+" "+destpath+destfile
-    switch1.expectHndl.send(cmd)
-    switch1.expectHndl.send('\r')
-    time.sleep(1)
-    switch1.expectHndl.send("yes")
-    switch1.expectHndl.send('\r')
-    time.sleep(1)
+    devIntReturn = switch1.DeviceInteract(command=cmd)
+    retCode = devIntReturn.get('returnCode')
 
     # Verify the downloaded file
     devIntReturn = switch1.DeviceInteract(command="start-shell")
@@ -239,6 +236,7 @@ def sftpClientInt(**kwargs):
     switch1.expectHndl.send('\r')
     time.sleep(1)
 
+
     # Perform get operation
     getcmd = "get"+" "+srcpath+" "+destpath+destfile
     switch1.expectHndl.send(getcmd)
@@ -287,6 +285,7 @@ def sftpClientInt(**kwargs):
     switch1.expectHndl.send(putcmd)
     switch1.expectHndl.send('\r')
     time.sleep(1)
+
 
     switch1.DeviceInteract(command="quit")
 
@@ -378,7 +377,7 @@ def sftpFailCases(**kwargs):
     switch1 = kwargs.get('switch1', None)
     switch2 = kwargs.get('switch2', None)
 
-    opsuccess = False
+    # opsuccess = False
     copy = "copy sftp"
     username = "root"
     hostip = "10.1.1.2"
@@ -454,6 +453,7 @@ def sftpRebootTest(**kwargs):
         return False
 
     cmd = copy+" "+username+" "+hostip+" "+srcpath+" "+destpath+destfile
+    devIntReturn = switch1.DeviceInteract(command=cmd)
     switch1.expectHndl.send(cmd)
     switch1.expectHndl.send('\r')
     time.sleep(1)
