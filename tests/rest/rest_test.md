@@ -50,6 +50,17 @@ REST API Test Cases
   - [Query VLANs filtered by ID](#query-vlans-filtered-by-id)
   - [Query VLANs filtered by Description](#query-vlans-filtered-by-description)
   - [Query VLANs filtered by Admin](#query-vlans-filtered-by-admin)
+  - [Update VLAN using If Match header with star Etag](#update-vlan-using-if-match-header-with-star-etag)
+  - [Update VLAN using If Match header with a matching Etag](#update-vlan-using-if-match-header-with-a-matching-etag)
+  - [Update VLAN using If Match header with a not matching Etag](#update-vlan-using-if-match-header-with-a-not-matching-etag)
+  - [Create VLAN using If Match header with a matching Etag](#create-vlan-using-if-match-header-with-a-matching-etag)
+  - [Create VLAN using If Match header with a not matching Etag](#create-vlan-using-if-match-header-with-a-not-matching-etag)
+  - [Query all VLANs using If Match header with a matching Etag](#query-all-vlans-using-if-match-header-with-a-matching-etag)
+  - [Query all VLANs using If Match header with a not matching Etag](#query-all-vlans-using-if-match-header-with-a-not-matching-etag)
+  - [Query VLAN using If Match header with a matching Etag](#query-vlan-using-if-match-header-with-a-matching-etag)
+  - [Query VLAN using If Match header with a not matching Etag](#query-vlan-using-if-match-header-with-a-not-matching-etag)
+  - [Delete VLAN using If Match header with a matching Etag](#delete-vlan-using-if-match-header-with-a-matching-etag)
+  - [Delete VLAN using If Match header with a not matching Etag](#delete-vlan-using-if-match-header-with-a-not-matching-etag)
 - [Declarative configuration schema validations](#declarative-configuration-schema-validations)
 - [Custom validators](#custom-validators)
 
@@ -1664,22 +1675,6 @@ The test is passing for "updating a port" when the following results occur:
 - The HTTP response is `200 OK` when executing a GET request with /rest/v1/system/ports/Port1.
 - The configuration data posted is the same as that of the retrieved port.
 
-The test is passing for "updating a port using If-Match" when the following results occur:
-
-- The HTTP response is `200 OK`.
-- The HTTP response is `200 OK` when executing a GET request with /rest/v1/system/ports/Port1.
-- The configuration data posted is the same as that of the retrieved port.
-
-The test is passing for "updating a port using If-Match and * as etag" when the following results occur:
-
-- The HTTP response is `200 OK`.
-- The HTTP response is `200 OK` when executing a GET request with /rest/v1/system/ports/Port1.
-- The configuration data posted is the same as that of the retrieved port.
-
-The test is passing for "updating a port using If-Match and a change already applied" when the The HTTP response is `200 OK`.
-
-The test is passing for "updating a port using If-Match and a not matching etag" when the The HTTP response is `412 PRECONDITION FAILED`.
-
 The test is passing for "updating a port with the same name as another port" when the HTTP response is `400 BAD REQUEST`.
 
 The test is passing for "updating a port with a valid string type" when the HTTP response is `200 OK`.
@@ -1715,22 +1710,6 @@ The test is failing for "updating a port" when the following occurs:
 - The HTTP response is not equal to `200 OK`.
 - The HTTP response is not equal to `200 OK` when executing a GET request with /rest/v1/system/ports/Port1.
 - The configuration data posted is not the same as the data on the retrieved port.
-
-The test is failing for "updating a port using If-Match" when the following results occur:
-
-- The HTTP response is not equal to `200 OK`.
-- The HTTP response is not equal to `200 OK` when executing a GET request with /rest/v1/system/ports/Port1.
-- The configuration data posted is not the same as that of the retrieved port.
-
-The test is failing for "updating a port using If-Match and * as etag" when the following results occur:
-
-- The HTTP response is `200 OK`.
-- The HTTP response is `200 OK` when executing a GET request with /rest/v1/system/ports/Port1.
-- The configuration data posted is the same as that of the retrieved port.
-
-The test is failing for "updating a port using If-Match and a change already applied" when the The HTTP response is not equal to `204 NOT CONTENT`.
-
-The test is failing for "updating a port using If-Match and a not matching etag" when the The HTTP response is not equal to `412 PRECONDITION FAILED`.
 
 The test is failing for "updating a port with the same name as another port" when the HTTP response is not equal to `400 BAD REQUEST`.
 
@@ -1819,7 +1798,6 @@ Period after exist.
 2. Execute a GET request on /rest/v1/system/ports and verify that the port is being deleted from the port list.
 3. Execute a GET request on /rest/v1/ports/system/Port1 and verify that the HTTP response is `404 NOT FOUND`.
 4. Execute a DELETE request on /rest/v1/system/ports/Port2 and ensure that the  HTTP response is `404 NOT FOUND`.
-5. Execute a DELETE request on  /rest/v1/system/ports/Port1 using Conditional request If-Match and verify HTTP response is `412 PRECONDITION FAILED` and `204 NOT CONTENT`.
 
 ### Test result criteria
 
@@ -1830,8 +1808,6 @@ The test is passing for "deleting an existing port" when the following occurs:
 - The HTTP response is `204 NOT CONTENT`.
 - There is no URI "/rest/v1/system/ports/Port1" in the port list that is returned from the /rest/v1/system/ports URI.
 - When doing a GET request on "/rest/v1/system/ports/Port1", the HTTP response is `404 NOT FOUND`.
-- The HTTP response is `412 PRECONDITION FAILED` if Conditional request If-Match provided entity tag does not match the Port entity-tag.
-- The HTTP response is `204 NOT CONTENT` if Conditional request If-Match provided entity tag matches the Port entity-tag.
 - There is no URI "/rest/v1/system/ports/Port1" in the port list that is returned from the /rest/v1/system/ports URI.
 - When doing a GET request on "/rest/v1/system/ports/Port1", the HTTP response is `404 NOT FOUND`.
 
@@ -5293,6 +5269,748 @@ This test fails when:
     - An HTTP response is not equal to `200 OK`.
     - A GET request to "rest/v1/system/bridges/bridge_normal/vlans?depth=1;admin=down" and the test VLANs are not within the HTTP response.
 
+## Update VLAN using If Match header with star Etag
+
+### Objective
+The objective of the test is to validate "rest/{version}/system/bridges/{id}/vlans/{id}" through the standard REST API PUT method using If-Match header with the field value `*`.
+
+###  Requirements
+
+- Bridge Normal exists.
+- A test VLAN added.
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default.
+** Switch 1 ** a test VLAN has to be added with the following configuration:
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+Verify if VLAN was updated successfully using If-Match header using value `*` as Etag:
+ 1. Execute a GET request over "/rest/v1/system/bridges/bridge_normal/vlans/test?selector=configuration".
+ 2. Modify VLAN description field: `"description": "Etag match"`
+ 3. Execute PUT request over "/rest/v1/system/bridges/bridge_normal/vlans/test?selector=configuration" and include the If-Match Header using field value `*` as Etag.
+ 4. Verify if the HTTP response is `200 OK`.
+ 5. Verify if the HTTP response is empty.
+ 6. Confirm that VLAN description field was updated.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- A `200 OK` HTTP response.
+- The HTTP response is empty.
+- The description field was modified.
+
+#### Test fail criteria
+
+This test fails when:
+
+- The HTTP response is not equal to `200 OK`.
+- HTTP response is not empty.
+- The description field was not modified.
+
+## Update VLAN using If Match header with a matching Etag
+
+### Objective
+The objective of the test is to validate "rest/{version}/system/bridges/{id}/vlans/{id}" through the standard REST API PUT method using If-Match header with a matching Etag.
+
+###  Requirements
+
+- Bridge Normal exists.
+- A test VLAN added.
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default.
+** Switch 1 ** a test VLAN has to be added with the following configuration:
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+ Verify if VLAN was updated unsuccessfully using If-Match header with a matching Etag.
+ 1. Execute a GET request over "/rest/v1/system/bridges/bridge_normal/vlans/test?selector=configuration".
+ 2. Read Etag header field provided by the server.
+ 3. Modify VLAN description field: `"description": "Etag match"`
+ 4. Execute PUT request over "/rest/v1/system/bridges/bridge_normal/vlans/test?selector=configuration" and include the If-Match Header using the Etag read at step 2.
+ 5. Verify if the HTTP response is `200 OK`.
+ 6. Verify if the HTTP response is empty.
+ 7. Confirm that VLAN description field was updated.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- A `200 OK` HTTP response.
+- The HTTP response is empty.
+- The description field was modified.
+
+#### Test fail criteria
+
+This test fails when:
+
+- The HTTP response is not equal to `200 OK`.
+- HTTP response is not empty.
+- The description field was not modified.
+
+## Update VLAN using If Match header with a not matching Etag
+
+### Objective
+The objective of the test is to validate "rest/{version}/system/bridges/{id}/vlans/{id}" through the standard REST API PUT method using If-Match header with a not matching Etag.
+
+###  Requirements
+
+- Bridge Normal exists.
+- A test VLAN added.
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default.
+** Switch 1 ** a test VLAN has to be added with the following configuration:
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+Verify if VLAN was not updated using If-Match header with a not matching Etag.
+ 1. Execute a GET request over "/rest/v1/system/bridges/bridge_normal/vlans/test?selector=configuration".
+ 2. Read Etag header field provided by the server.
+ 3. Modify VLAN description field: `"description": "Etag match"`
+ 4. Change the Etag value read at step 2.
+ 5. Execute PUT request over "/rest/v1/system/bridges/bridge_normal/vlans/test?selector=configuration" and include the If-Match Header using the changed Etag from step 4.
+ 6. Verify if the HTTP response is `412 Precondition Failed`.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+A `412 Precondition Failed` HTTP response.
+
+#### Test fail criteria
+
+This test fails when the HTTP response is not equal to `412 Precondition Failed`.
+
+## Create VLAN using If Match header with a matching Etag
+
+### Objective
+
+The objective of the test is to validate "rest/{version}/system/bridges/{id}/vlans" through the standard REST API POST method using If-Match header with a matching Etag.
+
+###  Requirements
+
+- Bridge Normal exists.
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default.
+** Switch 1 ** a test VLAN has to be added with the following configuration:
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+Verify if VLAN was added successfully using If-Match header with a matching Etag.
+ 1. Execute a GET request over "/rest/v1/system/bridges/bridge_normal/vlans?selector=configuration".
+ 2. Read Etag header field provided by the server.
+ 3. Execute POST request over "/rest/v1/system/bridges/bridge_normal/vlans?selector=configuration" and include the If-Match Header using the Etag read at step 2.
+ 4. Verify if the HTTP response is `201 CREATED`.
+ 5. Verify if the HTTP response is empty.
+ 6. Confirm that VLAN description field was updated.
+
+The new VLAN will have the following configuration data:
+```
+{
+    "configuration": {
+        "name": "VLAN2",
+        "id": 2,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- A `201 Created` HTTP response.
+- The HTTP response is empty.
+
+#### Test fail criteria
+
+This test fails when:
+
+- The HTTP response is not equal to `201 Created`.
+- HTTP response is not empty.
+
+## Create VLAN using If Match header with a not matching Etag
+
+### Objective
+The objective of the test is to validate "rest/{version}/system/bridges/{id}/vlans" through the standard REST API POST method using If-Match header with a not matching Etag.
+
+###  Requirements
+
+- Bridge Normal exists.
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default.
+** Switch 1 ** a test VLAN has to be added with the following configuration:
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+Verify if VLAN was not created using If-Match header with a not-matching Etag.
+ 1. Execute a GET request over "/rest/v1/system/bridges/bridge_normal/vlans?selector=configuration".
+ 2. Read Etag header field provided by the server.
+ 3. Change the Etag value read at step 2.
+ 4. Execute POST request over "/rest/v1/system/bridges/bridge_normal/vlans?selector=configuration" and include the If-Match Header using the Etag read at step 4.
+ 5. Verify if the HTTP response is `412 Precondition Failed`
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+A `412 Precondition Failed` HTTP response.
+
+#### Test fail criteria
+
+This test fails when the HTTP response is not equal to `412 Precondition Failed`
+
+## Query all VLANs using If Match header with a matching Etag
+
+### Objective
+
+The objective of the test is to validate "rest/{version}/system/bridges/{id}/vlans" through the standard REST API GET method using If-Match header with a matching Etag.
+
+###  Requirements
+
+- Bridge Normal exists.
+- A test VLAN added.
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default.
+** Switch 1 ** a test VLAN has to be added with the following configuration:
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+Verify if the VLANs are retrieved successfully using If-Match header with a matching Etag.
+ 1. Execute a GET request over "/rest/v1/system/bridges/bridge_normal/vlans?selector=configuration".
+ 2. Read Etag header field provided by the server.
+ 3. Execute GET request over "/rest/v1/system/bridges/bridge_normal/vlans?selector=configuration" and include the If-Match Header using the Etag read at step 2.
+ 4. Verify if the HTTP response is `200 OK`.
+ 5. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- A `200 OK` HTTP response.
+- The HTTP response is not empty.
+
+#### Test fail criteria
+
+This test fails when:
+
+- The HTTP response is not equal to `200 OK`.
+- HTTP response is empty.
+
+## Query all VLANs using If Match header with a not matching Etag
+
+### Objective
+The objective of the test is to validate "rest/{version}/system/bridges/{id}/vlans" through the standard REST API GET method using If-Match header with a not matching Etag.
+
+###  Requirements
+
+- Bridge Normal exists.
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default.
+** Switch 1 ** a test VLAN has to be added with the following configuration:
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+Verify if the VLANs aren't retrieved using If-Match header with a not matching Etag.
+ 1. Execute a GET request over "/rest/v1/system/bridges/bridge_normal/vlans?selector=configuration".
+ 2. Read Etag header field provided by the server.
+ 3. Change the Etag value read at step 2.
+ 4. Execute GET request over "/rest/v1/system/bridges/bridge_normal/vlans?selector=configuration" and include the If-Match Header using the Etag read at step 3.
+ 5. Verify if the HTTP response is `412 Precondition Failed`.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+A `412 Precondition Failed` HTTP response.
+
+#### Test fail criteria
+
+This test fails when the HTTP response is not equal to `412 Precondition Failed`.
+
+## Query VLAN using If Match header with a matching Etag
+
+### Objective
+
+The objective of the test is to validate "rest/{version}/system/bridges/{id}/vlans/{id}" through the standard REST API GET method using If-Match header with a matching Etag.
+
+###  Requirements
+
+- Bridge Normal exists.
+- A test VLAN added.
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default.
+** Switch 1 ** a test VLAN has to be added with the following configuration:
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+Verify if the VLAN is retrieved successfully using If-Match header with a matching Etag.
+ 1. Execute a GET request over "/rest/v1/system/bridges/bridge_normal/vlans/test?selector=configuration".
+ 2. Read Etag header field provided by the server.
+ 3. Execute GET request over "/rest/v1/system/bridges/bridge_normal/vlans/test?selector=configuration" and include the If-Match Header using the Etag read at step 2.
+ 4. Verify if the HTTP response is `200 OK`.
+ 5. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- A `200 OK` HTTP response.
+- The HTTP response is not empty.
+
+#### Test fail criteria
+
+This test fails when:
+
+- The HTTP response is not equal to `200 OK`.
+- HTTP response is empty.
+
+## Query VLAN using If Match header with a not matching Etag
+
+### Objective
+The objective of the test is to validate "rest/{version}/system/bridges/{id}/vlans/{id}" through the standard REST API GET method using If-Match header with a not matching Etag.
+
+###  Requirements
+
+- Bridge Normal exists.
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default.
+** Switch 1 ** a test VLAN has to be added with the following configuration:
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+
+Verify if the VLAN is not retrieved using If-Match header with a not matching Etag.
+ 1. Execute a GET request over "/rest/v1/system/bridges/bridge_normal/vlans/test?selector=configuration".
+ 2. Read Etag header field provided by the server.
+ 3. Change the Etag value read at step 2.
+ 4. Execute GET request over "/rest/v1/system/bridges/bridge_normal/vlans/test?selector=configuration" and include the If-Match Header using the Etag read at step 3.
+ 5. Verify if the HTTP response is `412 Precondition Failed`.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+A `412 Precondition Failed` HTTP response.
+
+#### Test fail criteria
+
+This test fails when the HTTP response is not equal to `412 Precondition Failed`.
+
+## Delete VLAN using If Match header with a matching Etag
+
+### Objective
+
+The objective of the test is to validate "rest/{version}/system/bridges/{id}/vlans/{id}" through the standard REST API DELETE method using If-Match header with a matching Etag.
+
+###  Requirements
+
+- Bridge Normal exists.
+- A test VLAN added.
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default.
+** Switch 1 ** a test VLAN has to be addded with the following configuration:
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+Add a VLAN to ** Switch 1 ** with the following data:
+```
+{
+    "configuration": {
+        "name": "VLAN2",
+        "id": 2,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+Verify if the VLAN is deleted successfully using If-Match header with a matching Etag.
+ 1. Execute a GET request over "/rest/v1/system/bridges/bridge_normal/vlans/VLAN2?selector=configuration".
+ 2. Read Etag header field provided by the server.
+ 3. Execute DELETE request over "/rest/v1/system/bridges/bridge_normal/vlans/VLAN2?selector=configuration" and include the If-Match Header using the Etag read at step 2.
+ 4. Verify if the HTTP response is `204 No Content`.
+ 5. Verify if the HTTP response is not empty.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- A `204 No Content` HTTP response.
+- The HTTP response is empty.
+
+#### Test fail criteria
+
+This test fails when:
+
+- The HTTP response is not equal to `204 No Content`.
+- HTTP response is not empty.
+
+## Delete VLAN using If Match header with a not matching Etag
+
+### Objective
+The objective of the test is to validate "rest/{version}/system/bridges/{id}/vlans/{id}" through the standard REST API DELETE method using If-Match header with a not matching Etag.
+
+###  Requirements
+
+- Bridge Normal exists.
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+** Switch 1 ** has bridge_normal configure by default.
+** Switch 1 ** a test VLAN has to be addded with the following configuration:
+
+```
+{
+    "configuration": {
+        "name": "test",
+        "id": 1,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+Add a VLAN with the following data:
+```
+{
+    "configuration": {
+        "name": "VLAN2",
+        "id": 2,
+        "description": "test_vlan",
+        "admin": ["up"],
+        "other_config": {},
+        "external_ids": {}
+    }
+}
+```
+
+### Description
+Verify if the VLAN is not deleted using If-Match header with a not matching Etag.
+ 1. Execute a GET request over "/rest/v1/system/bridges/bridge_normal/vlans/test?selector=configuration".
+ 2. Read Etag header field provided by the server.
+ 3. Change the Etag value read at step 2.
+ 4. Execute DELETE request over "/rest/v1/system/bridges/bridge_normal/vlans/test?selector=configuration" and include the If-Match Header using the Etag read at step 3.
+ 5. Verify if the HTTP response is `412 Precondition Failed`.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+A `412 Precondition Failed` HTTP response.
+
+#### Test fail criteria
+
+This test fails when the HTTP response is not equal to `412 Precondition Failed`.
 
 ##  Declarative configuration schema validations
 ### Objective
