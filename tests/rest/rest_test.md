@@ -23,6 +23,7 @@ REST API Test Cases
 - [REST API get method with pagination for ports](#rest-api-get-method-with-pagination-for-ports)
 - [REST API get method and sort by field for ports](#rest-api-get-method-and-sort-by-field-for-ports)
 - [REST API get method and sort by field combination for ports](#rest-api-get-method-and-sort-by-field-combination-for-ports)
+- [REST API patch method for system](#rest-api-patch-method-for-system)
 - [REST API VLANs Resource test cases](#rest-api-vlans-resource-test-cases)
   - [Query Bridge Normal](#query-bridge-normal)
   - [Query existent VLANs](#query-existent-vlans)
@@ -2419,6 +2420,227 @@ The test fails when:
 - The HTTP response is not `200 OK`.
 - The response doesn't have 10 ports.
 - The result is not sorted ascending/descending by the combination of fields.
+
+## REST API patch method for system
+
+### Objective
+The test case verifies queries for:
+
+- Add operation to set a field with a new value
+- Add operation to replace a existing field
+- Add operation to set a field with an array type value
+- Add operation to aggregate an object member
+- Add operation to set a field value with a malformed patch
+- Add operation to set a field with a boolean type value
+- Add operation to set multiple fields
+- Test operation to verify a nonexisting value
+- Test operation to verify an existent value
+- Copy operation to duplicate an existing value
+- Copy operation to duplicate a nonexistent value
+- Move operation to change of place an existing value
+- Move operation to change of place a nonexistent value
+- Replace operation to set a new value for an existing field
+- Replace operation to set a new value for a nonexistent value
+
+### Requirements
+
+- OpenSwitch
+- Ubuntu Workstation
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+### Description
+The test case validates add, copy, remove, replace, copy and move and test operations through the standard REST API PATCH method. If-Match header is optional for the standard REST API PATCH method and it's used in these tests to verify whether a change was made or not by checking the ETag or entity tag identifier.
+
+1. Verify if a patch is applied using the add operation for a new value.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "add", "path": "/dns_servers", "value": ["1.1.1.1"]}]
+    ```
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+    c. Confirm that system resource has the new value added.
+    d. Confirm that the ETag is changed.
+
+2. Verify if a patch is applied using the add operation to replace an existing field.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "add", "path": "/dns_servers", "value": ["1.1.1.1"]},
+         {"op": "add", "path": "/dns_servers", "value": ["1.2.3.4"]}]
+    ```
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+    c. Confirm that system resource has the replace value added.
+    d. Confirm that the ETag is changed.
+
+3. Verify if a patch is applied using the add operation for an array element.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "add", "path": "/dns_servers", "value": ["1.1.1.1"]},
+         {"op": "add", "path": "/dns_servers/1", "value": "1.2.3.4"}]
+    ```
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+    c. Confirm that system resource has the new values added.
+    d. Confirm that the ETag is changed.
+
+4. Verify if a patch is applied using the add operation for a new object member.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "add", "path": "/other_config/foo", "value": "bar"}]
+    ```
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+    c. Confirm that system resource has the new object and value added.
+    d. Confirm that the ETag is changed.
+
+5. Verify if a patch is applied using the add operation with a malformed patch.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"path": "/dns_servers", "value": ["1.1.1.1"]}]
+    ```
+    b. Verify if the HTTP response is `400 BAD REQUEST`.
+    c. Confirm that the ETag remains the same.
+
+6. Verify if a patch is applied using the add operation for a boolean element.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "add", "path": "/other_config/enable-statistics", "value": "true"}]
+    ```
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+    c. Confirm that system resource has the new values added.
+    d. Confirm that the ETag is changed.
+
+7. Verify if a patch is applied using the add operation for multiple fields.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "add", "path": "/other_config/enable-statistics", "value": "true"},
+         {"op": "add", "path": "/dns_servers", "value": ["1.1.1.1"]},
+         {"op": "add", "path": "/other_config/foo", "value": "bar"}]
+    ```
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+    c. Confirm that system resource has the new values added.
+    d. Confirm that the ETag is changed.
+
+8. Verify if a patch is applied using the Test operation for a nonexistent value.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "test", "path": "/other_config/foo", "value": "bar"}]
+    ```
+    b. Verify if the HTTP response is `400 BAD REQUEST`.
+    c. Confirm that the ETag remains the same.
+
+9. Verify if a patch is applied using the Test operation for an existent value.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "add", "path": "/dns_servers", "value": "1.1.1.1"},
+         {"op": "test", "path": "/dns_servers", "value": "1.1.1.1"}]
+    ```
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+    c. Confirm that the ETag is changed.
+
+10. Verify if a patch is applied using the Copy operation with an existent value.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "copy", "from": "/other_config/foo",
+          "path": "/other_config/copy_of_foo"}]
+    ```
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+    c. Confirm that system resource has the copied value.
+    d. Confirm that the ETag is changed.
+
+11. Verify if a patch is applied using the Copy operation with a nonexistent value.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "copy", "from": "/other_config/foo",
+          "path": "/other_config/copy_of_foo"}]
+    ```
+    b. Verify if the HTTP response is `400 BAD REQUEST`.
+    c. Confirm that the ETag remains the same.
+
+12. Verify if a patch is applied using the Move operation with an existent value.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "move", "from": "/dns_servers/0",
+          "path": "/other_config/dns_servers"}]
+    ```
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+    c. Confirm that system resource has the moved value.
+    d. Confirm that the ETag is changed.
+
+13. Verify if a patch is applied using the Move operation with a nonexistent value.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "move", "from": "/other_config/servers",
+          "path": "/other_config/dns_servers"}]
+    ```
+    b. Verify if the HTTP response is `400 BAD REQUEST`.
+
+14. Verify if a patch is applied using the Move operation with an invalid path.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "move", "from": "/other_config/abc",
+          "path": "/other_config/abc/def"}]
+    ```
+    b. Verify if the HTTP response is `400 BAD REQUEST`.
+    c. Confirm that the ETag remains the same.
+
+15. Verify if a patch is applied using the Replace operation with an existent value.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "replace", "path": "/other_config/test", "value": "bar"}]
+    ```
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+    c. Confirm that system resource has the replaced value.
+    d. Confirm that the ETag is changed.
+
+16. Verify if a patch is applied using the Replace operation with a nonexistent value.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "replace", "path": "/other_config/non_existent_field",
+          "value": "bar"}]
+    ```
+    b. Verify if the HTTP response is `400 BAD REQUEST`.
+    c. Confirm that the ETag remains the same.
+
+17. Verify if a patch is applied using the Remove operation with an existent value.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        [{"op": "remove", "path": "/other_config/test"}]
+    ```
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+    c. Confirm that system resource does not have the removed value.
+    d. Confirm that the ETag is changed.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Applying a Patch with the specified correct parameters in each step:
+    - A `204 NO CONTENT` HTTP response.
+
+- Applying a Patch with invalid parameters or a malformed patch results in a `400 BAD REQUEST`.
+
+- Applying a Patch with invalid ETag results in `412 PRECONDITION FAILED`
+
+#### Test fail criteria
+
+This test fails when:
+
+- Applying a Patch with the specified correct parameters in each step:
+    - A `400 BAD REQUEST` HTTP response.
+
+- Applying a Patch with invalid parameters or a malformed patch results in a `204 NO CONTENT`.
+
+- Applying a Patch with invalid ETag results in `204 NO CONTENT`
 
 REST API VLANs Resource test cases
 ==================================

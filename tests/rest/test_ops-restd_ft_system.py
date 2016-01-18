@@ -27,9 +27,6 @@ import urllib
 
 from utils.utils import *
 
-patchdisable = pytest.mark.skipif(True,
-                                  reason="Disabling until PATCH " + \
-                                  "support is merged")
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -259,7 +256,6 @@ class Test_system:
     def test_run_call_sytem_get (self):
         self.test_var.test_call_system_get()
 
-    @patchdisable
     def test_run_call_sytem_options (self):
         self.test_var.test_call_system_options()
 
