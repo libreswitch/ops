@@ -62,7 +62,7 @@ def create_test_port(ip):
                                                  "POST",
                                                  json.dumps(PORT_DATA),
                                                  ip)
-    return status_code
+    return status_code, response_data
 
 
 def update_test_field(switch_ip, path, field, new_value):

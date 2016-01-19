@@ -280,7 +280,12 @@ class Test_ModifyPort:
     def setup_class (cls):
         Test_ModifyPort.test_var = ModifyPortTest()
         # Add a test port
-        create_test_port(Test_ModifyPort.test_var.SWITCH_IP)
+        info("\n########## Creating Test Port  ##########\n")
+        switch_ip = Test_ModifyPort.test_var.SWITCH_IP
+        status_code, response = create_test_port(switch_ip)
+        assert status_code == httplib.CREATED, "Port not created."\
+            "Response %s" % response
+        info("### Test Port Created  ###\n")
 
     def teardown_class (cls):
         Test_ModifyPort.test_var.net.stop()
