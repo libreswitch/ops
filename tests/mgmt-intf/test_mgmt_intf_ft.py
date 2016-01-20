@@ -433,7 +433,7 @@ class mgmtIntfTests(OpsVsiTest):
     # Verify to set hostname through dhclient
     def set_hostname_by_dhclient(self):
         s1 = self.net.switches[0]
-        s1.cmd("dhcphostname open-vswitch-new")
+        s1.cmd("dhcp_options open-vswitch-new None None")
         cnt = 15
         while cnt:
             cmd_output = s1.ovscmd("ovs-vsctl list system")
@@ -537,5 +537,7 @@ class Test_mgmt_intf:
              " ##########\n")
         self.test.config_set_hostname_from_cli()
 
+    @pytest.mark.skipif(True, reason="Disabling this testcase "
+                        "due to this Defect:181 dependencies")
     def test_set_hostname_by_dhclient(self):
         self.test.set_hostname_by_dhclient()
