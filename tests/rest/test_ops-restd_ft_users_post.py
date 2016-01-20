@@ -35,10 +35,6 @@ switch_ip = ""
 
 MAX_USERNAME = 32
 
-users_post_disable = pytest.mark.skipif(True,
-                                        reason="Disabling until fix 205 for "
-                                        "users resource is merged")
-
 
 class myTopo(Topo):
 
@@ -405,7 +401,6 @@ class CreateUserTest(OpsVsiTest):
              "same password ##########\n")
 
 
-@users_post_disable
 class Test_CreateUser:
 
     def setup(self):

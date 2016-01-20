@@ -30,9 +30,6 @@ from utils.user_utils import *
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 
-users_get_disable = pytest.mark.skipif(True,
-                                       reason="Disabling until fix 205 for "
-                                       "users resource is merged")
 
 class myTopo(Topo):
     def build(self, hsts=0, sws=1, **_opts):
@@ -253,7 +250,7 @@ class QueryUserTest(OpsVsiTest):
         info("########## End Test to Validate GET Non existent "
              "User ##########\n")
 
-@users_get_disable
+
 class Test_QueryUser:
     def setup(self):
         pass

@@ -33,10 +33,6 @@ from utils.user_utils import *
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 
-users_put_disable = pytest.mark.skipif(True,
-                                       reason="Disabling until fix 205 for "
-                                       "users resource is merged")
-
 
 class myTopo(Topo):
     def build(self, hsts=0, sws=1, **_opts):
@@ -207,7 +203,6 @@ class UpdateUserTest(OpsVsiTest):
              " old password ##########\n")
 
 
-@users_put_disable
 class Test_UpdateUser:
     def setup(self):
         pass
