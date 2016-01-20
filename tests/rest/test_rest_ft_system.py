@@ -18,6 +18,7 @@ import json
 from opstestfw.switch.CLI import *
 from opstestfw import *
 topoDict = {"topoExecution": 3000,
+            "topoTarget": "dut01",
             "topoDevices": "dut01 wrkston01",
             "topoLinks": "lnk01:dut01:wrkston01",
             "topoFilters": "dut01:system-category:switch,\
