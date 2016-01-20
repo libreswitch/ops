@@ -580,6 +580,21 @@
         </p>
       </column>
 
+      <column name="software_info" key="os_name">
+        <p>
+          This column is used for the software info. The value of the key
+          'os_name' will identify the operating system, without a version
+          component, and suitable for presentation to the user. If not set,
+          defaults to <code>os_name=OpenSwitch</code>. Example:
+          <code>os_name=Fedora</code> or
+          <code>os_name="Debian GNU/Linux"</code>.  This is equivalent of
+          <code>NAME</code> variable of the <code>/etc/os-release</code>
+          file.  Please refer to
+          <code>http://www.freedesktop.org/software/systemd/man/os-release.html</code>
+          for more detailed information.
+        </p>
+      </column>
+
       <column name="software_info" key="bios_release_date">
       </column>
 
@@ -818,6 +833,34 @@
         <column name="ecmp_config" key="resilient_hash_enabled" type='{"type": "boolean"}'>
             Determines whether ECMP hashing preserves traffic flows when ECMP group membership changes.
             Default is true.
+        </column>
+    </group>
+
+    <group title="QoS configuration">
+      <p>
+        Specifies QoS (Quality of Service) configuration options that are
+        global or are the configured default to use if no per-port override
+        has been specified.
+      </p>
+
+        <column name="qos_config" key="qos_trust"
+                type='{"type": "string",
+                       "enum": ["set", ["none", "cos", "dscp"]]}'>
+          Specifies the global default QoS Trust Mode. A value of 'none' will
+          not trust any packet code point fields, and remark all of them to 0.
+          A value of 'cos' will trust the 802.1Q priority code point and
+          preserve DSCP or IP-ToS. A value of 'dscp' will trust DSCP, and
+          optionally remark the 802.1Q priority code point to match. If the
+          key is not specified, then the system will use the factory default
+          value: 'none'.
+        </column>
+        <column name="qos_dscp_map_entries">
+          Contains references to each entry in the global DSCP map used by
+          port trust mode DSCP.
+        </column>
+        <column name="qos_cos_map_entries">
+          Contains references to each entry in the global COS map used by
+          port trust mode COS.
         </column>
     </group>
 
@@ -1505,7 +1548,8 @@
       Default is 180 seconds.
       </column>
       <column name="redistribute">
-      Specifies which protocol rooutes should be redistributed into BGP.
+      Specifies which protocol routes should be redistributed into BGP.
+      The routes can be filtered by specifying the route-map.
       </column>
       <column name="always_compare_med">
       Compares MED (Multi-Exit Discriminitor) from different neighbors.
@@ -1876,6 +1920,68 @@
    </group>
   </table>
 
+  <table name="QoS_DSCP_Map_Entry"
+         title="Quality of Service Differentiated Services Code Point Map">
+    <p>
+        Contains DSCP map entries used by QoS Trust Mode. It associates
+        each code point to local_priority (required), and (optionally),
+        priority code point, color and description.
+    </p>
+
+    <group title="Configuration">
+      <column name="code_point">
+        The identifier for an entry in the DSCP map that represents the
+        Differentiated Services Code Point (DSCP) value for this entry.
+      </column>
+      <column name="local_priority">
+        This is a switch internal meta-data value that will be associated with
+        the packet. This value will be used later to select the egress queue
+        for the packet.
+      </column>
+      <column name="color">
+        It may be used later in the pipeline in packet-drop decision points.
+        The default is 'green'.
+      </column>
+      <column name="priority_code_point">
+        The 802.1Q priority that will be assigned to the packet. If the packet
+        is transmitted with a VLAN tag, this value will be in the Priority
+        Code Point field. If this value is not specified, the default behavior
+        is that the priority of the packet will not be changed.
+      </column>
+      <column name="description">
+        Used for customer documentation.
+      </column>
+    </group>
+  </table>
+
+  <table name="QoS_COS_Map_Entry"
+         title="Quality of Service Class of Service Map">
+    <p>
+        Contains COS map entries used by QoS Trust Mode. It associates each
+        priority to local_priority (required), and (optionally), color and
+        description.
+    </p>
+
+    <group title="Configuration">
+      <column name="code_point">
+        The identifier for an entry in the COS map that is the 802.1Q priority
+        code point for this entry.
+      </column>
+      <column name="local_priority">
+        This is a switch internal meta-data value that will be associated with
+        the packet. This value will be used later to select the egress queue
+        for the packet.
+      </column>
+      <column name="color">
+        It may be used later in the pipeline in packet-drop decision points.
+        The default is 'green'.
+      </column>
+      <column name="description">
+        Used for customer documentation.
+      </column>
+    </group>
+  </table>
+
  <table name="Port" table="Port or bond configuration.">
     <p>A port within a <ref table="Bridge"/>.</p>
     <p>Most commonly, a port has exactly one ``interface,'' pointed to by its
@@ -1932,6 +2038,24 @@
       <column name="hw_config" key="internal-vlan">
         The VLAN associated with l3 interfaces.
       </column>
+    </group>
+
+    <group title="QoS configuration">
+      <p>
+        Specifies QoS (Quality of Service) port configuration options.
+      </p>
+
+        <column name="qos_config" key="qos_trust"
+                type='{"type": "string",
+                       "enum": ["set", ["none", "cos", "dscp"]]}'>
+          Specifies the port QoS Trust Mode. A value of 'none' will
+          not trust any packet code point fields, and remark all of them to 0.
+          A value of 'cos' will trust the 802.1Q priority code point and
+          preserve DSCP or IP-ToS. A value of 'dscp' will trust DSCP, and
+          optionally remark the 802.1Q priority code point to match. If the
+          key is not specified, then the configured global default value will
+          be used.
+        </column>
     </group>
 
     <group title="VLAN Configuration">
@@ -2041,8 +2165,16 @@
       <p>These columns apply only to bonded ports.  Their values are otherwise
           ignored.</p>
 
-      <column name="bond_mode"> <p>The type of bonding used for a bonded port.
-              Defaults to <code>l3-src-dst-hash</code> if not assigned.  </p>
+      <column name="bond_mode">
+        <p>
+          The type of bonding used for a bonded port. Bond mode controls
+          the selection of a interface from a group of aggregate interfaces
+          with which to transmit a frame. This selection is performed with
+          a hash function using either source and destination mac addresses
+          (l2), mac addresses plus VLAN ID (l2vid), ip addresses (l3) or
+          tcp/udp ports (l4) as parameters.
+          Defaults to <code>l3-src-dst-hash</code> if not assigned.
+        </p>
       </column>
 
       <group title="LACP Configuration">

@@ -125,7 +125,12 @@ class Test_QueryPort:
     def setup_class (cls):
         Test_QueryPort.test_var = QueryPortTest()
         # Add a test port
-        create_test_port(Test_QueryPort.test_var.SWITCH_IP)
+        info("\n########## Creating Test Port  ##########\n")
+        switch_ip = Test_QueryPort.test_var.SWITCH_IP
+        status_code, response = create_test_port(switch_ip)
+        assert status_code == httplib.CREATED, "Port not created."\
+            "Response %s" % response
+        info("### Test Port Created  ###\n")
 
     def teardown_class (cls):
         Test_QueryPort.test_var.net.stop()
