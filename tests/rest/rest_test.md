@@ -475,24 +475,38 @@ The requirements for this test case are:
 The test case validates the "/rest/v1/system/users" through the standard REST API GET method.
 
 1. Verify if the GET method returns a json object with a list of users by creating 100 new users that are part of ovsdb_users group.
+    a. Execute the GET request over /rest/v1/system/users?depth=1.
+    b. Verify if the HTTP response is `200 OK`.
+    c. Confirm that the returned user list has the expected data.
+
+2. Verify if the GET method returns an users URI list by creating 100 new users that are part of ovsdb_users group.
     a. Execute the GET request over /rest/v1/system/users.
     b. Verify if the HTTP response is `200 OK`.
     c. Confirm that the returned user list has the expected data.
 
-2. Verify if the GET method returns a json object with a list of users by creating 11 new users and only 10 are part of ovsdb_users group.
-    a. Execute the GET request over /rest/v1/system/users.
+3. Verify if the GET method returns a json object with a list of users by creating 11 new users and only 10 are part of ovsdb_users group.
+    a. Execute the GET request over /rest/v1/system/users?depth=1.
     b. Verify if the HTTP response is `200 OK`.
     c. Confirm that the returned user list has the expected data.
 
-3. Verify if the GET method returns a json object with a list of users by creating 10 new users that are part of ovsdb_users group and have extra arguments in the creation command.
-    a. Execute the GET request over /rest/v1/system/users.
+4. Verify if the GET method returns a json object with a list of users by creating 10 new users that are part of ovsdb_users group and have extra arguments in the creation command.
+    a. Execute the GET request over /rest/v1/system/users?depth=1.
     b. Verify if the HTTP response is `200 OK`.
     c. Confirm that the returned user list has the expected data.
 
-4. Verify if the GET method returns a json object with the default user.
-    a. Execute the GET request over /rest/v1/system/users.
+5. Verify if the GET method returns a json object with the default user.
+    a. Execute the GET request over /rest/v1/system/users?depth=1.
     b. Verify if the HTTP response is `200 OK`.
     c. Confirm that the returned user list has the expected data.
+
+6. Verify if the GET method returns a json object when querying an specific user.
+    a. Execute the GET request over /rest/v1/system/users/{username}.
+    b. Verify if the HTTP response is `200 OK`.
+    c. Confirm that the returned user object has the expected data.
+
+7. Verify if the GET method not returns a json object when querying an non existent user.
+    a. Execute the GET request over /rest/v1/system/users/{username}.
+    b. Verify if the HTTP response is `404 NOT FOUND`.
 
 
 ### Test result criteria
@@ -500,13 +514,41 @@ The test case validates the "/rest/v1/system/users" through the standard REST AP
 
 This tests passes by meeting the following criteria:
 
-- A `200 OK` HTTP response.
-- The correct data is returned.
+- The following status code is displayed when trying to get all user using depth parameter:
+
+    A `200 OK` HTTP response.
+
+- The following status code is displayed when trying to get all users without depth parameter:
+
+    A `200 OK` HTTP response.
+
+- The following status code is displayed when trying to query a specific user:
+
+    A `200 OK` HTTP response.
+
+- The following status code is displayed when trying to query a non-existent user:
+
+    A `404 NOT FOUND` HTTP response.
 
 #### Test fail criteria
 
-- A `400 BAD REQUEST` HTTP response.
-- The incorrect data is returned.
+The test fails when:
+
+- The following error message or anything other than `200 OK` is displayed when trying to get all users using depth parameter:
+
+    A `404 NOT FOUND` HTTP response.
+
+- The following error message or anything other than `200 OK` is displayed when trying to get all users without depth parameter:
+
+    A `404 NOT FOUND` HTTP response.
+
+- The following error message or anything other than `200 OK` is displayed when trying to get a specific user:
+
+    A `404 NOT FOUND` HTTP response.
+
+- The following error message or anything other than `404 NOT FOUND` is displayed when trying to get non-existent user:
+
+    A `200 OK` HTTP response.
 
 ## REST API post method for users
 
@@ -818,11 +860,11 @@ The test case validates the "/rest/v1/system/users/{id}" through the standard RE
 
 4. Verify that the request fails after trying to delete a nonexistent user.
     a. Execute the DELETE request over /rest/v1/system/users/{id}.
-    b. Verify if the HTTP response is `400 BAD REQUEST`.
+    b. Verify if the HTTP response is `404 NOT FOUND`.
 
 5. Verify that the request fails after trying to delete a new user who is not part of the ovsdb_users group.
     a. Execute the DELETE request over /rest/v1/system/users/{id}.
-    b. Verify if the HTTP response is `400 BAD REQUEST`.
+    b. Verify if the HTTP response is `404 NOT FOUND`.
     c. Confirm that the returned user list has the expected data.
 
 ### Test result criteria
@@ -840,11 +882,11 @@ This test passes by meeting the following criteria:
 
 - The following error message is displayed when trying to delete a nonexistent user:
 
-    A `400 BAD REQUEST` HTTP response.
+    A `404 NOT FOUND` HTTP response.
 
 - The following error message is displayed when trying to delete a user who is not part of ovsdb_users group:
 
-    A `400 BAD REQUEST` HTTP response.
+    A `404 NOT FOUND` HTTP response.
 
 #### Test fail criteria
 
@@ -858,9 +900,9 @@ This test fails when:
 
     A `204 NO CONTENT` HTTP response.
 
-- Deleting a nonexistent user anything other than a `400 BAD REQUEST` HTTP response is displayed.
+- Deleting a nonexistent user anything other than a `404 NOT FOUND` HTTP response is displayed.
 
-- Deleting a user who is not part of the ovsdb_users group, the following error message or anything other than a `400 BAD REQUEST` HTTP response is displayed:
+- Deleting a user who is not part of the ovsdb_users group, the following error message or anything other than a `404 NOT FOUND` HTTP response is displayed:
 
     A `204 NO CONTENT` HTTP response.
 
@@ -947,7 +989,7 @@ The test case validates the "/rest/v1/system/users/{id}" through the standard RE
         }
         ```
 
-    b. Verify if the HTTP response is `400 BAD REQUEST`.
+    b. Verify if the HTTP response is `404 NOT FOUND`.
 
 4. Verify that the request fails after trying to update the password of a user who is not part of the ovsdb_users group.
     a. Execute the PUT request over /rest/v1/system/users/{id} with the following data:
@@ -961,7 +1003,7 @@ The test case validates the "/rest/v1/system/users/{id}" through the standard RE
         }
         ```
 
-    b. Verify if the HTTP response is `400 BAD REQUEST`.
+    b. Verify if the HTTP response is `404 NOT FOUND`.
 
 5. Verify that the request fails after trying to update the password of a user who is part of the ovsdb_users group and then try to log in with the old password.
     a. Execute the PUT request over /rest/v1/system/users/{id} with the following data:
@@ -993,11 +1035,11 @@ This test passes by meeting the following criteria:
 
 - The following error message is displayed when trying to update a nonexistent user:
 
-    A `400 BAD REQUEST` HTTP response.
+    A `404 NOT FOUND` HTTP response.
 
 - The following error message is displayed when trying to update a authorized user that has a valid password but is not part of ovsb_users group:
 
-    A `400 BAD REQUEST` HTTP response.
+    A `404 NOT FOUND` HTTP response.
 
 - The following error message is displayed when trying to log in with the old password instead of the recently updated password:
 
@@ -1017,11 +1059,11 @@ This test fails when:
 
 - The following message is displayed when trying to update an nonexistent user:
 
-    Anything other than  a `400 BAD REQUEST` HTTP response.
+    Anything other than  a `404 NOT FOUND` HTTP response.
 
 - The following message is displayed when trying to update an authorized user that has a valid password, but is not part of ovsb_users group:
 
-    Anything other than  a `400 BAD REQUEST` HTTP response.
+    Anything other than  a `404 NOT FOUND` HTTP response.
 
 - The following message is displayed when trying to log in with an old password instead of the recently updated password:
 

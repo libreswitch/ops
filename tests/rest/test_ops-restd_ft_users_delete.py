@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2015 Hewlett Packard Enterprise Development LP
+# Copyright (C) 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -33,12 +33,16 @@ from utils.user_utils import *
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 
+users_delete_disable = pytest.mark.skipif(True,
+                                          reason="Disabling until fix 205 for "
+                                          "users resource is merged")
+
 
 class myTopo(Topo):
     def build(self, hsts=0, sws=1, **_opts):
         self.hsts = hsts
         self.sws = sws
-        switch = self.addSwitch("s1")
+        self.addSwitch("s1")
 
 
 class DeleteUserTest(OpsVsiTest):
@@ -63,6 +67,7 @@ class DeleteUserTest(OpsVsiTest):
         users_list = []
         prompt = CLI_PROMPT
         new_path = self.PATH + "/test_user_0"
+        query_path = self.PATH + "?depth=1"
         expected_data = create_user(self, "test", "test", DEFAULT_USER_GRP,
                                     prompt, 1)
         # Removing the last user created from the expected data list
@@ -78,7 +83,7 @@ class DeleteUserTest(OpsVsiTest):
         assert status_code == httplib.NO_CONTENT, "Validation failed, is " +\
             "not sending No Content successful status code"
 
-        status_code, response_data = execute_request(self.PATH, "GET", None,
+        status_code, response_data = execute_request(query_path, "GET", None,
                                                      self.SWITCH_IP)
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -103,6 +108,7 @@ class DeleteUserTest(OpsVsiTest):
         users_list = []
         prompt = CLI_PROMPT
         new_path = self.PATH + "/test_user_0"
+        query_path = self.PATH + "?depth=1"
         expected_data = create_user(self, "test", "test", DEFAULT_USER_GRP,
                                     prompt, 1)
 
@@ -117,7 +123,7 @@ class DeleteUserTest(OpsVsiTest):
         assert status_code == httplib.BAD_REQUEST, "Validation failed, is " +\
             "not sending Bad Request error. Status code: %s" % status_code
         info("### Status code is 400 Bad Request ###\n")
-        status_code, response_data = execute_request(self.PATH, "GET", None,
+        status_code, response_data = execute_request(query_path, "GET", None,
                                                      self.SWITCH_IP)
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -140,8 +146,8 @@ class DeleteUserTest(OpsVsiTest):
     def test_delete_current_logged_in_user(self):
         # Test Setup
         users_list = []
-        prompt = CLI_PROMPT
         new_path = self.PATH + "/admin"
+        query_path = self.PATH + "?depth=1"
         expected_data = [{'username': "admin"}]
 
         # Test
@@ -155,7 +161,7 @@ class DeleteUserTest(OpsVsiTest):
         assert status_code == httplib.BAD_REQUEST, "Validation failed, is " +\
             "not sending Bad Request error. Status code: %s" % status_code
         info("### Status code is 400 Bad Request ###\n")
-        status_code, response_data = execute_request(self.PATH, "GET", None,
+        status_code, response_data = execute_request(query_path, "GET", None,
                                                      self.SWITCH_IP)
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -174,10 +180,7 @@ class DeleteUserTest(OpsVsiTest):
 
     def test_delete_nonexistent_user(self):
         # Test Setup
-        users_list = []
-        prompt = CLI_PROMPT
         new_path = self.PATH + "/noexistentuser"
-        expected_data = [{'username': "admin"}]
 
         # Test
         assert login(self, "admin", "admin"), "User not logged in"
@@ -187,9 +190,9 @@ class DeleteUserTest(OpsVsiTest):
         status_code, response_data = execute_request(new_path, "DELETE", None,
                                                      self.SWITCH_IP, False,
                                                      self.HEADERS)
-        assert status_code == httplib.BAD_REQUEST, "Validation failed, is " +\
-            "not sending Bad Request error. Status code: %s" % status_code
-        info("### Status code is 400 Bad Request ###\n")
+        assert status_code == httplib.NOT_FOUND, "Validation failed, is " +\
+            "not sending Not Found error. Status code: %s" % status_code
+        info("### Status code is 404 Not Found ###\n")
 
         info("########## End Test to Validate DELETE Nonexistent User "
              "##########\n")
@@ -199,6 +202,7 @@ class DeleteUserTest(OpsVsiTest):
         users_list = []
         prompt = CLI_PROMPT
         new_path = self.PATH + "/test_user_0"
+        query_path = self.PATH + "?depth=1"
         create_user(self, "test", "test", "nobody", prompt, 1)
         expected_data = [{'username': 'admin'}]
 
@@ -210,11 +214,11 @@ class DeleteUserTest(OpsVsiTest):
         status_code, response_data = execute_request(new_path, "DELETE", None,
                                                      self.SWITCH_IP, False,
                                                      self.HEADERS)
-        assert status_code == httplib.BAD_REQUEST, "Validation failed, is " +\
-            "not sending Bad Request error. Status code: %s" % status_code
-        info("### Status code is 400 Bad Request ###\n")
+        assert status_code == httplib.NOT_FOUND, "Validation failed, is " +\
+            "not sending Not Found error. Status code: %s" % status_code
+        info("### Status code is 404 Not Found ###\n")
 
-        status_code, response_data = execute_request(self.PATH, "GET", None,
+        status_code, response_data = execute_request(query_path, "GET", None,
                                                      self.SWITCH_IP)
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -234,23 +238,8 @@ class DeleteUserTest(OpsVsiTest):
         info("########## End Test to Validate DELETE New User not in OVSDB "
              "Group ##########\n")
 
-    def run_tests(self):
-        """
-        This method will inspect itself to retrieve all existing methods.
 
-        Only methods that begin with "test_" will be executed.
-        """
-        methodlist = [n for n, v in inspect.getmembers(self,
-                                                       inspect.ismethod)
-                      if isinstance(v, types.MethodType)]
-
-        info("\n########## Starting Users Delete Tests ##########\n")
-        for name in methodlist:
-            if name.startswith("test_"):
-                getattr(self, "%s" % name)()
-        info("\n########## Ending Users Delete Tests ##########\n")
-
-
+@users_delete_disable
 class Test_DeleteUser:
     def setup(self):
         pass
@@ -273,5 +262,17 @@ class Test_DeleteUser:
     def _del_(self):
         del self.test_var
 
-    def test_run(self):
-        self.test_var.run_tests()
+    def test_run_call_delete_new_user(self):
+        self.test_var.test_delete_new_user()
+
+    def test_run_call_delete_new_logged_in_user(self):
+        self.test_var.test_delete_new_logged_in_user()
+
+    def test_run_call_delete_current_logged_in_user(self):
+        self.test_var.test_delete_current_logged_in_user()
+
+    def test_run_call_delete_nonexistent_user(self):
+        self.test_var.test_delete_nonexistent_user()
+
+    def test_run_call_delete_user_not_in_ovsdb_group(self):
+        self.test_var.test_delete_user_not_in_ovsdb_group()

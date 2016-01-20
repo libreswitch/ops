@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2015 Hewlett Packard Enterprise Development LP
+# Copyright (C) 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -33,12 +33,16 @@ from utils.user_utils import *
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 
+users_put_disable = pytest.mark.skipif(True,
+                                       reason="Disabling until fix 205 for "
+                                       "users resource is merged")
+
 
 class myTopo(Topo):
     def build(self, hsts=0, sws=1, **_opts):
         self.hsts = hsts
         self.sws = sws
-        switch = self.addSwitch("s1")
+        self.addSwitch("s1")
 
 
 class UpdateUserTest(OpsVsiTest):
@@ -122,7 +126,6 @@ class UpdateUserTest(OpsVsiTest):
     def test_update_nonexistent_user(self):
         # Test Setup
         data = {}
-        prompt = CLI_PROMPT
         new_path = self.PATH + "/nonexistentuser"
 
         # Test
@@ -136,9 +139,9 @@ class UpdateUserTest(OpsVsiTest):
                                                      json.dumps(data),
                                                      self.SWITCH_IP)
 
-        assert status_code == httplib.BAD_REQUEST, "Validation failed, is " +\
-            "not sending Bad Request error. Status code: %s" % status_code
-        info("### Status code is 400 Bad Request ###\n")
+        assert status_code == httplib.NOT_FOUND, "Validation failed, is " +\
+            "not sending Not Found error. Status code: %s" % status_code
+        info("### Status code is 404 Not Found ###\n")
 
         info("########## End Test to Validate UPDATE nonexistent user"
              " password ##########\n")
@@ -162,9 +165,9 @@ class UpdateUserTest(OpsVsiTest):
                                                      json.dumps(data),
                                                      self.SWITCH_IP)
 
-        assert status_code == httplib.BAD_REQUEST, "Validation failed, is " +\
-            "not sending Bad Request error. Status code: %s" % status_code
-        info("### Status code is 400 Bad Request ###\n")
+        assert status_code == httplib.NOT_FOUND, "Validation failed, is " +\
+            "not sending Not Found error. Status code: %s" % status_code
+        info("### Status code is 404 Bad Request ###\n")
 
         # Test Teardown
         delete_user(self, "test", 1)
@@ -203,23 +206,8 @@ class UpdateUserTest(OpsVsiTest):
         info("########## End Test to Validate UPDATE Valid User and login with"
              " old password ##########\n")
 
-    def run_tests(self):
-        """
-        This method will inspect itself to retrieve all existing methods.
 
-        Only methods that begin with "test_" will be executed.
-        """
-        methodlist = [n for n, v in inspect.getmembers(self,
-                                                       inspect.ismethod)
-                      if isinstance(v, types.MethodType)]
-
-        info("\n########## Starting Users Delete Tests ##########\n")
-        for name in methodlist:
-            if name.startswith("test_"):
-                getattr(self, "%s" % name)()
-        info("\n########## Ending Users Delete Tests ##########\n")
-
-
+@users_put_disable
 class Test_UpdateUser:
     def setup(self):
         pass
@@ -242,5 +230,17 @@ class Test_UpdateUser:
     def _del_(self):
         del self.test_var
 
-    def test_run(self):
-        self.test_var.run_tests()
+    def test_run_call_update_valid_user(self):
+        self.test_var.test_update_valid_user()
+
+    def test_run_call_update_user_with_empty_password(self):
+        self.test_var.test_update_user_with_empty_password()
+
+    def test_run_call_update_nonexistent_user(self):
+        self.test_var.test_update_nonexistent_user()
+
+    def test_run_call_update_password_for_user_not_in_ovsdb_group(self):
+        self.test_var.test_update_password_for_user_not_in_ovsdb_group()
+
+    def test_run_call_update_valid_user_and_login_with_old_password(self):
+        self.test_var.test_update_valid_user_and_login_with_old_password()

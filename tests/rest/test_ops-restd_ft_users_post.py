@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2015 Hewlett Packard Enterprise Development LP
+# Copyright (C) 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -34,6 +34,10 @@ NUM_HOST_PER_SWITCH = 0
 switch_ip = ""
 
 MAX_USERNAME = 32
+
+users_post_disable = pytest.mark.skipif(True,
+                                        reason="Disabling until fix 205 for "
+                                        "users resource is merged")
 
 
 class myTopo(Topo):
@@ -111,7 +115,8 @@ class CreateUserTest(OpsVsiTest):
         info("### Status code is CREATED ###")
 
         info("### Check if user is created ###")
-        status_code, response_data = execute_request(self.PATH, "GET",
+        query_path = self.PATH + "?depth=1"
+        status_code, response_data = execute_request(query_path, "GET",
                                                      None, switch_ip)
 
         assert status_code == httplib.OK, "Validation failed, " \
@@ -183,7 +188,8 @@ class CreateUserTest(OpsVsiTest):
         info("### Status code is CREATED ###")
 
         info("### Check if user is created ###")
-        status_code, response_data = execute_request(self.PATH, "GET",
+        query_path = self.PATH + "?depth=1"
+        status_code, response_data = execute_request(query_path, "GET",
                                                      None, switch_ip)
 
         assert status_code == httplib.OK, "Validation failed, " \
@@ -229,7 +235,8 @@ class CreateUserTest(OpsVsiTest):
         info("### Status code is CREATED ###")
 
         info("### Check if user is created ###")
-        status_code, response_data = execute_request(self.PATH, "GET",
+        query_path = self.PATH + "?depth=1"
+        status_code, response_data = execute_request(query_path, "GET",
                                                      None, switch_ip)
 
         assert status_code == httplib.OK, "Validation failed, " \
@@ -356,7 +363,8 @@ class CreateUserTest(OpsVsiTest):
         info("### Status code is CREATED ###\n")
 
         info("### Check if user are created ###\n")
-        status_code, response_data = execute_request(self.PATH, "GET",
+        query_path = self.PATH + "?depth=1"
+        status_code, response_data = execute_request(query_path, "GET",
                                                      None, switch_ip)
 
         assert status_code == httplib.OK, "Validation failed, " \
@@ -396,22 +404,8 @@ class CreateUserTest(OpsVsiTest):
         info("\n########## End Test Create user: two user with the "
              "same password ##########\n")
 
-    def run_tests(self):
-        """
-        This method will inspect the class to retrieve all the existing
-        methods.
-        Only methods that begin with "test_" will be executed
-        """
-        methodlist = [n for n, v in inspect.getmembers(self, inspect.ismethod)
-                      if isinstance(v, types.MethodType)]
 
-        info("\n########## Starting Users Add Tests ##########\n")
-        for name in methodlist:
-            if name.startswith("test_"):
-                getattr(self, "%s" % name)()
-        info("\n########## Ending Users Add Tests ##########\n")
-
-
+@users_post_disable
 class Test_CreateUser:
 
     def setup(self):
@@ -435,5 +429,26 @@ class Test_CreateUser:
     def _del_(self):
         del selt.test_var
 
-    def test_run(self):
-        self.test_var.run_tests()
+    def test_run_call_create_user_valid_username_and_password(self):
+        self.test_var.test_create_user_valid_username_and_password()
+
+    def test_run_call_create_user_invalid_username(self):
+        self.test_var.test_create_user_invalid_username()
+
+    def test_run_call_create_user_max_username(self):
+        self.test_var.test_create_user_max_username()
+
+    def test_run_call_create_user_long_password(self):
+        self.test_var.test_create_user_long_password()
+
+    def test_run_call_create_user_empty_username_and_password(self):
+        self.test_var.test_create_user_empty_username_and_password()
+
+    def test_run_call_create_user_empty_password(self):
+        self.test_var.test_create_user_empty_password()
+
+    def test_run_call_create_existent_user(self):
+        self.test_var.test_create_existent_user()
+
+    def test_run_call_create_two_user_with_same_password(self):
+        self.test_var.test_create_two_user_with_same_password()
