@@ -1094,11 +1094,6 @@
           }
         }
       },
-      "indexes": [
-        [
-          "name"
-        ]
-      ],
       "isRoot": true
     },
     "Route": {
