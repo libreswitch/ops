@@ -2834,6 +2834,56 @@
           the above.
         </column>
       </group>
+      <group title="Layer3/IP Statistics">
+        <column name="statistics" key="ipv4_uc_rx_packets">
+          Number of received ipv4 unicast packets.
+        </column>
+        <column name="statistics" key="ipv4_uc_rx_bytes">
+          Number of received ipv4 unicast bytes.
+        </column>
+        <column name="statistics" key="ipv4_uc_tx_packets">
+          Number of transmitted ipv4 unicast packets.
+        </column>
+        <column name="statistics" key="ipv4_uc_tx_bytes">
+          Number of transmitted ipv4 unicast bytes.
+        </column>
+        <column name="statistics" key="ipv4_mc_rx_packets">
+          Number of received ipv4 multicast packets.
+        </column>
+        <column name="statistics" key="ipv4_mc_rx_bytes">
+          Number of received ipv4 multicast bytes.
+        </column>
+        <column name="statistics" key="ipv4_mc_tx_packets">
+          Number of transmitted ipv4 multicast packets.
+        </column>
+        <column name="statistics" key="ipv4_mc_tx_bytes">
+          Number of transmitted ipv4 multicast bytes.
+        </column>
+        <column name="statistics" key="ipv6_uc_rx_packets">
+          Number of received ipv6 unicast packets.
+        </column>
+        <column name="statistics" key="ipv6_uc_rx_bytes">
+          Number of received ipv6 unicast bytes.
+        </column>
+        <column name="statistics" key="ipv6_uc_tx_packets">
+          Number of transmitted ipv6 unicast packets.
+        </column>
+        <column name="statistics" key="ipv6_uc_tx_bytes">
+          Number of transmitted ipv6 unicast bytes.
+        </column>
+        <column name="statistics" key="ipv6_mc_rx_packets">
+          Number of received ipv6 multicast packets.
+        </column>
+        <column name="statistics" key="ipv6_mc_rx_bytes">
+          Number of received ipv6 multicast bytes.
+        </column>
+        <column name="statistics" key="ipv6_mc_tx_packets">
+          Number of transmitted ipv6 multicast packets.
+        </column>
+        <column name="statistics" key="ipv6_mc_tx_bytes">
+          Number of transmitted ipv6 multicast bytes.
+        </column>
+      </group>
       <group title="LLDP Interface Level Statistics">
         <column name="lldp_statistics" key="lldp_tx">
           Number of lldp packets transmitted.
