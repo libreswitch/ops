@@ -5336,8 +5336,8 @@ The objective of the test is to validate "rest/{version}/system/bridges/{id}/vla
 
 #### Test setup
 
-** Switch 1 ** has bridge_normal configure by default.
-** Switch 1 ** a test VLAN has to be added with the following configuration:
+**Switch 1** has bridge_normal configure by default.
+**Switch 1** a test VLAN has to be added with the following configuration:
 
 ```
 {
@@ -5360,7 +5360,7 @@ Verify if VLAN was updated successfully using If-Match header using value `*` as
  3. Execute PUT request over "/rest/v1/system/bridges/bridge_normal/vlans/test?selector=configuration" and include the If-Match Header using field value `*` as Etag.
  4. Verify if the HTTP response is `200 OK`.
  5. Verify if the HTTP response is empty.
- 6. Confirm that VLAN description field was updated.
+ 6. Confirm that the VLAN description field was updated.
 
 ### Test result criteria
 #### Test pass criteria
@@ -5404,8 +5404,8 @@ The objective of the test is to validate "rest/{version}/system/bridges/{id}/vla
 
 #### Test setup
 
-** Switch 1 ** has bridge_normal configure by default.
-** Switch 1 ** a test VLAN has to be added with the following configuration:
+**Switch 1** has bridge_normal configure by default.
+**Switch 1** a test VLAN has to be added with the following configuration:
 
 ```
 {
@@ -5422,14 +5422,14 @@ The objective of the test is to validate "rest/{version}/system/bridges/{id}/vla
 
 ### Description
 
- Verify if VLAN was updated unsuccessfully using If-Match header with a matching Etag.
+Verify if VLAN was updated unsuccessfully using If-Match header with a matching Etag.
  1. Execute a GET request over "/rest/v1/system/bridges/bridge_normal/vlans/test?selector=configuration".
  2. Read Etag header field provided by the server.
  3. Modify VLAN description field: `"description": "Etag match"`
  4. Execute PUT request over "/rest/v1/system/bridges/bridge_normal/vlans/test?selector=configuration" and include the If-Match Header using the Etag read at step 2.
  5. Verify if the HTTP response is `200 OK`.
  6. Verify if the HTTP response is empty.
- 7. Confirm that VLAN description field was updated.
+ 7. Confirm that the VLAN description field was updated.
 
 ### Test result criteria
 #### Test pass criteria
@@ -5473,8 +5473,8 @@ The objective of the test is to validate "rest/{version}/system/bridges/{id}/vla
 
 #### Test setup
 
-** Switch 1 ** has bridge_normal configure by default.
-** Switch 1 ** a test VLAN has to be added with the following configuration:
+**Switch 1** has bridge_normal configure by default.
+**Switch 1** a test VLAN has to be added with the following configuration:
 
 ```
 {
@@ -5535,8 +5535,8 @@ The objective of the test is to validate "rest/{version}/system/bridges/{id}/vla
 
 #### Test setup
 
-** Switch 1 ** has bridge_normal configure by default.
-** Switch 1 ** a test VLAN has to be added with the following configuration:
+**Switch 1** has bridge_normal configure by default.
+**Switch 1** a test VLAN has to be added with the following configuration:
 
 ```
 {
@@ -5559,7 +5559,7 @@ Verify if VLAN was added successfully using If-Match header with a matching Etag
  3. Execute POST request over "/rest/v1/system/bridges/bridge_normal/vlans?selector=configuration" and include the If-Match Header using the Etag read at step 2.
  4. Verify if the HTTP response is `201 CREATED`.
  5. Verify if the HTTP response is empty.
- 6. Confirm that VLAN description field was updated.
+ 6. Confirm that the VLAN description field was updated.
 
 The new VLAN will have the following configuration data:
 ```
@@ -5614,8 +5614,8 @@ The objective of the test is to validate "rest/{version}/system/bridges/{id}/vla
 
 #### Test setup
 
-** Switch 1 ** has bridge_normal configure by default.
-** Switch 1 ** a test VLAN has to be added with the following configuration:
+**Switch 1** has bridge_normal configure by default.
+**Switch 1** a test VLAN has to be added with the following configuration:
 
 ```
 {
@@ -5676,8 +5676,8 @@ The objective of the test is to validate "rest/{version}/system/bridges/{id}/vla
 
 #### Test setup
 
-** Switch 1 ** has bridge_normal configure by default.
-** Switch 1 ** a test VLAN has to be added with the following configuration:
+**Switch 1** has bridge_normal configure by default.
+**Switch 1** a test VLAN has to be added with the following configuration:
 
 ```
 {
@@ -5740,8 +5740,8 @@ The objective of the test is to validate "rest/{version}/system/bridges/{id}/vla
 
 #### Test setup
 
-** Switch 1 ** has bridge_normal configure by default.
-** Switch 1 ** a test VLAN has to be added with the following configuration:
+**Switch 1** has bridge_normal configure by default.
+**Switch 1** a test VLAN has to be added with the following configuration:
 
 ```
 {
@@ -5802,8 +5802,8 @@ The objective of the test is to validate "rest/{version}/system/bridges/{id}/vla
 
 #### Test setup
 
-** Switch 1 ** has bridge_normal configure by default.
-** Switch 1 ** a test VLAN has to be added with the following configuration:
+**Switch 1** has bridge_normal configure by default.
+**Switch 1** a test VLAN has to be added with the following configuration:
 
 ```
 {
@@ -5866,8 +5866,8 @@ The objective of the test is to validate "rest/{version}/system/bridges/{id}/vla
 
 #### Test setup
 
-** Switch 1 ** has bridge_normal configure by default.
-** Switch 1 ** a test VLAN has to be added with the following configuration:
+**Switch 1** has bridge_normal configure by default.
+**Switch 1** a test VLAN has to be added with the following configuration:
 
 ```
 {
@@ -5928,8 +5928,8 @@ The objective of the test is to validate "rest/{version}/system/bridges/{id}/vla
 
 #### Test setup
 
-** Switch 1 ** has bridge_normal configure by default.
-** Switch 1 ** a test VLAN has to be addded with the following configuration:
+**Switch 1** has bridge_normal configure by default.
+**Switch 1** a test VLAN has to be addded with the following configuration:
 
 ```
 {
@@ -5944,7 +5944,7 @@ The objective of the test is to validate "rest/{version}/system/bridges/{id}/vla
 }
 ```
 
-Add a VLAN to ** Switch 1 ** with the following data:
+Add a VLAN to **Switch 1** with the following data:
 ```
 {
     "configuration": {
@@ -6005,8 +6005,8 @@ The objective of the test is to validate "rest/{version}/system/bridges/{id}/vla
 
 #### Test setup
 
-** Switch 1 ** has bridge_normal configure by default.
-** Switch 1 ** a test VLAN has to be addded with the following configuration:
+**Switch 1** has bridge_normal configure by default.
+**Switch 1** a test VLAN has to be addded with the following configuration:
 
 ```
 {
