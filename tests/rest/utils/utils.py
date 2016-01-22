@@ -43,7 +43,15 @@ PORT_DATA = {
         "vlan_options": {},
         "ip4_address": "192.168.0.1",
         "admin": "up",
-        "qos_config": {}
+        "qos_config": {},
+        "ospf_auth_md5_keys": {},
+        "ospf_auth_text_key": "null",
+        "ospf_auth_type": "null",
+        "ospf_if_out_cost": 10,
+        "ospf_if_type": "ospf_iftype_broadcast",
+        "ospf_intervals": {},
+        "ospf_mtu_ignore": False,
+        "ospf_priority": 0
     },
     "referenced_by": [{"uri": "/rest/v1/system/bridges/bridge_normal"}]
 }

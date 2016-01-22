@@ -99,6 +99,20 @@
       <column name="dns_servers">
       </column>
 
+      <column name="router_id"  key="router_id_static" type='{"type": "boolean"}'>
+        This determines whether the system global router-ID is configured statically
+        or selected by Routing Manager dynamically.
+        The default value is false.
+      </column>
+      <column name="router_id"  key="router_id_val"
+        type='{"type": "integer", "minInteger": 1, "maxInteger": 4294967295}'>
+        The system global router identifier. Any routing protocol may pick up
+        this as router id, if it doesn't have a specific one configured.
+        The router-ID may be an IPv4 address of the router. It can be any
+        arbitrary 32bit number. However it MUST be non-zero and unique within
+        the entire Autonomus System domain.
+      </column>
+
       <column name="asset_tag_number">
       </column>
 
@@ -1120,6 +1134,9 @@
       <column name="bgp_routers" keyname="asn">
         BGP routers keyed by ASN value.
       </column>
+      <column name="ospf_routers" keyname="instance_tag">
+        The list of all the OSPFv2 Router instances.
+      </column>
       <column name="dhcp_server">
         DHCP Server in the VRF.
       </column>
@@ -1309,9 +1326,10 @@
       </column>
       <column name="from">
           Protocol that is responsible for this entry. The value is
-          <code>BGP</code> if BGP created this entry, <code>static</code>
-          when the user configures a static route and <code>connected</code>
-          if it is a directly connected device.
+          <code>bgp</code> if BGP created this entry, <code>static</code>
+          when the user configures a static route, <code>connected</code>
+          if it is a directly connected device and <code>ospf</code> if OSPF
+          created this entry.
       </column>
       <column name="protocol_private">
           Indicates that this row is a protocol specific route entry.
@@ -2297,7 +2315,71 @@
         This is a list of secondary IPv6 addresses and subnet mask
         in the address/mask format.
       </column>
-   </group>
+      <group title="Port level OSPFv2 Configurations">
+       <p>
+         The "Port" level OSPFv2 Routing Configurations.
+       </p>
+        <column name="ospf_intervals" key="transmit_delay"
+           type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+          The estimated time in seconds to transmit an LSA to a neighbor. The
+          transmit_delay timer increments the age of LSAs in the update packets
+          to accommodate transmission and propagation delays for the interface.
+          The timer is more important on very low speed links where the
+          transmission delay is more significant.
+          The default value is 1 second.
+        </column>
+        <column name="ospf_intervals" key="retransmit_interval"
+           type='{"type": "integer", "minInteger": 3, "maxInteger": 65535}'>
+          The number of seconds between LSA retransmissions. It is also used
+          when retransmitting Database Description and Link State Request Packets.
+          The default value is 5 seconds.
+        </column>
+        <column name="ospf_intervals" key="hello_interval"
+          type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+          The Hello packet will be sent every hello_interval timer value seconds.
+          This value must be the same for all routers attached to a common network.
+          The default value is 10 seconds.
+        </column>
+        <column name="ospf_intervals" key="dead_interval"
+          type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+          The time duration, in seconds, that a neighbor should wait for a Hello
+          packet before tearing down adjacencies with the local router.
+          The dead_interval must be equal to or in multiples of the hello_interval.
+          The default value is 4 times hello_interval seconds.
+        </column>
+        <column name="ospf_if_out_cost">
+          The output cost assigned to the corresponding OSPFv2 interface.
+          The default value depends on the interface bandwidth and on the auto-cost
+          reference bandwidth.
+        </column>
+        <column name="ospf_priority">
+          The router with the highest priority will be more eligible to become
+          Designated Router. Setting the value to 0, makes the router ineligible
+          to become Designated Router.
+          The default value is 1.
+        </column>
+        <column name="ospf_if_type">
+          The type of the OSPFv2 network interface.
+          The default value is the type of the interface from the Interface table.
+        </column>
+        <column name="ospf_mtu_ignore">
+          This determines if OSPFv2 should ignore any IP MTU mismatch with a
+          neighbor or not.
+          The default value is false, that is not to establish adjacency if
+          the neighbor MTU does not match the local interface MTU.
+        </column>
+        <column name="ospf_auth_type">
+          The type of OSPFv2 authentication.
+          If not set, then parent area level authentication holds for the port.
+        </column>
+        <column name="ospf_auth_text_key">
+          The authentication key for OSPFv2 authentication type "text".
+        </column>
+        <column name="ospf_auth_md5_keys" keyname="key_id">
+          The authentication keys for OSPFv2 authentication type "md5".
+        </column>
+      </group>
+    </group>
 
    <group title="Other Features">
       <column name="mac">
@@ -4126,6 +4208,694 @@
       Enables trust settings for this key_id.
       Default is false.
     </column>
+  </table>
+  <table name="OSPF_Router" title="An OSPFv2 Router Instance">
+    <group title="Configuration">
+        <column name="router_id"  key="router_id_static" type='{"type": "boolean"}'>
+          This determines whether the router-ID is configured statically on this
+          router instance or not.
+          The default is false.
+        </column>
+        <column name="router_id"  key="router_id_val"
+            type='{"type": "integer", "minInteger": 1, "maxInteger": 4294967295}'>
+          The OSPFv2 router identifier. The router ID for the OSPFv2 instance.
+          The router ID may be an IPv4 address of the router. It can be any
+          arbitrary 32bit number. However it MUST be non-zero and unique within
+          the entire Autonomus System domain.
+        </column>
+        <column name="areas"  keyname="area_id">
+          The list of all the "OSPF_Area" for the OSPFv2 router instance, which
+          contains the OSPFv2 area related configurations.
+        </column>
+        <column name="networks"  keyname="network_prefix">
+          The list of all the IPv4 networks configured to run OSPFv2 protocol.
+          The key is the network prefix in A.B.C.D/M format.
+        </column>
+        <column name="distance"  key="all">
+          The administrative distance applies to all types of routes if not
+          configured specifically for certain types.
+          The default value is 110.
+        </column>
+        <column name="distance"  key="external">
+          The administrative distance applies to routes of type external.
+          The default is 110.
+        </column>
+        <column name="distance"  key="intra_area">
+          The administrative distance applies to routes of type intra-area.
+          The default is 110.
+        </column>
+        <column name="distance"  key="inter_area">
+          The administrative distance applies to routes of type inter-area.
+          The default is 110.
+        </column>
+        <column name="default_information">
+          The configurations related to the default routes advertisement. The
+          router should originate an AS-External (type-5) LSA describing a
+          default route into the Autonomus Sytem's all external-routing capable areas.
+        </column>
+        <column name="default_information"  key="default_info_originate" type='{"type": "boolean"}'>
+          The router should advertise the default route into the Autonomus System.
+          The default value is false, that is, router should not advertise the
+          default route.
+        </column>
+        <column name="default_information"  key="always" type='{"type": "boolean"}'>
+          The default route must be advertised always, even if the default route
+          doesn't exist in the local system or VRF RIB.
+          The default value is false.
+        </column>
+        <column name="redistribute">
+          Redistributes the different types of routes into OSPFv2 network.
+        </column>
+        <column name="stub_router_adv"  key="admin_set"  type='{"type": "boolean"}'>
+          This determines whether the stub router router_lsa advertisement is
+          set administratively.
+          The default value is false.
+        </column>
+        <column name="stub_router_adv"  key="startup"
+            type='{"type": "integer", "minInteger": 5, "maxInteger": 86400}'>
+          This determines whether the router should advertise stub router router_lsa
+          on start-up. The delay, in seconds, is the duration for how long, after
+          the reboot, stub router router_lsa should be advertised.
+        </column>
+        <column name="passive_interface_default">
+          This determines whether all interfaces should be set to passive by default.
+          The default value is false.
+        </column>
+        <column name="passive_interfaces">
+          The list of the passive-interfaces.
+          If "passive_interface_default" is set "true", then this list should be empty.
+        </column>
+        <column name="active_interfaces">
+          The list of the active-interfaces.
+          If "passive_interface_default" is set "false", then this list should be empty.
+        </column>
+        <column name="spf_calculation" key="spf_delay"
+            type='{"type": "integer", "minInteger": 0, "maxInteger": 600000}'>
+          The initial delay time, in milliseconds, for SPF calculation schedule.
+          The default value is 200 milliseconds.
+        </column>
+        <column name="spf_calculation"  key="spf_holdtime"
+            type='{"type": "integer", "minInteger": 0, "maxInteger": 600000}'>
+          The minimum hold time, in milliseconds, between the SPF calculation
+          schedules.
+          The SPF hold time itself will be adaptive and increasing and bounded
+          by max wait time.
+          The default value is 1000 milliseconds.
+        </column>
+        <column name="spf_calculation"  key="spf_max_wait"
+            type='{"type": "integer", "minInteger": 0, "maxInteger": 600000}'>
+          The the maximum wait time or hold time, in milliseconds, between the
+          SPF calculation schedules.
+          The default value is 10000 milliseconds.
+        </column>
+        <column name="nbma_nbrs" keyname="nbr_ip_address">
+          The list of all the "OSPF_NBMA_Neighbor" for the OSPFv2 router
+          instance, which contains the OSPFv2 configurations related to
+          non-broadcast multi-access networks.
+        </column>
+        <column name="other_config"  key="default_metric"
+            type='{"type": "integer", "minInteger": 0, "maxInteger": 16777214}'>
+          The default cost metric for the redistributed routes.
+          The default value is 20.
+        </column>
+        <column name="other_config"  key="auto_cost_ref_bw"
+            type='{"type": "integer", "minInteger": 1, "maxInteger": 4000000}'>
+          The reference bandwidth, Mbits/second, for default cost calculations.
+          This bandwidth is considered equivalent to an OSPFv2 cost of 1.
+          The allowed range is 1 to 4000000 Mbps, that is 1 Mbps to 4000 Gbps.
+          The default value is 40000 Mbps, that is 40 Gbps.
+        </column>
+        <column name="other_config"  key="log_adjacency_changes" type='{"type": "boolean"}'>
+          This determines whether to log changes in adjacency or not.
+          The default value is false.
+        </column>
+        <column name="other_config"  key="log_adjacency_details" type='{"type": "boolean"}'>
+          This determines whether to log changes in adjacency in detail or not.
+          If the flag is not set then only changes to full or regressions are shown.
+          The default value is false.
+        </column>
+        <column name="other_config"  key="ospf_rfc1583_compatible" type='{"type": "boolean"}'>
+          This determines whether RFC1583 compatibility mode is enabled or not.
+          If value is false then the path preference algorithm is calculated as per RFC 2328.
+          The default value is false.
+        </column>
+        <column name="other_config"  key="enable_ospf_opaque_lsa" type='{"type": "boolean"}'>
+          This  determines if the OSPFv2 Opaque LSA capability is enabled or not.
+          The default value is false.
+        </column>
+        <column name="lsa_timers"  key="lsa_arrival_interval"
+            type='{"type": "integer", "minInteger": 10, "maxInteger": 600000}'>
+          The minimum interval, in milliseconds, between accepting the same LSA.
+          The default value is 1000 milliseconds.
+        </column>
+        <column name="lsa_timers"  key="lsa_group_pacing"
+            type='{"type": "integer", "minInteger": 1, "maxInteger": 1800}'>
+          The LSA group pacing timer. This is the interval, in seconds, between
+          group of LSA being refreshed or maxaged.
+          The default value is 10 seconds.
+        </column>
+    </group>
+    <group title="Status">
+         <column name="status"  key="abr" type='{"type": "boolean"}'>
+           The Router is a OSPFv2 Area Border Router (ABR).
+           The default value is false.
+         </column>
+         <column name="status"  key="asbr" type='{"type": "boolean"}'>
+           The Router is a OSPFv2 Autonomus System Boundary Router (ASBR).
+           The default value is false.
+         </column>
+         <column name="status"  key="spf_hold_multiplier" type='{"type": "integer"}'>
+           This is current value of adaptive multiplier of the initial-holdtime
+           and used in determining the hold time.
+           The default value is 1.
+         </column>
+         <column name="status"  key="ospf_rfc1583_compatibility" type='{"type": "boolean"}'>
+           This describes if the device has support for rfc1583 compatibility.
+           The default value is true.
+         </column>
+         <column name="status"  key="capability_opaque" type='{"type": "boolean"}'>
+           This describes if the device has support for Opaque lsa capability.
+           The default value is true.
+         </column>
+         <column name="status"  key="stub_router_support" type='{"type": "boolean"}'>
+           This describes if the device has support for stub router advertisement
+           as per RFC 3137.
+           The default value is true.
+         </column>
+         <column name="status"  key="capability_restart" type='{"type": "boolean"}'>
+           This describes if the device has support for Graceful OSPFv2 Restart.
+           The default value is false.
+         </column>
+         <column name="status"  key="opaque_status" type='{"type": "boolean"}'>
+           This describes if the device has support for Opaque LSA enabled.
+           The default value is false.
+         </column>
+         <column name="status"  key="opaque_origination_blocked" type='{"type": "boolean"}'>
+           This describes if the Opaque LSA origination is blocked.
+           The default value is false.
+         </column>
+         <column name="status" key="as_ext_lsas_sum_cksum" type='{"type": "integer"}'>
+           The sum of checksum of list of AS External LSAs.
+           The default value is 0.
+         </column>
+         <column name="status" key="opaque_as_lsas_sum_cksum" type='{"type": "integer"}'>
+           The sum of checksum of list of AS scope Opaque LSAs.
+           The default value is 0.
+         </column>
+         <column name="as_ext_lsas">
+           The list of all the AS External LSAs.
+         </column>
+         <column name="opaque_as_lsas">
+           The list of all the AS scope Opaque_LSAs.
+         </column>
+         <column name="ext_ospf_routes">
+           The list of all the ospf external routes.
+         </column>
+    </group>
+  </table>
+
+  <table name="OSPF_Area" title="OSPF Area level configurations">
+  <p>
+    The configurations and other details of and OSPFv2 Area entity.
+  </p>
+     <group title="Configuration">
+        <column name="ospf_interfaces">
+          The list of all the "OSPF_Interface" for the OSPFv2 Area, which
+          contains the OSPFv2 interface realted configurations, statuses,
+          and statistics.
+        </column>
+        <column name="area_type">
+          This defines how the external routing and summary lsas for this area will
+          be handled.
+          The default value is "default".
+        </column>
+        <column name="nssa_translator_role">
+          If value is set to "always", then NSSA ABR always translates NSSA
+          External (type 5) LSAs to AS External (type 7) LSAs.
+          If value is set to "never", then NSSA ABR will not translate NSSA
+          External (type 5) LSAs to AS External (type 7) LSAs.
+          If value is set to "candidate", then  this ABR router participates in
+          the translator election to determine if it will perform the translation
+          duties. If this NSSA router is not an ABR, then this option has no effect.
+          The default value is "candidate".
+        </column>
+        <column name="ospf_vlinks" keyname="peer_router_id">
+          The list of all the "OSPF_Vlink" for the OSPFv2 Area, which contains
+          the OSPFv2 Virtual link related configurations.
+        </column>
+        <column name="ospf_area_summary_addresses">
+          The list of all OSPFv2 summary aAddresses for this OSPFv2 area.
+          If area range addresses are configured, then ABR may advertise
+          summarized prefixes to other areas.
+        </column>
+        <column name="prefix_lists">
+          The ABR filters the  Type-3 summary-LSAs to or from area using prefix lists.
+        </column>
+        <column name="ospf_auth_type">
+          The type of OSPFv2 authentication.
+          If not set, the OSPFv2 protocol packets excahges are not authenticated.
+        </column>
+    </group>
+    <group title="status">
+        <column name="router_lsas">
+          The list of all the Router LSAs.
+        </column>
+        <column name="network_lsas">
+          The list of all the Network LSAs.
+        </column>
+        <column name="abr_summary_lsas">
+          The list of all the Type 3 ABR Summary LSAs.
+        </column>
+        <column name="asbr_summary_lsas">
+          The list of all the Type 4 ASBR Summary LSAs.
+        </column>
+        <column name="as_nssa_lsas">
+          The list of all the Type 7 NSSA External LSAs.
+        </column>
+        <column name="opaque_area_lsas">
+          The list of all the Area scope Opaque LSAs.
+        </column>
+        <column name="opaque_link_lsas">
+          The list of all the Link scope Opaque LSAs.
+        </column>
+        <column name="intra_area_ospf_routes">
+           The list of all the OSPFv2 intra area routes.
+        </column>
+        <column name="inter_area_ospf_routes">
+           The list of all the OSPFv2 inter area routes.
+        </column>
+        <column name="router_ospf_routes">
+           The list of all the OSPFv2 routes to the routers.
+        </column>
+        <column name="status" key="spf_last_run_timestamp" type='{"type": "string"}'>
+          This describes the time when the last time SPF algorithm had run for
+          this area.
+        </column>
+        <column name="status" key="stub_router_state_active" type='{"type": "boolean"}'>
+          This describes the status of the stub_router.
+          The default value is false.
+        </column>
+        <column name="status" key="stub_router_admin_set" type='{"type": "boolean"}'>
+          This describes the status of the stub_router if it is set administratively.
+          The default value is false.
+        </column>
+        <column name="status" key="stub_router_startup" type='{"type": "boolean"}'>
+          This describes the status of the stub_router if it is set "startup".
+          The default value is false.
+        </column>
+        <column name="status" key="NSSA translator role"
+            type='{"type": "string", "enum": ["set", ["enable", "disable"]]}'>
+          This describes the NSSA translator state.
+          The default value is disable.
+        </column>
+        <column name="status" key="transit_capability"
+            type='{"type": "string", "enum": ["set", ["enable", "disable"]]}'>
+          This describes the transit capability for virtual links.
+          The default value is false.
+        </column>
+        <column name="status" key="active_interfaces" type='{"type": "integer"}'>
+          This describes the number of active OSPFv2 interfaces in the area.
+          The default value is 0.
+        </column>
+        <column name="status" key="full_nbrs" type='{"type": "integer"}'>
+          This describes the the number of adjacent neighbors in the area.
+          The default value is 0.
+        </column>
+        <column name="status" key="full_virtual_nbrs" type='{"type": "integer"}'>
+          This describes the number of adjacent virtual neighbors.
+          The default value is 0.
+        </column>
+        <column name="status" key="router_lsas_sum_cksum" type='{"type": "integer"}'>
+          The sum of checksums of list of Router LSAs.
+          The default value is 0.
+        </column>
+        <column name="status" key="network_lsas_sum_cksum" type='{"type": "integer"}'>
+          The sum of checksums of list of Network LSAs.
+          The default value is 0.
+        </column>
+        <column name="status" key="abr_summary_lsas_sum_cksum" type='{"type": "integer"}'>
+          The sum of checksums of list of Type 3 ABR Summary LSAs.
+          The default value is 0.
+        </column>
+        <column name="status" key="asbr_summary_lsas_sum_cksum" type='{"type": "integer"}'>
+          The sum of checksums of list of Type 4 ASBR Summary LSAs.
+          The default value is 0.
+        </column>
+        <column name="status" key="as_nssa_lsas_sum_cksum" type='{"type": "integer"}'>
+          The sum of checksums of list of Type 7 NSSA External LSAs.
+          The default value is 0.
+        </column>
+        <column name="status" key="opaque_area_lsas_sum_cksum" type='{"type": "integer"}'>
+          The sum of checksums of list of  Area scope Opaque LSAs.
+          The default value is 0.
+        </column>
+        <column name="status" key="opaque_link_lsas_sum_cksum" type='{"type": "integer"}'>
+          The sum of checksums of list of Link scope Opaque LSAs.
+          The default value is 0.
+        </column>
+    </group>
+    <group title="statistics">
+        <column name="statistics" key="spf_calc">
+          The number of times the SPF calculations has run.
+        </column>
+        <column name="statistics" key="abr_count">
+          The number of Area Border Routers (ABR) in the area.
+        </column>
+        <column name="statistics" key="asbr_count">
+          The number of autonomous system border routers (ASBR) in the area.
+        </column>
+    </group>
+        <column name="other_config"  key="stub_default_cost" type='{"type": "integer"}'>
+          The cost metric for the default summary route sent into the stub area.
+          The default value is 1.
+        </column>
+  </table>
+
+  <table name="OSPF_Summary_Address" title="OSPFv2 summarization related configurations">
+    <group title="Configuration">
+        <column name="prefix">
+          The prefix address in A.B.C.D/M format.
+        </column>
+        <column name="other_config" key="cost"
+            type='{"type": "integer", "minInteger": 1, "maxInteger": 16777214}'>
+          The cost of the summary address.
+          The default value is 16777214.
+        </column>
+        <column name="other_config" key="tag" type='{"type": "string", "maxLength": 64}'>
+          The tag for the summarized prefix.
+        </column>
+        <column name="other_config" key="advertise" type='{"type": "boolean"}'>
+          This determines whether to advertise the summary address or not. If
+          value is false then the OSPFv2 router does not advertise this summary
+          address.
+          The default value is true.
+        </column>
+    </group>
+  </table>
+
+  <table name="OSPF_Interface" title="OSPFv2 Interface related configurations">
+    <group title="Configuration">
+        <column name="name">
+          The OSPFv2 Interface name.
+        </column>
+        <column name="port">
+          The "Port" corresponding to the OSPFv2 Interface.
+        </column>
+        <column name="ospf_vlink">
+          The virtual link related configurations. This is valid for the interface
+          of type "virtual link".
+        </column>
+    </group>
+
+    <group title="status">
+        <column name="ifsm_state">
+          OSPFv2 Interface FSM states.
+          The default value is "depend_upon".
+        </column>
+        <column name="neighbors">
+          The list of all the OSPFv2 neighbors on this OSPFv2 Interface.
+        </column>
+        <column name="status" key="active" type='{"type": "boolean"}'>
+          Updates status whether the interface is active.
+          The default value is true.
+        </column>
+        <column name="status" key="if_out_cost" type='{"type": "integer"}'>
+          The interface out cost.
+          If not configured, this is calculated as per the auto cost bandwidth
+          reference and interface speed.
+        </column>
+        <column name="status" key="hello_due_at" type='{"type": "integer"}'>
+          Updates when the next hello is due on the interface in seconds.
+          The default value is hello_interval on this interface.
+        </column>
+    </group>
+    <group title="statistics">
+        <column name="statistics" key="hello_rcvd">
+          The total number of hello packets received on the interface.
+        </column>
+        <column name="statistics" key="hello_sent">
+          The total number of hello packets sent on the interface.
+        </column>
+        <column name="statistics" key="db_desc_rcvd">
+          The total number of DataBase Description packets received on the interface.
+        </column>
+        <column name="statistics" key="db_desc_sent">
+          The total number of DataBase Description packets sent on the interface.
+        </column>
+        <column name="statistics" key="ls_req_rcvd">
+          The total number of Link State Request packets received on the interface.
+        </column>
+        <column name="statistics" key="ls_req_sent">
+          The total number of Link State Request packets sent on the interface.
+        </column>
+        <column name="statistics" key="ls_upd_rcvd">
+          The total number of Link State Update packets received on the interface.
+        </column>
+        <column name="statistics" key="ls_upd_sent">
+          The total number of Link State Update packets sent on the interface.
+        </column>
+        <column name="statistics" key="ls_ack_rcvd">
+          The total number of Link State Ack packets received on the interface.
+        </column>
+        <column name="statistics" key="ls_ack_sent">
+          The total number of Link State Ack packets sent on the interface.
+        </column>
+        <column name="statistics" key="rx_discard">
+          The total number of  received packets discarded on the interface.
+        </column>
+        <column name="statistics" key="state_changes">
+          The total number of state changes on the interface.
+        </column>
+    </group>
+  </table>
+  <table name="OSPF_Neighbor" title="OSPFv2 Neighbor information">
+    <group title="Configuration">
+        <column name="nbma_nbr">
+          The NBMA Neighbor related configurations, and statuses. This is valid
+          in case of NBMA Neighbor only.
+        </column>
+    </group>
+    <group title="status">
+        <column name="nbr_router_id">
+          The Neighbor Router ID is used to identify the neighbor.
+          The default value is 0, which is invalid router_id.
+        </column>
+        <column name="nbr_if_addr">
+          The interface address of the OSPFv2 Neighbor on which the neighbor
+          relationship is established.
+          The default value is 0, which is invalid if_address.
+        </column>
+        <column name="dr">
+          The router ID of the Designated Router, as reported by the neighbor.
+          The default value is 0.
+        </column>
+        <column name="bdr">
+          The router ID of the Backup Designated Router, as reported by the neighbor.
+          The default value is 0.
+        </column>
+        <column name="nbr_options">
+          The neighbor options or capabilities such as Opaque LSA capability,
+          Demand Circuit, External Attribute LSA capability, and so on.
+        </column>
+        <column name="nfsm_state">
+          OSPFv2 Neighbor FSM states.
+          The default value is "down".
+        </column>
+        <column name="nbr_priority">
+          The priority of the neighbor.
+          The default value is 255.
+        </column>
+        <column name="status" key="dead_timer_due" type='{"type": "integer"}'>
+          The time left for the dead timer of the neighbor to expire.
+          The default value is the dead_interval for the interface.
+        </column>
+        <column name="status" key="last_up_timestamp" type='{"type": "integer"}'>
+          The duration since when the state of the neighbor is seen.
+          The default value is 0.
+        </column>
+    </group>
+    <group title="statistics">
+        <column name="statistics" key="db_summary_count">
+          The total number of DataBase summary reports.
+        </column>
+        <column name="statistics" key="ls_request_count">
+          The total number of link state request packets.
+        </column>
+        <column name="statistics" key="ls_retransmit_count">
+          The total number of link state packets retransmitted.
+        </column>
+        <column name="statistics" key="state_changes_count">
+          The total number of state change events on this interface.
+        </column>
+    </group>
+  </table>
+  <table name="OSPF_NBMA_Neighbor" title="OSPFv2 NBMA Neighbor information">
+     <group title="Configuration">
+        <column name="nbr_address">
+          The IP address of the NMBA neighbor.
+          The default value is 0, which is invalid.
+        </column>
+        <column name="other_config" key="priority"
+            type='{"type": "integer", "minInteger": 0, "maxInteger": 255}'>
+          The priority of the NMBA neighbor.
+          The default value is 0.
+        </column>
+        <column name="other_config" key="poll_interval"
+            type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+          The poll interval (in seconds) of the NMBA neighbor.
+          Default is 60 seconds.
+        </column>
+    </group>
+    <group title="status">
+        <column name="nbr_router_id">
+          The router ID of the neighbor.
+          The default value is 0, which is invalid router_id.
+        </column>
+        <column name="interface_name">
+          The name of the interface on which the NBMA Neighbor is adjacent.
+        </column>
+        <column name="status" key="poll_timer_due" type='{"type": "integer"}'>
+          The poll timer due in seconds for the NMBA neighbor.
+          The default value is poll_interval.
+        </column>
+        <column name="status" key="state_changes_count" type='{"type": "integer"}'>
+          The total number of state change events.
+          The default value is 0.
+        </column>
+    </group>
+  </table>
+  <table name="OSPF_Vlink" title="OSPFv2 virtual link information">
+    <group title="Configuration">
+        <column name="peer_router_id">
+          The peer router ID.
+        </column>
+        <column name="area_id">
+          The area ID of the virtual link. Backbone area cannot have virtual link.
+        </column>
+        <column name="other_config" key="hello_interval" type='{"type": "integer"}'>
+          The time, in seconds, between successive Hello packets.
+          The default value is 10 seconds.
+        </column>
+        <column name="other_config" key="dead_interval" type='{"type": "integer"}'>
+          The time, in seconds, that a neighbor waits for a Hello packet before tearing down
+          adjacency with local router.
+          The default value is 4 times the hello interval.
+        </column>
+        <column name="other_config" key="retransmit_interval" type='{"type": "integer"}'>
+          The estimated time, in seconds, between successive LSAs.
+          The default value is 5 seconds.
+        </column>
+        <column name="other_config" key="transmit_delay" type='{"type": "integer"}'>
+          The estimated time, in seconds, to transmit an LSA to a neighbor.
+          The default value is 1 second.
+        </column>
+        <column name="ospf_auth_type">
+          The type of OSPFv2 authentication.
+          If not set, then the area level authentication of the transit area,
+          holds for the port.
+        </column>
+        <column name="ospf_auth_text_key">
+          The authentication key for OSPFv2 authentication type "text".
+        </column>
+        <column name="ospf_auth_md5_keys" keyname="key_id">
+          The authentication keys for OSPFv2 authentication type "md5" message-digest.
+        </column>
+    </group>
+    <group title="status">
+        <column name="name">
+          The virtual link identifier.
+        </column>
+    </group>
+  </table>
+  <table name="OSPF_Route" title="OSPFv2 Route related information">
+    <group title="status">
+        <column name="prefix">
+          Specifies the prefix address in A.B.C.D/M format.
+        </column>
+        <column name="path_type">
+          The value indicates whether the path type is inter-area, intra-area,
+          or external.
+        </column>
+        <column name="paths">
+          The list of paths.
+        </column>
+        <column name="route_info" key="area_id" type='{"type": "integer"}'>
+          The area ID of the route.
+        </column>
+        <column name="route_info" key="area_type_abr" type='{"type": "boolean"}'>
+          The area type ABR.
+          The default value is false.
+        </column>
+        <column name="route_info" key="area_type_asbr" type='{"type": "boolean"}'>
+          The area type ASBR.
+          The default value is false.
+        </column>
+        <column name="route_info" key="ext_type"
+            type='{"type": "string", "enum": ["set", ["ext_type_1", "ext_type_2"]]}'>
+          External Type 1 or Type 2 Route. For External routes only.
+          The default value is "ext_type_1".
+        </column>
+        <column name="route_info" key="type2_cost" type='{"type": "integer", "maxInteger": 16777215}'>
+          The External Type 2 route cost.
+          The default value is 16777215.
+        </column>
+        <column name="route_info" key="ext_tag" type='{"type": "string"}'>
+          The tag of the route.
+        </column>
+        <column name="route_info" key="asbr_router_id" type='{"type": "integer"}'>
+          The ASBR router ID.
+          The default value is 0, which is invalid router ID.
+        </column>
+    </group>
+  </table>
+
+  <table name="OSPF_LSA" title="OSPFv2 link state related information">
+    <group title="status">
+        <column name="area_id">
+          The OSPFv2 Area ID. This is for area scope LSAs.
+          The default value is 0.
+        </column>
+        <column name="ls_birth_time">
+          The OSPFv2 LSA birth time, number of seconds elapsed since Epoch, which
+          can be used to compute LSA age.
+        </column>
+        <column name="ls_id">
+          The OSPFv2 LS_ID.
+        </column>
+        <column name="adv_router">
+          The Router ID of the advertising router.
+        </column>
+        <column name="lsa_type">
+          The type of the OSPFv2 LSA.
+        </column>
+        <column name="ls_seq_num">
+          The sequence number of the OSPFv2 LSA.
+        </column>
+        <column name="options">
+          The options in the OSPFv2 LSA.
+        </column>
+        <column name="flags">
+          The flags in the OSPFv2 Router LSA.
+        </column>
+        <column name="chksum">
+          The checksum in the OSPFv2 LSA.
+          The default value is 0.
+        </column>
+        <column name="length">
+          The length of the OSPFv2 LSA in bytes.
+          The default value is 20 bytes.
+        </column>
+        <column name="num_router_links">
+          Total number of router links. This is applicable in case of Router LSA.
+          The default value is 0.
+        </column>
+        <column name="prefix">
+          The prefix in A.B.C.D/M format. This is applicable in case of the type 3 and 4 Summary LSAs.
+        </column>
+        <column name="lsa_data">
+          The OSPFv2 LSA specific data.
+        </column>
+    </group>
   </table>
 </database>
 

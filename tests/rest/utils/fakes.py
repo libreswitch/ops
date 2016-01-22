@@ -39,11 +39,19 @@ FAKE_PORT_DATA = """
         "mac": ["01:23:45:67:89:%(index)02x"],
         "other_config": {"cfg-1key": "cfg1val"},
         "bond_active_slave": "null",
-        "ip6_address_secondary": \
-            ["2001:0db8:85a3:0000:0000:8a2e:0371:%(index)04d"],
+        "ip6_address_secondary": ["2001:0db8:85a3:0000:0000:8a2e:0371:%(index)04d"],
         "vlan_options": {},
         "ip4_address": "192.168.0.%(index)s",
-        "admin": "up"
+        "admin": "up",
+        "qos_config": {},
+        "ospf_auth_md5_keys": {},
+        "ospf_auth_text_key": "null",
+        "ospf_auth_type": "null",
+        "ospf_if_out_cost": 10,
+        "ospf_if_type": "ospf_iftype_broadcast",
+        "ospf_intervals": {},
+        "ospf_mtu_ignore": false,
+        "ospf_priority": 0
     },
     "referenced_by": [{"uri": "/rest/v1/system/bridges/bridge_normal"}]
 }
