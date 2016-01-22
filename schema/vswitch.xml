@@ -372,6 +372,12 @@
       <column name="mgmt_intf_status" key="dhcp_hostname">
         Holds hostname configured by dhcp client.
       </column>
+      <column name="ntp_status">
+        This column holds the global status information for NTP.
+      </column>
+      <column name="ntp_status" key="uptime">
+         Time in hours since the system was last rebooted.
+      </column>
       <column name="next_cfg">
         Sequence number for client to increment.  When a client modifies
         any part of the database configuration and wishes to wait for
@@ -542,6 +548,36 @@
             table because of the TTL timer associated with a neighbor
             has expired.
             Default is 0.
+        </column>
+      </group>
+
+    <group title="NTP Statistics">
+        <column name="ntp_statistics" key="ntp_pkts_received">
+            Total number of packets received.
+        </column>
+        <column name="ntp_statistics" key="ntp_pkts_with_current_version">
+            Number of packets matching the current NTP version.
+        </column>
+        <column name="ntp_statistics" key="ntp_pkts_with_older_version">
+            Number of packets matching the previous NTP version.
+        </column>
+        <column name="ntp_statistics" key="ntp_pkts_with_bad_length_or_format">
+            Number of packets with invalid length, format or port number.
+        </column>
+        <column name="ntp_statistics" key="ntp_pkts_with_auth_failed">
+            Number of packets not verified as authentic.
+        </column>
+        <column name="ntp_statistics" key="ntp_pkts_declined">
+            Number of packets denied access for any reason.
+        </column>
+        <column name="ntp_statistics" key="ntp_pkts_restricted">
+            Number of packets restricted for any reason.
+        </column>
+        <column name="ntp_statistics" key="ntp_pkts_rate_limited">
+            Number of packets discarded due to rate limitation.
+        </column>
+        <column name="ntp_statistics" key="ntp_pkts_kod_responses">
+            Number of KoD packets from the server.
         </column>
     </group>
 
@@ -836,6 +872,15 @@
         </column>
     </group>
 
+    <group title="NTP configuration">
+      <p>
+        Specifies the NTP global configuration.
+      </p>
+      <column name="ntp_config" key="authentication_enable" type='{"type": "boolean"}'>
+         Determines whether NTP Authentication is enabled in the system.
+         Default is false.
+      </column>
+    </group>
     <group title="QoS configuration">
       <p>
         Specifies QoS (Quality of Service) configuration options that are
@@ -3907,4 +3952,130 @@
 
   </table>
 
+  <table name="NTP_Association">
+    <p>
+      NTP Client Configuration info related to configured NTP servers and
+      their status info.<code>https://www.ietf.org/rfc/rfc5907.txt</code>
+    </p>
+    <group title="NTP Association Configuration">
+      <column name="vrf">
+        Specifies which VRF this association should connect with.
+      </column>
+      <column name="address">
+        FQDN or ip address for the association.
+      </column>
+      <column name="key_id">
+        Key id is used if NTP client wants to connect to an authenticated association.
+        Key id is not used when using an unauthenticated association.
+      </column>
+      <column name="association_attributes" key="ref_clock_id">
+          The refclock driver ID, if available. A refclock driver ID like
+          "127.127.1.0" for non uni/multi/broadcast associations
+      </column>
+      <column name="association_attributes" key="prefer"
+                type='{"type": "boolean"}'>
+          Preference flag to suggest for this association.
+          Set this to <code>true</code> to enable preference
+          for this association.
+          Default is false.
+      </column>
+      <column name="association_attributes" key="ntp_version"
+                  type='{"type": "integer", "minInteger": 3, "maxInteger": 4}'>
+        NTP version to use for when communicating with this association.
+        Default is 3.
+      </column>
+    </group>
+
+    <group title="NTP Association Status">
+      <p>
+        Status information about NTP associations. For more info refer to
+        <code>http://doc.ntp.org/4.2.6p5/debug.html</code>
+      </p>
+      <column name="association_status">
+        Key-value pairs that report NTP association status.
+      </column>
+      <column name="association_status" key="remote_peer_address">
+        Provides the remote peer's ip address being synced to.
+        If FQDN is used as "address" during config, then
+        this would be the ip address.
+      </column>
+      <column name="association_status" key="remote_peer_ref_id">
+        Provides the reference id used by the remote peer.
+        This can be either another server or stratum 1 devices like .GPS. .USNO. etc.
+        For more info, refer to
+        <code>http://nlug.ml1.co.uk/2012/01/ntpq-p-output/831</code>
+      </column>
+      <column name="association_status" key="stratum"
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 16}'>
+        Provides the remote peer or server stratum level. Range between 1-16.
+      </column>
+      <column name="association_status" key="peer_type"
+        type='{"type": "string", "enum": ["set", ["uni_or_many_cast",
+        "bcast_or_mcast_client", "local_ref_clock", "symm_peer",
+        "manycast_server", "bcast_server", "mcast_server"]]}'>
+        Provides information about the remote peer type.
+      </column>
+      <column name="association_status" key="last_polled">
+        Provides information about when the peer was last polled.
+        (in seconds ago OR 'h' hours ago OR 'd' days ago).
+        Example 6h, 5d, 5 (this refers to seconds).
+      </column>
+      <column name="association_status" key="polling_interval">
+        Provides the polling frequency (in seconds) used for this peer.
+      </column>
+      <column name="association_status" key="reachability_register">
+        Provides status about the last consequetive polls for this peer.
+        (1 bit per poll)
+      </column>
+      <column name="association_status" key="network_delay">
+        Provides round trip delay (in milliseconds) between the switch and
+        the remote peer or server.
+      </column>
+      <column name="association_status" key="time_offset">
+        Provides Root Mean Square time (in milliseconds) between this local
+        host and the remote peer or server.
+      </column>
+      <column name="association_status" key="jitter">
+        Provides jitter (in milliseconds) in the time reported for that remote
+        peer or server.
+      </column>
+      <column name="association_status" key="root_dispersion">
+        Provides maximum error relative time (in seconds) to
+        primary reference clock.
+      </column>
+      <column name="association_status" key="reference_time">
+        Provides the time (in "day, month date year hh:mm" format)
+        when the server clock of refid was last adjusted.
+        Eg format Wed, Jan 13 2016  7:56:26.126
+      </column>
+      <column name="association_status" key="peer_status_word"
+        type='{"type": "string", "enum": ["set", ["reject",
+        "falsetick", "excess", "outlier", "pps_peer",
+        "candidate", "backup", "system_peer"]]}'>
+        Provides information about the peer status.
+        Refer to link for more info
+        <code>https://www.eecis.udel.edu/~mills/ntp/html/decode.html#peer</code>
+      </column>
+      <column name="association_status" key="associd">
+        Provides the Association ID mapped for this association.
+        This is an Internal ID.
+      </column>
+     </group>
+  </table>
+  <table name="NTP_Key">
+    <p>
+      NTP Keys configuration
+    </p>
+    <column name="key_id">
+      Specifies a key_id which is used for NTP authentication.
+    </column>
+    <column name="key_password">
+      Specifies a key_password which is used for NTP authentication.
+    </column>
+    <column name="trust_enable">
+      Enables trust settings for this key_id.
+      Default is false.
+    </column>
+  </table>
 </database>
+
