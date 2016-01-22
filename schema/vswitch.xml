@@ -2485,8 +2485,191 @@
           IPv4/IPv6 address configuration, that remains up until it is
           deleted by administrator. Loopback interface IP address is used
           as router-id and source address by many protocols.</dd>
+
+          <dt><code>ipsec_gre</code></dt>
+          <dd>
+            An Ethernet over RFC 2890 Generic Routing Encapsulation over IPv4
+            IPsec tunnel.
+          </dd>
        </dl>
       </column>
+    </group>
+
+    <group title="Tunnel Options">
+      <p>
+        These options apply to interfaces with <ref column="type"/> of
+        <code>ipsec_gre</code>.
+      </p>
+
+      <p>
+        Each tunnel must be uniquely identified by the combination of <ref
+        column="type"/>, <ref column="options" key="remote_ip"/>, <ref
+        column="options" key="local_ip"/>, and <ref column="options"
+        key="in_key"/>.  If two ports are defined that are the same except one
+        has an optional identifier and the other does not, the more specific
+        one is matched first.  <ref column="options" key="in_key"/> is
+        considered more specific than <ref column="options" key="local_ip"/> if
+        a port defines one and another port defines the other.
+      </p>
+
+      <column name="options" key="remote_ip">
+        <p>Required.  The remote tunnel endpoint, one of:</p>
+
+        <ul>
+          <li>
+            An IPv4 address (not a DNS name), e.g. <code>192.168.0.123</code>.
+            Only unicast endpoints are supported.
+          </li>
+          <li>
+            The word <code>flow</code>.  The tunnel accepts packets from any
+            remote tunnel endpoint.  To process only packets from a specific
+            remote tunnel endpoint, the flow entries may match on the
+            <code>tun_src</code> field.  When sending packets to a
+            <code>remote_ip=flow</code> tunnel, the flow actions must
+            explicitly set the <code>tun_dst</code> field to the IP address of
+            the desired remote tunnel endpoint, e.g. with a
+            <code>set_field</code> action.
+          </li>
+        </ul>
+
+        <p>
+          The remote tunnel endpoint for any packet received from a tunnel
+          is available in the <code>tun_src</code> field for matching in the
+          flow table.
+        </p>
+      </column>
+
+      <column name="options" key="local_ip">
+        <p>
+          Optional.  The tunnel destination IP that received packets must
+          match.  Default is to match all addresses.  If specified, may be one
+          of:
+        </p>
+
+        <ul>
+          <li>
+            An IPv4 address (not a DNS name), e.g. <code>192.168.12.3</code>.
+          </li>
+          <li>
+            The word <code>flow</code>.  The tunnel accepts packets sent to any
+            of the local IP addresses of the system running OVS.  To process
+            only packets sent to a specific IP address, the flow entries may
+            match on the <code>tun_dst</code> field.  When sending packets to a
+            <code>local_ip=flow</code> tunnel, the flow actions may
+            explicitly set the <code>tun_src</code> field to the desired IP
+            address, e.g. with a <code>set_field</code> action.  However, while
+            routing the tunneled packet out, the local system may override the
+            specified address with the local IP address configured for the
+            outgoing system interface.
+
+            <p>
+              This option is valid only for tunnels also configured with the
+              <code>remote_ip=flow</code> option.
+            </p>
+          </li>
+        </ul>
+
+        <p>
+          The tunnel destination IP address for any packet received from a
+          tunnel is available in the <code>tun_dst</code> field for matching in
+          the flow table.
+        </p>
+      </column>
+
+      <column name="options" key="in_key">
+        <p>Optional.  The key that received packets must contain, one of:</p>
+
+        <ul>
+          <li>
+            <code>0</code>.  The tunnel receives packets with no key or with a
+            key of 0.  This is equivalent to specifying no <ref column="options"
+            key="in_key"/> at all.
+          </li>
+          <li>
+            A 32-bit (for GRE).  The tunnel receives only packets with the
+            specified key.
+          </li>
+        </ul>
+
+        <p>
+        </p>
+      </column>
+
+      <column name="options" key="out_key">
+        <p>Optional.  The key to be set on outgoing packets, one of:</p>
+
+        <ul>
+          <li>
+            <code>0</code>.  Packets sent through the tunnel will have no key.
+            This is equivalent to specifying no <ref column="options"
+            key="out_key"/> at all.
+          </li>
+          <li>
+            A 32-bit (for GRE).  The tunnel receives only packets with the
+            specified key.
+          </li>
+        </ul>
+      </column>
+
+      <column name="options" key="key">
+        Optional.  Shorthand to set <code>in_key</code> and
+        <code>out_key</code> at the same time.
+      </column>
+
+      <column name="options" key="tos">
+        Optional.  The value of the ToS bits to be set on the encapsulating
+        packet.  ToS is interpreted as DSCP and ECN bits, ECN part must be
+        zero.  It may also be the word <code>inherit</code>, in which case
+        the ToS will be copied from the inner packet if it is IPv4 or IPv6
+        (otherwise it will be 0).  The ECN fields are always inherited.
+        Default is 0.
+      </column>
+
+      <column name="options" key="ttl">
+        Optional.  The TTL to be set on the encapsulating packet.  It may also
+        be the word <code>inherit</code>, in which case the TTL will be copied
+        from the inner packet if it is IPv4 or IPv6 (otherwise it will be the
+        system default, typically 64).  Default is the system default TTL.
+      </column>
+
+      <column name="options" key="df_default"
+              type='{"type": "boolean"}'>
+        Optional.  If enabled, the Don't Fragment bit will be set on tunnel
+        outer headers to allow path MTU discovery. Default is enabled; set
+        to <code>false</code> to disable.
+      </column>
+
+      <group title="Tunnel Options: ipsec_gre only">
+        <p>
+          Only <code>ipsec_gre</code> interfaces support these options.
+        </p>
+
+        <column name="options" key="peer_cert">
+          Required for certificate authentication.  A string containing the
+          peer's certificate in PEM format.  Additionally the host's
+          certificate must be specified with the <code>certificate</code>
+          option.
+        </column>
+
+        <column name="options" key="certificate">
+          Required for certificate authentication.  The name of a PEM file
+          containing a certificate that will be presented to the peer during
+          authentication.
+        </column>
+
+        <column name="options" key="private_key">
+          Optional for certificate authentication.  The name of a PEM file
+          containing the private key associated with <code>certificate</code>.
+          If <code>certificate</code> contains the private key, this option may
+          be omitted.
+        </column>
+
+        <column name="options" key="psk">
+          Required for pre-shared key authentication.  Specifies a pre-shared
+          key for authentication that must be identical on both sides of the
+          tunnel.
+        </column>
+      </group>
     </group>
 
     <group title="Interface Status">
