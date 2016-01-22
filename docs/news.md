@@ -3,13 +3,14 @@
 ## Upcoming Events
 -   Presenting at [FOSDEM 2016](https://fosdem.org/2016/schedule/event/openswitch/)
 -   Attending [OCP U.S. Summit 2016](http://www.opencompute.org/ocp-u.s.-summit-2016/)
--   Attending [OpenNetworkSummit 2016](http://opennetsummit.org)
+-   Attending [Open Networking Summit 2016](http://opennetsummit.org)
 
 ## Press Releases
 -	[Press release, October 5, 2015](/documents/user/press-release-2015-10-05)
 
 ## OpenSwitch Blogosphere
 ### Articles
+-   [_OpenSwitch in an OVA_, KontrolIssues, January 2016](http://kontrolissues.net/2016/01/21/openswitch-in-an-ova/)
 -   [_OpenSwitch Deep Dive On Software Gone Wild_, IPSpace, Ivan Pepelnjak, January 2016](http://blog.ipspace.net/2016/01/openswitch-deep-dive-on-software-gone.html)
 -   [_A Voyage of Discover-E_, The Networking Nerd, November 2015](http://networkingnerd.net/2015/11/24/a-voyage-of-discover-e/)
 -   [_OpenSwitch: Exciting Stuff_, Fragmentation Needed, November 2015 ](http://www.fragmentationneeded.net/2015/11/openswitch-exciting-stuff.html?spref=tw)
