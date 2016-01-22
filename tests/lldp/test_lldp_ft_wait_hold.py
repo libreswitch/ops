@@ -384,7 +384,6 @@ def lldp_wait_hold(**kwargs):
     LogOutput('info', "\nNo Neighbour is present for SW2, case passed")
 
 
-@pytest.mark.skipif(True, reason="Random failure")
 @pytest.mark.timeout(1000)
 class Test_lldp_configuration:
     def setup_class(cls):
