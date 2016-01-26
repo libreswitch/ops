@@ -20,6 +20,7 @@ import httplib
 import random
 import urllib
 import ssl
+import os
 
 from copy import deepcopy
 from string import rstrip
