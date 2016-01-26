@@ -367,7 +367,7 @@ class QueryPortPaginationTest(OpsVsiTest):
         info("\n########## End Test to Validate pagination of GET request" +
              " results ##########\n")
 
-
+@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class Test_QueryPortPagination:
     def setup(self):
         pass

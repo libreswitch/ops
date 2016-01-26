@@ -103,6 +103,7 @@ class DeletePortTest (OpsVsiTest):
 
         info("\n########## End Test delete non-existent Port  ##########\n")
 
+@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class Test_DeletePort:
     def setup (self):
         pass

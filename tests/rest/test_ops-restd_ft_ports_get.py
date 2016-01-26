@@ -115,6 +115,7 @@ class QueryPortTest (OpsVsiTest):
 
         info("\n########## End Test to Validate first GET Non-existent Port request ##########\n")
 
+@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class Test_QueryPort:
     def setup (self):
         pass

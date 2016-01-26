@@ -90,6 +90,7 @@ class DeleteNonExistentVlan(OpsVsiTest):
              "##########\n" % self.vlan_path)
 
 
+@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestDeleteNonExistentVlan:
     def setup(self):
         pass

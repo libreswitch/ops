@@ -90,6 +90,7 @@ class configTest(OpsVsiTest):
         info("\n### Startup config write & read were successful ###\n")
 
 
+@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class Test_config:
     def setup(self):
         pass

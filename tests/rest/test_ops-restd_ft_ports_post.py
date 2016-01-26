@@ -235,6 +235,7 @@ class CreatePortTest (OpsVsiTest):
 
         info("\n########## End test to verify malformed JSON ##########\n")
 
+@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class Test_CreatePort:
     def setup (self):
         pass

@@ -494,6 +494,7 @@ class IfMatchVlanTest(OpsVsiTest):
             assert status_code == httplib.NO_CONTENT, "VLAN deleted" % path
 
 
+@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class Test_IfMatchVlan:
     def setup(self):
         pass

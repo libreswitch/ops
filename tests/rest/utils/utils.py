@@ -40,23 +40,20 @@ PORT_DATA = {
         "vlan_mode": "trunk",
         "ip6_address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
         "external_ids": {"extid1key": "extid1value"},
-        "bond_options": {},
         "mac": "01:23:45:67:89:ab",
         "other_config": {"cfg-1key": "cfg1val"},
         "bond_active_slave": "null",
         "ip6_address_secondary": ["01:23:45:67:89:ab"],
-        "vlan_options": {},
         "ip4_address": "192.168.0.1",
         "admin": "up",
-        "qos_config": {},
-        "ospf_auth_md5_keys": {},
         "ospf_auth_text_key": "null",
         "ospf_auth_type": "null",
         "ospf_if_out_cost": 10,
         "ospf_if_type": "ospf_iftype_broadcast",
-        "ospf_intervals": {},
+        "ospf_intervals": {"transmit_delay": 1},
         "ospf_mtu_ignore": False,
-        "ospf_priority": 0
+        "ospf_priority": 0,
+        "qos_config": {"qos_trust": "none"}
     },
     "referenced_by": [{"uri": "/rest/v1/system/bridges/bridge_normal"}]
 }

@@ -795,6 +795,7 @@ class QueryFilterPortTest (OpsVsiTest):
         info("\n########## Ending Port Filter Tests ##########\n")
 
 
+@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class Test_QueryFilterPort:
     def setup(self):
         pass

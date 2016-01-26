@@ -179,6 +179,7 @@ def restTestSystem(wrkston01):
     return retStruct
 
 
+@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class Test_ft_framework_rest:
     def setup_class(cls):
         # Create Topology object and connect to devices

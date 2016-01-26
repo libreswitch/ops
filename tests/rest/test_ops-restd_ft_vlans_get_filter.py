@@ -115,6 +115,7 @@ class FilterVlanTestByName (OpsVsiTest):
         info("########## End Test Filter name ##########\n")
 
 
+@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestGetFilterVlanByName:
     def setup(self):
         pass
@@ -305,6 +306,7 @@ class FilterVlanByDescription (OpsVsiTest):
         info("########## End Filter description ##########\n")
 
 
+@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestGetFilterVlanByDescription:
     def setup(self):
         pass
