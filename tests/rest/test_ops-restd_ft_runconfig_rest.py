@@ -26,6 +26,7 @@ import httplib
 from opsvsi.docker import *
 from opsvsi.opsvsitest import *
 from opsvsiutils.systemutil import *
+from utils.utils import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -66,29 +67,23 @@ class configTest(OpsVsiTest):
         s1 = self.net.switches[0]
         ip_addr = s1.cmd("python -c \"import socket; print\
                          socket.gethostbyname(socket.gethostname())\"")
+        ip_addr = ip_addr.strip()
 
         path = '/rest/v1/system' + '/full-configuration?type=startup'
         with open(src_file) as data_file:
                 _data = json.loads(data_file.read())
 
-        _headers = {"Content-type": "multipart/form-data",
-                    "Accept": "text/plain"}
-        conn = httplib.HTTPConnection(ip_addr, 8091)
-        conn.request("PUT", path, json.dumps(_data), _headers)
-        response = conn.getresponse()
+        status_code, response_data = execute_request(path, "PUT",
+                                                     json.dumps(_data),
+                                                     ip_addr)
+        assert status_code == httplib.OK
 
-        assert response.status == 200
+        status_code, response_data = execute_request(path, "GET",
+                                                     json.dumps(""),
+                                                     ip_addr)
+        content = json.loads(response_data)
 
-        _headers = {"Content-type": "application/x-www-form-urlencoded",
-                    "Accept": "text/plain"}
-        conn = httplib.HTTPConnection(ip_addr, 8091)
-        conn.request("GET", path, json.dumps(""), _headers)
-        response = conn.getresponse()
-        content = response.read()
-
-        content = json.loads(content)
-
-        assert response.status == 200
+        assert status_code == httplib.OK
 
         assert ordered(content) == ordered(_data)
 
