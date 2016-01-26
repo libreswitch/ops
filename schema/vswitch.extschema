@@ -3671,6 +3671,16 @@
             "max": 255
           }
         },
+        "dhcp_relay_statistics": {
+          "category": "statistics",
+          "type": {
+            "key": "string",
+            "value": "integer",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true
+        },
         "other_config": {
           "category": "configuration",
           "type": {
@@ -6646,6 +6656,80 @@
           }
         }
       }
+    },
+    "DHCP_Relay": {
+      "columns": {
+        "port": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType" : "weak"
+            }
+          },
+          "mutable": false
+        },
+        "vrf": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRF",
+              "refType" : "weak"
+            }
+          },
+          "mutable": false
+        },
+        "ipv4_ucast_server": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 15
+            },
+            "min": 0,
+            "max": 16
+          }
+        },
+        "ipv6_ucast_server": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 49
+            },
+            "min": 0,
+            "max": 16
+          }
+        },
+        "ipv6_mcast_server": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 49
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType" : "weak"
+            },
+            "min": 0,
+            "max": 16
+          }
+        }
+      },
+      "indexes": [
+        [
+          "port",
+          "vrf"
+        ]
+      ],
+      "isRoot": true
     }
   }
 }
