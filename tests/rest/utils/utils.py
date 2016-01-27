@@ -19,6 +19,8 @@ import json
 import httplib
 import random
 import urllib
+import ssl
+import os
 
 from copy import deepcopy
 from string import rstrip
@@ -205,7 +207,14 @@ def execute_request(path, http_method, data, ip, full_response=False,
     headers = {"Content-type": "application/json", "Accept": "text/plain"}
     if xtra_header:
         headers.update(xtra_header)
-    conn = httplib.HTTPConnection(ip, 8091)
+
+    sslcontext = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+    sslcontext.verify_mode = ssl.CERT_REQUIRED
+    sslcontext.check_hostname = False
+    src_path = os.path.dirname(os.path.realpath(__file__))
+    src_file = os.path.join(src_path, 'server.crt')
+    sslcontext.load_verify_locations(src_file)
+    conn = httplib.HTTPSConnection(ip, 443, context=sslcontext)
     conn.request(http_method, url, data, headers)
     response = conn.getresponse()
     status_code, response_data = response.status, response.read()
@@ -273,16 +282,25 @@ def random_ip6_address():
 
 
 def login(dut, user_name, user_password):
-    conn = httplib.HTTPConnection(dut.SWITCH_IP, 8091)
-    url = '/login'
 
+    sslcontext = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+    sslcontext.verify_mode = ssl.CERT_REQUIRED
+    sslcontext.check_hostname = False
+    src_path = os.path.dirname(os.path.realpath(__file__))
+    src_file = os.path.join(src_path, 'server.crt')
+    sslcontext.load_verify_locations(src_file)
+    conn = httplib.HTTPSConnection(dut.SWITCH_IP, 443, context=sslcontext)
+    url = '/login'
     body = {'username': user_name, 'password': user_password}
     headers = {"Content-type": "application/x-www-form-urlencoded",
                "Accept": "text/plain"}
     conn.request('POST', url, urllib.urlencode(body), headers)
+
     response = conn.getresponse()
     dut.HEADERS = {'Cookie': response.getheader('set-cookie')}
 
+    status_code, response_data = response.status, response.read()
+    conn.close()
     if not dut.HEADERS['Cookie'] is None:
         return True
     else:

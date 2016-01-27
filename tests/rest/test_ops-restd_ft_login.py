@@ -27,6 +27,8 @@ import urllib
 from opsvsi.docker import *
 from opsvsi.opsvsitest import *
 from opsvsiutils.systemutil import *
+from utils.utils import *
+import ssl
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -64,45 +66,55 @@ class configTest (OpsVsiTest):
         s1 = self.net.switches[0]
         ip_addr = s1.cmd("python -c \"import socket;print\
                          socket.gethostbyname(socket.gethostname())\"")
-        ip_addr = ip_addr.replace('\r\r\n', '')
-        conn = httplib.HTTPConnection(ip_addr, 8091)
-        url = '/login'
 
-        # POST to fetch cookie
+        ip_addr = ip_addr.strip()
+
+        #POST
+        _headers = {"Content-type": "application/x-www-form-urlencoded",
+            "Accept": "text/plain"}
+        # GET to fetch system info from the DB
+
+        sslcontext = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+        sslcontext.verify_mode = ssl.CERT_REQUIRED
+        sslcontext.check_hostname = False
+
+        src_path = os.path.dirname(os.path.realpath(__file__))
+        src_file = os.path.join(src_path, 'utils/server.crt')
+        sslcontext.load_verify_locations(src_file)
+        url = '/login'
+        conn = httplib.HTTPSConnection(ip_addr, 443, context=sslcontext)
+
         print("\n######### Running POST to fetch the cookie ##########\n")
         body = {'username': 'root', 'password': ''}
-        headers = {"Content-type": "application/x-www-form-urlencoded",
-                   "Accept": "text/plain"}
-        conn.request('POST', url, urllib.urlencode(body), headers)
+        conn.request('POST', url, urllib.urlencode(body), headers=_headers)
         response = conn.getresponse()
-        print(response)
+        status_code, response_data = response.status, response.read()
+        conn.close()
 
-        headers = {'Cookie': response.getheader('set-cookie')}
-
+        _headers = {'Cookie': response.getheader('set-cookie')}
         time.sleep(2)
-
         print ('''"\n######### Running GET to fetch the system
-        info from the DB ##########\n"''')
+                info from the DB ##########\n"''')
 
-        # GET to fetch system info from the DB
-        conn = httplib.HTTPConnection(ip_addr, 8091)
-        conn.request('GET', url, headers=headers)
+        conn = httplib.HTTPSConnection(ip_addr, 443, context=sslcontext)
+
+        conn.request('GET', url, headers=_headers)
         response = conn.getresponse()
-        print(response)
 
         assert response.status == 200
+
         time.sleep(2)
 
         print ('''"\n######### Running GET to fetch the system info
                 from the DB after removing the cookie ##########\n"''')
 
-        headers = {'Cookie': response.getheader('set-cookie')}
+        _headers = {'Cookie': response.getheader('set-cookie')}
 
         # GET to fetch system info from the DB
-        conn = httplib.HTTPConnection(ip_addr, 8091)
-        conn.request('GET', url, headers=headers)
+
+        conn = httplib.HTTPSConnection(ip_addr, 443, context=sslcontext)
+        conn.request('GET', url, headers=_headers)
         response = conn.getresponse()
-        print(response)
 
         assert response.status == 401
 
@@ -110,61 +122,55 @@ class configTest (OpsVsiTest):
         s1 = self.net.switches[0]
         ip_addr = s1.cmd("python -c \"import socket;print\
                          socket.gethostbyname(socket.gethostname())\"")
-        ip_addr = ip_addr.replace('\r\r\n', '')
-        conn = httplib.HTTPConnection(ip_addr, 8091)
-        url = '/login'
 
-        # POST to fetch cookie
-        print ('''"\n######### Running POST to fetch the cookie
-                with wrong username and password #1 ##########\n"''')
-        url = '/login'
-        body = {'username': 'john', 'password': 'doe'}
-        headers = {"Content-type": "application/x-www-form-urlencoded",
-                   "Accept": "text/plain"}
-        conn = httplib.HTTPConnection(ip_addr, 8091)
-        conn.request('POST', url, urllib.urlencode(body), headers)
-        response = conn.getresponse()
-        print(response)
+        ip_addr = ip_addr.strip()
 
-        headers = {'Cookie': response.getheader('set-cookie')}
-
-        time.sleep(2)
-
-        print ('''"\n######### Running GET to fetch the system info
-               from the DB ##########\n"''')
-
+        #POST
+        _headers = {"Content-type": "application/x-www-form-urlencoded",
+            "Accept": "text/plain"}
         # GET to fetch system info from the DB
-        conn = httplib.HTTPConnection(ip_addr, 8091)
-        conn.request('GET', url, headers=headers)
+
+        sslcontext = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+        sslcontext.verify_mode = ssl.CERT_REQUIRED
+        sslcontext.check_hostname = False
+
+        src_path = os.path.dirname(os.path.realpath(__file__))
+        src_file = os.path.join(src_path, "utils/server.crt")
+        sslcontext.load_verify_locations(src_file)
+        url = '/login'
+        conn = httplib.HTTPSConnection(ip_addr, 443, context=sslcontext)
+
+        print("\n######### Running POST to fetch the cookie ##########\n")
+        body = {'username': 'john', 'password': 'doe'}
+        conn.request('POST', url, urllib.urlencode(body), headers=_headers)
         response = conn.getresponse()
-        print(response)
+        status_code, response_data = response.status, response.read()
+        conn.close()
+
+        _headers = {'Cookie': response.getheader('set-cookie')}
+        time.sleep(2)
+        print ('''"\n######### Running GET to fetch the system
+                info from the DB ##########\n"''')
+
+        conn = httplib.HTTPSConnection(ip_addr, 443, context=sslcontext)
+
+        conn.request('GET', url, headers=_headers)
+        response = conn.getresponse()
 
         assert response.status == 401
-        time.sleep(2)
-
-        # POST to fetch cookie
-        print ('''"\n######### Running POST to fetch the cookie with
-                wrong username and password #2 ##########\n"''')
-        url = '/login'
-        body = {'username': 'error', 'password': ''}
-        headers = {"Content-type": "application/x-www-form-rlencoded",
-                   "Accept": "text/plain"}
-        conn = httplib.HTTPConnection(ip_addr, 8091)
-        conn.request('POST', url, urllib.urlencode(body), headers)
-        response = conn.getresponse()
-        print(response)
-
-        headers = {'Cookie': response.getheader('set-cookie')}
 
         time.sleep(2)
 
         print ('''"\n######### Running GET to fetch the system info
-                from the DB ##########\n"''')
+                from the DB after removing the cookie ##########\n"''')
+
+        _headers = {'Cookie': response.getheader('set-cookie')}
+
         # GET to fetch system info from the DB
-        conn = httplib.HTTPConnection(ip_addr, 8091)
-        conn.request('GET', url, headers=headers)
+
+        conn = httplib.HTTPSConnection(ip_addr, 443, context=sslcontext)
+        conn.request('GET', url, headers=_headers)
         response = conn.getresponse()
-        print(response)
 
         assert response.status == 401
 
