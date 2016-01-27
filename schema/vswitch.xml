@@ -2241,6 +2241,14 @@
           VLAN.
         </p>
       </column>
+      <column name="vlan_tunnel_keys" keyname="vlan">
+        <p>
+          Specifies translation from a vlan to the
+          <ref table="Logical_Switch"/>. If this is an access port,
+          only one key needs to be specified. VLAN 0 means that untagged
+          traffic on the port is mapped to the specified logical switch.
+        </p>
+      </column>
     </group>
 
     <group title="Bonding Configuration">
@@ -2525,6 +2533,10 @@
             An Ethernet over RFC 2890 Generic Routing Encapsulation over IPv4
             IPsec tunnel.
           </dd>
+
+          <dt><code>vxlan</code></dt>
+          <dd>This is a vitual interface of type vxlan (L2 overlay over L3
+          network RFC 7348).</dd>
        </dl>
       </column>
     </group>
@@ -2532,7 +2544,7 @@
     <group title="Tunnel Options">
       <p>
         These options apply to interfaces with <ref column="type"/> of
-        <code>ipsec_gre</code>.
+        <code>ipsec_gre</code> and <code>vxlan</code>.
       </p>
 
       <p>
@@ -2554,60 +2566,19 @@
             An IPv4 address (not a DNS name), e.g. <code>192.168.0.123</code>.
             Only unicast endpoints are supported.
           </li>
-          <li>
-            The word <code>flow</code>.  The tunnel accepts packets from any
-            remote tunnel endpoint.  To process only packets from a specific
-            remote tunnel endpoint, the flow entries may match on the
-            <code>tun_src</code> field.  When sending packets to a
-            <code>remote_ip=flow</code> tunnel, the flow actions must
-            explicitly set the <code>tun_dst</code> field to the IP address of
-            the desired remote tunnel endpoint, e.g. with a
-            <code>set_field</code> action.
-          </li>
         </ul>
-
-        <p>
-          The remote tunnel endpoint for any packet received from a tunnel
-          is available in the <code>tun_src</code> field for matching in the
-          flow table.
-        </p>
       </column>
 
       <column name="options" key="local_ip">
         <p>
-          Optional.  The tunnel destination IP that received packets must
-          match.  Default is to match all addresses.  If specified, may be one
-          of:
+          The tunnel destination IP that received packets must
+          match.
         </p>
-
         <ul>
           <li>
             An IPv4 address (not a DNS name), e.g. <code>192.168.12.3</code>.
           </li>
-          <li>
-            The word <code>flow</code>.  The tunnel accepts packets sent to any
-            of the local IP addresses of the system running OVS.  To process
-            only packets sent to a specific IP address, the flow entries may
-            match on the <code>tun_dst</code> field.  When sending packets to a
-            <code>local_ip=flow</code> tunnel, the flow actions may
-            explicitly set the <code>tun_src</code> field to the desired IP
-            address, e.g. with a <code>set_field</code> action.  However, while
-            routing the tunneled packet out, the local system may override the
-            specified address with the local IP address configured for the
-            outgoing system interface.
-
-            <p>
-              This option is valid only for tunnels also configured with the
-              <code>remote_ip=flow</code> option.
-            </p>
-          </li>
         </ul>
-
-        <p>
-          The tunnel destination IP address for any packet received from a
-          tunnel is available in the <code>tun_dst</code> field for matching in
-          the flow table.
-        </p>
       </column>
 
       <column name="options" key="in_key">
@@ -2623,10 +2594,11 @@
             A 32-bit (for GRE).  The tunnel receives only packets with the
             specified key.
           </li>
+          <li>
+            A positive 24-bit (VXLAN). The tunnel receives only
+            packets with the specified key.
+          </li>
         </ul>
-
-        <p>
-        </p>
       </column>
 
       <column name="options" key="out_key">
@@ -2639,7 +2611,11 @@
             key="out_key"/> at all.
           </li>
           <li>
-            A 32-bit (for GRE).  The tunnel receives only packets with the
+            A 32-bit (for GRE).  The tunnel sends packets only with the
+            specified key.
+          </li>
+          <li>
+            A positive 24-bit (VXLAN). The tunnel sends packets only with the
             specified key.
           </li>
         </ul>
@@ -5128,5 +5104,86 @@
         </column>
     </group>
   </table>
-</database>
 
+  <table name="Logical_Switch">
+      <p>
+        Configuration for identifying overlay networks associated with
+        bridges.
+      </p>
+      <column name="name">
+        Name of the overlay network.
+      </column>
+      <column name="description">
+        Description of the overlay network.
+      </column>
+      <column name="bridge">
+        Reference to a <ref table="Bridge"/> participating in the overlay.
+      </column>
+      <column name="tunnel_key">
+        Tunnel key used in the overlay.
+        For VXLAN, this is the VNI.
+      </column>
+      <column name="from">
+        The entity managing the overlay.
+      </column>
+  </table>
+
+  <table name="MAC">
+
+    <p>
+      Configuration for consolidated MAC table which can potentially be
+      learnt from ASIC, from the hw-vtep controller or statically configured.
+    </p>
+
+    <column name="mac_addr">
+      MAC address.
+    </column>
+
+    <column name="bridge">
+      Specifies the bridge <ref table="Bridge"/> on which this MAC address
+      is associated.
+    </column>
+
+    <column name="vlan">
+      VLAN associated with MAC address.
+    </column>
+
+    <column name="from">
+      This column specifies who has configured this entry in the database.
+      Is it the hw-vtep controller, self learned from ASIC or statically configured.
+    </column>
+
+    <column name="port">
+      Specifies the port <ref table="Port"/> on which this MAC address
+      is associated.
+    </column>
+
+    <column name="tunnel_key">
+      If this MAC address is learnt from the tunnel port, then the tunnel_key
+      will be populated/configured. Otherwise, for static entries not having
+      tunnel as port, this column should not be populated.
+    </column>
+
+    <column name="expiry_time">
+      POSIX Time at which this MAC entry expires.
+    </column>
+
+    <group title="status">
+      <p>
+        This column specifies the status of this entry in the table.
+      </p>
+      <column name="status" key="ok">
+          Properly configured
+      </column>
+      <column name="status" key="invalid">
+          Invalid parameters
+      </column>
+      <column name="status" key="no_memory">
+          Memory exhaustion
+      </column>
+      <column name="status" key="error">
+          Unspecified error.
+      </column>
+    </group>
+  </table>
+</database>

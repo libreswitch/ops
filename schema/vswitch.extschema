@@ -2458,6 +2458,24 @@
             "max": "unlimited"
           }
         },
+        "vlan_tunnel_keys": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4094
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Logical_Switch",
+              "refType" : "weak"
+            },
+            "min": 0,
+            "max": 4095
+          }
+        },
         "mac": {
           "category": "configuration",
           "type": {
@@ -2788,7 +2806,8 @@
                   "system",
                   "internal",
                   "vlansubint",
-                  "loopback"
+                  "loopback",
+                  "vxlan"
                 ]
               ]
             }
@@ -4039,7 +4058,7 @@
      }
    },
    "DHCPSrv_Match":{
-      "columns":{
+     "columns":{
        "set_tag":{
          "category":"configuration",
          "type":{
@@ -4079,6 +4098,157 @@
          }
        }
      }
+    },
+    "Logical_Switch": {
+      "columns":{
+        "name":{
+          "category": "status",
+          "type": "string",
+          "mutable": false
+        },
+        "description":{
+          "category": "status",
+          "type": "string"
+        },
+        "bridge":{
+          "category": "status",
+          "relationship":"m:1",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Bridge",
+              "refType" : "weak"
+            }
+          }
+        },
+        "tunnel_key":{
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            }
+          }
+        },
+        "from": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "enum": [
+                "set",
+                [
+                  "hw-vtep"
+                ]
+              ],
+              "type": "string"
+            }
+          }
+        }
+      },
+      "indexes": [
+        [
+          "bridge",
+          "tunnel_key"
+        ]
+      ],
+      "isRoot": true
+    },
+    "MAC": {
+      "columns": {
+        "mac_addr": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 18,
+              "maxLength": 18
+            }
+          }
+        },
+        "bridge": {
+          "category": "configuration",
+          "relationship": "m:1",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Bridge",
+              "refType" : "weak"
+            }
+          }
+        },
+        "vlan": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 4094
+            }
+          }
+        },
+        "from": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "enum": [
+                "set",
+                [
+                  "hw-vtep",
+                  "learning",
+                  "static"
+                ]
+              ],
+              "type": "string"
+            }
+          }
+        },
+        "port": {
+          "category": "configuration",
+          "relationship": "m:1",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType" : "weak"
+            }
+          }
+        },
+        "tunnel_key": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "expiry_time": {
+          "category": "status",
+          "type": "integer"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        }
+      },
+      "indexes": [
+        [
+          "bridge",
+          "vlan",
+          "from",
+          "mac_addr"
+        ]
+      ],
+      "isRoot": true
     },
    "sFlow":{
       "columns":{
