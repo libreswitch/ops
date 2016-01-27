@@ -260,6 +260,7 @@ class Test_QueryUser:
 
     def setup_class(cls):
         Test_QueryUser.test_var = QueryUserTest()
+        rest_sanity_check(cls.test_var.SWITCH_IP)
 
     def teardown_class(cls):
         Test_QueryUser.test_var.net.stop()

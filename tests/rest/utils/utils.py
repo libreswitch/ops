@@ -21,7 +21,10 @@ import random
 import urllib
 import ssl
 import os
+import time
+import pytest
 
+from opsvsi.opsvsitest import *
 from copy import deepcopy
 from string import rstrip
 
@@ -291,6 +294,7 @@ def login(dut, user_name, user_password):
     sslcontext.load_verify_locations(src_file)
     conn = httplib.HTTPSConnection(dut.SWITCH_IP, 443, context=sslcontext)
     url = '/login'
+
     body = {'username': user_name, 'password': user_password}
     headers = {"Content-type": "application/x-www-form-urlencoded",
                "Accept": "text/plain"}
@@ -325,3 +329,27 @@ def validate_keys_complete_object(json_data):
     assert json_data["status"] is not None, "status key is not present"
 
     return True
+
+
+def rest_sanity_check(switch_ip):
+    info("\nSwitch Sanity Check: Verify if System table row and bridge_normal exist\n")
+    # Check if bridge_normal is ready, loop until ready or timeout finish
+    system_path = "/rest/v1/system"
+    bridge_path = "/rest/v1/system/bridges/bridge_normal"
+    count = 1
+    max_retries = 60 # 1 minute
+    while count <= max_retries:
+        info("\nSwitch Sanity Check: Try count %d \n" % count)
+        status_system, response_system = execute_request(system_path, "GET",
+                                                         None, switch_ip)
+        status_bridge, response_bridge = execute_request(bridge_path, "GET",
+                                                         None, switch_ip)
+        if status_system is httplib.OK and response_system is not None and \
+            status_bridge is httplib.OK and response_bridge is not None:
+            break;
+        count += 1
+        info("\nSwitch Sanity Check: Retrying\n")
+        time.sleep(1)
+
+    assert count <= max_retries, "Switch Sanity check failure: After waiting %d seconds, "\
+        "the switch is still not ready to run the tests" % max_retries

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2015 Hewlett Packard Enterprise Development LP
+# Copyright (C) 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -98,6 +98,7 @@ class TestGetDefaultBridgeNormal:
 
     def setup_class(cls):
         TestGetDefaultBridgeNormal.test_var = QueryDefaultBridgeNormal()
+        rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestGetDefaultBridgeNormal.test_var.net.stop()
@@ -167,6 +168,7 @@ class TestGetNoVlansAssociated:
 
     def setup_class(cls):
         TestGetNoVlansAssociated.test_var = QueryNoVlansAssociated()
+        rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestGetNoVlansAssociated.test_var.net.stop()
@@ -241,7 +243,7 @@ class TestGetVlansAssociated:
 
     def setup_class(cls):
         TestGetVlansAssociated.test_var = QueryVlansAssociated()
-
+        rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestGetVlansAssociated.test_var.vlan_path,
                          TestGetVlansAssociated.test_var.switch_ip,
                          TestGetVlansAssociated.test_var.vlan_name,
@@ -328,7 +330,7 @@ class TestGetVlanByName:
 
     def setup_class(cls):
         TestGetVlanByName.test_var = QueryVlanByName()
-
+        rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestGetVlanByName.test_var.vlan_path,
                          TestGetVlanByName.test_var.switch_ip,
                          TestGetVlanByName.test_var.vlan_name,
@@ -405,6 +407,7 @@ class TestGetNonExistentVlan:
 
     def setup_class(cls):
         TestGetNonExistentVlan.test_var = QueryNonExistentVlanByName()
+        rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestGetNonExistentVlan.test_var.net.stop()

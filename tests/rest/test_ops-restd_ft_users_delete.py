@@ -244,6 +244,7 @@ class Test_DeleteUser:
 
     def setup_class(cls):
         Test_DeleteUser.test_var = DeleteUserTest()
+        rest_sanity_check(cls.test_var.SWITCH_IP)
 
     def teardown_class(cls):
         Test_DeleteUser.test_var.net.stop()

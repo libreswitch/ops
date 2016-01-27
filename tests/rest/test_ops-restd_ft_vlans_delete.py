@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2015 Hewlett Packard Enterprise Development LP
+# Copyright (C) 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -99,6 +99,7 @@ class TestDeleteNonExistentVlan:
 
     def setup_class(cls):
         TestDeleteNonExistentVlan.test_var = DeleteNonExistentVlan()
+        rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestDeleteNonExistentVlan.test_var.net.stop()
@@ -195,7 +196,7 @@ class TestDeleteExistentVlan:
 
     def setup_class(cls):
         TestDeleteExistentVlan.test_var = DeleteExistentVlan()
-
+        rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestDeleteExistentVlan.test_var.vlan_path,
                          TestDeleteExistentVlan.test_var.switch_ip,
                          TestDeleteExistentVlan.test_var.vlan_name,

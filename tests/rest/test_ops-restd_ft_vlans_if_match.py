@@ -503,6 +503,7 @@ class Test_IfMatchVlan:
 
     def setup_class(cls):
         Test_IfMatchVlan.test_var = IfMatchVlanTest()
+        rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(Test_IfMatchVlan.test_var.vlan_path,
                          Test_IfMatchVlan.test_var.switch_ip,
                          Test_IfMatchVlan.test_var.vlan_name,

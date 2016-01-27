@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2015 Hewlett Packard Enterprise Development LP
+# Copyright (C) 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -124,7 +124,7 @@ class TestGetFilterVlanByName:
 
     def setup_class(cls):
         TestGetFilterVlanByName.test_var = FilterVlanTestByName()
-
+        rest_sanity_check(cls.test_var.switch_ip)
         for i in range(1, NUM_FAKE_VLANS+1):
             create_fake_vlan(TestGetFilterVlanByName.test_var.path,
                              TestGetFilterVlanByName.test_var.switch_ip,
@@ -198,7 +198,7 @@ class TestGetFilterVlanById:
 
     def setup_class(cls):
         TestGetFilterVlanById.test_var = FilterVlanById()
-
+        rest_sanity_check(cls.test_var.switch_ip)
         for i in range(1, NUM_FAKE_VLANS+1):
             create_fake_vlan(TestGetFilterVlanById.test_var.path,
                              TestGetFilterVlanById.test_var.switch_ip,
@@ -311,7 +311,7 @@ class TestGetFilterVlanByDescription:
 
     def setup_class(cls):
         TestGetFilterVlanByDescription.test_var = FilterVlanByDescription()
-
+        rest_sanity_check(cls.test_var.switch_ip)
         for i in range(1, NUM_FAKE_VLANS+1):
             create_fake_vlan(TestGetFilterVlanByDescription.test_var.path,
                              TestGetFilterVlanByDescription.test_var.switch_ip,
@@ -428,7 +428,7 @@ class TestGetFilterVlanByAdmin:
 
     def setup_class(cls):
         TestGetFilterVlanByAdmin.test_var = FilterVlanByAdmin()
-
+        rest_sanity_check(cls.test_var.switch_ip)
         for i in range(1, NUM_FAKE_VLANS+1):
             create_fake_vlan(TestGetFilterVlanByAdmin.test_var.path,
                              TestGetFilterVlanByAdmin.test_var.switch_ip,

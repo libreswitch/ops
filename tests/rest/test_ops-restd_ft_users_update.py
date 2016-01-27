@@ -212,6 +212,7 @@ class Test_UpdateUser:
 
     def setup_class(cls):
         Test_UpdateUser.test_var = UpdateUserTest()
+        rest_sanity_check(cls.test_var.SWITCH_IP)
 
     def teardown_class(cls):
         Test_UpdateUser.test_var.net.stop()

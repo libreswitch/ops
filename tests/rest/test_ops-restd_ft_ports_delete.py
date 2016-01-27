@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2015 Hewlett Packard Enterprise Development LP
+# Copyright (C) 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -112,9 +112,10 @@ class Test_DeletePort:
 
     def setup_class (cls):
         Test_DeletePort.test_var = DeletePortTest()
+        rest_sanity_check(cls.test_var.SWITCH_IP)
         # Add a test port
-        info("\n########## Creating Test Port  ##########\n")
         switch_ip = Test_DeletePort.test_var.SWITCH_IP
+        info("\n########## Creating Test Port  ##########\n")
         status_code, response = create_test_port(switch_ip)
         assert status_code == httplib.CREATED, "Port not created."\
             "Response %s" % response

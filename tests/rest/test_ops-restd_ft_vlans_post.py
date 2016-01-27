@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2015 Hewlett Packard Enterprise Development LP
+# Copyright (C) 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -131,6 +131,7 @@ class TestPostBasicVlan:
 
     def setup_class(cls):
         TestPostBasicVlan.test_var = CreateBasicVlan()
+        rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestPostBasicVlan.test_var.net.stop()
@@ -218,6 +219,7 @@ class TestPostVlanInvalidName:
 
     def setup_class(cls):
         TestPostVlanInvalidName.test_var = CreateVlanInvalidName()
+        rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestPostVlanInvalidName.test_var.net.stop()
@@ -305,6 +307,7 @@ class TestPostVlanInvalidId:
 
     def setup_class(cls):
         TestPostVlanInvalidId.test_var = CreateVlanInvalidId()
+        rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestPostVlanInvalidId.test_var.net.stop()
@@ -393,6 +396,7 @@ class TestPostVlanInvalidDescription:
     def setup_class(cls):
         TestPostVlanInvalidDescription.test_var = \
             CreateVlanInvalidDescription()
+        rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestPostVlanInvalidDescription.test_var.net.stop()
@@ -480,6 +484,7 @@ class TestPostVlanInvalidAdmin:
 
     def setup_class(cls):
         TestPostVlanInvalidAdmin.test_var = CreateVlanInvalidAdmin()
+        rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestPostVlanInvalidAdmin.test_var.net.stop()
@@ -568,6 +573,7 @@ class TestPostVlanInvalidOtherConfig:
     def setup_class(cls):
         TestPostVlanInvalidOtherConfig.test_var = \
             CreateVlanInvalidOtherConfig()
+        rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestPostVlanInvalidOtherConfig.test_var.net.stop()
@@ -656,6 +662,7 @@ class TestPostVlanInvalidExternalIds:
     def setup_class(cls):
         TestPostVlanInvalidExternalIds.test_var = \
             CreateVlanInvalidExternalIds()
+        rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestPostVlanInvalidExternalIds.test_var.net.stop()
@@ -736,6 +743,7 @@ class TestPostVlanMissingFields:
 
     def setup_class(cls):
         TestPostVlanMissingFields.test_var = CreateVlanMissingFields()
+        rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestPostVlanMissingFields.test_var.net.stop()
@@ -832,6 +840,7 @@ class TestPostDuplicated:
 
     def setup_class(cls):
         TestPostDuplicated.test_var = CreateVlanDuplicated()
+        rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestPostDuplicated.test_var.net.stop()

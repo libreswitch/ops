@@ -411,6 +411,7 @@ class Test_CreateUser:
 
     def setup_class(cls):
         Test_CreateUser.test_var = CreateUserTest()
+        rest_sanity_check(switch_ip)
 
     def teardown_class(cls):
         Test_CreateUser.test_var.net.stop()

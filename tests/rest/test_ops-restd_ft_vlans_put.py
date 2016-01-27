@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2015 Hewlett Packard Enterprise Development LP
+# Copyright (C) 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -126,7 +126,7 @@ class TestPutExistingVlan:
 
     def setup_class(cls):
         TestPutExistingVlan.test_var = UpdateExistingVlan()
-
+        rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestPutExistingVlan.test_var.vlan_path,
                          TestPutExistingVlan.test_var.switch_ip,
                          TestPutExistingVlan.test_var.vlan_name,
@@ -223,7 +223,7 @@ class TestPutVlanInvalidName:
 
     def setup_class(cls):
         TestPutVlanInvalidName.test_var = UpdateVlanInvalidName()
-
+        rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestPutVlanInvalidName.test_var.vlan_path,
                          TestPutVlanInvalidName.test_var.switch_ip,
                          TestPutVlanInvalidName.test_var.vlan_name,
@@ -320,7 +320,7 @@ class TestPutVlanInvalidId:
 
     def setup_class(cls):
         TestPutVlanInvalidId.test_var = UpdateVlanInvalidId()
-
+        rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestPutVlanInvalidId.test_var.vlan_path,
                          TestPutVlanInvalidId.test_var.switch_ip,
                          TestPutVlanInvalidId.test_var.vlan_name,
@@ -417,7 +417,7 @@ class TestPutVlanInvalidDescription:
 
     def setup_class(cls):
         TestPutVlanInvalidDescription.test_var = UpdateVlanInvalidDescription()
-
+        rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestPutVlanInvalidDescription.test_var.vlan_path,
                          TestPutVlanInvalidDescription.test_var.switch_ip,
                          TestPutVlanInvalidDescription.test_var.vlan_name,
@@ -514,7 +514,7 @@ class TestPutVlanInvalidAdmin:
 
     def setup_class(cls):
         TestPutVlanInvalidAdmin.test_var = UpdateVlanInvalidAdmin()
-
+        rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestPutVlanInvalidAdmin.test_var.vlan_path,
                          TestPutVlanInvalidAdmin.test_var.switch_ip,
                          TestPutVlanInvalidAdmin.test_var.vlan_name,
@@ -611,7 +611,7 @@ class TestPutVlanInvalidOtherConfig:
 
     def setup_class(cls):
         TestPutVlanInvalidOtherConfig.test_var = UpdateVlanInvalidOtherConfig()
-
+        rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestPutVlanInvalidOtherConfig.test_var.vlan_path,
                          TestPutVlanInvalidOtherConfig.test_var.switch_ip,
                          TestPutVlanInvalidOtherConfig.test_var.vlan_name,
@@ -708,7 +708,7 @@ class TestPutVlanInvalidExternalIds:
 
     def setup_class(cls):
         TestPutVlanInvalidExternalIds.test_var = UpdateVlanInvalidExternalIds()
-
+        rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestPutVlanInvalidExternalIds.test_var.vlan_path,
                          TestPutVlanInvalidExternalIds.test_var.switch_ip,
                          TestPutVlanInvalidExternalIds.test_var.vlan_name,
