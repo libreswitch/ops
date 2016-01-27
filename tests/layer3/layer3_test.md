@@ -425,97 +425,152 @@ Check ECMP load balancing distribution, inclusion/exclusion of various parameter
     |    |       |    <-----+       +----+
     | H1 <-------> D1 |
     |    |       |    <-----+       +----+
-    +----+       +---^+     |       |    |
-                     |      +-------> E3 |
-                     |              |    |
-                     |              +----+
-                     |
-                     |              +----+
-                     |              |    |
-                     +--------------> E4 |
+    +----+       +----+     |       |    |
+                            +-------> E3 |
                                     |    |
                                     +----+
     ```
-|Entity | IPv4 Address | IPv4 Route(s)               | IPv6 Address | IPv6 Route(s)
-|-------|--------------|-----------------------------|--------------|--------------
-|Host H1| 20.0.0.10/24 | 0.0.0.0/0 -> 20.0.0.1 (D1)  | 20::10/64    | 0::0/0 -> 20::1 (D1)
-|DUT D1 | 1.0.0.2/24   | 70.0.0.0/8 -> 1.0.0.1 (E1)  | 1::1/64      | 70::0/8 -> 1::1 (E1)
-|DUT D1 | 2.0.0.2/24   |               2.0.0.1 (E2)  | 2::2/64      |            2::1 (E2)
-|DUT D1 | 3.0.0.2/24   |               3.0.0.1 (E3)  | 3::2/64      |            3::1 (E3)
-|DUT D1 | 4.0.0.2/24   |               4.0.0.1 (E4)  | 4::2/64      |            4::1 (E4)
-|ECMP E1| 1.0.0.1/24   | none                        | 1::1/64      | none
-|ECMP E2| 2.0.0.1/24   | none                        | 2::1/64      | none
-|ECMP E3| 3.0.0.1/24   | none                        | 3::1/64      | none
-|ECMP E4| 4.0.0.1/24   | none                        | 4::1/64      | none
+#### IPv4
+|Entity | IPv4 Address | IPv4 Route(s)
+|-------|--------------|---------------------------
+|Host H1| 20.0.0.10/24 | 0.0.0.0/0 -> 20.0.0.1 (D1)
+|DUT D1 | 1.0.0.2/24   | 70.0.0.0/24-> 1.0.0.1 (E1)
+|DUT D1 | 2.0.0.2/24   |               2.0.0.1 (E2)
+|DUT D1 | 3.0.0.2/24   |               3.0.0.1 (E3)
+|ECMP E1| 1.0.0.1/24   | 20.0.0.0/24-> 1.0.0.2 (D1)
+|ECMP E2| 2.0.0.1/24   | 20.0.0.0/24-> 2.0.0.2 (D1)
+|ECMP E3| 3.0.0.1/24   | 20.0.0.0/24-> 3.0.0.2 (D1)
 
+#### IPv6
+|Entity | IPv6 Address | IPv6 Route(s)
+|-------|--------------|--------------
+|Host H1| 20::10/64    | 0::0/0 -> 20::1 (D1)
+|DUT D1 | 1001::1/64   | 70::0/64 -> 1001::1 (E1)
+|DUT D1 | 1002::2/64   |             1002::1 (E2)
+|DUT D1 | 1003::2/64   |             1003::1 (E3)
+|ECMP E1| 1001::1/64   | 20::0/64 -> 1001::2 (D1)
+|ECMP E2| 1002::1/64   | 20::0/64 -> 1002::2 (D1)
+|ECMP E3| 1003::1/64   | 20::0/64 -> 1003::2 (D1)
 
 ### Description
-1. Assign IPv4 and IPv6 address to interfaces on the host, switch and ECMP next hops.
-1. Configure a route (R1) on the switch with multiple nexthops corresponding to the ECMP next hops.
-1. On the host, listen for ICMP responses on the interface connected to the switch.
-1. On the host, generate L4 packets destined for route R1, varying the packets' L3 and L4 information. Send one packet at a time.
-1. Examine ICMP response packets' source IP information.
+1. Verify ECMP and hashing by all fields are enabled `show ip ecmp`.
+1. Assign IPv4 and IPv6 address to interfaces on the host, switch and ECMP
+   next hops.
+1. Configure a route (R1) on the switch with multiple nexthops corresponding
+   to the ECMP next hops.
+1. On each nexthop listen for inbound traffic on the interface connected to the
+   switch.
+1. On the host, generate L4 packets destined for route R1, varying the packet
+   L3 and L4 information. Send one packet at a time.
+1. Examine packets received at the next hops for source and destination.
 
 ### Test Result Criteria
 #### Test Pass Criteria
-- Source IP in the ICMP response packets should be distributed evenly among the nexthops if the original outbound packets' L3 and L4 information is sufficiently varied.
-- Source IP in the ICMP response packets should be from a single nexthop for packets with the same L3 and L4 source and destination information.
+- Source IP in the packets should be distributed evenly among
+  the nexthops if the original outbound packet L3 and L4 information is
+  sufficiently varied.
+- Packets with a given set of source and destination L3 and L4 information
+  should arrive at one and only one nexthop.
 
 #### Test Fail Criteria
-- Source IP in the ICMP response packets are all from a single nexthop.
-- No ICMP response packets are received.
+- Packets are dropped.
+- Packets are seen by only one next hop.
+- Packets with a given set of source and destination L3 and L4 information
+  are distributed among multiple nexthops.
 
 ### Variation: Hashing Fields
 Repeat the above setup and procedure with the following changes:
+
 1. Generate packets such that all packets differ only in L3 source information.
-1. Send these packets with default settings and verify traffic is distributed among nexthops.
-1. Disable L3 source hashing.
-1. Send the same packets again and verify all traffic is routed to a single next hop.
+1. Send these packets with default settings and verify traffic is distributed
+   among nexthops.
+1. Disable L3 source hashing `ip ecmp load-blance src-ip disable`.
+1. Use `show ip ecmp` to verify L3 source hashing is disabled.
+1. Send the same packets again and verify all traffic is routed to a single
+   next hop.
+1. Re-enable L3 source hashing `no ip ecmp load-blance src-ip disable`.
 1. Repeat with L3 destination, L4 source, and L4 destination.
+
+### Variation: Disable ECMP
+Repeat the above setup and procedure with the following changes:
+
+1. Generate packets such that all packets differ in L3/L4 fields.
+1. Send these packets with default settings and verify traffic is distributed
+   among nexthops.
+1. Disable ECMP entirely `ip ecmp disable`.
+1. Use `show ip ecmp` to verify ECMP is disabled.
+1. Send the same packets again and verify all traffic is routed to a single
+   next hop.
+1. Re-enable ECMP `no ip ecmp disable`.
 
 ### Test Result Criteria
 #### Test Pass Criteria
-- Source IP in the ICMP response packets should be distributed evenly among the nexthops with default settings.
-- Source IP in the ICMP response packets should be from a single nexthop when the varying hash parameter is disabled.
+- Packets should be distributed evenly among the nexthops with default settings.
+- Packets should be seen by a single nexthop when the varying hash parameter
+  is disabled.
 
 #### Test Fail Criteria
-- Source IP in the ICMP response packets are all from a single nexthop in the default case.
-- Source IP in the ICMP response packets are distrubuted when the varying hash parameter is disabled.
-- No ICMP response packets are received.
+- Packets are all seen by a single nexthop in the default case.
+- Packets are distrubuted when the varying hash parameter is disabled.
+- Packets are dropped.
 
 ### Objective
 Check resilient ECMP.
 
 ### Requirements
 - Physical switch/workstations test setup
-- **FT File**: `ops/tests/test_layer3_ft_ecmp_routing.py` (L3 ECMP Routing)
+- **FT File**: `ops/tests/test_layer3_ft_ecmp_resilient.py` (Resilient ECMP)
+- **FT File**: `ops/tests/test_layer3_ft_ecmp_resilient_ipv6.py` (IPv6
+  Resilient ECMP)
 
 ### Setup
 #### Topology Diagram
 Same as above
 
 ### Description
-1. Assign IPv4 and IPv6 address to interfaces on the host, switch and ECMP next hops.
-1. Configure a route (R1) on the switch with multiple nexthops corresponding to the ECMP next hops.
-1. On the host, listen for ICMP responses on the interface connected to the switch.
-1. On the host, generate multiple streams of packets destined for route R1 where each packet within a stream has the same source and destination L3 and L4 information.
-1. Examine ICMP response packets' source IP information.
-1. Disable one of the nexthops.
-1. Generate new streams of packets destined for route R1.
-1. Re-enable one of the nexthops.
-1. Generate new streams of packets destined for route R1.
+1. Assign IPv4 and IPv6 address to interfaces on the host, switch and
+   ECMP next hops.
+1. Configure a route (R1) on the switch with multiple nexthops corresponding
+   to the ECMP next hops.
+1. On the next hops, listen for packets on the interface connected to the switch.
+1. On the host, generate a stream of packets destined for route R1
+   where each packet within a stream has the same source and destination
+   L3 and L4 information.
+1. Note which nexthop is selected (N1)
+#### Case 1: Disable an un-selected nexthop
+1. Disable one of the other nexthops (N2).
+1. Generate a new stream of packets destined for route R1.
+#### Case 2: Re-enabled un-selected nexthop.
+1. Re-enable nexthop N2.
+1. Generate a new stream of packets destined for route R1.
+#### Case 3: Disable the selected nexthop.
+1. Disable nexthop N1.
+1. Generate a new stream of packets destined for route R1.
+#### Case 4: Re-enable the selected nexthop.
+1. Re-enable nexthop N1.
+1. Generate a new stream of packets destined for route R1.
+
 
 ### Test Result Criteria
 #### Test Pass Criteria
-- Source IP in the ICMP response packets should be distributed evenly among the nexthops.
-- Source IP in the ICMP response for each stream should remain the same throughout for each nexthop that is not added or removed.
-- Source IP in the ICMP response for the stream destined for the nexthop that is removed should change to another nexthop and then should not change.
-- Source IP in the ICMP response for the new streams (after the nexthop is re-added) should be distributed among all ECMP members.
+- In each case, packets should arrive at one and only one nexthop.
+- In Case 1, traffic *must not* shift to another nexthop.
+- In Case 2, traffic _may_ shift to another nexthop depending on the hardware
+  implementation [1], but should still select one and only one nexthop.
+- In Case 3, traffic *must* shift to one and only one nexthop.
+- In Case 4, traffic _may_ shift to another nexthop depending on the hardware
+  implementation [1], but should still select one and only one nexthop.
+
+[1] In some implementations, removing a nexthop will not shift traffic, because
+entries in the ECMP group corresponding to the lost nexthop are simply
+overwritten with new values. In the case of _adding_ a nexthop, however,
+existing entries are overwritten or the ECMP group table size is increased,
+which can cause traffic to shift due to overwiting entries or a larger modulus
+for hash operations.
 
 #### Test Fail Criteria
-- Source IP in the ICMP response packets for all streams are all from a single nexthop.
-- Source IP in the ICMP response packets associated with a single stream vary.
-- No ICMP response packets are received
+- Packets associated with a single stream arrive at multiple nexthops.
+- Packets are dropped.
 
 ## LAG Fastpath
 ### Objective
