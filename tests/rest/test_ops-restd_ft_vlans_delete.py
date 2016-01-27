@@ -187,6 +187,9 @@ class DeleteExistentVlan(OpsVsiTest):
              "##########\n" % self.vlan_path)
 
 
+@pytest.mark.skipif(True, reason="Disabling this testcase "
+                                 "due to this dependencies on"
+                                 " L2 vlan behaviour changes")
 class TestDeleteExistentVlan:
     def setup(self):
         pass
