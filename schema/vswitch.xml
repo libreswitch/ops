@@ -1255,16 +1255,16 @@
       </column>
    </group>
   </table>
-  <table name="Filter_List" title="Filter List">
-    <group title="IP AS Path filter List Configuration">
+  <table name="BGP_ASPath_Filter" title="BGP ASPath Filter">
+    <group title="IP AS Path Filter List Configuration">
       <column name="name">
-        Name of the filter list.
+        Name of the as-path filter.
       </column>
-      <column name="action">
-        Action to either "permit" or "deny".
+      <column name="permit">
+        Permitted POSIX regular expressions.
       </column>
-      <column name="match">
-      Specify POSIX regex expression to match.
+      <column name="deny">
+        Denied POSIX regular expressions.
       </column>
     </group>
   </table>
@@ -1311,16 +1311,16 @@
       </column>
    </group>
   </table>
-  <table name="Community_Filter" title="Community Filter">
+  <table name="BGP_Community_Filter" title="BGP Community Filter">
    <group title="Global Community and Extended Community Configuration">
      <column name="name">
        Name of the list.
      </column>
-     <column name="match">
-       Regular expression.
+     <column name="permit">
+       Permitted POSIX regular expressions.
      </column>
-     <column name="action">
-       There are two types, either "permit" or "deny".
+     <column name="deny">
+       Denied POSIX regular expressions.
      </column>
      <column name="type">
        There are two types, either "extcommunity-list" or "community-list".
@@ -1778,16 +1778,16 @@
       BGP per neighbor timers - Connect timer/Keep-alive Interval.
       </column>
 
-      <column name="filter_lists">
-      Name and direction of the filter lists.
+      <column name="aspath_filters">
+      Name and direction of the as-path filters.
       </column>
 
-      <column name="filter_lists" key="in">
-      Filter list associated with incoming routes.
+      <column name="aspath_filters" key="in">
+      AS Path filter associated with incoming routes.
       </column>
 
-      <column name="filter_lists" key="out">
-      Filter list associated with outbound routes.
+      <column name="aspath_filters" key="out">
+      AS Path filter associated with outbound routes.
       </column>
 
       <column name="prefix_lists">

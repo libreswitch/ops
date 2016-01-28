@@ -938,7 +938,7 @@
         }
       }
     },
-    "Filter_List": {
+    "BGP_ASPath_Filter": {
       "columns": {
         "name": {
           "category": "configuration",
@@ -949,28 +949,26 @@
             }
           }
         },
-        "action": {
-          "category": "configuration",
-          "type": {
-           "key": {
-              "type": "string",
-              "enum": [
-                "set",
-                [
-                  "permit",
-                  "deny"
-                ]
-              ]
-            }
-          }
-        },
-        "match": {
+        "permit": {
           "category": "configuration",
           "type": {
             "key": {
               "type": "string",
               "maxLength": 80
-            }
+            },
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "deny": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": "unlimited"
           }
         }
       },
@@ -1116,7 +1114,7 @@
         }
       }
     },
-    "Community_Filter" : {
+    "BGP_Community_Filter" : {
       "columns" : {
         "name": {
           "category": "configuration",
@@ -1127,30 +1125,26 @@
             }
           }
         },
-        "match": {
+        "permit": {
           "category": "configuration",
           "type": {
             "key": {
-             "type": "string",
+              "type": "string",
               "maxLength": 80
             },
             "min": 0,
-            "max": 1
+            "max": "unlimited"
           }
         },
-        "action": {
+        "deny": {
           "category": "configuration",
           "type": {
-           "key": {
+            "key": {
               "type": "string",
-              "enum": [
-                "set",
-                [
-                  "permit",
-                  "deny"
-                ]
-              ]
-            }
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": "unlimited"
           }
         },
         "type": {
@@ -1169,6 +1163,11 @@
           }
         }
       },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
       "isRoot": true
     },
     "Route": {
@@ -1831,7 +1830,7 @@
           },
           "ephemeral": true
         },
-        "filter_lists": {
+        "aspath_filters": {
           "category": "configuration",
           "relationship": "reference",
           "type": {
@@ -1847,7 +1846,7 @@
             },
             "value": {
               "type": "uuid",
-              "refTable": "Filter_List"
+              "refTable": "BGP_ASPath_Filter"
             },
             "min": 0,
             "max": 2
