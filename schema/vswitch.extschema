@@ -3764,6 +3764,54 @@
           },
           "ephemeral": true
         },
+        "queue_tx_bytes": {
+          "category": "statistics",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "value": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true
+        },
+        "queue_tx_packets": {
+          "category": "statistics",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "value": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true
+        },
+        "queue_tx_errors": {
+          "category": "statistics",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "value": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true
+        },
         "lldp_statistics": {
           "category": "statistics",
           "type": {

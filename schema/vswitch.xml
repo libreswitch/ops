@@ -3653,6 +3653,17 @@
           Number of lldp TLVs discarded because of unknown tlv.
         </column>
       </group>
+      <group title="Statistics: Interface Queue Transmit Statistics">
+        <column name="queue_tx_bytes" keyname="queue_number">
+          For each outbound queue, a count of the queue's total bytes transmitted.
+        </column>
+        <column name="queue_tx_packets" keyname="queue_number">
+          For each outbound queue, a count of the queue's total packets transmitted.
+        </column>
+        <column name="queue_tx_errors" keyname="queue_number">
+          For each outbound queue, a count of the queue's total transmit errors or drops.
+        </column>
+      </group>
     </group>
 
     <group title="Bonding Configuration">
