@@ -41,7 +41,7 @@ Admin user.
 
 #### Examples
 ```
-s1(config)#ntp server time.microsoft.com key 10 version 4
+s1(config)#ntp server time.apple.com key 10 version 4
 s1(config)#no ntp server 192.0.1.1
 ```
 
@@ -92,8 +92,8 @@ Admin user.
 
 #### Examples
 ```
-s1(config)#ntp authentication-key 1 md5 myPassword
-s1(config)#no ntp authentication-key 1
+s1(config)#ntp authentication-key 10 md5 myPassword
+s1(config)#no ntp authentication-key 10
 ```
 
 ### ntp trusted-key
@@ -114,13 +114,12 @@ Admin user.
 | Parameter | Status   | Syntax |	Description          |
 |-----------|----------|----------------------|
 | *key-id* | Required | 1-65534 | The key used while communicating with the server. |
-| password | Required | 8-16 chars | The MD5 password. |
 | **no** | Optional | Literal | Destroys the perviously created NTP authentication key. |
 
 #### Examples
 ```
-s1(config)#ntp authentication-key 1 md5 myPassword
-s1(config)#no ntp authentication-key 1
+s1(config)#ntp trusted-key 10
+s1(config)#no ntp trusted-key 10
 ```
 
 ## Display commands
@@ -148,7 +147,7 @@ s1(config)#show ntp associations
   ID             NAME           REMOTE  VER  KEYID           REF-ID  ST  T  LAST  POLL  REACH  DELAY  OFFSET  JITTER
 --------------------------------------------------------------------------------------------------------------------
    1        192.0.1.1        192.0.1.1    3      -           .INIT.   -  -     -     -      -      -       -       -
-*  2   time.apple.com   174.37.238.179    4     11                -   2  U    10    64      0  0.121   0.000   0.000
+*  2   time.apple.com     17.253.2.253    4     10           .GPSs.   2  U    10    64      0  0.121   0.994   0.001
 --------------------------------------------------------------------------------------------------------------------
 ```
 
@@ -164,11 +163,11 @@ REF_ID       : Reference ID for the remote server (Can be an IP address)
 Stratum (ST) : Number of hops between the client and the reference clock.
 TYPE (T)     : Transmission Type - U Unicast/manycast; B Broadcast; M Multicast; L Local; b bcast/mcast; S Symm_peer; m manycast
 LAST         : Poll interval since the last packet was received (seconds unless unit is provided).
-POLL         : Interval between NTP poll packets. Maximum (1024) reached as server and client syncs.
+POLL         : Interval (in seconds) between NTP poll packets. Maximum (1024) reached as server and client syncs.
 REACH        : Octal number that displays status of last eight NTP messages (377 - all messages received).
-DELAY        : Round trip delay of packets to the selected reference clock.
-OFFSET       : Difference between local clock and reference clock.
-JITTER       : Maximum error of local clock relative to the reference clock.
+DELAY        : Round trip delay (in milliseconds) of packets to the selected reference clock.
+OFFSET       : Provides Root Mean Square time (in milliseconds) between this local host and the remote peer or server.
+JITTER       : Maximum error (in milliseconds) of local clock relative to the reference clock.
 ```
 
 #### Key for the Tally code
@@ -201,6 +200,13 @@ Admin user.
 No parameters.
 
 #### Examples
+When the system has not been synced:
+```
+s1(config)#show ntp status
+NTP is enabled.
+NTP authentication is enabled.
+```
+When the system has been synced to a NTP server:
 ```
 s1(config)#show ntp status
 NTP is enabled.
@@ -292,4 +298,16 @@ Declined-pkts        0
 Restricted-pkts      0
 Rate-limited-pkts    0
 KoD-pkts             0
+```
+Legend:
+```
+Rx-pkts: Total NTP packets received.
+Cur Ver Rx-pkts: Number of NTP packets that match the current NTP version.
+Old Ver Rx-pkts: Number of NTP packets that match the previous NTP version.
+Error pkts: Packets dropped due to all other error reasons.
+Auth-failed pkts: Packets dropped due to authentication failure.
+Declined pkts: Packets denied access for any reason.
+Restricted pkts: Packets dropped due to NTP access control.
+Rate-limited pkts: Number of packets discarded due to rate limitation.
+KOD pkts: Number of Kiss of Death packets.
 ```
