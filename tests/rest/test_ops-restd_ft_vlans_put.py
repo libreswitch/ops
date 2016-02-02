@@ -117,7 +117,6 @@ class UpdateExistingVlan(OpsVsiTest):
              "##########\n" % self.vlan_path)
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPutExistingVlan:
     def setup(self):
         pass
@@ -215,7 +214,6 @@ class UpdateVlanInvalidName(OpsVsiTest):
              "##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPutVlanInvalidName:
     def setup(self):
         pass
@@ -313,7 +311,6 @@ class UpdateVlanInvalidId(OpsVsiTest):
              "##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPutVlanInvalidId:
     def setup(self):
         pass
@@ -411,7 +408,6 @@ class UpdateVlanInvalidDescription(OpsVsiTest):
              "DONE ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPutVlanInvalidDescription:
     def setup(self):
         pass
@@ -509,7 +505,6 @@ class UpdateVlanInvalidAdmin(OpsVsiTest):
              "##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPutVlanInvalidAdmin:
     def setup(self):
         pass
@@ -607,7 +602,6 @@ class UpdateVlanInvalidOtherConfig(OpsVsiTest):
              "value DONE ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPutVlanInvalidOtherConfig:
     def setup(self):
         pass
@@ -705,7 +699,6 @@ class UpdateVlanInvalidExternalIds(OpsVsiTest):
              "DONE ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPutVlanInvalidExternalIds:
     def setup(self):
         pass

@@ -122,7 +122,6 @@ class CreateBasicVlan(OpsVsiTest):
         info("########## Executing POST to /system/bridges DONE ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPostBasicVlan:
     def setup(self):
         pass
@@ -211,7 +210,6 @@ class CreateVlanInvalidName(OpsVsiTest):
              "DONE ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPostVlanInvalidName:
     def setup(self):
         pass
@@ -300,7 +298,6 @@ class CreateVlanInvalidId(OpsVsiTest):
              "##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPostVlanInvalidId:
     def setup(self):
         pass
@@ -389,7 +386,6 @@ class CreateVlanInvalidDescription(OpsVsiTest):
              "DONE ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPostVlanInvalidDescription:
     def setup(self):
         pass
@@ -479,7 +475,6 @@ class CreateVlanInvalidAdmin(OpsVsiTest):
              "DONE ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPostVlanInvalidAdmin:
     def setup(self):
         pass
@@ -568,7 +563,6 @@ class CreateVlanInvalidOtherConfig(OpsVsiTest):
              "DONE ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPostVlanInvalidOtherConfig:
     def setup(self):
         pass
@@ -658,7 +652,6 @@ class CreateVlanInvalidExternalIds(OpsVsiTest):
              "DONE ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPostVlanInvalidExternalIds:
     def setup(self):
         pass
@@ -741,7 +734,6 @@ class CreateVlanMissingFields(OpsVsiTest):
              "##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPostVlanMissingFields:
     def setup(self):
         pass
@@ -839,7 +831,6 @@ class CreateVlanDuplicated(OpsVsiTest):
              "##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestPostDuplicated:
     def setup(self):
         pass

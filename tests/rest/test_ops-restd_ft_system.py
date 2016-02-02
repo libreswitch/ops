@@ -218,7 +218,7 @@ class systemTest(OpsVsiTest):
 
         info("\n########## Finished executing PUT request on %s ##########\n" % self.PATH)
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
+
 class Test_system:
     def setup (self):
         pass

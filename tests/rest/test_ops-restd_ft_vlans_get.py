@@ -89,7 +89,6 @@ class QueryDefaultBridgeNormal(OpsVsiTest):
         info("########## Executing GET to /system/bridges DONE ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestGetDefaultBridgeNormal:
     def setup(self):
         pass
@@ -103,79 +102,6 @@ class TestGetDefaultBridgeNormal:
 
     def teardown_class(cls):
         TestGetDefaultBridgeNormal.test_var.net.stop()
-
-    def setup_method(self, method):
-        pass
-
-    def teardown_method(self, method):
-        pass
-
-    def __del__(self):
-        del self.test_var
-
-    def test_run(self):
-        self.test_var.test()
-
-
-###############################################################################
-#                                                                             #
-#   No VLANs Associated to bridge_normal by default                           #
-#                                                                             #
-###############################################################################
-class QueryNoVlansAssociated(OpsVsiTest):
-    def setupNet(self):
-        self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
-                                       sws=NUM_OF_SWITCHES,
-                                       hopts=self.getHostOpts(),
-                                       sopts=self.getSwitchOpts()),
-                           switch=VsiOpenSwitch,
-                           host=None,
-                           link=None,
-                           controller=None,
-                           build=True)
-
-        self.path = "/rest/v1/system/bridges/"
-        self.switch_ip = get_switch_ip(self.net.switches[0])
-
-    def test(self):
-        path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
-
-        info("\n########## Executing GET to /system/bridges/{id}/vlans "
-             "(No VLANs added) ##########\n")
-        info("Testing path: %s\n" % path)
-
-        response_status, response_data = execute_request(path,
-                                                         "GET",
-                                                         None,
-                                                         self.switch_ip)
-
-        assert response_status == httplib.OK, \
-            "Response status received: %s\n" % response_status
-        info("Response status received: %s\n" % response_status)
-
-        assert json.loads(response_data) == []
-        info("Response data received: %s\n" % response_data)
-
-        info("########## Executing GET to /system/bridges/{id}/vlans "
-             "(No VLANs added) DONE ##########\n")
-
-
-@pytest.mark.skipif(True, reason="Disabling this testcase "
-                                 "due to this dependencies on"
-                                 " L2 vlan behaviour changes")
-class TestGetNoVlansAssociated:
-    def setup(self):
-        pass
-
-    def teardown(self):
-        pass
-
-    def setup_class(cls):
-        TestGetNoVlansAssociated.test_var = QueryNoVlansAssociated()
-        rest_sanity_check(cls.test_var.switch_ip)
-
-    def teardown_class(cls):
-        TestGetNoVlansAssociated.test_var.net.stop()
 
     def setup_method(self, method):
         pass
@@ -214,7 +140,7 @@ class QueryVlansAssociated(OpsVsiTest):
         self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
 
     def test(self):
-        expected_data = ["%s/%s" % (self.vlan_path, self.vlan_name)]
+        expected_data = "%s/%s" % (self.vlan_path, self.vlan_name)
         path = self.vlan_path
 
         info("\n########## Executing GET to /system/bridges/{id}/vlans "
@@ -230,7 +156,7 @@ class QueryVlansAssociated(OpsVsiTest):
             "Response status received: %s\n" % response_status
         info("Response status received: %s\n" % response_status)
 
-        assert json.loads(response_data) == expected_data, \
+        assert expected_data in json.loads(response_data) , \
             "Response data received: %s\n" % response_data
         info("Response data received: %s" % response_data)
 
@@ -238,9 +164,6 @@ class QueryVlansAssociated(OpsVsiTest):
              "(VLAN added) DONE ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling this testcase "
-                                 "due to this dependencies on"
-                                 " L2 vlan behaviour changes")
 class TestGetVlansAssociated:
     def setup(self):
         pass
@@ -328,7 +251,6 @@ class QueryVlanByName(OpsVsiTest):
              "DONE ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestGetVlanByName:
     def setup(self):
         pass
@@ -406,7 +328,6 @@ class QueryNonExistentVlanByName(OpsVsiTest):
              "DONE ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestGetNonExistentVlan:
     def setup(self):
         pass

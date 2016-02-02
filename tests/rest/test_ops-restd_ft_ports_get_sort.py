@@ -574,7 +574,6 @@ class QuerySortPortTest (OpsVsiTest):
         info("\n########## End Port Sort Tests Descending Order ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class Test_QuerySortPort:
 
     def setup(self):

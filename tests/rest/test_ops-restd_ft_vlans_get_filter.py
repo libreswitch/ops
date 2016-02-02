@@ -97,7 +97,7 @@ class FilterVlanTestByName (OpsVsiTest):
 
         info("\n########## Test Filter name  ##########\n")
 
-        for i in range(1, NUM_FAKE_VLANS + 1):
+        for i in range(2, NUM_FAKE_VLANS + 2):
             test_vlan = "Vlan-%s" % i
             path = "%s?depth=1;%s=%s" % (self.path, test_field, test_vlan)
 
@@ -115,7 +115,6 @@ class FilterVlanTestByName (OpsVsiTest):
         info("########## End Test Filter name ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestGetFilterVlanByName:
     def setup(self):
         pass
@@ -126,7 +125,7 @@ class TestGetFilterVlanByName:
     def setup_class(cls):
         TestGetFilterVlanByName.test_var = FilterVlanTestByName()
         rest_sanity_check(cls.test_var.switch_ip)
-        for i in range(1, NUM_FAKE_VLANS+1):
+        for i in range(2, NUM_FAKE_VLANS + 2):
             create_fake_vlan(TestGetFilterVlanByName.test_var.path,
                              TestGetFilterVlanByName.test_var.switch_ip,
                              "Vlan-%s" % i,
@@ -173,7 +172,7 @@ class FilterVlanById (OpsVsiTest):
 
         info("\n########## Test Filter id  ##########\n")
 
-        for i in range(1, NUM_FAKE_VLANS + 1):
+        for i in range(2, NUM_FAKE_VLANS + 2):
             path = "%s?depth=1;%s=%s" % (self.path, test_field, i)
 
             request_response = validate_request(self.switch_ip,
@@ -190,9 +189,6 @@ class FilterVlanById (OpsVsiTest):
         info("########## End Test Filter id ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling this testcase "
-                                 "due to this dependencies on"
-                                 " L2 vlan behaviour changes")
 class TestGetFilterVlanById:
     def setup(self):
         pass
@@ -203,7 +199,7 @@ class TestGetFilterVlanById:
     def setup_class(cls):
         TestGetFilterVlanById.test_var = FilterVlanById()
         rest_sanity_check(cls.test_var.switch_ip)
-        for i in range(1, NUM_FAKE_VLANS+1):
+        for i in range(2, NUM_FAKE_VLANS + 2):
             create_fake_vlan(TestGetFilterVlanById.test_var.path,
                              TestGetFilterVlanById.test_var.switch_ip,
                              "Vlan-%s" % i,
@@ -246,7 +242,7 @@ class FilterVlanByDescription (OpsVsiTest):
         self.path = "/rest/v1/system/bridges/bridge_normal/vlans/"
 
     def test(self):
-        test_vlans = ["Vlan-1", "Vlan-2", "Vlan-3", "Vlan-4", "Vlan-5"]
+        test_vlans = ["Vlan-2", "Vlan-3", "Vlan-4", "Vlan-5", "Vlan-6"]
         test_field = "description"
         test_old_value = "test_vlan"
         test_new_value = "fake_vlan"
@@ -306,7 +302,6 @@ class FilterVlanByDescription (OpsVsiTest):
         info("########## End Filter description ##########\n")
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class TestGetFilterVlanByDescription:
     def setup(self):
         pass
@@ -317,7 +312,7 @@ class TestGetFilterVlanByDescription:
     def setup_class(cls):
         TestGetFilterVlanByDescription.test_var = FilterVlanByDescription()
         rest_sanity_check(cls.test_var.switch_ip)
-        for i in range(1, NUM_FAKE_VLANS+1):
+        for i in range(2, NUM_FAKE_VLANS + 2):
             create_fake_vlan(TestGetFilterVlanByDescription.test_var.path,
                              TestGetFilterVlanByDescription.test_var.switch_ip,
                              "Vlan-%s" % i,
@@ -360,13 +355,14 @@ class FilterVlanByAdmin (OpsVsiTest):
         self.path = "/rest/v1/system/bridges/bridge_normal/vlans/"
 
     def test(self):
-        test_vlans = ["Vlan-1", "Vlan-2", "Vlan-3", "Vlan-4", "Vlan-5"]
+        test_vlans = ["Vlan-2", "Vlan-3", "Vlan-4", "Vlan-5", "Vlan-6"]
         test_field = "admin"
         test_old_value = "up"
         test_new_value = "down"
 
         updated_vlans = len(test_vlans)
-        other_vlans = NUM_FAKE_VLANS - updated_vlans
+        # DEFAULT_VLAN_1 is set to admin=up
+        other_vlans = NUM_FAKE_VLANS - updated_vlans + 1
 
         info("\n########## Test Filter Admin ##########\n")
 
@@ -424,9 +420,6 @@ class FilterVlanByAdmin (OpsVsiTest):
             create_fake_vlan(self.path, self.switch_ip, "Vlan-%s" % i, i)
 
 
-@pytest.mark.skipif(True, reason="Disabling this testcase "
-                                 "due to this dependencies on"
-                                 " L2 vlan behaviour changes")
 class TestGetFilterVlanByAdmin:
     def setup(self):
         pass
@@ -437,7 +430,7 @@ class TestGetFilterVlanByAdmin:
     def setup_class(cls):
         TestGetFilterVlanByAdmin.test_var = FilterVlanByAdmin()
         rest_sanity_check(cls.test_var.switch_ip)
-        for i in range(1, NUM_FAKE_VLANS+1):
+        for i in range(2, NUM_FAKE_VLANS + 2):
             create_fake_vlan(TestGetFilterVlanByAdmin.test_var.path,
                              TestGetFilterVlanByAdmin.test_var.switch_ip,
                              "Vlan-%s" % i,
