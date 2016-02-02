@@ -700,6 +700,12 @@
         If radius=true, radius based authentication is enabled. By default
         authentication is local.
       </column>
+      <column name="aaa" key="radius_auth"
+        type='{"type": "string", "enum": ["set", ["pap", "chap"]]}'>
+        Specifies encoding to be used for the user password for radius
+        based authentication.
+        By default <code>pap</code> is used.
+      </column>
       <column name="aaa" key="fallback" type='{"type": "string"}'>
         This column used for AAA feature. The valid values for the key 'fallback'
         are true or false based on the user request for authentication. If
