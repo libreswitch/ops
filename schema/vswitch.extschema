@@ -226,6 +226,15 @@
             "max": "unlimited"
           }
         },
+        "qos_status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
         "qos_dscp_map_entries": {
           "category": "configuration",
           "relationship": "1:m",
@@ -248,6 +257,30 @@
             },
             "min": 0,
             "max": 8
+          }
+        },
+        "q_profile": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Q_Profile"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "qos": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "QoS"
+            },
+            "min": 0,
+            "max": 1
           }
         },
         "other_config": {
@@ -3570,6 +3603,39 @@
             "max": "unlimited"
           }
         },
+        "q_profile": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Q_Profile"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "qos": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "QoS"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "qos_status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
         "ospf_intervals": {
           "category": "configuration",
           "type": {
@@ -5351,7 +5417,8 @@
               "minInteger": 0,
               "maxInteger": 63
             }
-          }
+          },
+          "mutable": false
         },
         "local_priority": {
           "category": "configuration",
@@ -5359,7 +5426,7 @@
             "key": {
               "type": "integer",
               "minInteger": 0,
-              "maxInteger": 7
+              "maxInteger": 4294967295
             }
           }
         },
@@ -5396,6 +5463,34 @@
             "min": 0,
             "max": 1
           }
+        },
+        "hw_defaults": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "mutable": false
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
         }
       },
       "indexes": [
@@ -5415,7 +5510,8 @@
               "minInteger": 0,
               "maxInteger": 7
             }
-          }
+          },
+          "mutable": false
         },
         "local_priority": {
           "category": "configuration",
@@ -5423,7 +5519,7 @@
             "key": {
               "type": "integer",
               "minInteger": 0,
-              "maxInteger": 7
+              "maxInteger": 4294967295
             }
           }
         },
@@ -5448,6 +5544,34 @@
             "min": 0,
             "max": 1
           }
+        },
+        "hw_defaults": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "mutable": false
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
         }
       },
       "indexes": [
@@ -5456,6 +5580,250 @@
         ]
       ],
       "maxRows": 8
+    },
+    "Q_Profile": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          "mutable": false
+        },
+        "q_profile_entries": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Q_Profile_Entry"
+            },
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+       "hw_default":{
+         "category":"status",
+         "type":{
+           "key":{
+             "type":"boolean"
+           },
+           "min":0,
+           "max":1
+           },
+          "mutable": false
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true
+    },
+    "Q_Profile_Entry": {
+      "columns": {
+        "local_priorities": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "description": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+       "hw_default":{
+         "category":"status",
+         "type":{
+           "key":{
+             "type":"boolean"
+           },
+           "min":0,
+           "max":1
+           },
+          "mutable": false
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        }
+      }
+    },
+    "QoS": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          "mutable": false
+        },
+        "queues": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Queue"
+            },
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+       "hw_default":{
+         "category":"status",
+         "type":{
+           "key":{
+             "type":"boolean"
+           },
+           "min":0,
+           "max":1
+           },
+          "mutable": false
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true
+    },
+    "Queue": {
+      "columns": {
+        "algorithm": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": ["set", ["strict", "wrr"] ]
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "weight": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+       "hw_default":{
+         "category":"status",
+         "type":{
+           "key":{
+             "type":"boolean"
+           },
+           "min":0,
+           "max":1
+           },
+          "mutable": false
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        }
+      }
     },
     "NTP_Association": {
       "columns": {

@@ -53,8 +53,7 @@ PORT_DATA = {
         "ospf_if_type": "ospf_iftype_broadcast",
         "ospf_intervals": {"transmit_delay": 1},
         "ospf_mtu_ignore": False,
-        "ospf_priority": 0,
-        "qos_config": {"qos_trust": "none"}
+        "ospf_priority": 0
     },
     "referenced_by": [{"uri": "/rest/v1/system/bridges/bridge_normal"}]
 }

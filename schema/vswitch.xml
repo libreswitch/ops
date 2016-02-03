@@ -935,22 +935,81 @@
         <column name="qos_config" key="qos_trust"
                 type='{"type": "string",
                        "enum": ["set", ["none", "cos", "dscp"]]}'>
-          Specifies the global default QoS Trust Mode. A value of 'none' will
-          not trust any packet code point fields, and remark all of them to 0.
-          A value of 'cos' will trust the 802.1Q priority code point and
-          preserve DSCP or IP-ToS. A value of 'dscp' will trust DSCP, and
-          optionally remark the 802.1Q priority code point to match. If the
-          key is not specified, then the system will use the factory default
-          value: 'none'.
+          <p>
+          Specifies the QoS Trust Mode for ports that do not specify their own
+          Trust Mode (see <ref table="Port"/> qos_config column).
+          </p><p><code>none</code> -
+          no fields are inspected on arriving packets.  The initial
+          local-priority and color meta-data values are taken from PCP 0 entry
+          of the COS Map table (see <ref table="QoS_COS_Map_Entry"/>).
+          </p><p><code>cos</code> -
+          will use the PCP of the outermost 802.1 VLAN tag to index the COS
+          Map entry to initialize the local-priority and color meta-data
+          values of the packet.  For untagged packets, the initial
+          local-priority and color meta-data values are taken from PCP 0 entry
+          of the COS Map table (see <ref table="QoS_COS_Map_Entry"/>).
+          </p><p><code>dscp</code> -
+          will use the DSCP value of IP packets to index the DSCP
+          Map entry to initialize the local-priority and color meta-data
+          values of the packet.  For non-IP packets, what meta-data values are
+          assigned is hardware dependent.
+          </p><p>
+          If the key is not specified, then the system will use 'none'.
+          </p>
         </column>
         <column name="qos_dscp_map_entries">
           Contains references to each entry in the global DSCP map used by
-          port trust mode DSCP.
+          port trust mode DSCP. (see <ref table="QoS_DSCP_Map_Entry"/>)
         </column>
         <column name="qos_cos_map_entries">
           Contains references to each entry in the global COS map used by
-          port trust mode COS.
+          port trust mode COS. (see <ref table="QoS_DSCP_Map_Entry"/>)
         </column>
+        <column name="q_profile">
+          Specifies the queue profile for ports that do not specify their own
+          queue profile (see <ref table="Port"/> q_profile column).
+          When missing, the <ref table="Q_Profile"/> row with
+          <ref column="hw_default"/> true will be used.
+        </column>
+        <column name="qos">
+          Specifies the schedule profile for ports that do not specify their own
+          schedule profile (see <ref table="Port"/> qos column).
+          When missing, the <ref table="QoS"/> row with
+          <ref column="hw_default"/> true will be used.
+        </column>
+    </group>
+
+    <group title="QoS Status">
+      <column name="qos_status">
+        Key-value pairs that report the Quality of Service status in hardware
+        for ports that do not specify their own configuration.
+      </column>
+      <column name="qos_status" key="queue_profile">
+        <p>
+        This key's value contains the <ref table="Q_Profile"/>
+        <ref column="name"/> that is currently operating in hardware for
+        ports that do not specify their own queue profile configuration.
+        </p>
+        <p>
+        The value may be different than the name in <ref column="q_profile"/>
+        when that queue profile cannot be supported in hardware.  In this case,
+        this key's value is the name of the last successfully configured
+        system queue profile.
+        </p>
+      </column>
+      <column name="qos_status" key="schedule_profile">
+        <p>
+        This key's value contains the <ref table="QoS"/>
+        <ref column="name"/> that is currently operating in hardware for
+        ports that do not specify their own queue profile configuration.
+        </p>
+        <p>
+        The value may be different than the name in <ref column="qos"/>
+        when that schedule profile cannot be supported in hardware.  In this
+        case, this key's value may be the name of the last successfully
+        configured system schedule profile.
+        </p>
+      </column>
     </group>
 
     <group title="Common Columns">
@@ -2419,6 +2478,32 @@
         Used for customer documentation.
       </column>
     </group>
+
+    <group title="Hardware Default">
+      The key-value pairs document the hardware defaults for configuration
+      columns in this row.
+      <column name="hw_defaults" key="default_local_priority">
+        When missing, the default local_priority is obtained from the
+        <ref column="hw_defaults"/> of the <ref table="QoS_COS_Map_Entry"/> row
+        indexed by the top 3-bits of this row's code_point (i.e. class selector
+        bits cs0 through cs7).
+      </column>
+      <column name="hw_defaults" key="default_color">
+        When missing, the default is 'green'.
+      </column>
+      <column name="hw_defaults" key="default_priority_code_point">
+        When missing, the default is not to remark packets' 802.1Q priority.
+      </column>
+    </group>
+
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+    </group>
   </table>
 
   <table name="QoS_COS_Map_Entry"
@@ -2445,6 +2530,224 @@
       </column>
       <column name="description">
         Used for customer documentation.
+      </column>
+    </group>
+
+    <group title="Hardware Default">
+      The key-value pairs document the hardware defaults for configuration
+      columns in this row.
+      <column name="hw_defaults" key="default_local_priority">
+        When missing, the default is the 802.1Q (Annex I) Traffic Type
+        assignment for this row's Priority Code Point:
+        <ul>
+        <li>code_point 0 (Traffic Type BE) local_priority=1</li>
+        <li>code_point 1 (Traffic Type BK) local_priority=0</li>
+        <li>code_point 2 (Traffic Type EE) local_priority=2</li>
+        <li>code_point 3 (Traffic Type CA) local_priority=3</li>
+        <li>code_point 4 (Traffic Type VI) local_priority=4</li>
+        <li>code_point 5 (Traffic Type VO) local_priority=5</li>
+        <li>code_point 6 (Traffic Type IC) local_priority=6</li>
+        <li>code_point 7 (Traffic Type NC) local_priority=7</li>
+        </ul>
+      </column>
+      <column name="hw_defaults" key="default_color">
+        When missing, the default is 'green'.
+      </column>
+    </group>
+
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+    </group>
+  </table>
+
+  <table name="QoS"
+         title="Quality of Service Schedule Profile">
+    <p>
+        Used to specify named profiles of scheduling configuration.
+        Ports use a schedule profile to configure their packet queue servicing
+        behavior.
+    </p>
+    <group title="Configuration">
+      <column name="name">
+        There must be a user-defined name of the schedule profile.
+      </column>
+      <column name="queues" keyname="queue_number">
+        <p>
+        Schedule parameters for individual queues.
+        </p>
+        <p>
+        Queues are numbered in *priority order*, with zero being
+        the lowest priority.  The maximum number of queues is hardware
+        dependent.
+        </p>
+      </column>
+    </group>
+
+    <group title="Hardware Default">
+      <column name="hw_default">
+        <p>
+        When true, this row signifies the hardware default schedule profile.
+        </p>
+        <p>
+        Default schedule profile is "Strict Priority" when any of the following
+        occur:
+        <ul>
+        <li>No row in this table has hw_default true</li>
+        <li>More than one row in this table has hw_default true</li>
+        <li>Any <ref table="Queue"/> rows referenced do not have
+            their hw_default true</li>
+        </ul>
+        </p>
+      </column>
+    </group>
+
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+    </group>
+  </table>
+
+  <table name="Queue"
+         title="Queue Schedule Parameters">
+    <p>
+        Contains scheduling parameters for one queue of one profile.
+    </p>
+
+    <group title="Configuration">
+      <column name="algorithm">
+        <p>
+        This parameter selects the scheduling behavior of the queue:
+        </p><p><code>strict</code> -
+        Strict Priority will service all packets in the queue before any
+        packets in lower numbered queues as long as there are no packets
+        in any higher number queue.
+        </p><p><code>wrr</code> -
+        (Deficit) Weight Round Robin will apportion available bandwidth
+        amongst all non-empty wrr queues in relation to their queue weights.
+        </p>
+        <p>
+        If this parameter is missing, it is assumed to be 'strict'.
+        </p>
+      </column>
+      <column name="weight">
+        The weight value for this queue.
+        The maximum weight is hardware dependent.
+      </column>
+    </group>
+
+    <group title="Hardware Default">
+      <column name="hw_default">
+        When true, this row contains the hardware default schedule profile
+        parameters for this queue.
+      </column>
+    </group>
+
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+    </group>
+  </table>
+
+  <table name="Q_Profile"
+         title="Quality of Service Queue Profile">
+    <p>
+        Used to specify named profiles of queue configuration.
+        Ports use a queue profile to configure their packet queue settings.
+    </p>
+
+    <group title="Configuration">
+      <column name="name">
+        There must be a user-defined name of the schedule profile.
+      </column>
+      <column name="q_profile_entries" keyname="queue_number">
+        <p>
+        Configuration parameters for individual queues.
+        </p>
+        <p>
+        Queues are numbered in *priority order*, with zero being
+        the lowest priority.  The maximum number of queues is hardware
+        dependent.
+        </p>
+      </column>
+    </group>
+
+    <group title="Hardware Default">
+      <column name="hw_default">
+        <p>
+        When true, this row contains the hardware default queue profile.
+        </p>
+        <p>
+        The default queue profile will be 8 queues when any of the following
+        conditions occur:
+        <ul>
+        <li>No row in this table has hw_default true</li>
+        <li>More than one row in this table has hw_default true</li>
+        <li>Any <ref table="Q_Profile_Entry"/> rows referenced do not have
+            their hw_default true</li>
+        </ul>
+        </p>
+      </column>
+    </group>
+
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+    </group>
+  </table>
+
+  <table name="Q_Profile_Entry"
+         title="Q Profile Entry">
+    <p>
+        Contains configuration parameters for one queue of one profile.
+    </p>
+
+    <group title="Configuration">
+      <column name="local_priorities">
+        <p>
+        This essential parameter specifies one or more local-priority(s)
+        that are assigned to this queue.  Packets' local-priority meta-data
+        is initially assigned by the port's QoS Trust Mode  (see
+        <ref table="Port"/> qos_config).  If missing, the queue is not used.
+        </p>
+      </column>
+      <column name="description">
+        Used for documentation of these queue configuration parameters.
+      </column>
+    </group>
+
+    <group title="Hardware Default">
+      <column name="hw_default">
+        When true, this row contains the hardware default queue profile
+        parameters for this queue.
+      </column>
+    </group>
+
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
       </column>
     </group>
   </table>
@@ -2515,14 +2818,61 @@
         <column name="qos_config" key="qos_trust"
                 type='{"type": "string",
                        "enum": ["set", ["none", "cos", "dscp"]]}'>
-          Specifies the port QoS Trust Mode. A value of 'none' will
-          not trust any packet code point fields, and remark all of them to 0.
-          A value of 'cos' will trust the 802.1Q priority code point and
-          preserve DSCP or IP-ToS. A value of 'dscp' will trust DSCP, and
-          optionally remark the 802.1Q priority code point to match. If the
-          key is not specified, then the configured global default value will
-          be used.
+          <p>
+          Specifies the individual port QoS Trust Mode.
+          </p><p><code>none</code> -
+          no fields are inspected on arriving packets.  The initial
+          local-priority and color meta-data values are taken from PCP 0 entry
+          of the COS Map table (see <ref table="QoS_COS_Map_Entry"/>).
+          </p><p><code>cos</code> -
+          will use the PCP of the outermost 802.1 VLAN tag to index the COS
+          Map entry to initialize the local-priority and color meta-data
+          values of the packet.  For untagged packets, the initial
+          local-priority and color meta-data values are taken from code_point 0
+          entry of the COS Map table (see <ref table="QoS_COS_Map_Entry"/>).
+          </p><p><code>dscp</code> -
+          will use the DSCP value of IP packets to index the DSCP
+          Map entry to initialize the local-priority and color meta-data
+          values of the packet.  For non-IP packets, what meta-data values are
+          assigned is hardware dependent.
+          </p><p>
+          If the key is not specified, then the qos_trust value in the
+          <ref table="System"/> table will be used.
+          </p>
         </column>
+        <column name="qos_config" key="cos_override"
+              type='{"type": "integer", "minInteger": 0, "maxInteger": 7}'>
+          Specifies the port COS override to use. If the key is not specified,
+          then no override will be enabled.
+        </column>
+        <column name="qos_config" key="dscp_override"
+              type='{"type": "integer", "minInteger": 0, "maxInteger": 63}'>
+          Specifies the port DSCP override to use. If the key is not specified,
+          then no override will be enabled.
+        </column>
+        <column name="q_profile">
+          References queue profile for this port.
+          If this is unspecified, then the queue profile referenced in
+          <ref table="System"/>) table q_profile will be used.
+        </column>
+        <column name="qos">
+          References schedule profile for this port.
+          If this is unspecified, then the schedule profile referenced in
+          <ref table="System"/>) table qos will be used.
+        </column>
+    </group>
+
+    <group title="QoS Status">
+      <column name="qos_status" key="queue_profile">
+      Contains the name of the queue profile that is operating in hardware.
+      This may different than the name in <ref column="q_profile"/> when
+      that profile cannot be supported in hardware.
+      </column>
+      <column name="qos_status" key="schedule_profile">
+      Contains the name of the schedule profile that is operating in hardware.
+      This may different than the name in <ref column="qos"/> when
+      that profile cannot be supported in hardware.
+      </column>
     </group>
 
     <group title="VLAN Configuration">
