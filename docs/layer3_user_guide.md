@@ -22,7 +22,7 @@ ops-as5712(config-if)# end
 ops-as5712#
 ```
 ### VLAN Interfaces
-To achieve interVLAN routing, VLAN interfaces are created. VLAN interfaces are configured similar to physical interfaces. In addition to configuring IPv4 or IPv6 addresses, these interfaces are associated with a VLAN. The VLAN ID is part of the name of the vlan interface being configured.
+To achieve interVLAN routing, VLAN interfaces are created. VLAN interfaces are configured similar to physical interfaces. In addition to configuring IPv4 or IPv6 addresses, these interfaces are associated with a VLAN. The VLAN ID is part of the name of the VLAN interface being configured.
 
 To configure a VLAN interface for VLAN ID 100:
 
@@ -59,6 +59,19 @@ Interface 1 is up
             0 input error                0 dropped
             0 collision
 
+ops-as5712# show ip interface
+
+Interface 1 is up
+ Admin state is up
+ Hardware: Ethernet, MAC Address: 70:72:cf:77:06:df
+ IPv4 address: 192.168.1.1/24
+ MTU 0
+ RX
+          ucast: 10 packets, 750 bytes
+          mcast: 0 packets, 0 bytes
+ TX
+          ucast: 10 packets, 750 bytes
+          mcast: 0 packets, 0 bytes
 
 ops-as5712# show interface brief
 
@@ -138,7 +151,7 @@ To disable ECMP on OpenSwitch:
 ops-as5712# configure terminal
 ops-as5712(config)# ip ecmp disable
 ```
-To re-enable ECMP
+To re-enable ECMP:
 ```
 ops-as5712# configure terminal
 ops-as5712(config)# no ip ecmp disable
@@ -202,7 +215,7 @@ Destination Port   : Enabled
 ```
 
 ## Internal VLAN Management
-Every layer3 interface is associated with a unique VLAN ID. By default, OpenSwitch uses VLAN IDs from the range 1024-4094 for this purpose. However this range is configurable. The order in which the VLAN IDs are used in this range is also be specified using "ascending" or "descending" in the CLI
+Every layer3 interface is associated with a unique VLAN ID. By default, OpenSwitch uses VLAN IDs from the range 1024-4094 for this purpose. However, this range is configurable. The order in which the VLAN IDs are used in this range is also be specified using "ascending" or "descending" in the CLI.
 To configure the VLAN range for internal use:
 ```
 ops-as5712# configure terminal
