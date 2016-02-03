@@ -964,6 +964,7 @@ class PatchSystemTest(OpsVsiTest):
         info(TEST_END % test_title)
 
 
+@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class Test_PatchSystem:
     def setup(self):
         pass
