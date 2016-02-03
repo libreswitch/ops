@@ -30,7 +30,7 @@
 This command is used to select the type of authentication for accessing the switch
 #### Syntax
 ```
-aaa authentication login <local | radius>
+aaa authentication login <local | radius [auth-type <pap | chap>]>
 ```
 #### Description
 This command enables local authentication or RADIUS authentication. By default local authentication is enabled.
@@ -38,15 +38,18 @@ This command enables local authentication or RADIUS authentication. By default l
 Admin
 #### Parameters
 
-| Parameter | Status   | Syntax |	Description |
-|-----------|----------|----------------------|
-| **local** | Required | Literal | Local authentication |
-| **radius** | Required | Literal | RADIUS authentication |
+| Parameter  | Status   | Syntax  |      Description               |
+|------------|----------|------------------------------------------|
+| **local**  | Required | Literal | Enable local authentication. |
+| **radius** | Required | Literal | Enable RADIUS authentication. |
+| **chap**   | Optional | Literal | Use CHAP with RADIUS authentication. |
+| **pap**    | Optional | Literal | Use PAP with RADIUS authentication. |
 
 #### Examples
 ```
     (config)# aaa authentication login local
     (config)# aaa authentication login radius
+    (config)# aaa authentication login radius auth-type chap
 ```
 ### aaa authentication login fallback error local
 This command is used to enable or disable fallback to local authentication.
@@ -264,6 +267,13 @@ N/A
     AAA Authentication
      Local authentication                  : Enabled
      Radius authentication                 : Disabled
+     Fallback to local authentication      : Enabled
+
+    switch# show aaa authentication
+    AAA Authentication
+     Local authentication                  : Disabled
+     Radius authentication                 : Enabled
+     Radius authentication type            : CHAP
      Fallback to local authentication      : Enabled
 ```
 ### show radius-server
