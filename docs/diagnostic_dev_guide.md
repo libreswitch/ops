@@ -55,7 +55,7 @@ Add dependancy ```"DEPENDS = ops-supportability" in bbscript of respective daemo
 
 #### Header file
 include diag_dump.h in .c file.
-```ditta
+```ditaa
 #include  <diag_dump.h>
 ```
 #### Init function
@@ -64,7 +64,7 @@ eg., ```INIT_DIAG_DUMP_BASIC(lldpd_diag_dump_basic_cb);```
 
 #### Example of a callback function definition
 
-```ditta
+```ditaa
 static void lldpd_diag_dump_basic_cb(const char *feature , char **buf)
 {
     if (!buf)
@@ -83,7 +83,7 @@ static void lldpd_diag_dump_basic_cb(const char *feature , char **buf)
 ```
 #### Example for lldpd daemon
 
-```ditta
+```ditaa
 BB Script: yocto/openswitch/meta-distro-openswitch/recipes-ops/l2/ops-lldpd.bb
 DEPENDS = "ops-utils ops-config-yaml ops-ovsdb libevent openssl ops-supportability"
 
@@ -108,7 +108,7 @@ INIT_DIAG_DUMP_BASIC(lldpd_diag_dump_basic_cb);
 
 static void lldpd_diag_dump_basic_cb(const char *feature , char **buf)
 {
-    if (!buf && !*buf)
+    if (!buf)
         return;
     *buf =  xcalloc(1,BUF_LEN);
     if (*buf) {
@@ -129,7 +129,7 @@ static void lldpd_diag_dump_basic_cb(const char *feature , char **buf)
 ## YAML configuration
 Add a new enty for daemon on switch or add this entry in ops-supportability repo.
 /etc/openswitch/supportability/ops_diagdump.yaml
-```ditta
+```ditaa
   -
     feature_name: "lldp"
     feature_desc: "Link Layer Discovery Protocol"
