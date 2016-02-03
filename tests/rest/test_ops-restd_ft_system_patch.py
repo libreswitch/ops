@@ -69,8 +69,7 @@ class PatchSystemTest(OpsVsiTest):
         test_title = "using \"op\": \"add\" with a new value"
         info(TEST_START % test_title)
         data = ["1.1.1.1"]
-        patch = [{"op": "remove", "path": "/dns_servers"},
-                 {"op": "add", "path": "/dns_servers", "value": data}]
+        patch = [{"op": "add", "path": "/dns_servers", "value": data}]
         # 1 - Query Resource
         response, response_data = execute_request(self.path, "GET", None,
                                                   self.switch_ip, True)
@@ -121,8 +120,7 @@ class PatchSystemTest(OpsVsiTest):
         info(TEST_START % test_title)
         # 1 - Query Resource
         data = ["1.2.3.4"]
-        patch = [{"op": "remove", "path": "/dns_servers"},
-                 {"op": "add", "path": "/dns_servers", "value": ["1.1.1.1"]},
+        patch = [{"op": "add", "path": "/dns_servers", "value": ["1.1.1.1"]},
                  {"op": "add", "path": "/dns_servers", "value": data}]
         response, response_data = execute_request(self.path, "GET", None,
                                                   self.switch_ip, True)
@@ -172,8 +170,7 @@ class PatchSystemTest(OpsVsiTest):
         info(TEST_START % test_title)
         # 1 - Query Resource
         data = ["1.1.1.1", "1.2.3.4"]
-        patch = [{"op": "remove", "path": "/dns_servers"},
-                 {"op": "add", "path": "/dns_servers", "value": ["1.1.1.1"]},
+        patch = [{"op": "add", "path": "/dns_servers", "value": ["1.1.1.1"]},
                  {"op": "add", "path": "/dns_servers/1", "value": "1.2.3.4"}]
         response, response_data = execute_request(self.path, "GET", None,
                                                   self.switch_ip, True)
@@ -224,7 +221,8 @@ class PatchSystemTest(OpsVsiTest):
         info(TEST_START % test_title)
         # 1 - Query Resource
         data = {"baz": "qux"}
-        patch = [{"op": "add", "path": "/other_config/foo", "value": "bar"}]
+        patch = [{"op": "add", "path": "/other_config", "value": {}},
+                 {"op": "add", "path": "/other_config/foo", "value": "bar"}]
         status_code, response_data = execute_request(self.path, "PATCH",
                                                      json.dumps(patch),
                                                      self.switch_ip)
@@ -256,8 +254,8 @@ class PatchSystemTest(OpsVsiTest):
         post_patch_data = self.check_malformed_json(response_data)
         post_patch_data = post_patch_data['configuration']['other_config']
 
-        assert data["baz"] == post_patch_data["baz"], "Configuration data is not "\
-            "equal that posted data"
+        assert data["baz"] == post_patch_data["baz"], \
+            "Configuration data is not equal that posted data"
         post_patch_etag = response.getheader("Etag")
         assert etag != post_patch_etag, "Etag should not be the same"
         info("### Configuration data validated %s ###\n" % post_patch_data)
@@ -310,7 +308,8 @@ class PatchSystemTest(OpsVsiTest):
         test_title = "using \"op\": \"add\" with a new value for boolean field"
         info(TEST_START % test_title)
         data = "true"
-        patch = [{"op": "add", "path": "/other_config/enable-statistics",
+        patch = [{"op": "add", "path": "/other_config", "value": {}},
+                 {"op": "add", "path": "/other_config/enable-statistics",
                  "value": data}]
         # 1 - Query Resource
         response, response_data = execute_request(self.path, "GET", None,
@@ -361,7 +360,8 @@ class PatchSystemTest(OpsVsiTest):
         test_title = "using \"op\": \"add\" multiple fields"
         info(TEST_START % test_title)
         data = ["true", ["1.1.1.1"], "bar"]
-        patch = [{"op": "add", "path": "/other_config/enable-statistics",
+        patch = [{"op": "add", "path": "/other_config", "value": {}},
+                 {"op": "add", "path": "/other_config/enable-statistics",
                  "value": data[0]},
                  {"op": "add", "path": "/dns_servers", "value": data[1]},
                  {"op": "add", "path": "/other_config/foo", "value": data[2]}]
@@ -393,8 +393,8 @@ class PatchSystemTest(OpsVsiTest):
         post_patch_data = self.check_malformed_json(response_data)
         post_patch_data = post_patch_data['configuration']
 
-        assert post_patch_data["other_config"]["enable-statistics"] == data[0],\
-            "Configuration data is not equal that posted data"
+        assert post_patch_data["other_config"]["enable-statistics"] == \
+            data[0], "Configuration data is not equal that posted data"
         assert post_patch_data["dns_servers"] == data[1],\
             "Configuration data is not equal that posted data"
         assert post_patch_data["other_config"]["foo"] == data[2],\
@@ -517,7 +517,8 @@ class PatchSystemTest(OpsVsiTest):
         test_title = "using \"op\": \"copy\" for existent value"
         info(TEST_START % test_title)
         data = "this is a test"
-        patch = [{"op": "add", "path": "/other_config/foo", "value": data}]
+        patch = [{"op": "add", "path": "/other_config", "value": {}},
+                 {"op": "add", "path": "/other_config/foo", "value": data}]
         patch_test = [{"op": "copy", "from": "/other_config/foo",
                        "path": "/other_config/copy_of_foo"}]
         # 1 - Query Resource
@@ -620,7 +621,8 @@ class PatchSystemTest(OpsVsiTest):
         test_title = "using \"op\": \"move\" for existent value"
         info(TEST_START % test_title)
         data = "1.1.1.1"
-        patch = [{"op": "add", "path": "/other_config/servers", "value": data}]
+        patch = [{"op": "add", "path": "/other_config", "value": {}},
+                 {"op": "add", "path": "/other_config/servers", "value": data}]
         patch_test = [{"op": "move", "from": "/other_config/servers",
                        "path": "/other_config/dns_servers"}]
         # 1 - Query Resource
@@ -723,7 +725,8 @@ class PatchSystemTest(OpsVsiTest):
         test_title = "using \"op\": \"move\" value to invalid path"
         info(TEST_START % test_title)
         data = "this is a test"
-        patch = [{"op": "add", "path": "/other_config/abc", "value": data}]
+        patch = [{"op": "add", "path": "/other_config", "value": {}},
+                 {"op": "add", "path": "/other_config/abc", "value": data}]
         patch_test = [{"op": "move", "from": "/other_config/abc",
                        "path": "/other_config/abc/def"}]
         # 1 - Query Resource
@@ -785,7 +788,8 @@ class PatchSystemTest(OpsVsiTest):
         info(TEST_START % test_title)
         data = "foo"
         patch_data = "bar"
-        patch = [{"op": "add", "path": "/other_config/test", "value": data}]
+        patch = [{"op": "add", "path": "/other_config", "value": {}},
+                 {"op": "add", "path": "/other_config/test", "value": data}]
         patch_test = [{"op": "replace", "path": "/other_config/test",
                        "value": patch_data}]
         # 1 - Query Resource
@@ -851,7 +855,8 @@ class PatchSystemTest(OpsVsiTest):
         info(TEST_START % test_title)
         data = "foo"
         patch_data = "bar"
-        patch = [{"op": "add", "path": "/other_config/test", "value": data}]
+        patch = [{"op": "add", "path": "/other_config", "value": {}},
+                 {"op": "add", "path": "/other_config/test", "value": data}]
         patch_test = [{"op": "replace",
                        "path": "/other_config/non_existent_field",
                        "value": patch_data}]
@@ -913,7 +918,8 @@ class PatchSystemTest(OpsVsiTest):
         test_title = "using \"op\": \"remove\" for existent value"
         info(TEST_START % test_title)
         data = "foo"
-        patch = [{"op": "add", "path": "/other_config/test", "value": data}]
+        patch = [{"op": "add", "path": "/other_config", "value": {}},
+                 {"op": "add", "path": "/other_config/test", "value": data}]
         patch_test = [{"op": "remove", "path": "/other_config/test"}]
         # 1 - Query Resource
         response, response_data = execute_request(self.path, "GET", None,
@@ -958,13 +964,17 @@ class PatchSystemTest(OpsVsiTest):
 
         assert etag != post_patch_etag, "Etag should not be the same"
 
-        assert post_patch_data["configuration"]["other_config"] == {},\
-            "Something went wrong when removing the data"
+        # If "test" was the last value in other_config,
+        # GET will not return the column at all if removed
+        if "other_config" in post_patch_data["configuration"]:
+            assert "test" not in \
+                post_patch_data["configuration"]["other_config"], \
+                "Something went wrong when removing the data"
+
         info("### Configuration data validated %s ###\n" % post_patch_data)
         info(TEST_END % test_title)
 
 
-@pytest.mark.skipif(True, reason="Disabling until bug fix for 127 is merged into ops-restd")
 class Test_PatchSystem:
     def setup(self):
         pass
