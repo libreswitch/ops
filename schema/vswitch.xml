@@ -946,8 +946,6 @@
 
   <table name="Subsystem" title="system board, daughter card, line card, etc.">
     <group title="Configuration">
-      <column name="interfaces">
-      </column>
       <column name="leds">
       </column>
       <column name="fans">
@@ -960,6 +958,9 @@
       </column>
     </group>
     <group title="Hardware Configuration">
+      <column name="interfaces">
+        References to the interfaces which are part of this subsystem.
+      </column>
       <column name="next_mac_address">
         Next available (unused) Ethernet MAC address from the MAC address pool
         for this subsystem.

@@ -435,7 +435,7 @@
           }
         },
         "interfaces": {
-          "category": "configuration",
+          "category": "status",
           "relationship": "reference",
           "type": {
             "key": {
