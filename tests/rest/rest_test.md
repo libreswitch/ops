@@ -6277,7 +6277,7 @@ A `412 Precondition Failed` HTTP response.
 
 This test fails when the HTTP response is not equal to `412 Precondition Failed`.
 
-##  Declarative configuration schema validations
+## Declarative configuration schema validations
 ### Objective
 The test case verifies that the schema validations for the declarative configuration including incorrect data type, out of range, missing mandatory field, and invalid reference checking prevents invalid configurations from reaching the database.
 
@@ -6402,7 +6402,7 @@ The test case is considered passing if the PUT request using the valid data is s
 #### Test fail criteria
 The test is considered failing if the PUT request using the invalid data is successful. A successful response indicates that the schema validations did not detect errors in the data.
 
-##  Custom validators
+## Custom validators
 ### Objective
 This test case verifies that the custom validation framework invokes an implemented custom validator upon a POST request and also returns any issues.
 
