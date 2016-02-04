@@ -196,6 +196,25 @@
         </p>
       </column>
 
+      <column name="other_config" key="banner">
+        <p>
+            Banner to be displayed on CLI start. Maximum length 4095.
+        </p>
+
+        <p>
+            No banner by default.
+        </p>
+      </column>
+
+      <column name="other_config" key="banner_exec">
+        <p>
+            Banner to be displayed on CLI login. Maximum length 4095.
+        </p>
+
+        <p>
+            No banner by default.
+        </p>
+      </column>
 
       <group title="TFTP Server Configurations">
         <column name="other_config" key="tftp_server_enable"
