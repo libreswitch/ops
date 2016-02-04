@@ -992,7 +992,7 @@ To test that a previously configured static link aggregation does not stop forwa
 
 ## Modify number of static LAG members upper limits
 ### Objective ###
-To verify it is possible to modify a LAG’s upper limits.
+To verify it is possible to modify a LAG's upper limits.
 ### Requirements
 The requirements for this test case are:
 
