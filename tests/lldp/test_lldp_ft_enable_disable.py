@@ -31,7 +31,6 @@ topoDict = {"topoExecution": 1000,
 
 
 def lldp_enable_disable(**kwargs):
-    pytest.skip("Disable lldp tests to enable gate while gate failures are under investigation")
     device1 = kwargs.get('device1', None)
     device2 = kwargs.get('device2', None)
 
@@ -339,7 +338,7 @@ def lldp_enable_disable(**kwargs):
 
 
 @pytest.mark.timeout(1000)
-@pytest.mark.skipif(True, reason="Disable lldp tests to enable gate while gate failures are under investigation")
+@pytest.mark.skipif(True, reason="Skipping temporarily to debug build failure")
 class Test_lldp_configuration:
     def setup_class(cls):
         # Test object will parse command line and formulate the env
