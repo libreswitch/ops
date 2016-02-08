@@ -2411,6 +2411,11 @@
         Determines whether sflow sampling is enabled on this port.
         Default is true.
       </column>
+      <column name="other_config" key="proxy_arp_enabled" type='{"type": "boolean"}'>
+        Enables proxy ARP feature on the interface.
+        Default is false. Port should be part of VRF in order for the feature
+        to be active.
+      </column>
    </group>
 
     <group title="Port Status">
