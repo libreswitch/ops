@@ -1,81 +1,108 @@
-Web User Interface
-==================
 OpenSwitch Web User Interface (UI)
+==================
+
+#Contents
+- [Overview](#overview)
+- [Accesing Web UI](#accesing-web-ui)
+- [Screens](#screens)
+	- [Login](#login)
+	- [Overview](#overview)
+		- [System](#system)
+		- [Hardware](#hardware)
+		- [Features](#features)
+		- [Traffic](#traffic)
+		- [Logs](#logs)
+	- [Interfaces](#interfaces)
+	- [VLANs](#vlans)
+	- [LAGs](#lags)
+	- [ECMP](#ecmp)
+	- [Logs](#logs)
+	- [Quick Guides](#quick-guides)
+	- [Links](#links)
+		- [REST API](#rest-api)
+		- [OpenSwitch.net](#openswitchnet)
+
 
 # Overview
-The OpenSwitch web UI provides an easy-to-see visual representation displaying the state of the switch.  Easy to use view and configuration screens help the user understand and configure complex features.
+The OpenSwitch web UI provides an easy-to-see visual representation displaying the state of the switch. Easy to use view and configuration screens help the user to understand and configure complex features.
 
 # Accesing Web UI
-To access the web UI, bring up a browser (Chrome preferred) and enter the IP address of the switch management interface.
+To access the web UI, bring up a web browser (Google Chrome preferred) and enter the IP address of the switch management interface.
 
 # Screens
 
 
-##Login
-When accessing the switch web UI, the first screen that appears is the login screen.  The login is tied to a user account that has been added to the switch via the CLI `useradd` command.
+## Login
+When accessing the switch web UI, the first screen that appears is the login screen. The login is tied to a user account that has been added to the switch via the CLI `useradd` command.
 
-##General
-
-###Overview
+## Overview
 The Overview screen displays important information and statistics about the switch.
 
-####Information
-The information panel includes the product name, vendor, version, ONIE version, and base MAC address.   Also listed in the information panel are status indicators for fans (including the total number of fans in parentheses).  The power supplies status shows different states:
-- OK
-- Input Fault (power supply present but not plugged in)
-- Output Fault (power supply present and plugged in, but there is a voltage issue)
-- Absent (power supply not present).
+### System
+The system panel includes information about the switch, such as:
+- the product name
+- serial number
+- vendor
+- version
+- base MAC address
 
-####Temperatures
-The temperature sensors displays the various sensors.  On initial release, the AS5712 has 3 sensors - front, back, and side.
+### Hardware
+The hardware panel shows the status of:
+- the power supplies
+- temperatures
+- fans
 
-####CPU Load
-The CPU Load gauge displays the current load average on the switch.  This is similar to the `uptime` command in Linux.  Clicking the graph icon at the top of the gauge takes you to the System Monitor screen, displaying details about that gauge.
+### Features
+The features panel includes:
+- a listing of the switch features and their current state (enabled or disabled)
+- number of VLANs configured on the switch
+- number of interfaces on the switch
+- the maximum transmission unit (MTU)
 
-####Memory
-The Memory gauge displays the amount of memory being used by the switch.  Clicking the graph icon at the top of the gauge takes you to the System Monitor screen, displaying details about that gauge.
+### Traffic
+The traffic panel displays the ports with the top utilization (transmit or receive). The list automatically sorts, moving the port with the top utliization percentage to the top. Clicking the graph icon at the top of the gauge takes you to the Interfaces Monitor screen, displaying details for the top interface.
 
-####Storage
-The Storage gauge displays the amount of disk space used by the switch.
+### Logs
+The logs panel displays the last system log messages.
 
-####Top Interface Utilization
-The Top Interface Utilization panel displays the ports with the top utilization (transmite or receive).  The list automatically sorts, moving the port with the top utliization percentage to the top.  Clicking the graph icon at the top of the gauge takes you to the Interfaces Monitor screen, displaying details for the top interface.
+## Interfaces
+The interface screen displays the box graphic of the switch, interface table with search option.
+On clicking any row in the interface table/click on any port on the box graphic should shoot out interface details panel. This interface details panel has information about that interface, LLDP Port and Statistics.
 
-###System Monitor
-The System Monitor screen displays live, updating graphs for CPU Load, Memory, and Temperature.
+This interface details panel has general information about the interface configuration and statistics. In addition, LLDP neighbor information and statistics are provided. The information in the interface details panel can be used to help understand the interface configuration and health as well as provide troubleshooting information via the LLDP "map" of directly connected devices.
 
-###Management Interface
-The Management Interface screen displays the current settings for the Management Interface.  This includes the name, typically `eth0` and Mode `dhcp` or `static`.  If the mode is `static`, the remaining IPv4/IPv6 information displays (address, subnet mask, and gateway).
+There are two options on the top-right corner of the interface details panel, a pencil icon (edit) and close (X). On clicking the edit/ pencil icon on the top-right corner of the interface details panel, a window slides out from the right where you can change the Admin State “up” and “down” for that particular interface. The X icon is used to close the interface details panel.
 
-##Interfaces
+## VLANs
 
-###Management
-The Interface Management screen displays a graphical view of the switch, along with the list of interfaces.  The box graphic displays the status of the interface for each port.  A green checkmark means the interface is enabled and there is a link.  A red X means that Admin is disabled, and a yellow X means there is no link.  The interface list includes the following:
-- Name
-- Admin State
-- Link State
-- Duplex
-- Speed
-- Connector
-- Vendor (of the connector).
+## LAGs
 
-###Monitor
-The Interface Monitor screen displays a live graph of Rx utilization, Tx utilization, Dropped bytes and Error bytes.  The port being viewed can be changed by clicking the **Select Port** dropdown.  The live graph can be paused and resumed, and the various items being graphed can be turned on or off by clicking the area chart icon next to the statistic type at the top of the graph.
+## ECMP
+The ECMP screen shows ECMP (Equal Cost Multi-Path) status and various load balancing configurations:
 
-Clicking the line chart icon for each of these statistics changes the graph to a bar chart of just the selected statistic type.
+- **Status:** Determines whether ECMP is enabled in the system. Default is true
 
-###LAG
-The LAG screen displays Link Aggregate Group (i.e. trunk) information configured on the switch.  The top list shows the list of configured LAGs. Clicking one of the LAGs displays the interface information for that LAG in the lower list.
+- **Source IP:** Determines whether the source IP participates in the ECMP hash calculation. Default is true.
 
-##VLANs
+- **Source Port:**  Determines whether the source TCP/UDP port participates in the ECMP hash calculation. Default is true.
 
-###Management
-The VLAN Management screen displays all VLANs configured on the switch, as well as the ports that are part of the VLANs. Clicking the checkbox for a VLAN displays the port membership for that VLAN on the box graphic. Up to 4 VLANs can be selected at the same time.
+- **Destination IP:** Determines whether the destination IP participates in the ECMP hash calculation. Default is true.
 
-##Links
+- **Destination Port:** Determines whether the destination TCP/UDP port participates in the ECMP hash calculation. Default is true.
 
-###Swagger UI
-The Swagger UI link opens a new window/tab in the browser and displays the Swagger UI:  http://api.openswitch.net/rest/dist/index.html
+- **Resilience Hashing:** Determines whether the ECMP hashing preserves traffic flows when the ECMP group membership changes. Default is true.
 
-###OpenSwitch.net
-The OpenSwitch.net link opens a new window/tab in the browser and displays the OpenSwitch web site:  http://openswitch.net
+
+
+## Logs
+
+## Quick Guides
+
+## Links
+
+### REST API
+The Swagger UI link opens a new window/tab in the browser and displays the Swagger UI:  [http://api.openswitch.net/rest/dist/index.html](http://api.openswitch.net/rest/dist/index.html)
+
+### OpenSwitch.net
+The OpenSwitch.net link opens a new window/tab in the browser and displays the OpenSwitch website:
+[http://openswitch.net](http://openswitch.net)
