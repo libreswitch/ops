@@ -33,12 +33,13 @@ When there is a choice between Linux PAM(http://www.linux-pam.org/) and `openPAM
                                    |       |
                                    |       |
                                    |       |
-                                +--v-------+-----+
-                                |                |
-                                |   PAM Module   |
-                                | pam_unix and/or|
-                                | pam_radius_auth|
-                                +----------------+
+                              +----v-------+--------+
+                              |                     |
+                              |     PAM Module      |
+                              | pam_unix,           |
+                              | pam_radius_auth,    |
+                              | pam_radius_chap_auth|
+                              +---------------------+
 
 ```
 
