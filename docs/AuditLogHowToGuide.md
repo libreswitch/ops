@@ -115,7 +115,7 @@ The vlen parameter must be set to zero (0) unless the data contains an embedded 
 The full list of field names and their expected formats can be found in the "How to write good events" white paper on the Audit Framework web site at [http://people.redhat.com/sgrubb/audit/audit-events.txt](http://people.redhat.com/sgrubb/audit/audit-events.txt).
 
 #### Generate a general configuration change audit event
-```[C]
+```
 int audit_log_user_message(int audit_fd, int type, const char *message,
 						   const char *hostname, const char *addr, const char *tty, int result)
 ```
@@ -160,7 +160,7 @@ This function is used when a program is scheduled to change the OpenSwitch confi
 ```
 
 #### Manipulate user account audit events
-``` [C]
+```
 int audit_log_acct_message(int audit_fd, int type, const char *pgname, const char *op, const char *name,
                            unsigned int id, const char *hostname, const char *addr, const char *tty, int result)
 ```
@@ -170,7 +170,7 @@ This function is used for all user account manipulation operations. This include
 However, if in the future, a custom/sophisticated Role Based Access Control function is implemented, this call may be needed to log various "role" events.
 
 #### Execute a script
-``` [C]
+```
 int audit_log_user_comm_message(int audit_fd, int type, const char *message, const char *command,
 						        const char *hostname, const char *addr, const char *tty, int result)
 ```
@@ -189,7 +189,7 @@ Python code should be able to directly use the audit library without any changes
 - result     - The value 1 or 0 indicating success or failure of the operation.
 - self 	  - The Tornado web.RequestHandler instance (see basy.py BaseHandler class).
 
-``` [python]
+```
 import audit
 import socket
 
@@ -229,7 +229,7 @@ Where:
 
 In order to use the audit log library, you need to change your repo recipe to link in libaudit.a (static) or libaudit.so (shared).  The build system also needs a dependency on the audit framework.  Like the Python example, this example assumes the same variables (and their contents).  This example is appropriate for creating an audit event in the vtysh (CLI) code.
 
-``` [C]
+```
 #include <libaudit.h>
 
 int audit_fd;
