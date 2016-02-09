@@ -803,7 +803,6 @@ def lldp_interface_txrx(**kwargs):
     
 
 @pytest.mark.timeout(1000)
-@pytest.mark.skipif(True, reason="Skipping temporarily to debug build failure.")
 class Test_lldp_configuration:
     def setup_class (cls):
         # Test object will parse command line and formulate the env

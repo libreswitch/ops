@@ -621,7 +621,6 @@ def lldp_tlv(**kwargs):
 
 
 @pytest.mark.timeout(600)
-@pytest.mark.skipif(True, reason="Skipping temporarily to debug build failure")
 class Test_lldp_configuration:
 
     def setup_class(cls):
