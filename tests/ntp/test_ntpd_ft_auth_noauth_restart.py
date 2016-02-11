@@ -48,13 +48,14 @@ def switchWsConfig(dut01, wrkston01, wrkston02):
     global SERVER_UNREACHABLE
     info('\n### Configuring workstation 1 as a local NTP server with authentication###\n')
     info('### Configuring workstation 2 as a local NTP server without authentication###\n')
+    sleep(10)
     wrkston01.cmd("echo \"authenticate yes\" >> /etc/ntp.conf")
     wrkston01.cmd("ntpd -c /etc/ntp.conf")
     wrkston02.cmd("ntpd -c /etc/ntp.conf")
     sleep(10)
     out = wrkston01.cmd("ntpq -p")
     #check if the public NTP server is reachable fot the local NTP server
-    if ".INIT." in out:
+    if ".INIT." in out or "Connection refused" in out:
         SERVER_UNREACHABLE = True
     else:
         SERVER_UNREACHABLE = False
@@ -72,7 +73,7 @@ def switchWsConfig(dut01, wrkston01, wrkston02):
     out = wrkston01.cmd("ntpq -p")
     info("\nworkstation1 --> %s\n"%(pprint.pformat(out)))
     #check if the public NTP server is reachable fot the local NTP server
-    if ".INIT." in out:
+    if ".INIT." in out or "Connection refused" in out:
         SERVER_UNREACHABLE = True
     else:
         SERVER_UNREACHABLE = False
