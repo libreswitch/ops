@@ -6280,4 +6280,32 @@
       </column>
     </group>
   </table>
+
+  <table name="Package_Info">
+    <p>
+      Each entry contains metadata related to package which is part of the image
+    </p>
+    <column name="name">
+      Name of the package.
+      Example: ops-openvswitch, sed, ops-quagga, openssh etc.
+    </column>
+    <column name="src_type">
+      Corresponds to the type of source pointed to by src_url.
+      Depending on the src_url, some of the values it can take are -
+      git, https, http, ftp, svn, cvs etc.
+    </column>
+    <column name="src_url">
+      This denotes the download location for the source-code of the package.
+      For example:
+      ops-openvswitch: https://git.openswitch.net/openswitch/ops-openvswitch
+      sed: http://ftp.gnu.org/gnu/sed/sed-4.2.2.tar.gz
+    </column>
+    <column name="version">
+      If the src_type is a git repository, this will contain the git hash.
+      Otherwise it will contain the version string (depending on the package).
+      For example:
+      ops-openvswitch: ac19ac49778adf6cf011a3ef6e0675025f1945b5
+      sed: 4.2.2
+    </column>
+  </table>
 </database>

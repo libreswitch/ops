@@ -7518,6 +7518,42 @@
           "name"
         ]
       ]
+    },
+    "Package_Info": {
+      "columns": {
+        "name": {
+          "category": "status",
+          "type": "string",
+          "mutable": false
+        },
+        "src_type": {
+          "category": "status",
+          "type": "string",
+          "mutable": true
+        },
+        "src_url": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": true
+        },
+        "version": {
+          "category": "status",
+          "type": "string",
+          "mutable": true
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true
     }
   }
 }
