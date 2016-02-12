@@ -3225,6 +3225,20 @@
           Number of transmitted ipv6 multicast bytes.
         </column>
       </group>
+      <group title="sFlow Statistics">
+        <column name="statistics" key="sflow_ingress_packets">
+          Number of ingress packets sampled on an interface.
+        </column>
+        <column name="statistics" key="sflow_ingress_bytes">
+          Number of ingress bytes sampled on an interface.
+        </column>
+        <column name="statistics" key="sflow_egress_packets">
+          Number of egress packets sampled on an interface.
+        </column>
+        <column name="statistics" key="sflow_egress_bytes">
+          Number of egress bytes sampled on an interface.
+        </column>
+      </group>
       <group title="LLDP Interface Level Statistics">
         <column name="lldp_statistics" key="lldp_tx">
           Number of lldp packets transmitted.
