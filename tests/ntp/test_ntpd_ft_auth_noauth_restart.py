@@ -53,7 +53,8 @@ def switchWsConfig(dut01, wrkston01, wrkston02):
     wrkston01.cmd("ntpd -c /etc/ntp.conf")
     wrkston02.cmd("ntpd -c /etc/ntp.conf")
     sleep(10)
-    out = wrkston01.cmd("ntpq -p")
+    out = wrkston01.cmd("ntpq -p -n")
+    info("\nworkstation1 --> \n%s\n"%(pprint.pformat(out)))
     #check if the public NTP server is reachable fot the local NTP server
     if ".INIT." in out or "Connection refused" in out:
         SERVER_UNREACHABLE = True
@@ -70,13 +71,6 @@ def switchWsConfig(dut01, wrkston01, wrkston02):
                WORKSTATION_IP_ADDR_SER1 = word[i+1]
                break
     info("### Workstation 1 IP address: %s\n" % WORKSTATION_IP_ADDR_SER1)
-    out = wrkston01.cmd("ntpq -p")
-    info("\nworkstation1 --> %s\n"%(pprint.pformat(out)))
-    #check if the public NTP server is reachable fot the local NTP server
-    if ".INIT." in out or "Connection refused" in out:
-        SERVER_UNREACHABLE = True
-    else:
-        SERVER_UNREACHABLE = False
     #retrieve the IP address of the workstation 2
     ifConfigCmdOut = wrkston02.cmd("ifconfig eth0")
     lines = ifConfigCmdOut.split('\n')
@@ -87,9 +81,14 @@ def switchWsConfig(dut01, wrkston01, wrkston02):
             if w == target:
                WORKSTATION_IP_ADDR_SER2 = word[i+1]
                break
+    out = wrkston02.cmd("ntpq -p -n")
+    info("\nworkstation2 --> \n%s\n"%(pprint.pformat(out)))
+    if SERVER_UNREACHABLE == False:
+        if ".INIT." in out or "Connection refused" in out:
+            SERVER_UNREACHABLE = True
+        else:
+            SERVER_UNREACHABLE = False
     info("### Workstation 2 IP address: %s\n" % WORKSTATION_IP_ADDR_SER2)
-    out = wrkston02.cmd("ntpq -p")
-    info("\nworkstation2 --> %s\n"%(pprint.pformat(out)))
     devIntReturn = dut01.DeviceInteract(command="start-shell")
     retCode = devIntReturn.get('returnCode')
     assert retCode == 0, "Failed to enter bash shell"
@@ -107,7 +106,6 @@ def validateNtpAssociationInfo(dut01, wrkston01, wrkston02):
     global WORKSTATION_IP_ADDR_SER1
     global WORKSTATION_IP_ADDR_SER2
     out = dut01.cmdVtysh(command="do show ntp associations")
-    info("\ndut01 'do show ntp associations' --> %s\n"%(pprint.pformat(out)))
     lines = out.split('\n')
     for line in lines:
         if WORKSTATION_IP_ADDR_SER1 in line:
@@ -126,7 +124,6 @@ def validateNtpAssociationInfo(dut01, wrkston01, wrkston02):
 def validateNtpStatus(dut01, wrkston01, wrkston02):
     global WORKSTATION_IP_ADDR_SER2
     out = dut01.cmdVtysh(command="do show ntp status")
-    info("\ndut01 'do show ntp status' --> %s\n"%(pprint.pformat(out)))
     if 'Synchronized' in out and WORKSTATION_IP_ADDR_SER2 in out:
         return True
     return False
@@ -139,12 +136,11 @@ def restartNTPDaemon(dut01, wrkston01, wrkston02):
     dut01.DeviceInteract(command="systemctl restart ops-ntpd")
     sleep(30)
     out = dut01.DeviceInteract(command="ps -ef | grep ntpd")
-    info("\ndut01 'restart ops-ntpd' --> %s\n"%(pprint.pformat(out)))
+    info("\ndut01 'restart ops-ntpd' --> \n%s\n"%(pprint.pformat(out)))
     if 'ntpd -c' in out['buffer']:
         info("### OPS-NTPD Daemon restart successful ###\n")
     else:
         error("### OPS-NTPD Daemon restart FAILED ###\n")
-    assert len(out["buffer"].split("\n")) != 3, "### OPS-NTPD daemon restart failed ###"
     dut01.DeviceInteract(command="vtysh")
     dut01.DeviceInteract(command="configure terminal")
 
@@ -166,12 +162,24 @@ def chkNTPAssociationandStatus(dut01, wrkston01, wrkston02):
             return True
     if SERVER_UNREACHABLE == True:
         info("\n### Local NTP server could not reach Public NTP server###\n")
+        out = dut01.cmdVtysh(command="do show ntp status")
+        info("\ndut01 'do show ntp status' --> \n%s\n"%(pprint.pformat(out)))
+        out = dut01.cmdVtysh(command="do show ntp associations")
+        info("\ndut01 'do show ntp associations' --> \n%s\n"%(pprint.pformat(out)))
+        out = wrkston01.cmd("ntpq -p -n")
+        info("\nworkstation1 --> \n%s\n"%(pprint.pformat(out)))
+        out = wrkston02.cmd("ntpq -p -n")
+        info("\nworkstation2 --> \n%s\n"%(pprint.pformat(out)))
         return True
     info("\nTimeout occured, test FAIL\n")
     out = dut01.cmdVtysh(command="do show ntp status")
-    info("\ndut01 'do show ntp status' --> %s\n"%(pprint.pformat(out)))
+    info("\ndut01 'do show ntp status' --> \n%s\n"%(pprint.pformat(out)))
     out = dut01.cmdVtysh(command="do show ntp associations")
-    info("\ndut01 'do show ntp associations' --> %s\n"%(pprint.pformat(out)))
+    info("\ndut01 'do show ntp associations' --> \n%s\n"%(pprint.pformat(out)))
+    out = wrkston01.cmd("ntpq -p -n")
+    info("\nworkstation1 --> \n%s\n"%(pprint.pformat(out)))
+    out = wrkston02.cmd("ntpq -p -n")
+    info("\nworkstation2 --> \n%s\n"%(pprint.pformat(out)))
     error("\n### Timeout occured, NTP config failed###\n")
     return False
 
