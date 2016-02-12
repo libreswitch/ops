@@ -23,9 +23,11 @@ from opsvsi.opsvsitest import *
 import json
 import httplib
 import urllib
+import subprocess
 
 from utils.fakes import *
 from utils.utils import *
+from utils.swagger_test_utility import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -156,7 +158,7 @@ class QueryVlansAssociated(OpsVsiTest):
             "Response status received: %s\n" % response_status
         info("Response status received: %s\n" % response_status)
 
-        assert expected_data in json.loads(response_data) , \
+        assert expected_data in json.loads(response_data), \
             "Response data received: %s\n" % response_data
         info("Response data received: %s" % response_data)
 
@@ -261,10 +263,12 @@ class TestGetVlanByName:
     def setup_class(cls):
         TestGetVlanByName.test_var = QueryVlanByName()
         rest_sanity_check(cls.test_var.switch_ip)
-        create_fake_vlan(TestGetVlanByName.test_var.vlan_path,
-                         TestGetVlanByName.test_var.switch_ip,
-                         TestGetVlanByName.test_var.vlan_name,
-                         TestGetVlanByName.test_var.vlan_id)
+        cls.fake_data = create_fake_vlan(TestGetVlanByName.test_var.vlan_path,
+                                         TestGetVlanByName.test_var.switch_ip,
+                                         TestGetVlanByName.test_var.vlan_name,
+                                         TestGetVlanByName.test_var.vlan_id)
+
+        cls.container_id = get_container_id(cls.test_var.net.switches[0])
 
     def teardown_class(cls):
         TestGetVlanByName.test_var.net.stop()
@@ -279,6 +283,10 @@ class TestGetVlanByName:
         del self.test_var
 
     def test_run(self):
+        info("container_id_test %s\n" % self.container_id)
+        swagger_model_verification(self.container_id,
+                                   "/system/bridges/{pid}/vlans/{id}",
+                                   "GET_ID", self.fake_data)
         self.test_var.test()
 
 

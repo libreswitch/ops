@@ -24,12 +24,15 @@ from opsvsi.opsvsitest import *
 import json
 import httplib
 import urllib
+import subprocess
 
 from utils.utils import *
-
+from utils.swagger_test_utility import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
+response_global = ""
+
 
 class myTopo(Topo):
     def build(self, hsts=0, sws=1, **_opts):
@@ -38,6 +41,7 @@ class myTopo(Topo):
 
         switch = self.addSwitch("s1")
 
+
 class systemTest(OpsVsiTest):
 
     def setupNet(self):
@@ -45,24 +49,25 @@ class systemTest(OpsVsiTest):
                                        sws=NUM_OF_SWITCHES,
                                        hopts=self.getHostOpts(),
                                        sopts=self.getSwitchOpts()),
-                                       switch=VsiOpenSwitch,
-                                       host=None,
-                                       link=None,
-                                       controller=None,
-                                       build=True)
+                           switch=VsiOpenSwitch, host=None, link=None,
+                           controller=None, build=True)
 
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
         self.SWITCH_PORT = 8091
         self.PATH = "/rest/v1/system"
 
     def test_call_system_get(self):
-        info("\n########## Executing GET request on %s ##########\n" % self.PATH)
+        global response_global
+        info("\n########## Executing GET request on %s ##########\n"
+             % self.PATH)
 
         # # Execute GET
 
-        response, json_string = execute_request(self.PATH, "GET", None, self.SWITCH_IP, True)
+        response, json_string = execute_request(self.PATH, "GET", None,
+                                                self.SWITCH_IP, True)
 
-        assert response.status == httplib.OK, "GET request failed: {0} {1}".format(response.status, response.reason)
+        assert response.status == httplib.OK, "GET request failed: {0} \
+            {1}".format(response.status, response.reason)
 
         get_data = {}
 
@@ -78,46 +83,63 @@ class systemTest(OpsVsiTest):
         assert type(get_data) is dict, "GET: Malformed response"
         assert len(get_data) > 0, "GET: No data in response"
 
-        info("\n########## Finished executing GET request on %s ##########\n" % self.PATH)
+        info("\n########## Finished executing GET request on %s ##########\n"
+             % self.PATH)
 
     def test_call_system_options(self):
-        info("\n########## Executing OPTIONS request on %s ##########\n" % self.PATH)
+        info("\n########## Executing OPTIONS request on %s ##########\n"
+             % self.PATH)
 
         # # Execute OPTIONS
 
-        response, json_string = execute_request(self.PATH, "OPTIONS", None, self.SWITCH_IP, True)
+        response, json_string = execute_request(self.PATH, "OPTIONS", None,
+                                                self.SWITCH_IP, True)
 
-        assert response.status == httplib.OK, "OPTIONS request failed: {0} {1}".format(response.status, response.reason)
+        assert response.status == httplib.OK, "OPTIONS request failed: {0} \
+            {1}".format(response.status, response.reason)
 
         # # Check expected options are correct
 
-        # TODO change these to propper expected values after correct OPTIONS is implemented
+        # TODO change these to propper expected values after correct OPTIONS
+        # is implemented
         expected_allow = ["DELETE", "GET", "OPTIONS", "POST", "PUT", "PATCH"]
         response_allow = response.getheader("allow").split(", ")
 
-        assert expected_allow == response_allow, "OPTIONS: unexpected 'allow' options"
+        assert expected_allow == response_allow, "OPTIONS: unexpected 'allow'\
+            options"
 
-        # TODO change these to propper expected values after correct OPTIONS is implemented
-        expected_access_control_allow_methods = ["DELETE", "GET", "OPTIONS", "POST", "PUT", "PATCH"]
-        response_access_control_allow_methods = response.getheader("access-control-allow-methods").split(", ")
+        # TODO change these to propper expected values after correct OPTIONS
+        # is implemented
+        expected_access_control_allow_methods = ["DELETE", "GET", "OPTIONS",
+                                                 "POST", "PUT", "PATCH"]
+        response_access_control_allow_methods = response.getheader(
+            "access-control-allow-methods").split(", ")
 
-        assert expected_access_control_allow_methods == response_access_control_allow_methods, "OPTIONS: unexpected 'access-control-allow-methods' options"
+        assert expected_access_control_allow_methods == \
+            response_access_control_allow_methods, \
+            "OPTIONS: unexpected 'access-control-allow-methods' options"
 
-        info("\n########## Finished executing OPTIONS request on %s ##########\n" % self.PATH)
+        info("\n########## Finished executing OPTIONS request on %s \
+            ##########\n" % self.PATH)
 
     def test_call_system_put(self):
-        info("\n########## Executing PUT request on %s ##########\n" % self.PATH)
+        info("\n########## Executing PUT request on %s ##########\n" \
+            % self.PATH)
 
         # # Get initial data
-        response, pre_put_json_string = execute_request(self.PATH, "GET", None, self.SWITCH_IP, True)
-        assert response.status == httplib.OK, "PUT: initial GET request failed: {0} {1}".format(response.status, response.reason)
+        response, pre_put_json_string = execute_request(self.PATH, "GET",
+                                                        None, self.SWITCH_IP,
+                                                        True)
+        assert response.status == httplib.OK, "PUT: initial GET request \
+            failed: {0} {1}".format(response.status, response.reason)
         pre_put_get_data = {}
 
         try:
             # A malformed json should throw an exception here
             pre_put_get_data = json.loads(pre_put_json_string)
         except:
-            assert False, "PUT: Malformed JSON in response body for initial GET request"
+            assert False, "PUT: Malformed JSON in response body for initial \
+                GET request"
 
         # # Execute PUT request
 
@@ -184,15 +206,21 @@ class systemTest(OpsVsiTest):
         else:
             put_data['logrotate_config'] = logrotate_config
 
-        response, json_string = execute_request(self.PATH, "PUT", json.dumps({'configuration': put_data}), self.SWITCH_IP, True)
+        response_global = {"configuration": put_data}
+        response, json_string = execute_request(self.PATH, "PUT", \
+            json.dumps({'configuration': put_data}), self.SWITCH_IP, True)
 
-        assert response.status == httplib.OK, "PUT request failed: {0} {1}".format(response.status, response.reason)
+        assert response.status == httplib.OK, "PUT request failed: {0} \
+            {1}".format(response.status, response.reason)
 
         # # Get post-PUT data
 
-        response, post_put_json_string = execute_request(self.PATH, "GET", None, self.SWITCH_IP, True)
+        response, post_put_json_string = execute_request(self.PATH, "GET",
+                                                         None, self.SWITCH_IP,
+                                                         True)
 
-        assert response.status == httplib.OK, "PUT: Post-PUT GET request failed: {0} {1}".format(response.status, response.reason)
+        assert response.status == httplib.OK, "PUT: Post-PUT GET request \
+            failed: {0} {1}".format(response.status, response.reason)
 
         post_put_get_data = {}
 
@@ -205,48 +233,58 @@ class systemTest(OpsVsiTest):
         # post-PUT data should be the same as pre-PUT data
         post_put_data = post_put_get_data['configuration']
 
-        assert put_data == post_put_data, "PUT: Mismatch between PUT request data and post-PUT GET response"
+        assert put_data == post_put_data, "PUT: Mismatch between PUT request\
+            data and post-PUT GET response"
 
         # # Perform bad PUT request
 
         json_string = json.dumps({'configuration': put_data})
         json_string += ","
 
-        response, json_string = execute_request(self.PATH, "PUT", json_string, self.SWITCH_IP, True)
+        response, json_string = execute_request(self.PATH, "PUT",
+                                                json_string, self.SWITCH_IP,
+                                                True)
 
-        assert response.status == httplib.BAD_REQUEST, "PUT: Malformed JSON did not yield BAD_REQUEST: {0} {1}".format(response.status, response.reason)
+        assert response.status == httplib.BAD_REQUEST, "PUT: Malformed JSON \
+            did not yield BAD_REQUEST: {0} {1}".format(response.status,
+                                                       response.reason)
 
-        info("\n########## Finished executing PUT request on %s ##########\n" % self.PATH)
+        info("\n########## Finished executing PUT request on %s ##########\n" \
+            % self.PATH)
 
 
 class Test_system:
-    def setup (self):
+    def setup(self):
         pass
 
-    def teardown (self):
+    def teardown(self):
         pass
 
-    def setup_class (cls):
+    def setup_class(cls):
         Test_system.test_var = systemTest()
         rest_sanity_check(cls.test_var.SWITCH_IP)
+        cls.container_id = get_container_id(cls.test_var.net.switches[0])
 
-    def teardown_class (cls):
+    def teardown_class(cls):
         Test_system.test_var.net.stop()
 
-    def setup_method (self, method):
+    def setup_method(self, method):
         pass
 
-    def teardown_method (self, method):
+    def teardown_method(self, method):
         pass
 
-    def __del__ (self):
+    def __del__(self):
         del self.test_var
 
-    def test_run_call_sytem_get (self):
+    def test_run_call_sytem_get(self):
         self.test_var.test_call_system_get()
+        info("container_id_test_get_id %s\n" % self.container_id)
+        swagger_model_verification(self.container_id, "/system", "GET_ID",
+                                   response_global)
 
-    def test_run_call_sytem_options (self):
+    def test_run_call_sytem_options(self):
         self.test_var.test_call_system_options()
 
-    def test_run_call_sytem_put (self):
+    def test_run_call_sytem_put(self):
         self.test_var.test_call_system_put()
