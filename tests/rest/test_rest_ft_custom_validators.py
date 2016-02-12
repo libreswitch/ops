@@ -220,12 +220,7 @@ def restTestCustomValidatorInvalidPost(wrkston01):
         'REST POST unexpectedly passed.\n' + retStruct.data['response_body']
     info("### Received expected non-successful HTTP status code ###\n")
 
-    response_body = json.loads(retStruct.data["response_body"])
-    assert "code" in response_body, 'Error does not contain an error code\n'
-    info("### Successfully retrieved validation error code ###\n")
-
-    print response_body["message"]
-    assert "exceeded" in response_body["message"], \
+    assert "exceeded" in retStruct.data["response_body"], \
         'Error does not contain resources exceeded error\n'
     info("### Successfully retrieved validation error message ###\n")
 
@@ -259,8 +254,8 @@ def dcTestCustomValidatorValidPut(wrkston01):
                                   method="PUT",
                                   data=dc_put_data)
 
-    assert retStruct.returnCode() == 0, "Failed to PUT for url=%s" % post_url
-    info("### Successfully executed PUT for url=%s ###\n" % post_url)
+    assert retStruct.returnCode() == 0, "Failed to PUT for url=%s" % dc_put_url
+    info("### Successfully executed PUT for url=%s ###\n" % dc_put_url)
 
     assert retStruct.data['http_retcode'].find('200') != -1, \
         'REST PUT passed.\n' + retStruct.data['response_body']
@@ -280,8 +275,8 @@ def dcTestCustomValidatorInvalidPut(wrkston01):
                                   method="PUT",
                                   data=dc_put_data)
 
-    assert retStruct.returnCode() == 0, "Failed to PUT for url=%s" % post_url
-    info("### Successfully executed PUT for url=%s ###\n" % post_url)
+    assert retStruct.returnCode() == 0, "Failed to PUT for url=%s" % dc_put_url
+    info("### Successfully executed PUT for url=%s ###\n" % dc_put_url)
 
     assert retStruct.data['http_retcode'].find('200') == -1, \
         'REST PUT unexpectedly passed.\n' + retStruct.data['response_body']
@@ -290,11 +285,7 @@ def dcTestCustomValidatorInvalidPut(wrkston01):
     response_body = json.loads(retStruct.data["response_body"])
     response_error = response_body["error"][0]
 
-    print response_error
-    assert "code" in response_error, 'Error does not contain an error code'
-    info("### Successfully retrieved validation error code ###")
-
-    assert "exceeded" in response_error["message"], \
+    assert "exceeded" in retStruct.data["response_body"], \
         'Error does not contain resources exceeded error\n'
     info("### Successfully retrieved validation error message ###\n")
 
