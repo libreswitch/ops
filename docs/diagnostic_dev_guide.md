@@ -3,28 +3,27 @@
 ## Contents
 
 - [Overview](#overview)
-- [How to define the mapping between a feature and the daemon which implements that eature](#how-to-define-the-mapping-between-a-feature-and-the-daemon-which-implements-that-feature)
+- [How to define the mapping between a feature and the daemon which implements that feature](#how-to-define-the-mapping-between-a-feature-and-the-daemon-which-implements-that-feature)
 	- [YAML configuration](#yaml-configuration)
-- [Diagnostics dump callback function in daemons](#diagnostics-dump-callback-function-in-daemons)
-	- [BB script changes](#bb-script-changes)
-	- [Header file](#header-file)
-	- [Daemon init function](#daemon-init-function)
-	- [Example of a callback function definition](#example-of-a-callback-function-definition)
-	- [Example for lldpd daemon](#example-for-lldpd-daemon)
+- [Diagnostics dump C API](#diagnostics-dump-c-api)
+- [Diagnostics dump Python API](#diagnostics-dump-python-api)
 - [Testing](#testing)
 	- [diag-dump list](#diag-dump-list)
 	- [diag-dump for a feature (basic) on CLI session](#diag-dump-for-a-feature-basic-on-cli-session)
 	- [diag-dump for a feature (basic) to a file](#diag-dump-for-a-feature-basic-to-a-file)
 		- [CT script](#ct-script)
+- [References](#references)
+
 
 ## Overview
-The Diagnostic CLI captures internal diagnostic information about the requested feature(s) from the respective daemons. Internally it uses the unixctl mechanism to communicate with the daemons.
+The Diagnostic CLI captures internal diagnostic information about the requested features from the respective daemons. Internally it uses the unixctl mechanism to communicate with the daemons.
 
-## How to define the mapping between a feature and the daemon which implements that feature
+## Defining the mapping between a feature and its daemons
+
 ### YAML configuration
-Feature owners are required to define the mapping between the feature and the daemons which implement that feature, so that the diagnostic module can understand which daemons it has to communicate to. This mapping should be defined in the configuration file in the ops-supportability repo under the path `ops-supportability/conf/ops_diagdump.yaml`.
+Feature owners are required to define the mapping between the feature and the daemons that implement the feature, so that the diagnostic module can understand which daemons it has to communicate to. This mapping should be defined in the configuration file in the ops-supportability repo under the path `ops-supportability/conf/ops_diagdump.yaml`.
 
-Following are some examples:
+Example mappings:
 
 ```ditaa
   -
@@ -43,10 +42,10 @@ Following are some examples:
 
 ```
 
-## Diagnostics dump callback function in daemons
+## Diagnostics dump C API
 Define a callback function that collects the necessary diagnostics information from the daemon for the given feature. This callback function needs to allocate sufficient memory (buf) to hold the diagnostics information. This memory is later deallocated by the diagnostic framework.
 
-The syntax of the callback function should be as follows:
+Syntax of the callback function:
 
 ```
 static void cb_func_name(const char *feature, char **buf)
@@ -59,20 +58,19 @@ Example:
 INIT_DIAG_DUMP_BASIC(basic_diag_handler_cb)
 ```
 
-In summary the following steps need to be completed:
+In summary, complete the following steps:
 
-1. Define a callback function for collecting basic diagnostic information.
-2. The callback function should perform the following activities:
+1. Define a callback function for collecting basic diagnostic information. The callback function should perform the following activities:
 	 a. Allocate character buffer to hold the diagnostics information.
 	 b. Copy the diagnostics information (text format) into the buffer.
 	 c. Null terminate the buffer.
 3. Initialize the basic diagnostic framework in the daemon init routine.
 
-*Note that the dagnostics framework is responsible for freeing the allocated buffer once it is used.*
+*Note: The diagnostics framework is responsible for freeing the allocated buffer once it is used.*
 
 
-### BB script changes
-Add a dependancy in bbscript for the respective daemon.
+### BBScript changes
+Add a dependency in BBScript for the respective daemon.
 ```
 DEPENDS = "ops-supportability"
 ```
@@ -84,11 +82,11 @@ Include diag_dump.h in the .c file.
 #include  <diag_dump.h>
 ```
 ### Daemon init function
-The daemon initialization routine should invoke this macro with the callback function. For example: ```
+The daemon initialization routine should invoke this macro with the callback function.
+For example:
+```
 INIT_DIAG_DUMP_BASIC(lldpd_diag_dump_basic_cb)
 ```
-
-
 
 ### Example of a callback function definition
 
@@ -153,6 +151,89 @@ static void lldpd_diag_dump_basic_cb(const char *feature , char **buf)
 
 ```
 
+## Diagnostics dump Python API
+Define a callback function that collects the necessary diagnostics information from the daemon for the given feature. This callback function needs to fill a buffer to hold the diagnostic information. The callback function should return this buffer.
+
+Syntax of the callback function:
+
+```ditaa
+cb_func_name(argv)
+```
+
+Initialize the basic diagnostic framework in the daemon init routine by calling `init_diag_dump_basic` and passing the callback function name.
+
+Example:
+```ditaa
+ops_diagdump.init_diag_dump_basic(basic_diag_handler_cb)
+```
+
+In summary, completed these steps:
+1. Add dependency "ops-supportability" in the BBScript.
+2. Import Python module ops_diagdump.
+3. Define a callback function for collecting basic diagnostic information. The callback function should perform the following activities:
+	 a. Copy the diagnostics information (text format) into the buffer.
+	 b. Return the buffer.
+5. Initialize the basic diagnostic framework in the daemon init routine.
+
+
+### BBScript changes
+Add a dependency in bbscript for the respective daemon.
+```ditaa
+DEPENDS = "ops-supportability"
+```
+
+### Import Python module
+import ops_diag_dump in Python file.
+
+```ditaa
+import ops_diagdump
+```
+### Daemon init function
+The daemon initialization routine should invoke this macro with the callback function. For example:
+```ditaa
+ops_diagdump.init_diag_dump_basic(diag_basic_handler)
+```
+
+
+
+### Example of a callback function definition
+
+```ditaa
+
+def diag_basic_handler( argv ):
+    # argv[0] is basic
+    # argv[1] is feature name
+    feature = argv.pop()
+    buff = 'Diagnostic dump response for feature ' + feature + '.\n'
+    buff = buff + 'diag-dump feature for AAA is not implemented'
+    return buff
+
+
+```
+### Example for AAA daemon
+
+```ditaa
+BB Script: yocto/openswitch/meta-distro-openswitch/recipes-ops/utils/ops-aaa-utils.bb
+DEPENDS = "ops-ovsdb ops-supportability"
+
+file: src/ops-aaa-utils/ops_aaautilspamcfg.py
+
+import ops_diagdump
+.....
+
+def diag_basic_handler( argv ):
+    # argv[0] is basic
+    # argv[1] is feature name
+    feature = argv.pop()
+    buff = 'Diagnostic dump response for feature ' + feature + '.\n'
+    buff = buff + 'diag-dump feature for AAA is not implemented'
+    return buff
+
+...
+ops_diagdump.init_diag_dump_basic(diag_basic_handler)
+...
+
+```
 
 ## Testing
 ### diag-dump list
@@ -164,3 +245,10 @@ The `diag-dump <feature> basic <file name>` command captures diagnostic informat
 #### CT script
 Run the following CT test to verify that the diag-dump command is properly working with the configuration changes:
 `make devenv_ct_test src/ops-supportability/test/diag_dump_test.py`
+
+## References
+
+* [High-Level Design of Diagnostic Dump](http://www.openswitch.net/documents/dev/ops-diag/diagnostic_design)
+* [Diagnostic Dump Commands](http://www.openswitch.net/documents/user/diagnostic_cli)
+* [Component Test Cases for Diagnostic](http://www.openswitch.net/documents/user/diagnostic_test)
+* [Diagnostic Dump User Guide ](http://www.openswitch.net/documents/user/diagnostic_user_guide)
