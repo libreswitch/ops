@@ -285,7 +285,7 @@ ops-as5712(config)# no lldp timer
 ```
 ### Enable LLDP transmission
 #### Syntax
-`lldp transmission`
+`lldp transmit`
 #### Description
 This command enables LLDP transmission (TX) for a particular interface. This command only works in interface context.
 #### Authority
@@ -296,11 +296,11 @@ No parameters.
 ```
 ops-as5712# configure terminal
 ops-as5712(config)# interface 1
-ops-as5712(config-if)# lldp transmission
+ops-as5712(config-if)# lldp transmit
 ```
 ### Disable LLDP transmission
 #### Syntax
-`no lldp transmission`
+`no lldp transmit`
 #### Description
 This command disables LLDP transmission (TX) for a particular interface. This command only works in interface context.
 #### Authority
@@ -311,11 +311,11 @@ No parameters.
 ```
 ops-as5712# configure terminal
 ops-as5712(config)# interface 1
-ops-as5712(config-if)# no lldp transmission
+ops-as5712(config-if)# no lldp transmit
 ```
 ### Enable LLDP reception
 #### Syntax
-`lldp reception`
+`lldp receive`
 #### Description
 This command enables LLDP reception (RX) for a particular interface. This command only works in interface context.
 #### Authority
@@ -326,11 +326,11 @@ No parameters.
 ```
 ops-as5712# configure terminal
 ops-as5712(config)# interface 1
-ops-as5712(config-if)# lldp reception
+ops-as5712(config-if)# lldp receive
 ```
 ### Disable LLDP reception
 #### Syntax
-`no lldp reception`
+`no lldp receive`
 #### Description
 This command disables LLDP reception (RX) for a particular interface. This command only works in interface context.
 #### Authority
@@ -341,7 +341,7 @@ No parameters.
 ```
 ops-as5712# configure terminal
 ops-as5712(config)# interface 1
-ops-as5712(config-if)# no lldp reception
+ops-as5712(config-if)# no lldp receive
 ```
 
 ## LLDP Show Commands
