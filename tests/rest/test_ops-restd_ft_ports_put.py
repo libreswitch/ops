@@ -22,9 +22,11 @@ from opsvsi.opsvsitest import *
 
 import json
 import httplib
+import subprocess
 from copy import deepcopy
 
 from utils.utils import *
+from utils.swagger_test_utility import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -43,11 +45,8 @@ class ModifyPortTest (OpsVsiTest):
                                        sws=NUM_OF_SWITCHES,
                                        hopts=self.getHostOpts(),
                                        sopts=self.getSwitchOpts()),
-                           switch=VsiOpenSwitch,
-                           host=None,
-                           link=None,
-                           controller=None,
-                           build=True)
+                           switch=VsiOpenSwitch, host=None, link=None,
+                           controller=None, build=True)
 
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
         self.PATH = "/rest/v1/system/ports"
@@ -88,8 +87,7 @@ class ModifyPortTest (OpsVsiTest):
         info("\n########## End Test to Validate Modify Port ##########\n")
 
     def modify_port(self):
-        info("\n########## Test to Validate Modify Port with depth "
-             "##########\n")
+        info("\n########## Test to Validate Modify Port ##########\n")
 
         # 1 - Query port
         status_code, response_data = execute_request(self.PORT_PATH, "GET",
@@ -124,13 +122,12 @@ class ModifyPortTest (OpsVsiTest):
         put_data["ip4_address"] = "192.168.1.2"
 
         status_code, response_data = execute_request(self.PORT_PATH, "PUT",
-                                                     json.dumps(
-                                                         {'configuration':
-                                                          put_data}),
+                                                     json.dumps
+                                                     ({'configuration':
+                                                      put_data}),
                                                      self.SWITCH_IP)
-        assert status_code == httplib.OK, \
-            "Error modifying a Port. Status code: %s Response data: %s " % \
-            (status_code, response_data)
+        assert status_code == httplib.OK, "Error modifying a Port. Status \
+            code: %s Response data: %s " % (status_code, response_data)
         info("### Port Modified. Status code 200 OK  ###\n")
 
         # 3 - Verify Modified data
@@ -153,14 +150,14 @@ class ModifyPortTest (OpsVsiTest):
         info("\n########## End Test to Validate Modify Port ##########\n")
 
     def verify_port_name_modification_not_applied(self):
-        info("\n########## Test to Validate: Port name modification not " +
-             "applied ##########\n")
+        info("\n########## Test to Validate: Port name modification not \
+            applied ##########\n")
 
         # 1 - Query port
         status_code, response_data = execute_request(self.PORT_PATH, "GET",
                                                      None, self.SWITCH_IP)
-        assert status_code == httplib.OK, "Port %s doesn't exists" % \
-            self.PORT_PATH
+        assert status_code == httplib.OK, "Port %s doesn't exists" \
+            % self.PORT_PATH
 
         pre_put_get_data = {}
         try:
@@ -175,20 +172,19 @@ class ModifyPortTest (OpsVsiTest):
         put_data["name"] = "Port2"
 
         status_code, response_data = execute_request(self.PORT_PATH, "PUT",
-                                                     json.dumps(
-                                                         {'configuration':
-                                                          put_data}),
+                                                     json.dumps
+                                                     ({'configuration':
+                                                     put_data}) ,
                                                      self.SWITCH_IP)
-        assert status_code == httplib.OK, \
-            "Error modifying a Port. Status code: %s Response data: %s " % \
-            (status_code, response_data)
+        assert status_code == httplib.OK, "Error modifying a Port. Status \
+            code: %s Response data: %s " % (status_code, response_data)
         info("### Port Modified. Status code 200 OK  ###\n")
 
         # 3 - Verify Port name is not modified
         status_code, response_data = execute_request(self.PORT_PATH, "GET",
                                                      None, self.SWITCH_IP)
-        assert status_code == httplib.OK, "Port %s doesn't exists" % \
-            self.PORT_PATH
+        assert status_code == httplib.OK, "Port %s doesn't exists" \
+            % self.PORT_PATH
         post_put_get_data = {}
         try:
             post_put_get_data = json.loads(response_data)
@@ -201,24 +197,22 @@ class ModifyPortTest (OpsVsiTest):
             "Port name was modified"
         info("### Configuration data validated %s ###\n" % response_data)
 
-        info("\n########## End Test to Validate: Port name modification not " +
-             "applied ##########\n")
+        info("\n########## End Test to Validate: Port name modification not \
+            applied ##########\n")
 
     def verify_attribute_type(self):
 
         info("\n########## Test to verify attribute types ##########\n")
 
-        info("\nAttempting to modify a port with incorrect types in " +
-             "attributes\n")
+        info("\nAttempting to modify a port with incorrect types in \
+            attributes\n")
 
-        data = [
-                ("ip4_address", 192, httplib.BAD_REQUEST),
+        data = [("ip4_address", 192, httplib.BAD_REQUEST),
                 ("ip4_address", "192.168.0.1", httplib.OK),
                 ("tag", "675", httplib.BAD_REQUEST),
                 ("tag", 675, httplib.OK),
                 ("trunks", "654, 675", httplib.BAD_REQUEST),
-                ("trunks", [654, 675], httplib.OK)
-        ]
+                ("trunks", [654, 675], httplib.OK)]
         results = execute_port_operations(data, "PortTypeTest", "PUT",
                                           self.PATH, self.SWITCH_IP)
 
@@ -230,6 +224,11 @@ class ModifyPortTest (OpsVsiTest):
                 "test in field '%s'" % attribute[0]
             info("%s code received as expected for field %s!\n" %
                  (attribute[2], attribute[0]))
+            assert attribute[1], "{0} code issued instead of {2} for type \
+                test in field '{1}'".format(attribute[2], attribute[0],
+                                            attribute[3])
+            info("{0} code received as expected for field {1}!\n".format \
+                (attribute[2], attribute[0]))
 
         info("\n########## End test to verify attribute types ##########\n")
 
@@ -237,21 +236,19 @@ class ModifyPortTest (OpsVsiTest):
 
         info("\n########## Test to verify attribute ranges ##########\n")
 
-        info("\nAttempting to modify a port with out of range values in " +
-             "attributes\n")
+        info("\nAttempting to modify a port with out of range values in \
+            attributes\n")
 
         interfaces_out_of_range = []
         for i in range(1, 10):
             interfaces_out_of_range.append("/rest/v1/system/interfaces/%s" % i)
 
-        data = [
-                ("ip4_address", "175.167.134.123/248", httplib.BAD_REQUEST),
+        data = [("ip4_address", "175.167.134.123/248", httplib.BAD_REQUEST),
                 ("ip4_address", "175.167.134.123/24", httplib.OK),
                 ("tag", 4095, httplib.BAD_REQUEST),
                 ("tag", 675, httplib.OK),
                 ("interfaces", interfaces_out_of_range, httplib.BAD_REQUEST),
-                ("interfaces", ["/rest/v1/system/interfaces/1"], httplib.OK)
-        ]
+                ("interfaces", ["/rest/v1/system/interfaces/1"], httplib.OK)]
         results = execute_port_operations(data, "PortRangesTest", "PUT",
                                           self.PATH, self.SWITCH_IP)
 
@@ -288,8 +285,8 @@ class ModifyPortTest (OpsVsiTest):
             info("%s code received as expected for field %s!\n" %
                  (attribute[2], attribute[0]))
 
-        info("\n########## End test to verify attribute valid value " +
-             "##########\n")
+        info("\n########## End test to verify attribute valid value \
+            ##########\n")
 
     def verify_unknown_attribute(self):
 
@@ -327,8 +324,8 @@ class ModifyPortTest (OpsVsiTest):
 
         # Try to POST a port with a malformed JSON in request data
 
-        info("\nAttempting to modify port with a malformed JSON in request " +
-             "data\n")
+        info("\nAttempting to modify port with a malformed JSON in request \
+            data\n")
 
         json_string = json.dumps(request_data)
         json_string += ","
@@ -374,6 +371,7 @@ class Test_ModifyPort:
         assert status_code == httplib.CREATED, "Port not created."\
             "Response %s" % response
         info("### Test Port Created  ###\n")
+        cls.container_id = get_container_id(cls.test_var.net.switches[0])
 
     def teardown_class(cls):
         Test_ModifyPort.test_var.net.stop()
@@ -397,3 +395,6 @@ class Test_ModifyPort:
         self.test_var.verify_attribute_value()
         self.test_var.verify_unknown_attribute()
         self.test_var.verify_malformed_json()
+        info("container_id_test %s\n" % self.container_id)
+        swagger_model_verification(self.container_id, "/system/ports/{id}",
+                                   "PUT", PORT_DATA)

@@ -20,9 +20,11 @@ from opsvsi.opsvsitest import *
 
 import json
 import httplib
+import subprocess
 
 from utils.utils import *
 from copy import deepcopy
+from utils.swagger_test_utility import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -41,11 +43,8 @@ class CreatePortTest (OpsVsiTest):
                                        sws=NUM_OF_SWITCHES,
                                        hopts=self.getHostOpts(),
                                        sopts=self.getSwitchOpts()),
-                           switch=VsiOpenSwitch,
-                           host=None,
-                           link=None,
-                           controller=None,
-                           build=True)
+                           switch=VsiOpenSwitch, host=None, link=None,
+                           controller=None, build=True)
 
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
         self.PATH = "/rest/v1/system/ports"
@@ -110,8 +109,7 @@ class CreatePortTest (OpsVsiTest):
 
         info("\nAttempting to create port with incorrect type in attributes\n")
 
-        data = [
-                ("ip4_address", 192, httplib.BAD_REQUEST),
+        data = [("ip4_address", 192, httplib.BAD_REQUEST),
                 ("ip4_address", "192.168.0.1", httplib.CREATED),
                 ("tag", "675", httplib.BAD_REQUEST),
                 ("tag", 675, httplib.CREATED),
@@ -143,8 +141,7 @@ class CreatePortTest (OpsVsiTest):
         for i in range(1, 10):
             interfaces_out_of_range.append("/rest/v1/system/interfaces/%s" % i)
 
-        data = [
-                ("ip4_address", "175.167.134.123/248", httplib.BAD_REQUEST),
+        data = [("ip4_address", "175.167.134.123/248", httplib.BAD_REQUEST),
                 ("ip4_address", "175.167.134.123/24", httplib.CREATED),
                 ("tag", 4095, httplib.BAD_REQUEST),
                 ("tag", 675, httplib.CREATED),
@@ -309,6 +306,7 @@ class Test_CreatePort:
     def setup_class(cls):
         Test_CreatePort.test_var = CreatePortTest()
         rest_sanity_check(cls.test_var.SWITCH_IP)
+        cls.container_id = get_container_id(cls.test_var.net.switches[0])
 
     def teardown_class(cls):
         Test_CreatePort.test_var.net.stop()
@@ -332,3 +330,6 @@ class Test_CreatePort:
         self.test_var.verify_missing_attribute()
         self.test_var.verify_unknown_attribute()
         self.test_var.verify_malformed_json()
+        info("container_id_test %s\n" % self.container_id)
+        swagger_model_verification(self.container_id, "/system/ports", "POST",
+                                   PORT_DATA)

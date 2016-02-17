@@ -545,6 +545,11 @@ class Test_sftp:
         # Get topology object
         Test_sftp.topoObj = \
             Test_sftp.testObj.topoObjGet()
+        # Defect Note:  Waiting for Taiga ID 682 to get fixed to
+        if Test_sftp.topoObj.topoType == "physical":
+            LogOutput('info',
+                      "Skipping  test physical run due to defect #682")
+            pytest.skip("Skipping  test physical run due defect #682")
 
     def teardown_class(cls):
         Test_sftp.topoObj.terminate_nodes()
