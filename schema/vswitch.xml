@@ -1108,6 +1108,10 @@
    </group>
 
     <group title="Other Features">
+      <column name="mirrors">
+        <ref table="Mirror"/> references for sessions configured in this bridge.
+      </column>
+
       <column name="datapath_type">
         Name of datapath provider.
       </column>
@@ -1115,6 +1119,7 @@
       </column>
       <column name="datapath_id">
       </column>
+
       <column name="other_config" key="hwaddr">
         An Ethernet address in the form
         <var>xx</var>:<var>xx</var>:<var>xx</var>:<var>xx</var>:<var>xx</var>:<var>xx</var>
@@ -5640,6 +5645,99 @@
         A maximum of 16 IPv6 server configurations are allowed. This count includes IPv6 unicast
         server configurations from the column "ipv6_ucast_server".
       </column>
+    </group>
+  </table>
+
+  <table name="Mirror" title="Mirror Sessions">
+    <p>
+      Mirror sessions referenced from a <ref table="Bridge"/>.
+    </p>
+    <p>
+      A mirror configures a bridge to send copies of selected packets to
+      special "mirrored" ports, in addition to their normal destinations.
+      Mirroring traffic may also be referred to as SPAN.
+    </p>
+
+    <column name="name">
+      There must be a user-defined name of the mirror session.
+    </column>
+
+    <column name="active">
+      The intended state of the mirror session: active or inactive.
+      The <ref column="status" key="operation_state"/> value contains
+      the actual state in hardware (e.g. active, inactive, or error).
+      When missing or false, the state is inactive.
+    </column>
+
+    <group title="Mirroring Source(s) Configuration">
+      <p>
+        To be selected for mirroring, a given packet must enter or leave the
+        bridge through a selected port.  If a source port is in both the
+        select_src_port and select_dst_port sets, then both transmitted
+        and received packets will be mirrored.
+      </p>
+
+      <column name="select_src_port">
+        Set of Ethernet port or LAG references in <ref table="Port"/>
+        on which received packets are selected to be mirrored.
+      </column>
+
+      <column name="select_dst_port">
+        Set of Ethernet port or LAG references in <ref table="Port"/>
+        on which transmitted packets are selected to be mirrored.
+      </column>
+    </group>
+
+    <group title="Mirroring Destination Configuration">
+      <column name="output_port">
+        <p>
+          Ethernet port or LAG reference in <ref table="Port"/> used
+          to transmit the mirror packets.  There must be a valid Ethernet port
+          or LAG for the session operation state to become active.
+        </p>
+        <p>
+          The output port should be reserved exclusively for transmitting
+          mirror packets for this session.  It should not pariticapte in
+          any other network activity (e.g. Spanning Tree, LLDP etc).
+        </p>
+      </column>
+    </group>
+
+    <group title="Mirror Session Status">
+      <column name="mirror_status">
+        Key-value pair(s) that report mirror status in hardware.
+      </column>
+      <column name="mirror_status" key="operation_state" type='{"type": "string"}'>
+        Operational state of the mirror session in hardware.
+        Only the value "active" means the hardware mirroring is running.
+        Any other value, or if the key is missing, means the session
+        is not running.
+      </column>
+    </group>
+
+    <group title="Mirror Session Statistics">
+      <p>
+        Key-value pairs that report mirror statistics.  The counts are
+        reset to zero whenever the operation state transitions to active.
+        The update period is controlled by <ref table="System"/>
+        <ref column="other_config" key="stats-update-interval"/>.
+        No counts may be available initally until the first update period
+        has elasped.  If any key-value pairs remains missing, the hardware
+        does not support that count.
+      </p>
+      <column name="statistics" key="tx_packets">
+        Number of packets transmitted through this mirror.
+      </column>
+      <column name="statistics" key="tx_bytes">
+        Number of bytes transmitted through this mirror.
+      </column>
+    </group>
+
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+      <column name="other_config"/>
+      <column name="external_ids"/>
     </group>
   </table>
 </database>
