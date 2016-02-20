@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2015 Hewlett Packard Enterprise Development LP
+# Copyright (C) 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -19,8 +19,8 @@ import crypt
 
 
 # User Management
-DEFAULT_USER = "admin"
-DEFAULT_USER_GRP = "ovsdb_users"
+DEFAULT_USER = "netop"
+DEFAULT_USER_GRP = "ops_netop"
 CLI_PROMPT = "/usr/bin/vtysh"
 BASH_PROMPT = "/usr/bin/bash"
 SHADOW_CMD = "echo $(</etc/shadow awk -v user=%s -F : 'user == $1 {print $2}')"
@@ -34,8 +34,8 @@ def create_user(dut, user_prefix, password, user_group, user_prompt, num):
         user_list.append({"username": DEFAULT_USER})
     for i in range(0, num):
         user_name = user_prefix + "_user_" + str(i)
-        dut.switch.cmd("useradd " + user_name + " -p " + password +
-                        " -g " + user_group + " -s " + user_prompt)
+        dut.switch.cmd("useradd " + user_name + " -p " + password + " -g " +
+                       user_group + " -G ovsdb-client -s " + user_prompt)
         user_list.append({"username": user_name})
     return user_list
 
