@@ -22,7 +22,6 @@ from opstestfw.switch.OVS import *
 
 # Topology definition
 topoDict = {"topoExecution": 1000,
-            "topoType": "physical",
             "topoTarget": "dut01",
             "topoDevices": "dut01 wrkston01 wrkston02 wrkston03 wrkston04",
             "topoLinks": "lnk01:dut01:wrkston01,lnk02:dut01:wrkston02,lnk03:dut01:wrkston03,lnk04:dut01:wrkston04",
@@ -228,13 +227,13 @@ def ping_vlan(**kwargs):
     retCode = retStruct.returnCode()
     assert retCode==0, "Failed to configure an ipv6 address"
 
-    retStruct = host1.IPRoutesConfig(config=True, destNetwork="0.0.0.0", netMask=24, gateway="10.0.0.1")
+    retStruct = host1.IPRoutesConfig(config=True, destNetwork="0.0.0.0", netMask=24, gateway="10.0.0.1", interface=host1.linkPortMapping['lnk01'])
     retCode = retStruct.returnCode()
     if retCode:
         LogOutput('error', "\nFailed to configure ipv4 address route")
         caseReturnCode = 1
 
-    retStruct = host1.IPRoutesConfig(config=True, destNetwork="::", netMask=120, gateway="1000::1", ipv6Flag=True)
+    retStruct = host1.IPRoutesConfig(config=True, destNetwork="::", netMask=120, gateway="1000::1", ipv6Flag=True, interface=host1.linkPortMapping['lnk01'])
     retCode = retStruct.returnCode()
     if retCode:
         LogOutput('error', "\nFailed to configure ipv6 address route")
@@ -252,13 +251,13 @@ def ping_vlan(**kwargs):
     retCode = retStruct.returnCode()
     assert retCode==0, "Failed to configure an ipv6 address"
 
-    retStruct = host2.IPRoutesConfig(config=True, destNetwork="0.0.0.0", netMask=24, gateway="10.0.0.1")
+    retStruct = host2.IPRoutesConfig(config=True, destNetwork="0.0.0.0", netMask=24, gateway="10.0.0.1", interface=host2.linkPortMapping['lnk02'])
     retCode = retStruct.returnCode()
     if retCode:
         LogOutput('error', "\nFailed to configure ipv4 address route")
         caseReturnCode = 1
 
-    retStruct = host2.IPRoutesConfig(config=True, destNetwork="::", netMask=120, gateway="1000::1", ipv6Flag=True)
+    retStruct = host2.IPRoutesConfig(config=True, destNetwork="::", netMask=120, gateway="1000::1", ipv6Flag=True, interface=host2.linkPortMapping['lnk02'])
     retCode = retStruct.returnCode()
     if retCode:
         LogOutput('error', "\nFailed to configure ipv6 address route")
@@ -277,13 +276,13 @@ def ping_vlan(**kwargs):
     retCode = retStruct.returnCode()
     assert retCode==0, "Failed to configure an ipv6 address"
 
-    retStruct = host3.IPRoutesConfig(config=True, destNetwork="0.0.0.0", netMask=24, gateway="20.0.0.1")
+    retStruct = host3.IPRoutesConfig(config=True, destNetwork="0.0.0.0", netMask=24, gateway="20.0.0.1", interface=host3.linkPortMapping['lnk03'])
     retCode = retStruct.returnCode()
     if retCode:
         LogOutput('error', "\nFailed to configure ipv4 address route")
         caseReturnCode = 1
 
-    retStruct = host3.IPRoutesConfig(config=True, destNetwork="::", netMask=120, gateway="2000::1", ipv6Flag=True)
+    retStruct = host3.IPRoutesConfig(config=True, destNetwork="::", netMask=120, gateway="2000::1", ipv6Flag=True, interface=host3.linkPortMapping['lnk03'])
     retCode = retStruct.returnCode()
     if retCode:
         LogOutput('error', "\nFailed to configure ipv6 address route")
@@ -301,13 +300,13 @@ def ping_vlan(**kwargs):
     retCode = retStruct.returnCode()
     assert retCode==0, "Failed to configure an ipv6 address"
 
-    retStruct = host4.IPRoutesConfig(config=True, destNetwork="0.0.0.0", netMask=24, gateway="30.0.0.1")
+    retStruct = host4.IPRoutesConfig(config=True, destNetwork="0.0.0.0", netMask=24, gateway="30.0.0.1", interface=host4.linkPortMapping['lnk04'])
     retCode = retStruct.returnCode()
     if retCode:
         LogOutput('error', "\nFailed to configure ipv4 address route")
         caseReturnCode = 1
 
-    retStruct = host4.IPRoutesConfig(config=True, destNetwork="::", netMask=120, gateway="3000::1", ipv6Flag=True)
+    retStruct = host4.IPRoutesConfig(config=True, destNetwork="::", netMask=120, gateway="3000::1", ipv6Flag=True, interface=host4.linkPortMapping['lnk04'])
     retCode = retStruct.returnCode()
     if retCode:
         LogOutput('error', "\nFailed to configure ipv6 address route")
@@ -405,6 +404,7 @@ def ping_vlan(**kwargs):
     assert retCode!=0, "\n##### Ping Passed, Case Failed #####"
     LogOutput('info',"\n##### Failed to do IPv6 ping, Case Passed #####\n\n")
 
+@pytest.mark.timeout(1000)
 class Test_vlan_ping:
     def setup_class (cls):
         # Test object will parse command line and formulate the env
