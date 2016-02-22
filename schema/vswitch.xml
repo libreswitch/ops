@@ -2071,7 +2071,7 @@
     </group>
   </table>
 
- <table name="Port" table="Port or bond configuration.">
+ <table name="Port" title="Port or bond configuration.">
     <p>A port within a <ref table="Bridge"/>.</p>
     <p>Most commonly, a port has exactly one ``interface,'' pointed to by its
     <ref column="interfaces"/> column.  Such a port logically
