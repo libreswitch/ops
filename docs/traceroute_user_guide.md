@@ -88,7 +88,7 @@ Destination host unreachable
     Range: <1 to 255>
 
 #### Minimum TTL
-    traceroute minttl <1-255>
+    traceroute <IP | Hostname> minttl <1-255>
     Minimum number of hops used in outgoing probe packets.
     Range: <1 to 255>
 
