@@ -217,7 +217,6 @@ def restTestDcInvalidData(wrkston01):
     return retStruct
 
 
-@pytest.mark.skipif(True, reason="Skipping temporarily to debug build failure.")
 class Test_ft_framework_rest:
     def setup_class(cls):
         # Create Topology object and connect to devices

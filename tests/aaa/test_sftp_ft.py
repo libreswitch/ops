@@ -535,7 +535,6 @@ def sftpRebootTest(**kwargs):
     return True
 
 
-@pytest.mark.skipif(True, reason="Skipping temporarily to debug build failure.")
 # Test class to verify SFTP
 class Test_sftp:
     def setup_class(cls):
