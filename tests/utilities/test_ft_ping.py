@@ -255,7 +255,7 @@ def ping_with_datagram_size_option(**kwargs):
     " from switch2 to host1 with the datagram-size parameter"
 
     retBuffer = devIntRetStruct.get('buffer')
-    assert 'PING 10.0.30.1 (10.0.30.1): 200 data bytes' \
+    assert 'PING 10.0.30.1 (10.0.30.1) 200(228) bytes of data' \
     and '0% packet loss' in retBuffer, "Ping"
     " IPv4-address from switch2 to host1"
     " with the datagram-size parameter failed"
@@ -295,8 +295,8 @@ def ping_with_repetition_option(**kwargs):
     " from switch2 to host1 with the repetition parameter"
 
     retBuffer = devIntRetStruct.get('buffer')
-    assert '0% packet loss' and '2 packets transmitted' \
-    and '2 packets received' in retBuffer, "Ping"
+    assert '2 packets transmitted, 2 received, 0% packet loss,' \
+    in retBuffer, "Ping"
     " IPv4-address from switch2 to host1"
     " with the repetition parameter failed"
 
@@ -449,7 +449,7 @@ def ping6_with_datagram_size_option(**kwargs):
     " from switch2 to host1 with the datagram-size parameter"
 
     retBuffer = devIntRetStruct.get('buffer')
-    assert 'PING 1030::1 (1030::1): 200 data bytes' \
+    assert 'PING 1030::1(1030::1) 200 data bytes' \
     and '0% packet loss' in retBuffer, "Ping6"
     " from switch2 to host1 with the datagram-size parameter failed"
 
@@ -533,7 +533,7 @@ def ping_unknown_host(**kwargs):
     assert retCode == 0, "Failed to ping hostname"
 
     retBuffer = devIntRetStruct.get('buffer')
-    assert 'ping: unknown host' in retBuffer, "Failure"
+    assert 'unknown host' in retBuffer, "Failure"
     " case test is unsuccessful"
 
 
@@ -563,7 +563,7 @@ def ping6_unknown_host(**kwargs):
     assert retCode == 0, "Failed to ping hostname"
 
     retBuffer = devIntRetStruct.get('buffer')
-    assert 'ping6: unknown host' in retBuffer, "Failure"
+    assert 'unknown host' in retBuffer, "Failure"
     " case test is unsuccessful"
 
 
@@ -706,8 +706,6 @@ def cleanup(**kwargs):
     assert retCode == 0, "Failed to exit vtysh prompt"
 
 
-@pytest.mark.skipif(True, reason="Skipping ping FT temporarily till code changes"
-                    " related to ping package change to iputils are merged.")
 class Test_ping:
 
     def setup_class(cls):
