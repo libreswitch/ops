@@ -5,7 +5,6 @@
    - [Design choices](#design-choices)
    - [Internal structure](#internal-structure)
    - [OVSDB Schema](#ovsdb-schema)
-   - [References](#references)
 
 ## High level design of SFTP
 The SFTP (Secure File Transfer Protocol) command is a very common method for transferring a file or executing a command in a secure mode. SFTP makes use of encrypted SSH sessions for its operation. It provides an alternative to TFTP (Trivial File Transfer Protocol) for transferring sensitive information to and from the switch. Files transferred using SFTP are encrypted and require authentication, thus providing greater security to the switch.
@@ -63,8 +62,3 @@ sftp_server_enable
 Value:
 true, false
 ```
-
-## References
-openSSH 6.8 Package (http://olex.openlogic.com/packages/openssh/6.8)
-
-SFTP RFC (https://tools.ietf.org/html/rfc913)
