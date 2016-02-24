@@ -114,15 +114,15 @@ switch(config)# no ntp trusted-key <_key-id_>
 The `show ntp status` command displays global NTP configuration information.
 ```
 switch# show ntp status
-NTP has been enabled
-NTP Authentication has been enabled
+NTP is enabled
+NTP authentication is enabled
 Uptime: 2 hrs
 ```
 If the switch has synchronized its time with an NTP server, then those details are also displayed:
 ```
 switch# show ntp status
-NTP has been enabled
-NTP Authentication has been enabled
+NTP is enabled
+NTP authentication is enabled
 Uptime: 2 hrs
 Synchronized to NTP Server 10.93.55.11 at stratum 4
 Poll interval = 1024 seconds

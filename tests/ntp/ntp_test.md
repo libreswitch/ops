@@ -95,8 +95,8 @@ Configure the switch as an NTP client and add the NTP server's IP address as a p
 Restart the ops-ntpd service on the switch, and check if the NTP associations and NTP status is verified.
 Use the command below on the switch to restart the ops-ntpd service.
 
-Following command is not a vtysh CLI command. Run it on the Linux shell.
-To come out of the vtysh shell, use `exit` on the vtysh shell and then execute following command.
+The following command is not a vtysh CLI command. Run it on the Linux shell.
+To come out of the vtysh shell, use `exit` on the vtysh shell and then execute the following command.
 
  ```
  service restart ops-ntpd
@@ -113,7 +113,7 @@ After restarting an additional-ntpd service, make sure that the NTP association 
 
 - Check the NTP status and verify if the clock is synchronized with the NTP server.
 
-- Confirm that the local server can reach its configured the public server. If the public server cannot be reached, the NTP client cannot be configured with the local NTP server.
+- Confirm that the local server can reach its configured public server. If the public server cannot be reached, the NTP client cannot be configured with the local NTP server.
 
 - The nonauthenticating server has been added as the preferred server. Confirm that the IP address of the preferred server is synchronized with the client.
 
@@ -131,8 +131,8 @@ Example output:
 
  switch# show ntp status
 
- NTP has been enabled
- NTP Authentication has been enabled
+ NTP is enabled
+ NTP authentication is enabled
  Synchronized to NTP Server 172.17.0.3 at stratum 3
  Poll interval = 64 seconds
  Time accuracy is within 0.016 seconds
@@ -251,7 +251,7 @@ After restarting the ops-ntpd service, confirm that the NTP association and NTP 
 
 - Check the NTP status, and verify that the clock is synchronized with the NTP server.
 
-- Confirm that the local server can reach its configured the public server. If the public server cannot be reached, the NTP client cannot be configured with the local NTP server.
+- Confirm that the local server can reach its configured public server. If the public server cannot be reached, the NTP client cannot be configured with the local NTP server.
 
 - The nonauthenticating server has been added as the preferred server. Confirm that the IP address of the preferred server is synchronized with the client.
 
@@ -269,8 +269,8 @@ switch# show ntp associations
 
 switch# show ntp status
 
-NTP has been enabled
-NTP Authentication has been enabled
+NTP is enabled
+NTP authentication is enabled
 Synchronized to NTP Server 172.17.0.2 at stratum 3
 Poll interval = 64 seconds
 Time accuracy is within 0.016 seconds
