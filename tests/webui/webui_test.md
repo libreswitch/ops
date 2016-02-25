@@ -1,12 +1,28 @@
 # Testing for OPS-WEBUI
 The Web UI testing consists of:
+* automated REST feature tests (FT)
 * automated JavaScript unit tests
 * manual GUI tests
 
 ## Contents
+- [Automated REST Feature Tests](#automated-rest-feature-tests)
+	- [Test_CreatePatch](#test_createpatch)
+		- [test_create_port](#test_create_port)
+		- [test_patch_port_int_admin](#test_patch_port_int_admin)
 - [Automated JavaScript unit tests](#automated-javascript-unit-tests)
 - [Shell test commands](#shell-test-commands)
-- [Tests](#tests)
+- [Unit Tests](#unit-tests)
+
+## Automated REST Feature Tests
+The goal of the automated REST feature tests is to make sure that schema, data, or REST changes don't break the Web UI.
+
+### Test_CreatePatch
+#### test_create_port
+This test creates a basic port object and validates the data returned is what the Web UI expects.
+
+#### test_patch_port_int_admin
+This test patches the port and interface object to add the admin up state, and validates the returning data.
+
 
 ## Automated JavaScript unit tests
 This testing uses the following NodeJS modules:
@@ -34,7 +50,7 @@ The `aliases.sh` file in the ops-webui root directory can be sourced to provide 
 * **wt** - run the unit tests a single time (Karma/Jasmine tests are located in \__test__ directories)
 * **wtw** - continuous testing, same as test but reruns when files change
 
-## Tests
+## Unit Tests
 
     Start:
      Test Suite For InterfaceActions

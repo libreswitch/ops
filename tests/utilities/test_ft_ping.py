@@ -706,6 +706,8 @@ def cleanup(**kwargs):
     assert retCode == 0, "Failed to exit vtysh prompt"
 
 
+@pytest.mark.skipif(True, reason="Skipping ping FT temporarily till code changes"
+                    " related to ping package change to iputils are merged.")
 class Test_ping:
 
     def setup_class(cls):

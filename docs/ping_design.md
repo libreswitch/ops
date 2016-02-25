@@ -1,17 +1,17 @@
 #PING Design
 
-##Contents
+## Contents
    - [High level design of ping](#high-level-design-of-ping)
    - [Design choices](#design-choices)
    - [Internal structure](#internal-structure)
        - [CLI Daemon](#cli-daemon)
    - [References](#references)
 
-##High level design of ping
+## High level design of ping
 
 The Ping application is most commonly used for troubleshooting the accessibility of devices.
 It is mostly used to verify connectivity between your switch and a host or port.
-OpenSwitch uses open source `ping` and `ping6` from the inetutils package for implementing ping functionality.
+OpenSwitch uses open source `ping` and `ping6` from the iputils package for implementing ping functionality.
 Ping parameters are obtained from the user through CLI.
 Obtained information is stored in a structure and passed to the handler as an argument.
 The handler maps the ping parameters entered by the user to the open source ping options and invokes the Linux ping utility.
@@ -19,10 +19,10 @@ The handler sends the response obtained from the open source ping to the user th
 The end to end operation is performed in a single thread context as part of CLI Daemon.
 No OVSDB interaction or any other module interaction is involved.
 
-##Design choices
+## Design choices
 
 There are multiple open source packages available for the ping application.
-The open source `Ping` application used is taken from the Linux inetutils package.
+The open source `Ping` application used is taken from the Linux iputils package.
 
 ##Internal structure
 
@@ -45,7 +45,7 @@ The open source `Ping` application used is taken from the Linux inetutils packag
 
 ```
 
-###CLI Daemon
+### CLI Daemon
 All information needed by the ping application is obtained from the user through CLI.
 The information below is stored in a structure and maintained in the CLI Daemon.
 
@@ -61,7 +61,7 @@ The information below is stored in a structure and maintained in the CLI Daemon.
 * Type of Service value
 
 
-##References
-Inetutils Package (http://www.gnu.org/software/inetutils/)
+## References
+Iputils Package (http://www.skbuff.net/iputils/)
 
 Linux Ping Man page (http://linux.die.net/man/8/ping)

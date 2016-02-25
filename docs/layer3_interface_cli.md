@@ -7,6 +7,7 @@
 	- [vrf attach](#vrf-attach)
 	- [ip address](#ip-address)
 	- [ipv6 address](#ipv6-address)
+	- [ip proxy-arp](#ip-proxy-arp)
 	- [interface vlan](#interface-vlan)
 	- [interface](#interface)
 - [Display commands](#display-commands)
@@ -121,7 +122,30 @@ hostname(config)# interface 1
 hostname(config-if)# ipv6 address fd00:5708::f02d:4df6/64
 hostname(config-if)#
 ```
+###ip proxy-arp
 
+#### Syntax
+
+Under the interface context.
+
+`[no] ip proxy-arp`
+
+#### Description
+The command enables/disables proxy ARP on the specified interface. By default, it is disabled.
+
+#### Authority
+Admin
+
+#### Parameter
+none
+
+#### Example
+Configure proxy ARP on an interface
+```
+hostname(config)# interface 1
+hostname(config-if)# ip proxy-arp
+
+```
 ### interface vlan
 
 #### Syntax
@@ -217,6 +241,7 @@ hostname# show interface 1
 Interface 1 is up
  Admin state is up
  Hardware: Ethernet, MAC Address: 48:0f:cf:af:02:17
+ Proxy ARP is enabled
  MTU 1500
  Full-duplex
  Speed 1000 Mb/s

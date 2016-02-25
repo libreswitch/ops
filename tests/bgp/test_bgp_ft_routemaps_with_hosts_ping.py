@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (C) 2015 Hewlett Packard Enterprise Development LP
+# Copyright (C) 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -125,6 +125,7 @@ NUM_HOSTS = 2
 SWITCH_PREFIX = "s"
 HOST_PREFIX = "h"
 
+PING_ATTEMPTS = 10
 
 class myTopo(Topo):
     def build(self, hsts=0, sws=2, **_opts):
@@ -272,24 +273,33 @@ class bgpTest(OpsVsiTest):
         assert not found, "Route should not exist (%s -> %s) on %s" % \
                           (network, next_hop, switch.name)
 
+    def get_ping_hosts_result(self):
+        h1 = self.net.hosts[0]
+        h2 = self.net.hosts[1]
+
+        info("### Ping %s from %s ###\n" % (h1.name, h2.name))
+        ret = h1.cmd("ping -c 1 %s" % HOST2_IP_ADDR)
+        return parsePing(ret)
+
     def verify_hosts_ping_OK(self):
         info("\n########## Verifying PING successful.. ##########\n")
-        result = self.net.pingAll()
 
-        assert result == 0.0, "PING failed for at least one host. \
-                              Failure percentage: %f" % result
+        for i in range(PING_ATTEMPTS):
+            result = self.get_ping_hosts_result()
+            if result:
+                break
+
+        assert result, "PING failed"
 
         info("### Pings successful ###\n")
 
     def verify_hosts_ping_fail(self):
-        info("\n########## Verifying PING Failure "
-             "(negative case) ##########\n")
-        result = self.net.pingAll()
+        info("\n########## Verifying PING Failure (negative case) ##########\n")
 
-        assert result != 0.0, "PING did not fail when it was supposed to."
+        result = self.get_ping_hosts_result()
+        assert not result, "PING did not fail when it was supposed to."
 
 
-@pytest.mark.skipif(True, reason="PING fails intermittently.")
 class Test_bgpd_routemaps_with_hosts_ping:
     def setup(self):
         pass

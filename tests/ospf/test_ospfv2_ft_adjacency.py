@@ -53,7 +53,7 @@ OSPF_NETWORK_PL = "24"
 OSPF_NETWORK_MASK = "255.255.255.0"
 
 VTYSH_CR = '\r\n'
-ADJACENCY_MAX_WAIT_TIME = 100
+ADJACENCY_MAX_WAIT_TIME = 50
 
 
 # Topology definition
@@ -287,6 +287,18 @@ class Test_ospf_configuration:
         dut02Obj = self.topoObj.deviceObjGet(device="dut02")
 
         configure(switch1=dut01Obj, switch2=dut02Obj)
-        LogOutput('info', "Wait for adjacency to form")
-        wait_for_adjacency(dut01Obj, SW2_ROUTER_ID)
-        wait_for_adjacency(dut02Obj, SW1_ROUTER_ID)
+        LogOutput('info', "Wait for adjacency to form between SW1 and SW2")
+        if wait_for_adjacency(dut01Obj, SW2_ROUTER_ID) is True:
+            LogOutput('info', "Adjacency formed in SW1 with SW2 (Router-id %s)"
+                      % SW2_ROUTER_ID)
+        else:
+            assert False, "Adjacency not formed in SW1 with SW2(Router-id %s)"\
+                          % SW2_ROUTER_ID
+
+        if wait_for_adjacency(dut02Obj, SW1_ROUTER_ID) is True:
+            LogOutput('info', "Adjacency formed in SW2 with SW1 (Router-id %s)"
+                      % SW1_ROUTER_ID)
+
+        else:
+            assert False, "Adjacency not formed in SW2 with SW1(Router-id %s)"\
+                          % SW1_ROUTER_ID

@@ -347,13 +347,20 @@ def rest_sanity_check(switch_ip):
     max_retries = 60  # 1 minute
     while count <= max_retries:
         info("\nSwitch Sanity Check: Try count %d \n" % count)
-        status_system, response_system = execute_request(system_path, "GET",
-                                                         None, switch_ip)
-        status_bridge, response_bridge = execute_request(bridge_path, "GET",
-                                                         None, switch_ip)
-        if status_system is httplib.OK and response_system is not None and \
-                status_bridge is httplib.OK and response_bridge is not None:
-            break
+        try:
+            status_system, response_system = \
+                execute_request(system_path, "GET", None, switch_ip)
+            status_bridge, response_bridge = \
+                execute_request(bridge_path, "GET", None, switch_ip)
+
+            if status_system is httplib.OK and \
+                    response_system is not None and \
+                    status_bridge is httplib.OK and \
+                    response_bridge is not None:
+                break
+        except:
+            pass
+
         count += 1
         info("\nSwitch Sanity Check: Retrying\n")
         time.sleep(1)

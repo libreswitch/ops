@@ -210,6 +210,10 @@ class Test_subInt:
         Test_subInt.testObj = testEnviron(topoDict=topoDict)
         # Get topology object
         Test_subInt.topoObj = Test_subInt.testObj.topoObjGet()
+        if Test_subInt.topoObj.topoType == "physical":
+            LogOutput('info',
+                      "Skipping test physical run due to defect #744")
+            pytest.skip("Skipping test physical run due to defect #744")
 
     def teardown_class(cls):
         Test_subInt.topoObj.terminate_nodes()

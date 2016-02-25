@@ -476,22 +476,22 @@ The requirements for this test case are:
 
 The test case validates the `/rest/v1/system/users` through the standard REST API GET method.
 
-1. Verify if the GET method returns a json object with a list of users by creating 100 new users that are part of ovsdb_users group.
+1. Verify if the GET method returns a json object with a list of users by creating 100 new users that are part of ovsdb-client group.
     a. Execute the GET request over `/rest/v1/system/users?depth=1`.
     b. Verify if the HTTP response is `200 OK`.
     c. Confirm that the returned user list has the expected data.
 
-2. Verify if the GET method returns an users URI list by creating 100 new users that are part of ovsdb_users group.
+2. Verify if the GET method returns an users URI list by creating 100 new users that are part of ovsdb-client group.
     a. Execute the GET request over `/rest/v1/system/users`.
     b. Verify if the HTTP response is `200 OK`.
     c. Confirm that the returned user list has the expected data.
 
-3. Verify if the GET method returns a json object with a list of users by creating 11 new users and only 10 are part of ovsdb_users group.
+3. Verify if the GET method returns a json object with a list of users by creating 11 new users and only 10 are part of ovsdb-client group.
     a. Execute the GET request over `/rest/v1/system/users?depth=1`.
     b. Verify if the HTTP response is `200 OK`.
     c. Confirm that the returned user list has the expected data.
 
-4. Verify if the GET method returns a json object with a list of users by creating 10 new users that are part of ovsdb_users group and have extra arguments in the creation command.
+4. Verify if the GET method returns a json object with a list of users by creating 10 new users that are part of ovsdb-client group and have extra arguments in the creation command.
     a. Execute the GET request over `/rest/v1/system/users?depth=1`.
     b. Verify if the HTTP response is `200 OK`.
     c. Confirm that the returned user list has the expected data.
@@ -845,12 +845,12 @@ The requirements for this test case are:
 ### Description
 The test case validates the `/rest/v1/system/users/<id>` through the standard REST API DELETE method.
 
-1. Verify that the request passes when trying to delete a new user who is part of ovsdb_users group and is not logged in.
+1. Verify that the request passes when trying to delete a new user who is part of ovsdb-client group and is not logged in.
     a. Execute the DELETE request over `/rest/v1/system/users/<id>`.
     b. Verify if the HTTP response is `204 NO CONTENT`.
     c. Confirm that the returned user list has the expected data.
 
-2. Verify that the request fails when trying to delete a new user who is part of ovsdb_users group and is logged in.
+2. Verify that the request fails when trying to delete a new user who is part of ovsdb-client group and is logged in.
     a. Execute the DELETE request over `/rest/v1/system/users/<id>`.
     b. Verify if the HTTP response is `400 BAD REQUEST`.
     c. Confirm that the returned user list has the expected data.
@@ -864,7 +864,7 @@ The test case validates the `/rest/v1/system/users/<id>` through the standard RE
     a. Execute the DELETE request over `/rest/v1/system/users/<id>`.
     b. Verify if the HTTP response is `404 NOT FOUND`.
 
-5. Verify that the request fails after trying to delete a new user who is not part of the ovsdb_users group.
+5. Verify that the request fails after trying to delete a new user who is not part of the ovsdb-client group.
     a. Execute the DELETE request over `/rest/v1/system/users/<id>`.
     b. Verify if the HTTP response is `404 NOT FOUND`.
     c. Confirm that the returned user list has the expected data.
@@ -886,7 +886,7 @@ This test passes by meeting the following criteria:
 
     A `404 NOT FOUND` HTTP response.
 
-- The following error message is displayed when trying to delete a user who is not part of ovsdb_users group:
+- The following error message is displayed when trying to delete a user who is not part of ovsdb-client group:
 
     A `404 NOT FOUND` HTTP response.
 
@@ -904,7 +904,7 @@ This test fails when:
 
 - Deleting a nonexistent user anything other than a `404 NOT FOUND` HTTP response is displayed.
 
-- Deleting a user who is not part of the ovsdb_users group, the following error message or anything other than a `404 NOT FOUND` HTTP response is displayed:
+- Deleting a user who is not part of the ovsdb-client group, the following error message or anything other than a `404 NOT FOUND` HTTP response is displayed:
 
     A `204 NO CONTENT` HTTP response.
 
@@ -949,7 +949,7 @@ The requirements for this test case are:
 ### Description
 The test case validates the `/rest/v1/system/users/<id>` through the standard REST API PUT method.
 
-1. Verify that the request passes when trying to update the password of a user, who is also part of ovsdb_users group but is not logged in.
+1. Verify that the request passes when trying to update the password of a user, who is also part of ovsdb-client group but is not logged in.
     a. Execute the PUT request over `/rest/v1/system/users/<id>` with the following data:
 
         ```
@@ -964,7 +964,7 @@ The test case validates the `/rest/v1/system/users/<id>` through the standard RE
     b. Verify if the HTTP response is `200 OK`.
     c. Confirm that the user can log in with the new password.
 
-2. Verify that the request fails when trying to update a user with an empty password, and the user is part of the ovsdb_users group.
+2. Verify that the request fails when trying to update a user with an empty password, and the user is part of the ovsdb-client group.
     a. Execute the PUT request over `/rest/v1/system/users/<id>` with the following data:
 
         ```
@@ -993,7 +993,7 @@ The test case validates the `/rest/v1/system/users/<id>` through the standard RE
 
     b. Verify if the HTTP response is `404 NOT FOUND`.
 
-4. Verify that the request fails after trying to update the password of a user who is not part of the ovsdb_users group.
+4. Verify that the request fails after trying to update the password of a user who is not part of the ovsdb-client group.
     a. Execute the PUT request over `/rest/v1/system/users/<id>` with the following data:
 
         ```
@@ -1007,7 +1007,7 @@ The test case validates the `/rest/v1/system/users/<id>` through the standard RE
 
     b. Verify if the HTTP response is `404 NOT FOUND`.
 
-5. Verify that the request fails after trying to update the password of a user who is part of the ovsdb_users group and then try to log in with the old password.
+5. Verify that the request fails after trying to update the password of a user who is part of the ovsdb-client group and then try to log in with the old password.
     a. Execute the PUT request over `/rest/v1/system/users/<id>` with the following data:
 
         ```

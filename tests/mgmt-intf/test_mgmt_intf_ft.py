@@ -67,13 +67,21 @@ class mgmtIntfTests(OpsVsiTest):
     def dhclient_started_on_mgmt_intf_ipv4(self):
         s1 = self.net.switches[0]
         cnt = 15
+        output_tmp = ''
+        output = ''
         while cnt:
-            output = s1.cmd("systemctl status dhclient@eth0.service")
+            output = s1.cmd("systemctl status dhclient@eth0.service -l")
+            output_tmp = s1.cmd("ifconfig eth0")
+            output_log = s1.cmd("cat /var/log/messages | grep \"dhclient\" ")
             if output in 'running':
                 break
             else:
                 cnt -= 1
                 sleep(1)
+
+        info("DHCLIENT status debug info : %s\n" % (output))
+        info("Mgmt port status debug info : %s\n" % (output_tmp))
+        info("SYSLOG output : %s\n" % (output_log))
         assert 'running' in output, "Test to verify dhcp client has"\
             " started failed"
         info('### Successfully verified dhcp client has started ###\n')
@@ -433,7 +441,7 @@ class mgmtIntfTests(OpsVsiTest):
     # Verify to set hostname through dhclient
     def set_hostname_by_dhclient(self):
         s1 = self.net.switches[0]
-        s1.cmd("dhcp_options open-vswitch-new None None")
+        s1.cmd("dhcp_options open-vswitch-new None None None")
         cnt = 15
         while cnt:
             cmd_output = s1.ovscmd("ovs-vsctl list system")
@@ -449,6 +457,51 @@ class mgmtIntfTests(OpsVsiTest):
         info("### Successfully verified to set system hostname"
              " by dhclient ###\n")
 
+    # Verify to configure system domainname through CLI
+    def config_set_domainname_from_cli(self):
+        s1 = self.net.switches[0]
+        s1.cmdCLI("config terminal")
+        s1.cmdCLI("domain-name cli")
+        cnt = 15
+        while cnt:
+            cmd_output = s1.ovscmd("ovs-vsctl list system")
+            domainname = s1.ovscmd("ovs-vsctl get system . "
+                                   "domain_name").rstrip('\r\n')
+            output = s1.cmd("uname -n")
+            if "domain_name=cli" in cmd_output and \
+               domainname == "cli" and \
+               "cli" in output:
+                break
+            else:
+                cnt -= 1
+                sleep(1)
+        assert 'domain_name=cli' in cmd_output and \
+               domainname == 'cli' and \
+               'cli' in output,\
+               "Test to set domainname through CLI"\
+               " has failed"
+        info("### Successfully verified configuring"
+             " domainname using CLI ###\n")
+
+    # Verify to set domainname through dhclient
+    def set_domainname_by_dhclient(self):
+        s1 = self.net.switches[0]
+        s1.cmd("dhcp_options None None None dhcp_domain")
+        cnt = 15
+        while cnt:
+            cmd_output = s1.ovscmd("ovs-vsctl list system")
+            output = s1.cmd("uname -n")
+            if "dhcp_domain_name=dhcp_domain" in cmd_output:
+                break
+            else:
+                cnt -= 1
+                sleep(1)
+        assert 'dhcp_domain_name=dhcp_domain' in cmd_output,\
+            "Test to set system domainname through dhclient"\
+            " has failed"
+        info("### Successfully verified to set system domainname"
+             " by dhclient ###\n")
+
     #Extra cleanup if test fails in middle.
     def mgmt_intf_cleanup(self):
         s1 = self.net.switches[0]
@@ -457,7 +510,6 @@ class mgmtIntfTests(OpsVsiTest):
             s1.cmd("ip netns exec swns ip address flush dev 1")
 
 
-@pytest.mark.skipif(True, reason="Skipping temporarily to debug build failure.")
 class Test_mgmt_intf:
 
     def setup_class(cls):
@@ -542,3 +594,13 @@ class Test_mgmt_intf:
                         "due to this Defect:181 dependencies")
     def test_set_hostname_by_dhclient(self):
         self.test.set_hostname_by_dhclient()
+
+    def test_config_set_domainname_from_cli(self):
+        info("\n########## Test to configure System Domainname "
+             " ##########\n")
+        self.test.config_set_domainname_from_cli()
+
+    @pytest.mark.skipif(True, reason="Disabling this testcase "
+                        "due to this Defect:181 dependencies")
+    def test_set_domainname_by_dhclient(self):
+        self.test.set_domainname_by_dhclient()

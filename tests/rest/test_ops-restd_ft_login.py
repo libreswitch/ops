@@ -29,6 +29,7 @@ from opsvsi.opsvsitest import *
 from opsvsiutils.systemutil import *
 from utils.utils import *
 import ssl
+from utils.utils import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -60,12 +61,12 @@ class configTest (OpsVsiTest):
                            hopts=host_opts, sopts=switch_opts)
         self.net = Mininet(ecmp_topo, switch=VsiOpenSwitch, host=Host,
                            link=OpsVsiLink, controller=None, build=True)
+        self.SWITCH_IP = get_switch_ip(self.net.switches[0])
 
     def verify_login(self):
 
         s1 = self.net.switches[0]
-        ip_addr = s1.cmd("python -c \"import socket;print\
-                         socket.gethostbyname(socket.gethostname())\"")
+        ip_addr = self.SWITCH_IP
 
         ip_addr = ip_addr.strip()
 
@@ -85,7 +86,7 @@ class configTest (OpsVsiTest):
         conn = httplib.HTTPSConnection(ip_addr, 443, context=sslcontext)
 
         print("\n######### Running POST to fetch the cookie ##########\n")
-        body = {'username': 'root', 'password': ''}
+        body = {'username': 'netop', 'password': 'netop'}
         conn.request('POST', url, urllib.urlencode(body), headers=_headers)
         response = conn.getresponse()
         status_code, response_data = response.status, response.read()
@@ -120,8 +121,7 @@ class configTest (OpsVsiTest):
 
     def verify_fail_login(self):
         s1 = self.net.switches[0]
-        ip_addr = s1.cmd("python -c \"import socket;print\
-                         socket.gethostbyname(socket.gethostname())\"")
+        ip_addr = self.SWITCH_IP
 
         ip_addr = ip_addr.strip()
 
@@ -183,7 +183,8 @@ class Test_config:
         pass
 
     def setup_class(cls):
-        Test_config.test_var = configTest()
+        cls.test_var = configTest()
+        rest_sanity_check(cls.test_var.SWITCH_IP)
 
     def teardown_class(cls):
         Test_config.test_var.net.stop()

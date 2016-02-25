@@ -1066,7 +1066,34 @@
       <column name="vlans">
         VLANs included in the bridge.
       </column>
+
+      <column name="mstp_instances">
+        MSTP configuration for individual instance.
+      </column>
+
+      <column name="mstp_common_instance">
+        MSTP configuration for CIST(Common Instance Spanning Tree).
+      </column>
+
     </group>
+
+    <group title="MSTP Configurations">
+      <p>
+        MSTP global configurations for all MSTIs.
+      </p>
+      <column name="mstp_enable" type='{"type": "boolean"}'>
+        Set this value to <code>true</code>, to enable MSTP.
+        Default value is <code>false</code>.
+      </column>
+      <column name="other_config" key="mstp_config_name">
+        Set this value to specify the MSTP configuration name.
+        Default value is system MAC address.
+      </column>
+      <column name="other_config" key="mstp_config_revision">
+        Set this value to specify the configuration revision number.
+        Default value is 0.
+      </column>
+   </group>
 
     <group title="Other Features">
       <column name="datapath_type">
@@ -1176,6 +1203,340 @@
       <column name="external_ids">
       </column>
    </group>
+  </table>
+
+  <table name="MSTP_Instance" title="MSTP instance info">
+    <p>
+        This represents information regarding a Bridge's
+        Bridge Protocol entity for the specified Spanning Tree instance.
+    </p>
+    <group title="Configurations">
+      <column name="vlans">
+        VLANs included in the MSTP instance.
+      </column>
+      <column name="priority">
+        Set this value to specify the priority value, configured as a multiple of 4096
+        The lower a priority value, the higher the priority.
+        Default value is 32768.
+      </column>
+      <column name="bridge_identifier">
+        The root bridge ID for CIST.
+        Default value 64 bit string(4 bit priority + 12 bit Instance ID + 48bit system MAC address)
+      </column>
+      <column name="mstp_instance_ports">
+        MSTP configuration for port.
+      </column>
+    </group>
+    <group title="Status">
+     <p>
+        These are status parameters for a particular MSTP instance.
+        These values will be calculated at the time of protocol initialization.
+     </p>
+      <column name="hardware_grp_id">
+      The hardware spanning tree group ID.
+      Default value is 0.
+      </column>
+      <column name="designated_root">
+        The root bridge name for a MSTP instance.
+      </column>
+      <column name="root_path_cost">
+        The path cost from the transmitting Bridge to the Root Bridge for the MSTI.
+      </column>
+      <column name="root_priority">
+        The root bridge priority.
+        The lower a priority value, the higher the priority.
+        Default value is 32768.
+      </column>
+      <column name="root_port">
+        Specifies the root port name for a MSTP instance.
+      </column>
+      <column name="time_since_top_change">
+        The time last topology change happened for this instance.
+        The format for this is number of seconds from epoch.
+      </column>
+      <column name="top_change_cnt">
+        The total number of topology changes that have occurred for this instance.
+      </column>
+      <column name="topology_change_disable">
+        Set this value to <code>true</code>, if there is a change in topology.
+        Default is <code>false</code>.
+      </column>
+    </group>
+  </table>
+
+  <table name="MSTP_Common_Instance" title="MSTP common instance info">
+    <p>
+        This represents information regarding a Bridge's Bridge Protocol entity for the CIST..
+    </p>
+    <group title="Configurations">
+      <column name="vlans">
+        VLANs included in the CIST instance.
+      </column>
+      <column name="priority">
+        Set this value to specify the priority value, configured as a multiple of 4096
+        The lower a priority value, the higher the priority.
+        Default value is 32768.
+      </column>
+      <column name="bridge_identifier">
+        The root bridge ID for CIST.
+        Default value 64 bit string(4 bit priority + 12 bit Instance ID + 48bit system MAC address)
+      </column>
+      <column name="hello_time">
+        The hello time value for this instance.
+        Default value is 2.
+      </column>
+      <column name="forward_delay">
+        The forward delay time value for this instance.
+        Default value is 15.
+      </column>
+      <column name="max_age">
+        Set this value to specify the maximum-aging time(The time a device waits without receiving
+        spanning tree configuration messages before attempting a reconfiguration) for all MST instances.
+        Default value is 20.
+      </column>
+      <column name="tx_hold_count">
+        The value used by the MSTP transmit state machine to limit the maximum
+        transmission rate of MST BPDUs within the hello interval.
+        Default value is 6.
+      </column>
+      <column name="mstp_common_instance_ports">
+        CIST configurations for port.
+      </column>
+    </group>
+    <group title="Status">
+      <column name="hardware_grp_id">
+        The hardware spanning tree group ID.
+        Default value is 0.
+      </column>
+      <column name="designated_root">
+        The root bridge name for a CIST instance.
+      </column>
+      <column name="root_path_cost">
+        The path cost from the transmitting Bridge to the Root Bridge for the MSTI.
+      </column>
+      <column name="root_priority">
+        The root bridge priority.
+        The lower a priority value, the higher the priority.
+        Default value is 32768.
+      </column>
+      <column name="root_port">
+        The root port name for a CIST instance.
+      </column>
+      <column name="regional_root">
+        The regional root for the CIST.
+      </column>
+      <column name="cist_path_cost">
+        The path cost from the transmitting bridge to the CIST regional root.
+      </column>
+      <column name="remaining_hops">
+        The hop count after which this instance MSTP BPDU will be discarded.
+        Default value is 20
+      </column>
+      <column name="oper_hello_time">
+        The operating hello timer value for this instance.
+      </column>
+      <column name="oper_forward_delay">
+        The forward delay timer value for this instance.
+      </column>
+      <column name="oper_max_age">
+        Set this value to specify the maximum-aging time(The time a device waits without receiving
+        spanning tree configuration messages before attempting a reconfiguration) for all MST instances.
+      </column>
+      <column name="hello_expiry_time">
+        The epoch time in seconds after which a hello packet will be sent.
+      </column>
+      <column name="forward_delay_expiry_time">
+        The epoch time in seconds when forward delay will expire.
+      </column>
+      <column name="time_since_top_change">
+        The time last topology change happened for this instance.
+        The format for this is number of seconds from epoch.
+      </column>
+      <column name="oper_tx_hold_count">
+        The value used by the MSTP transmit state machine to limit the maximum
+        transmission rate of MST BPDUs within the hello interval.
+      </column>
+      <column name="top_change_cnt">
+        The total number of topology changes that have occurred for this instance.
+      </column>
+    </group>
+  </table>
+
+  <table name="MSTP_Common_Instance_Port" title="MSTP common instance port info">
+    <p>
+        This represents information regarding a specific Port
+        within the Bridge's Bridge Protocol entity, for the CIST.
+    </p>
+    <group title="Configurations">
+      <column name="port">
+        Specifies port for the CIST instance.
+      </column>
+      <column name="port_priority">
+        Set this value to specify the port-priority.
+        configurable in increments of 16.
+        Default value is 128.
+      </column>
+      <column name="admin_path_cost">
+        The path cost for the port to reach spanning-tree root.
+      </column>
+      <column name="admin_edge_port_disable" type='{"type": "boolean"}'>
+        Set this value to <code>true</code>, if this admin edge port should not participate in root election.
+        Default is <code>false</code>.
+      </column>
+      <column name="bpdus_rx_enable"  type='{"type": "boolean"}'>
+        Set this value to <code>false</code> to stop transmission of BPDUs.
+        Default is <code>true</code>.
+      </column>
+      <column name="bpdus_tx_enable"  type='{"type": "boolean"}'>
+        Set this value to <code>false</code> not to transmit the BPDUs
+        Default is <code>true</code>.
+      </column>
+      <column name="restricted_port_role_disable" type='{"type": "boolean"}'>
+        Set this value to <code>true</code> if restiricted role enabled (not to be selected as Root Port for the CIST or any MSTI).
+        Default is <code>false</code>.
+      </column>
+      <column name="restricted_port_tcn_disable" type='{"type": "boolean"}'>
+        Set this value to <code>true</code> if restiricted port tcn is enabled(not to propagate topology changes to other ports).
+        Default is <code>false</code>.
+      </column>
+      <column name="bpdu_guard_disable" type='{"type": "boolean"}'>
+        Set this value to <code>true</code> if BPDU Guard enabled (to shut down the
+        port if that port receives a BPDU).
+        Default is <code>false</code>.
+      </column>
+      <column name="loop_guard_disable" type='{"type": "boolean"}'>
+        Set this value to <code>true</code> if loop guard is enabled (to block
+        sending and receiving BPDUs on the port).
+        Default value is <code>false</code>.
+      </column>
+      <column name="root_guard_disable" type='{"type": "boolean"}'>
+        Set this value to <code>true</code> if root guard is enabled(to participate in STP as long
+        as the device does not try to become the root).
+        Default value is <code>false</code>.
+      </column>
+      <column name="bpdu_filter_disable" type='{"type": "boolean"}'>
+        Set this value to <code>true</code> if BPDU filter is enabled(to suppress
+        sending and receiving BPDUs on the port).
+        Default value is <code>false</code>.
+      </column>
+    </group>
+    <group title="Status">
+    <p>
+        These are status parameters for the common instance.
+        These values will be calculated from the time of protocol initialization.
+    </p>
+      <column name="port_role">
+        The role of this port in the active MSTP topology.
+      </column>
+      <column name="port_state">
+        The state of the port in the active topology.
+        Default value is Blocking.
+      </column>
+      <column name="designated_root">
+        The designated root ID for the port.
+      </column>
+      <column name="link_type">
+        Specifies the link type.
+        Default value is point_to_point.
+      </column>
+      <column name="oper_edge_port" type='{"type": "boolean"}'>
+        The operational port type as edge port or not for the CIST.
+      </column>
+      <column name="cist_regional_root_id">
+        The regional root Id for the CIST.
+      </column>
+      <column name="cist_path_cost">
+        The CIST path cost from the transmitting bridge to the CIST regional root.
+      </column>
+      <column name="port_path_cost">
+        The operational value of the path cost.
+      </column>
+      <column name="designated_path_cost">
+        The path cost for this port.
+      </column>
+      <column name="designated_bridge">
+        The designated bridge identifier component of the port's MSTI port priority vector.
+      </column>
+      <column name="designated_port">
+        The designated port identifier component of the port's MSTI port priority vector.
+      </column>
+      <column name="port_hello_time">
+        The port's hello time value, for the CIST.
+      </column>
+      <column name="protocol_migration_enable">
+        Set this value to <code>true</code> to switch the STP working mode
+        or to <code>false</code> to explicitly disable it.
+        Default is <code>true</code>.
+      </column>
+    </group>
+    <group title="Statistics">
+      <column name="mstp_statistics" key="mstp_BPDUs_Tx">
+        The transmitted BPDU count.
+      </column>
+      <column name="mstp_statistics" key="mstp_BPDUs_Rx">
+        The received BPDU count.
+      </column>
+    </group>
+  </table>
+
+  <table name="MSTP_Instance_Port" title="MSTP instance info per port">
+    <p>
+       This represents information regarding a specific Port within
+       the bridge's bridge protocol entity, for a given MSTI.
+    </p>
+    <group title="Configurations">
+      <column name="port">
+      Specifies port for the MSTP instance.
+      </column>
+      <column name="port_priority">
+        Set this value to specify the priority value used along with the switch MAC
+        address to determine which device is root. Configured as a multiple of 16.
+        The lower a priority value, the higher the priority.
+        Default value is 128.
+      </column>
+      <column name="admin_path_cost">
+        The cost to reach root port.
+        Default value is determined from the interface speed.
+        Bandwidth           Port cost
+        10 Mbps             2,000,000
+        100 Mbps            200,000
+        1 Gigabit Ethernet  20,000
+        10 Gigabit Ethernet 2,000
+      </column>
+    </group>
+
+    <group title="Status">
+      <p>
+        These are status parameters for the port.
+        These values will be calculated at the time of protocol initialization.
+      </p>
+      <column name="port_role">
+        The role of port in the active MSTP topology
+      </column>
+      <column name="port_state">
+        The state of the port in the active topology
+        Default value is Blocking.
+      </column>
+      <column name="designated_root">
+        The root bridge name for a MSTP instance.
+      </column>
+      <column name="designated_root_priority">
+        The priority value for designated port.
+        Default value is 32768.
+      </column>
+      <column name="designated_cost">
+        The path cost for designated bridge.
+      </column>
+      <column name="designated_bridge">
+        The designated bridge for this port.
+      </column>
+      <column name="designated_bridge_priority">
+        The designated bridge priority at this port.
+      </column>
+      <column name="designated_port">
+        The designated port ID.
+      </column>
+    </group>
   </table>
 
   <table name="Daemon" title="Daemon Information">
@@ -2071,7 +2432,7 @@
     </group>
   </table>
 
- <table name="Port" table="Port or bond configuration.">
+ <table name="Port" title="Port or bond configuration.">
     <p>A port within a <ref table="Bridge"/>.</p>
     <p>Most commonly, a port has exactly one ``interface,'' pointed to by its
     <ref column="interfaces"/> column.  Such a port logically
@@ -2239,6 +2600,14 @@
           A native-tagged or native-untagged port always trunks its native
           VLAN, regardless of whether <ref column="trunks"/> includes that
           VLAN.
+        </p>
+      </column>
+      <column name="vlan_tunnel_keys" keyname="vlan">
+        <p>
+          Specifies translation from a vlan to the
+          <ref table="Logical_Switch"/>. If this is an access port,
+          only one key needs to be specified. VLAN 0 means that untagged
+          traffic on the port is mapped to the specified logical switch.
         </p>
       </column>
     </group>
@@ -2432,6 +2801,9 @@
       <column name="status">
         Key-value pairs that report port status.
       </column>
+      <column name="status" key="error">
+        Human readable error description.
+      </column>
       <column name="status" key="bond_hw_handle">
         Unique identifier of the LAG from the data path's perspective.
         This key value should be treated as opaque handle by application
@@ -2522,6 +2894,10 @@
             An Ethernet over RFC 2890 Generic Routing Encapsulation over IPv4
             IPsec tunnel.
           </dd>
+
+          <dt><code>vxlan</code></dt>
+          <dd>This is a vitual interface of type vxlan (L2 overlay over L3
+          network RFC 7348).</dd>
        </dl>
       </column>
     </group>
@@ -2529,7 +2905,7 @@
     <group title="Tunnel Options">
       <p>
         These options apply to interfaces with <ref column="type"/> of
-        <code>ipsec_gre</code>.
+        <code>ipsec_gre</code> and <code>vxlan</code>.
       </p>
 
       <p>
@@ -2551,60 +2927,19 @@
             An IPv4 address (not a DNS name), e.g. <code>192.168.0.123</code>.
             Only unicast endpoints are supported.
           </li>
-          <li>
-            The word <code>flow</code>.  The tunnel accepts packets from any
-            remote tunnel endpoint.  To process only packets from a specific
-            remote tunnel endpoint, the flow entries may match on the
-            <code>tun_src</code> field.  When sending packets to a
-            <code>remote_ip=flow</code> tunnel, the flow actions must
-            explicitly set the <code>tun_dst</code> field to the IP address of
-            the desired remote tunnel endpoint, e.g. with a
-            <code>set_field</code> action.
-          </li>
         </ul>
-
-        <p>
-          The remote tunnel endpoint for any packet received from a tunnel
-          is available in the <code>tun_src</code> field for matching in the
-          flow table.
-        </p>
       </column>
 
       <column name="options" key="local_ip">
         <p>
-          Optional.  The tunnel destination IP that received packets must
-          match.  Default is to match all addresses.  If specified, may be one
-          of:
+          The tunnel destination IP that received packets must
+          match.
         </p>
-
         <ul>
           <li>
             An IPv4 address (not a DNS name), e.g. <code>192.168.12.3</code>.
           </li>
-          <li>
-            The word <code>flow</code>.  The tunnel accepts packets sent to any
-            of the local IP addresses of the system running OVS.  To process
-            only packets sent to a specific IP address, the flow entries may
-            match on the <code>tun_dst</code> field.  When sending packets to a
-            <code>local_ip=flow</code> tunnel, the flow actions may
-            explicitly set the <code>tun_src</code> field to the desired IP
-            address, e.g. with a <code>set_field</code> action.  However, while
-            routing the tunneled packet out, the local system may override the
-            specified address with the local IP address configured for the
-            outgoing system interface.
-
-            <p>
-              This option is valid only for tunnels also configured with the
-              <code>remote_ip=flow</code> option.
-            </p>
-          </li>
         </ul>
-
-        <p>
-          The tunnel destination IP address for any packet received from a
-          tunnel is available in the <code>tun_dst</code> field for matching in
-          the flow table.
-        </p>
       </column>
 
       <column name="options" key="in_key">
@@ -2620,10 +2955,11 @@
             A 32-bit (for GRE).  The tunnel receives only packets with the
             specified key.
           </li>
+          <li>
+            A positive 24-bit (VXLAN). The tunnel receives only
+            packets with the specified key.
+          </li>
         </ul>
-
-        <p>
-        </p>
       </column>
 
       <column name="options" key="out_key">
@@ -2636,7 +2972,11 @@
             key="out_key"/> at all.
           </li>
           <li>
-            A 32-bit (for GRE).  The tunnel receives only packets with the
+            A 32-bit (for GRE).  The tunnel sends packets only with the
+            specified key.
+          </li>
+          <li>
+            A positive 24-bit (VXLAN). The tunnel sends packets only with the
             specified key.
           </li>
         </ul>
@@ -3223,6 +3563,20 @@
         </column>
         <column name="statistics" key="ipv6_mc_tx_bytes">
           Number of transmitted ipv6 multicast bytes.
+        </column>
+      </group>
+      <group title="sFlow Statistics">
+        <column name="statistics" key="sflow_ingress_packets">
+          Number of ingress packets sampled on an interface.
+        </column>
+        <column name="statistics" key="sflow_ingress_bytes">
+          Number of ingress bytes sampled on an interface.
+        </column>
+        <column name="statistics" key="sflow_egress_packets">
+          Number of egress packets sampled on an interface.
+        </column>
+        <column name="statistics" key="sflow_egress_bytes">
+          Number of egress bytes sampled on an interface.
         </column>
       </group>
       <group title="LLDP Interface Level Statistics">
@@ -5111,5 +5465,86 @@
         </column>
     </group>
   </table>
-</database>
 
+  <table name="Logical_Switch">
+      <p>
+        Configuration for identifying overlay networks associated with
+        bridges.
+      </p>
+      <column name="name">
+        Name of the overlay network.
+      </column>
+      <column name="description">
+        Description of the overlay network.
+      </column>
+      <column name="bridge">
+        Reference to a <ref table="Bridge"/> participating in the overlay.
+      </column>
+      <column name="tunnel_key">
+        Tunnel key used in the overlay.
+        For VXLAN, this is the VNI.
+      </column>
+      <column name="from">
+        The entity managing the overlay.
+      </column>
+  </table>
+
+  <table name="MAC">
+
+    <p>
+      Configuration for consolidated MAC table which can potentially be
+      learnt from ASIC, from the hw-vtep controller or statically configured.
+    </p>
+
+    <column name="mac_addr">
+      MAC address.
+    </column>
+
+    <column name="bridge">
+      Specifies the bridge <ref table="Bridge"/> on which this MAC address
+      is associated.
+    </column>
+
+    <column name="vlan">
+      VLAN associated with MAC address.
+    </column>
+
+    <column name="from">
+      This column specifies who has configured this entry in the database.
+      Is it the hw-vtep controller, self learned from ASIC or statically configured.
+    </column>
+
+    <column name="port">
+      Specifies the port <ref table="Port"/> on which this MAC address
+      is associated.
+    </column>
+
+    <column name="tunnel_key">
+      If this MAC address is learnt from the tunnel port, then the tunnel_key
+      will be populated/configured. Otherwise, for static entries not having
+      tunnel as port, this column should not be populated.
+    </column>
+
+    <column name="expiry_time">
+      POSIX Time at which this MAC entry expires.
+    </column>
+
+    <group title="status">
+      <p>
+        This column specifies the status of this entry in the table.
+      </p>
+      <column name="status" key="ok">
+          Properly configured
+      </column>
+      <column name="status" key="invalid">
+          Invalid parameters
+      </column>
+      <column name="status" key="no_memory">
+          Memory exhaustion
+      </column>
+      <column name="status" key="error">
+          Unspecified error.
+      </column>
+    </group>
+  </table>
+</database>

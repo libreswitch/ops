@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (C) 2015 Hewlett Packard Enterprise Development LP
+# Copyright (C) 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -54,8 +54,8 @@ class aaaFeatureTest(OpsVsiTest):
         h1 = self.net.hosts[0]
         switchIP = self.getSwitchIP()
         print "SwitchIP:" + switchIP
-        out = h1.cmd("sed -i '76s/steve/admin/' /etc/freeradius/users")
-        out = h1.cmd("sed -i '76s/#admin/admin/' /etc/freeradius/users")
+        out = h1.cmd("sed -i '76s/steve/netop/' /etc/freeradius/users")
+        out = h1.cmd("sed -i '76s/#netop/netop/' /etc/freeradius/users")
         out = h1.cmd("sed -i '196s/192.168.0.0/"+switchIP+"/' "
                      "/etc/freeradius/clients.conf")
         out = h1.cmd("sed -i '196,199s/#//' /etc/freeradius/clients.conf")
@@ -214,7 +214,7 @@ class aaaFeatureTest(OpsVsiTest):
         out += s1.cmd("echo ")
         sshkey= "ssh-keygen -R " + switchIpAddress
         sshkeygen = pexpect.spawn(sshkey)
-        myssh = SSHCLIENT + " admin@" + switchIpAddress
+        myssh = SSHCLIENT + " netop@" + switchIpAddress
         p = pexpect.spawn(myssh)
 
         i = p.expect([ssh_newkey, 'password:', pexpect.EOF])
@@ -223,7 +223,7 @@ class aaaFeatureTest(OpsVsiTest):
             p.sendline('yes')
             i = p.expect([ssh_newkey, 'password:', pexpect.EOF])
         if i == 1:
-            p.sendline('admin')
+            p.sendline('netop')
             j = p.expect(['#', 'password:'])
             if j == 0:
                 p.sendline('exit')
@@ -260,7 +260,7 @@ class aaaFeatureTest(OpsVsiTest):
         out += s1.cmd("echo ")
         sshkey= "ssh-keygen -R " + switchIpAddress
         sshkeygen = pexpect.spawn(sshkey)
-        myssh = SSHCLIENT + " admin@" + switchIpAddress
+        myssh = SSHCLIENT + " netop@" + switchIpAddress
         p = pexpect.spawn(myssh)
 
         i = p.expect([ssh_newkey, 'password:', pexpect.EOF])
@@ -307,7 +307,7 @@ class aaaFeatureTest(OpsVsiTest):
         out += s1.cmd("echo ")
         sshkey= "ssh-keygen -R " + switchIpAddress
         sshkeygen = pexpect.spawn(sshkey)
-        myssh = SSHCLIENT + " admin@" + switchIpAddress
+        myssh = SSHCLIENT + " netop@" + switchIpAddress
         p = pexpect.spawn(myssh)
 
         i = p.expect([ssh_newkey, 'password:', pexpect.EOF])
@@ -321,7 +321,7 @@ class aaaFeatureTest(OpsVsiTest):
             assert i != 2, "Failed with SSH command"
         loginpass = p.expect(['password:', '#'])
         if loginpass == 0:
-            p.sendline('admin')
+            p.sendline('netop')
             p.expect('#')
             p.sendline('exit')
             p.kill(0)

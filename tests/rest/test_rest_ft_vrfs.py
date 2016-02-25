@@ -161,7 +161,6 @@ class Test_ft_framework_rest:
         info('#######################################################\n')
         info('######   Testing REST Vrfs basic functionality   ####\n')
         info('#######################################################\n')
-	pytest.skip("Skipping temporarily to debug build failure")
         wrkston01Obj = self.topoObj.deviceObjGet(device="wrkston01")
         retStruct = restTestVrfs(wrkston01Obj)
         assert retStruct.returnCode() == 0, 'Failed to test rest Vrfs'
