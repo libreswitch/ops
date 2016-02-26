@@ -19,6 +19,7 @@
 		- [Configuring hash type](#configuring-hash-type)
 		- [Configuring LACP fallback mode](#configuring-lacp-fallback-mode)
 		- [Configuring LACP rate](#configuring-lacp-rate)
+		- [Configuring shutdown](#configuring-shutdown)
 - [LAG display commands](#lag-display-commands)
 	- [Display global LACP configuration](#display-global-lacp-configuration)
 	- [Display LACP aggregates](#display-lacp-aggregates)
@@ -322,6 +323,52 @@ no parameters.
 ```
 switch(config)# interface lag 1
 switch(config-lag-if)# lacp rate fast
+```
+
+##### Configuring no shutdown
+##### Syntax
+
+```
+    no shutdown
+```
+
+##### Description
+This command sets every interface in LAG to no shutdown.
+
+##### Authority
+all users
+
+##### Parameters
+no parameters.
+
+##### Examples
+
+```
+switch(config)# interface lag 1
+switch(config-lag-if)# no shutdown
+```
+
+##### Configuring shutdown
+##### Syntax
+
+```
+    shutdown
+```
+
+##### Description
+This command sets every interface in LAG to shutdown.
+
+##### Authority
+all users
+
+##### Parameters
+no parameters.
+
+##### Examples
+
+```
+switch(config)# interface lag 1
+switch(config-lag-if)# shutdown
 ```
 
 ## LAG display commands
