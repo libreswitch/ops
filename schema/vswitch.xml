@@ -224,8 +224,20 @@
           globally and set it to <code>false</code> to enable it. DHCP-Relay is
           enabled by default. If the key is missing, the configuration is assumed
           to be enabled.
-          Thought DHCP-Relay configuration is enabled globally, the functionality
+          Though DHCP-Relay configuration is enabled globally, the functionality
           is effective only after the port level server configuration.
+        </column>
+    </group>
+
+    <group title="UDP Broadcast Forwarder Configurations">
+        <column name="other_config" key="udp_bcast_forwarder_enabled"
+              type='{"type": "boolean"}'>
+          Set this value to <code>true</code> to enable UDP-Broadcast-Forwarder
+          functionality globally and set it to <code>false</code> to disable it.
+          UDP-Broadcast-Forwarder is disabled by default. If the key is missing, the
+          configuration is assumed to be disabled.
+          UDP-Broadcast-Forwarder port level configuration is present in
+          <ref table="UDP_Bcast_Forwarder_Server"/>.
         </column>
     </group>
 
@@ -5966,7 +5978,7 @@
 
   <table name="DHCP_Relay">
     <p>
-      Placeholder for a set of server configuration entries. DHCP-Relay features uses these entries
+      Placeholder for a set of server configuration entries. DHCP-Relay feature uses these entries
       to forward matching DHCP broadcast packets received on the layer3 Port.
     </p>
     <group title="DHCP-Relay Configuration">
@@ -6088,6 +6100,30 @@
       Columns</code> at the beginning of this document.
       <column name="other_config"/>
       <column name="external_ids"/>
+    </group>
+  </table>
+
+  <table name="UDP_Bcast_Forwarder_Server">
+    <p>
+      Each entry represents the match and forward criteria for UDP broadcast packets received
+      on the port. UDP-Broadcast-Forwarder feature uses these entries to forward selective UDP
+      broadcast packets received on the routed Port to the configured server(s).
+    </p>
+    <group title="UDP Broadcast Forwarder Configuration">
+      <column name="src_port">
+        Reference to the routed port on which packets are receive.
+      </column>
+      <column name="dest_vrf">
+        VRF through which server is reachable.
+      </column>
+      <column name="udp_dport">
+        UDP broadcast packets with this destination udp port are forwarded to the configured
+        server(s).
+      </column>
+      <column name="ipv4_ucast_server">
+        List of IPv4 unicast server destinations to which matching UDP broadcast packets received
+        on the port are duplicated and forwarded.
+      </column>
     </group>
   </table>
 </database>
