@@ -93,6 +93,11 @@
       <column name="ssl">
       </column>
 
+      <column name="ipsec_ike_policies">
+        This is a list of configured IPsec IKE policies. These are system configuration
+        settings with no interface or routing dependences.
+      </column>
+
       <column name="hostname">
       </column>
 
@@ -3317,6 +3322,12 @@
           network RFC 7348).</dd>
        </dl>
       </column>
+
+      <column name="ipsec_ike_policy">
+       This is a reference to a configured IPsec IKE policy. It provides the
+       IPsec IKE protection for the associated tunnel.
+       Only valid for the <code>ipsec_gre_ike</code> type.
+      </column>
     </group>
 
     <group title="Tunnel Options">
@@ -3458,6 +3469,7 @@
           tunnel.
         </column>
       </group>
+
     </group>
 
     <group title="Interface Status">
@@ -3821,6 +3833,96 @@
       </column>
     </group>
 
+      <group title="IKE Status: ipsec_gre_ike only">
+        <p>
+          Only <code>ipsec_gre_ike</code> interface supports these status.
+        </p>
+
+        <column name="status" key="ipsec_ike_established_time"
+           type='{"type": "integer"}'>
+           Reports the epoch time when this connection is established.
+        </column>
+
+        <column name="status" key="ipsec_ike_initiator_spi"
+           type='{"type": "integer"}'>
+           Reports the IKE initiator SPI.
+        </column>
+
+        <column name="status" key="ipsec_ike_responder_spi"
+           type='{"type": "integer"}'>
+           Reports the IKE responder SPI.
+        </column>
+
+        <column name="status" key="ipsec_ike_reauth_time"
+           type='{"type": "integer"}'>
+           Reports the epoch time when this connection re-authenticates.
+        </column>
+
+        <column name="status" key="ipsec_ike_conn_state"
+           type='{"type": "string", "enum": ["set",
+                        ["config_error",
+                        "config_ok",
+                        "created",
+                        "connecting",
+                        "passive",
+                        "rekeying",
+                        "deleting",
+                        "destroying",
+                        "routed",
+                        "installing",
+                        "updating",
+                        "rekeyed",
+                        "retrying",
+                        "installed",
+                        "establish"]]}'>
+           Reports this connection state.
+        </column>
+
+        <column name="status" key="ipsec_sa_rekey_time"
+           type='{"type": "integer"}'>
+           Reports the epoch time when this SA re-keys.
+        </column>
+
+        <column name="status" key="ipsec_sa_expiration_time"
+           type='{"type": "integer"}'>
+           Reports the epoch time when this SA expires.
+        </column>
+
+        <column name="status" key="ipsec_bytes_in"
+           type='{"type": "integer"}'>
+           Reports input bytes processed.
+        </column>
+
+        <column name="status" key="ipsec_bytes_out"
+           type='{"type": "integer"}'>
+           Reports output bytes processed.
+        </column>
+
+        <column name="status" key="ipsec_packets_in"
+           type='{"type": "integer"}'>
+           Reports input packets processed.
+        </column>
+
+        <column name="status" key="ipsec_packets_out"
+           type='{"type": "integer"}'>
+           Reports output packets processed.
+        </column>
+
+        <column name="status" key="ipsec_sa_state">
+           Reports the this SA state.
+      </column>
+
+        <column name="status" key="ipsec_sa_spi_in"
+           type='{"type": "integer"}'>
+           Reports the Security Parameter Index used for SA inbound traffics.
+        </column>
+
+        <column name="status" key="ipsec_sa_spi_out"
+           type='{"type": "integer"}'>
+           Reports the Security Parameter Index used for SA outbound traffics.
+        </column>
+
+      </group>
     </group>
 
     <group title="Module Information">
@@ -5892,6 +5994,58 @@
           The OSPFv2 LSA specific data.
         </column>
     </group>
+  </table>
+
+  <table name="IPsec_IKE_Policy">
+    <p>
+      Following is the description of the IPsec IKE configuration settings of <ref table="IPsec_IKE_Policy"/>.
+    </p>
+    <column name="name">
+      Specifies the IPsec policy name that includes rules to detect and transform specific IP flows.
+    </column>
+    <column name="protocol">
+      Specifies the traffic IPsec protocol: Authentication Header (AH) vs. Encapsulating Security Payload (ESP).
+      Defaults to <code>ESP</code>.
+    </column>
+    <column name="mode">
+      Specifies the traffic IPsec operation mode: tunnel vs. transport,
+      Defaults to <code>transport</code>.
+    </column>
+    <column name="integrity">
+      Specifies the configured hashes for the authenticity and integrity protection.
+      Defaults to <code>SHA1HMAC</code>.
+    </column>
+    <column name="encryption">
+      Specifies the supported encryptions for the message privacy.
+      Defaults to <code>AES128</code>.
+    </column>
+    <column name="ike_integrity">
+      Specifies the supported hashes for the IKE authenticity and integrity protection.
+      Defaults to <code>SHA1HMAC</code>.
+    </column>
+    <column name="ike_encryption">
+      Specifies the supported encryptions for the IKE privacy protection.
+      Defaults to <code>AES128</code>.
+    </column>
+    <column name="ike_group">
+      Specifies the supported key exchange groups.
+      Defaults to <code>DIFFIE2</code>.
+    </column>
+    <column name="peer_auth_by">
+      Specifies the selected peer authentication type: PSK or cert
+    </column>
+    <column name="psk">
+      Specifies the shared secret for a peer authentication.
+    </column>
+    <column name="psk_selectors">
+      Specifies remote IP addresses, Fully Qualified Domain Names,
+      user@FQDNs, %any or %any6 to be used with a configured PSK.
+      Defaults to <code>%any</code>.
+    </column>
+    <column name="keep_alive_seconds">
+      Specifies the configured keep-alive SA session in seconds.
+      Defaults to <code>10</code> seconds.
+    </column>
   </table>
 
   <table name="Logical_Switch">
