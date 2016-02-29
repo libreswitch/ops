@@ -2927,6 +2927,11 @@
       <column name="hw_config" key="internal-vlan">
         The VLAN associated with l3 interfaces.
       </column>
+      <column name="hw_config" key="block_all_mstp"
+              type='{"type": "boolean"}'>
+        Indicates that the port should be blocked in all MSTP instances.
+        Defaults to <code>false</code>.
+      </column>
     </group>
 
     <group title="QoS configuration">
