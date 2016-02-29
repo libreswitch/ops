@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2015 Hewlett Packard Enterprise Development LP
+# Copyright (C) 2015-Present Hewlett Packard Enterprise Development LP
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -22,7 +22,6 @@ from opstestfw.switch.OVS import *
 
 # Topology definition
 topoDict = {"topoExecution": 1000,
-            "topoType": "physical",
             "topoTarget": "dut01 dut02",
             "topoDevices": "dut01 dut02 wrkston01 wrkston02 wrkston03",
             "topoLinks": "lnk01:dut01:dut02,\
@@ -724,6 +723,7 @@ def ecmp_ping(**kwargs):
         retStruct.printValueString()
         LogOutput('info', "\n##### Ping Passed, Case Failed #####\n\n")
 
+@pytest.mark.timeout(500)
 
 class Test_ecmp_ping:
 

@@ -23,6 +23,7 @@ REST API Test Cases
 - [REST API get method with pagination for ports](#rest-api-get-method-with-pagination-for-ports)
 - [REST API get method and sort by field for ports](#rest-api-get-method-and-sort-by-field-for-ports)
 - [REST API get method and sort by field combination for ports](#rest-api-get-method-and-sort-by-field-combination-for-ports)
+- [REST API get method with specific column retrieval for interfaces](#rest-api-get-method-with-specific-column-retrieval-for-interfaces)
 - [REST API patch method for system](#rest-api-patch-method-for-system)
 - [REST API VLANs Resource test cases](#rest-api-vlans-resource-test-cases)
   - [Query Bridge Normal](#query-bridge-normal)
@@ -2420,6 +2421,128 @@ The test fails when:
 - The HTTP response is not `200 OK`.
 - The response doesn't have 10 ports.
 - The result is not sorted ascending/descending by the combination of fields.
+
+## REST API get method with specific column retrieval for interfaces
+
+### Objective
+The test case verifies queries for:
+
+- Single column retrieval
+- Multiple column retrieval
+- Column retrieval without depth argument
+- Column retrieval with empty columns argument
+- Column retrieval with nonexistent column key
+- Column retrieval with filter
+- Column retrieval with pagination
+- Column retrieval with depth greater than one
+- Column retrieval in requests other than GET
+- Column retrieval with all applicable arguments
+- Column retrieval by adding columns argument by separate
+
+### Requirements
+- OpenSwitch
+- Ubuntu Workstation
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+### Description
+The test case validates if the interface list retrieved it shows only the data with the specified columns through the standard REST API GET method.
+
+1. Verify if specific column retrieval is applied in the GET request by using the columns argument for a single column.
+    a. Execute the GET request over `/rest/v1/system/interfaces?selector=configuration;depth=1;sort=name;columns=name`.
+    b. Verify if the HTTP response is `200 OK`.
+    c. Validate if the list of interfaces has the exact amount of columns specified in the request.
+    d. Confirm that interface resource returned the expected data.
+
+2. Verify if specific column retrieval is applied in the GET request by using the columns argument for multiple columns.
+    a. Execute the GET request over `/rest/v1/system/interfaces?selector=configuration;depth=1;sort=name;columns=name,type`.
+    b. Verify if the HTTP response is `200 OK`.
+    c. Validate if the list of interfaces has the exact amount of columns specified in the request.
+    d. Confirm that interface resource returned the expected data.
+
+3. Verify if specific column retrieval is invalid in the GET request by using the columns argument and no depth argument.
+    a. Execute the GET request over `/rest/v1/system/interfaces?selector=configuration;sort=name;columns=name`.
+    b. Verify if the HTTP response is `400 BAD REQUEST`.
+
+4. Verify if specific column retrieval is invalid in the GET request by using the columns argument and no value.
+    a. Execute the GET request over `/rest/v1/system/interfaces?selector=configuration;depth=1;sort=name;columns=`.
+    b. Verify if the HTTP response is `400 BAD REQUEST`.
+
+5. Verify if specific column retrieval is invalid in the GET request by using the columns argument and nonexistent key.
+    a. Execute the GET request over `/rest/v1/system/interfaces?selector=configuration;depth=1;sort=name;columns=foo`.
+    b. Verify if the HTTP response is `400 BAD REQUEST`.
+
+6. Verify if specific column retrieval is applied in the GET request by using the columns and filter arguments.
+    a. Execute the GET request over `/rest/v1/system/interfaces?selector=configuration;depth=1;sort=name;name=10;columns=name,type`.
+    b. Verify if the HTTP response is `200 OK`.
+    c. Validate if the list of interfaces has the exact amount of columns specified in the request.
+    d. Confirm that interface resource returned the expected data.
+
+7. Verify if specific column retrieval is applied in the GET request by using the columns and pagination arguments.
+    a. Execute the GET request over `/rest/v1/system/interfaces?selector=configuration;depth=1;sort=name;limit=10;offset=10;columns=name,type`.
+    b. Verify if the HTTP response is `200 OK`.
+    c. Validate if the list of interfaces has the exact amount of columns specified in the request.
+    d. Confirm that interface resource returned the expected data.
+
+8. Verify if specific column retrieval is applied in the GET request by using the columns argument and depth argument equals 2.
+    a. Execute the GET request over `/rest/v1/system/interfaces?selector=configuration;depth=2;sort=name;columns=name,type`.
+    b. Verify if the HTTP response is `200 OK`.
+    c. Validate if the list of interfaces has the exact amount of columns specified in the request.
+    d. Confirm that interface resource returned the expected data.
+
+9. Verify if specific column retrieval is invalid in requests other than GET.
+    a. Execute the POST, PUT and DELETE request over `/rest/v1/system/interfaces?selector=configuration;depth=1;sort=name;columns=name`.
+    b. Verify if the HTTP response is `400 BAD REQUEST`.
+
+10. Verify if specific column retrieval is applied in the GET request by using the columns argument in combination with filter, sort and pagination.
+    a. Execute the GET request over `/rest/v1/system/interfaces?selector=configuration;depth=1;sort=name;name=10;limit=1;columns=name,type`.
+    b. Verify if the HTTP response is `200 OK`.
+    c. Validate if the list of interfaces has the exact amount of columns specified in the request.
+    d. Confirm that interface resource returned the expected data.
+
+11. Verify if specific column retrieval is applied in the GET request by using the columns argument more than once as separate arguments.
+    a. Execute the GET request over `/rest/v1/system/interfaces?selector=configuration;depth=1;sort=name;columns=name;columns=type`.
+    b. Verify if the HTTP response is `200 OK`.
+    c. Validate if the list of interfaces has the exact amount of columns specified in the request.
+    d. Confirm that interface resource returned the expected data.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Using the columns argument with the specified correct value and depth greater than zero in the request:
+    - A `200 OK` HTTP response.
+
+- Using the columns argument with invalid values or a nonexistent keys results in the request:
+    - A `400 BAD REQUEST` HTTP response.
+
+- Using the columns argument in requests other than GET:
+    - A `400 BAD REQUEST` HTTP response.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Using the columns argument with the specified correct value and depth greater than zero in the request:
+    - A `400 BAD REQUEST` HTTP response or anything other than `200 OK` HTTP RESPONSE.
+
+- Using the columns argument with invalid values or a nonexistent keys results in the request:
+    - A `200 OK` HTTP response or anything other than `400 BAD REQUEST` HTTP RESPONSE.
+
+- Using the columns argument in requests other than GET:
+    - A `200 OK` HTTP response or anything other than `400 BAD REQUEST` HTTP RESPONSE.
 
 ## REST API patch method for system
 

@@ -90,7 +90,7 @@ switch(config-if)#vlan trunk native 20
 ```
 switch(config)# interface lag 2
 switch(config-lag-if)#no routing
-switch(config-lag-if)#vlan native trunk 20
+switch(config-lag-if)#vlan trunk native 20
 ```
 
 #### Removing a trunk native VLAN from an interface
@@ -178,13 +178,13 @@ All users.
 ```
 switch(config)# interface 2
 switch(config-if)#no routing
-switch(config-if)#vlan native trunk 1
+switch(config-if)#vlan trunk native 1
 switch(config-if)#vlan trunk allowed  2
 ```
 ```
 switch(config)# interface lag 2
 switch(config-if)#no routing
-switch(config-lag-if)#vlan native trunk 1
+switch(config-lag-if)#vlan trunk native 1
 switch(config-lag-if)#vlan trunk allowed 2
 ```
 
