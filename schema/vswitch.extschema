@@ -5285,8 +5285,8 @@
           "type": {
             "key": {
               "type": "string",
-              "minLength": 18,
-              "maxLength": 18
+              "minLength": 17,
+              "maxLength": 17
             }
           }
         },
