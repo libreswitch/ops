@@ -1386,15 +1386,21 @@ switch(config-router)# no passive-interface 1
 ## Interface context commands
 ### Enable authentication on the interface
 #### Syntax ####
+`ip ospf authentication null`
 `ip ospf authentication {message-digest}`
 `ip ospf authentication-key <key>`
 `ip ospf message-digest-key <key_id> md5 <message_digest_key>`
 #### Description ####
-These commands enable authentication on the interface. The `ip ospf authentication` command enables simple authentication on the interface. The `ip ospf authentication message-digest` command enables message digest authentication on the interface.
+These commands enable authentication on the interface. The `ip ospf authentication null` command disables authentication on the interface, in case it was enabled by area level authentication commands. The `ip ospf authentication` command enables simple authentication on the interface. The `ip ospf authentication message-digest` command enables message digest authentication on the interface.
 To set the key for authentication the `ip ospf authenticati on-key <key>` and `ip ospf message-digest-key <key_id> md5 <message_digest_key>` commands are used.
 #### Authority ####
 All users.
 #### Parameters ####
+Parameters for enabling null authentication:
+
+| Parameter | Status   | Syntax         | Description |
+|:-----------|:----------|:----------------:|:--------------|
+| **null** | Optional | Literal | Disables authentication on the interface, in case it was enabled by area level authentication commands.
 Parameters for enabling authentication:
 
 | Parameter | Status   | Syntax         | Description |
