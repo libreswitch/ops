@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2015 Hewlett Packard Enterprise Development LP
+# Copyright (C)2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -27,21 +27,11 @@ import urllib
 from opsvsi.docker import *
 from opsvsi.opsvsitest import *
 from opsvsiutils.systemutil import *
-from utils.utils import *
+from opsvsiutils.restutils.utils import *
 import ssl
-from utils.utils import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
-
-
-def ordered(obj):
-    if isinstance(obj, dict):
-        return sorted((k, ordered(v)) for k, v in obj.items())
-    if isinstance(obj, list):
-        return sorted(ordered(x) for x in obj)
-    else:
-        return obj
 
 
 class myTopo(Topo):
@@ -62,117 +52,84 @@ class configTest (OpsVsiTest):
         self.net = Mininet(ecmp_topo, switch=VsiOpenSwitch, host=Host,
                            link=OpsVsiLink, controller=None, build=True)
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
+        self.URL = '/login'
 
     def verify_login(self):
 
-        s1 = self.net.switches[0]
-        ip_addr = self.SWITCH_IP
-
-        ip_addr = ip_addr.strip()
-
         #POST
         _headers = {"Content-type": "application/x-www-form-urlencoded",
-            "Accept": "text/plain"}
+                    "Accept": "text/plain"}
         # GET to fetch system info from the DB
 
-        sslcontext = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-        sslcontext.verify_mode = ssl.CERT_REQUIRED
-        sslcontext.check_hostname = False
-
-        src_path = os.path.dirname(os.path.realpath(__file__))
-        src_file = os.path.join(src_path, 'utils/server.crt')
-        sslcontext.load_verify_locations(src_file)
-        url = '/login'
-        conn = httplib.HTTPSConnection(ip_addr, 443, context=sslcontext)
-
-        print("\n######### Running POST to fetch the cookie ##########\n")
         body = {'username': 'netop', 'password': 'netop'}
-        conn.request('POST', url, urllib.urlencode(body), headers=_headers)
-        response = conn.getresponse()
-        status_code, response_data = response.status, response.read()
-        conn.close()
+        response, response_data = execute_request(
+            self.URL, "POST", urllib.urlencode(body),
+            self.SWITCH_IP, True, _headers)
+        assert response.status == httplib.OK, ("Wrong status code %s "
+                                               % response.status)
 
         _headers = {'Cookie': response.getheader('set-cookie')}
         time.sleep(2)
-        print ('''"\n######### Running GET to fetch the system
-                info from the DB ##########\n"''')
+        info('\n######### Running GET to fetch the system' +
+             ' info from the DB ##########\n')
 
-        conn = httplib.HTTPSConnection(ip_addr, 443, context=sslcontext)
+        _headers = {'Cookie': response.getheader('set-cookie')}
+        time.sleep(2)
 
-        conn.request('GET', url, headers=_headers)
-        response = conn.getresponse()
-
-        assert response.status == 200
+        status_code, response_data = execute_request(
+            self.URL, "GET", json.dumps(""),
+            self.SWITCH_IP, False, _headers)
+        assert status_code == httplib.OK, ("Wrong status code %s "
+                                           % status_code)
 
         time.sleep(2)
 
-        print ('''"\n######### Running GET to fetch the system info
-                from the DB after removing the cookie ##########\n"''')
-
-        _headers = {'Cookie': response.getheader('set-cookie')}
+        info('\n######### Running GET to fetch the system info' +
+             ' from the DB after removing the cookie ##########\n')
 
         # GET to fetch system info from the DB
-
-        conn = httplib.HTTPSConnection(ip_addr, 443, context=sslcontext)
-        conn.request('GET', url, headers=_headers)
-        response = conn.getresponse()
-
-        assert response.status == 401
+        response, response_data = execute_request(
+            self.URL, "GET", json.dumps(""),
+            self.SWITCH_IP, True, None)
+        assert response.status == httplib.UNAUTHORIZED, \
+            ("Wrong status code %s " % response.status)
 
     def verify_fail_login(self):
-        s1 = self.net.switches[0]
-        ip_addr = self.SWITCH_IP
-
-        ip_addr = ip_addr.strip()
 
         #POST
         _headers = {"Content-type": "application/x-www-form-urlencoded",
-            "Accept": "text/plain"}
-        # GET to fetch system info from the DB
+                    "Accept": "text/plain"}
 
-        sslcontext = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-        sslcontext.verify_mode = ssl.CERT_REQUIRED
-        sslcontext.check_hostname = False
-
-        src_path = os.path.dirname(os.path.realpath(__file__))
-        src_file = os.path.join(src_path, "utils/server.crt")
-        sslcontext.load_verify_locations(src_file)
-        url = '/login'
-        conn = httplib.HTTPSConnection(ip_addr, 443, context=sslcontext)
-
-        print("\n######### Running POST to fetch the cookie ##########\n")
-        body = {'username': 'john', 'password': 'doe'}
-        conn.request('POST', url, urllib.urlencode(body), headers=_headers)
-        response = conn.getresponse()
-        status_code, response_data = response.status, response.read()
-        conn.close()
+        info('\n######### Running POST to fetch the cookie ##########\n')
+        body = {'username': 'Ops', 'password': 'Ops'}
+        response, response_data = execute_request(
+            self.URL, "POST", urllib.urlencode(body),
+            self.SWITCH_IP, True, _headers)
+        assert response.status == httplib.UNAUTHORIZED, \
+            ("Wrong status code %s " % response.status)
 
         _headers = {'Cookie': response.getheader('set-cookie')}
         time.sleep(2)
-        print ('''"\n######### Running GET to fetch the system
-                info from the DB ##########\n"''')
+        info('\n######### Running GET to fetch the system' +
+             ' info from the DB ##########\n')
 
-        conn = httplib.HTTPSConnection(ip_addr, 443, context=sslcontext)
-
-        conn.request('GET', url, headers=_headers)
-        response = conn.getresponse()
-
-        assert response.status == 401
-
+        status_code, response_data = execute_request(
+            self.URL, "GET", json.dumps(""),
+            self.SWITCH_IP, False, None)
+        assert response.status == httplib.UNAUTHORIZED, \
+            ("Wrong status code %s " % response.status)
         time.sleep(2)
 
-        print ('''"\n######### Running GET to fetch the system info
-                from the DB after removing the cookie ##########\n"''')
-
-        _headers = {'Cookie': response.getheader('set-cookie')}
+        info('\n######### Running GET to fetch the system info' +
+             'from the DB after removing the cookie ##########\n')
 
         # GET to fetch system info from the DB
 
-        conn = httplib.HTTPSConnection(ip_addr, 443, context=sslcontext)
-        conn.request('GET', url, headers=_headers)
-        response = conn.getresponse()
-
-        assert response.status == 401
+        response, response_data = execute_request(
+            self.URL, "GET", json.dumps(""),
+            self.SWITCH_IP, True, None)
+        assert response.status == httplib.UNAUTHORIZED, \
+            ("Wrong status code %s " % response.status)
 
 
 class Test_config:

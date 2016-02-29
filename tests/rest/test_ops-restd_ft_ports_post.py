@@ -22,9 +22,9 @@ import json
 import httplib
 import subprocess
 
-from utils.utils import *
+from opsvsiutils.restutils.utils import *
 from copy import deepcopy
-from utils.swagger_test_utility import *
+from opsvsiutils.restutils.swagger_test_utility import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0

@@ -23,8 +23,8 @@ from opsvsi.opsvsitest import *
 
 import json
 
-from utils.fakes import *
-from utils.utils import *
+from opsvsiutils.restutils.fakes import *
+from opsvsiutils.restutils.utils import *
 
 
 NUM_OF_SWITCHES = 1
