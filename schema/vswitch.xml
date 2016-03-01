@@ -358,6 +358,14 @@
       </column>
    </group>
 
+   <group title="Syslog Remotes Configurations">
+      <column name="syslog_remotes">
+        <p>
+          List of syslog servers to which syslog messages will be forwarded.
+          <ref table="Syslog_Remote"/>
+        </p>
+      </column>
+   </group>
    </group>
 
     <group title="Status">
@@ -6312,5 +6320,27 @@
       ops-openvswitch: ac19ac49778adf6cf011a3ef6e0675025f1945b5
       sed: 4.2.2
     </column>
+  </table>
+  <table name="Syslog_Remote" title="Syslog remote configuration">
+    <p>
+      Each entry contains the configuration of the remote syslog server to forward syslog messages.
+    </p>
+    <group title="Configuration">
+      <column name="remote_host">
+         FQDN or host name or IPv4 address or IPv6 address of the syslog server.
+      </column>
+      <column name="transport">
+         Transport layer protocol used to forward messages to the server.
+         Default is <code>udp</code>
+      </column>
+      <column name="port_number">
+         Port number on which syslog server is listening.
+         Default is <code>514</code> for UDP protocol and <code>1470</code> for TCP protocol.
+      </column>
+      <column name="severity">
+         Filter syslog messages with severity.  Only messages with severity higher than or equal to the specified value will be sent to the remote server.
+         Default is <code>debug</code>.
+      </column>
+    </group>
   </table>
 </database>

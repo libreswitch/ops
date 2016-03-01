@@ -447,6 +447,18 @@
             "max": "unlimited"
           },
           "ephemeral": true
+        },
+        "syslog_remotes": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Syslog_Remote"
+            },
+            "min": 0,
+            "max": 4
+          }
         }
       },
       "isRoot": true,
@@ -7553,6 +7565,78 @@
         ]
       ],
       "isRoot": true
+    },
+    "Syslog_Remote": {
+      "columns": {
+        "remote_host": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        },
+        "transport": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set",
+                [
+                  "udp",
+                  "tcp"
+                ]
+              ]
+            },
+            "min":0,
+            "max":1
+          }
+        },
+        "port_number": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "severity": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set",
+                [
+                  "debug",
+                  "info",
+                  "notice",
+                  "warning",
+                  "err",
+                  "crit",
+                  "alert",
+                  "emerg"
+                ]
+              ]
+            },
+            "min":0,
+            "max":1
+          }
+        }
+      },
+      "indexes": [
+        [
+          "remote_host",
+          "transport"
+        ]
+      ]
     }
   }
 }
