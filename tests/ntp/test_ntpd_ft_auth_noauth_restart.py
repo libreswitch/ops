@@ -124,7 +124,7 @@ def validateNtpAssociationInfo(dut01, wrkston01, wrkston02):
 def validateNtpStatus(dut01, wrkston01, wrkston02):
     global WORKSTATION_IP_ADDR_SER2
     out = dut01.cmdVtysh(command="do show ntp status")
-    if 'Synchronized' in out and WORKSTATION_IP_ADDR_SER2 in out:
+    if 'Synchronized' in out:
         return True
     return False
 
