@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C)2015-2016 Hewlett Packard Enterprise Development LP
+# Copyright (C) 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -15,124 +15,173 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import os
-import sys
-import time
-import pytest
-import subprocess
-import shutil
-import json
-import httplib
-import urllib
+# Testing framework imports
 from opsvsi.docker import *
 from opsvsi.opsvsitest import *
 from opsvsiutils.systemutil import *
-from opsvsiutils.restutils.utils import *
-import ssl
+
+import time
+import httplib
+import urllib
+
+from opsvsiutils.restutils.utils import get_switch_ip, rest_sanity_check, \
+    execute_request
+from opsvsiutils.restutils.utils import LOGIN_URI, DEFAULT_USER, \
+    DEFAULT_PASSWORD
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 
+TEST_HEADER = "/login validation:"
+TEST_START = "\n########## " + TEST_HEADER + " %s ##########\n"
+TEST_END = "########## End " + TEST_HEADER + " %s ##########\n"
+
+HEADERS = {"Content-type": "application/x-www-form-urlencoded",
+           "Accept": "text/plain"}
+
 
 class myTopo(Topo):
     def build(self, hsts=0, sws=1, **_opts):
-
         self.hsts = hsts
         self.sws = sws
-        switch = self.addSwitch("s1")
+        self.addSwitch("s1")
 
 
-class configTest (OpsVsiTest):
+class LoginTest (OpsVsiTest):
     def setupNet(self):
 
-        host_opts = self.getHostOpts()
-        switch_opts = self.getSwitchOpts()
-        ecmp_topo = myTopo(hsts=NUM_HOSTS_PER_SWITCH, sws=NUM_OF_SWITCHES,
-                           hopts=host_opts, sopts=switch_opts)
-        self.net = Mininet(ecmp_topo, switch=VsiOpenSwitch, host=Host,
-                           link=OpsVsiLink, controller=None, build=True)
+        mytopo = myTopo(hsts=NUM_HOSTS_PER_SWITCH, sws=NUM_OF_SWITCHES,
+                        hopts=self.getHostOpts(), sopts=self.getSwitchOpts())
+        self.net = Mininet(topo=mytopo, switch=VsiOpenSwitch, host=None,
+                           link=None, controller=None, build=True)
+
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
-        self.URL = '/login'
 
-    def verify_login(self):
+    def query_not_logged_in(self):
+        '''
+        This function verifies the user can't query on /login if not logged in
+        '''
+        test_title = "query login while not logged in"
+        info(TEST_START % test_title)
 
-        #POST
-        _headers = {"Content-type": "application/x-www-form-urlencoded",
-                    "Accept": "text/plain"}
-        # GET to fetch system info from the DB
+        info("Executing GET on /login while not logged in...")
+        status_code, response_data = execute_request(LOGIN_URI, "GET", None,
+                                                     self.SWITCH_IP, False)
+        assert status_code == httplib.UNAUTHORIZED, "Wrong status code " + \
+            "when querying /login while not logged in: %s" % status_code
+        info(" All good.\n")
 
-        body = {'username': 'netop', 'password': 'netop'}
-        response, response_data = execute_request(
-            self.URL, "POST", urllib.urlencode(body),
-            self.SWITCH_IP, True, _headers)
-        assert response.status == httplib.OK, ("Wrong status code %s "
-                                               % response.status)
+        info(TEST_END % test_title)
 
-        _headers = {'Cookie': response.getheader('set-cookie')}
-        time.sleep(2)
-        info('\n######### Running GET to fetch the system' +
-             ' info from the DB ##########\n')
+    def successful_login(self):
+        '''
+        This verifies Login is successful when using correct data
+        '''
+        test_title = "successful Login"
+        info(TEST_START % test_title)
 
-        _headers = {'Cookie': response.getheader('set-cookie')}
-        time.sleep(2)
+        data = {'username': DEFAULT_USER, 'password': DEFAULT_PASSWORD}
 
-        status_code, response_data = execute_request(
-            self.URL, "GET", json.dumps(""),
-            self.SWITCH_IP, False, _headers)
-        assert status_code == httplib.OK, ("Wrong status code %s "
-                                           % status_code)
+        # Attempt Login
+        info("Attempting login with correct data...")
+        response, response_data = execute_request(LOGIN_URI, "POST",
+                                                  urllib.urlencode(data),
+                                                  self.SWITCH_IP, True,
+                                                  HEADERS)
+        assert response.status == httplib.OK, ("Login POST not successful, " +
+                                               "code: %s " % response.status)
+        info(" All good.\n")
 
-        time.sleep(2)
+        # Get cookie header
+        cookie_header = {'Cookie': response.getheader('set-cookie')}
 
-        info('\n######### Running GET to fetch the system info' +
-             ' from the DB after removing the cookie ##########\n')
-
-        # GET to fetch system info from the DB
-        response, response_data = execute_request(
-            self.URL, "GET", json.dumps(""),
-            self.SWITCH_IP, True, None)
-        assert response.status == httplib.UNAUTHORIZED, \
-            ("Wrong status code %s " % response.status)
-
-    def verify_fail_login(self):
-
-        #POST
-        _headers = {"Content-type": "application/x-www-form-urlencoded",
-                    "Accept": "text/plain"}
-
-        info('\n######### Running POST to fetch the cookie ##########\n')
-        body = {'username': 'Ops', 'password': 'Ops'}
-        response, response_data = execute_request(
-            self.URL, "POST", urllib.urlencode(body),
-            self.SWITCH_IP, True, _headers)
-        assert response.status == httplib.UNAUTHORIZED, \
-            ("Wrong status code %s " % response.status)
-
-        _headers = {'Cookie': response.getheader('set-cookie')}
-        time.sleep(2)
-        info('\n######### Running GET to fetch the system' +
-             ' info from the DB ##########\n')
-
-        status_code, response_data = execute_request(
-            self.URL, "GET", json.dumps(""),
-            self.SWITCH_IP, False, None)
-        assert response.status == httplib.UNAUTHORIZED, \
-            ("Wrong status code %s " % response.status)
         time.sleep(2)
 
-        info('\n######### Running GET to fetch the system info' +
-             'from the DB after removing the cookie ##########\n')
+        # Verify Login was successful
+        info("Verifying Login was successful...")
+        status_code, response_data = execute_request(LOGIN_URI, "GET", None,
+                                                     self.SWITCH_IP, False,
+                                                     cookie_header)
+        assert status_code == httplib.OK, ("Login GET not successful, " +
+                                           "code: %s " % status_code)
+        info(" All good.\n")
 
-        # GET to fetch system info from the DB
+        info(TEST_END % test_title)
 
-        response, response_data = execute_request(
-            self.URL, "GET", json.dumps(""),
-            self.SWITCH_IP, True, None)
-        assert response.status == httplib.UNAUTHORIZED, \
-            ("Wrong status code %s " % response.status)
+    def unsuccessful_login_with_wrong_password(self):
+        '''
+        This verifies Login is unsuccessful for an
+        existent user but using a wrong password
+        '''
+        test_title = "unsuccessful Login with wrong password"
+        info(TEST_START % test_title)
+
+        data = {'username': DEFAULT_USER, 'password': 'wrongpassword'}
+
+        # Attempt Login
+        info("Attempting login with wrong password...")
+        response, response_data = execute_request(LOGIN_URI, "POST",
+                                                  urllib.urlencode(data),
+                                                  self.SWITCH_IP, True,
+                                                  HEADERS)
+        assert response.status == httplib.UNAUTHORIZED, "Wrong status code" + \
+            " when login in with wrong password: %s " % response.status
+
+        info(" All good.\n")
+
+        info(TEST_END % test_title)
+
+    def unsuccessful_login_with_non_existent_user(self):
+        '''
+        This verifies Login is unsuccessful for a non-existent user
+        '''
+        test_title = "unsuccessful Login with non-existent user"
+        info(TEST_START % test_title)
+
+        data = {'username': 'john', 'password': 'doe'}
+
+        # Attempt Login
+        info("Attempting login with non-existent user...")
+        response, response_data = execute_request(LOGIN_URI, "POST",
+                                                  urllib.urlencode(data),
+                                                  self.SWITCH_IP, True,
+                                                  HEADERS)
+        assert response.status == httplib.UNAUTHORIZED, "Wrong status code" + \
+            " when login in with non-existent user: %s " % response.status
+
+        info(" All good.\n")
+
+        info(TEST_END % test_title)
+
+    def unauthorized_user_login_attempt(self):
+        '''
+        This verifies that you can't login with
+        a user that has no REST login permissions.
+        Current login permissions include
+        READ_SWITCH_CONFIG and WRITE_SWITCH_CONFIG.
+        Currently, the only users that do not have
+        either of these permissions are any user from
+        the ops_admin group
+        '''
+        test_title = "login attempt by unauthorized user"
+        info(TEST_START % test_title)
+
+        data = {'username': 'admin', 'password': 'admin'}
+
+        # Attempt Login
+        info("Attempting login with an unauthorized user...")
+        status_code, response_data = execute_request(LOGIN_URI, "POST",
+                                                     urllib.urlencode(data),
+                                                     self.SWITCH_IP, False,
+                                                     HEADERS)
+        assert status_code == httplib.UNAUTHORIZED, "Wrong status code " + \
+            "when attempting login by an unauthorized user: %s " % status_code
+        info(" All good.\n")
+
+        info(TEST_END % test_title)
 
 
-class Test_config:
+class Test_login:
     def setup(self):
         pass
 
@@ -140,11 +189,11 @@ class Test_config:
         pass
 
     def setup_class(cls):
-        cls.test_var = configTest()
+        cls.test_var = LoginTest()
         rest_sanity_check(cls.test_var.SWITCH_IP)
 
     def teardown_class(cls):
-        Test_config.test_var.net.stop()
+        cls.test_var.net.stop()
 
     def setup_method(self, method):
         pass
@@ -155,6 +204,17 @@ class Test_config:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
-        self.test_var.verify_login()
-        self.test_var.verify_fail_login()
+    def test_query_login_while_not_logged_in(self):
+        self.test_var.query_not_logged_in()
+
+    def test_successful_login(self):
+        self.test_var.successful_login()
+
+    def test_login_with_wrong_password(self):
+        self.test_var.unsuccessful_login_with_wrong_password()
+
+    def test_login_with_non_existent_user(self):
+        self.test_var.unsuccessful_login_with_non_existent_user()
+
+    def test_unauthorized_user_login_attempt(self):
+        self.test_var.unauthorized_user_login_attempt()

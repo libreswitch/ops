@@ -10,11 +10,9 @@ REST API Test Cases
 - [REST API get method for interfaces](#rest-api-get-method-for-interfaces)
 - [REST API put method with invalid data for URLs](#rest-api-put-method-with-invalid-data-for-urls)
 - [REST API login authentication](#rest-api-login-authentication)
+- [REST API method access](#rest-api-method-access)
+- [REST API user account management](#rest-api-user-account-management)
 - [REST API startup config verify](#rest-api-startup-config-verify)
-- [REST API get method for users](#rest-api-get-method-for-users)
-- [REST API post method for users](#rest-api-post-method-for-users)
-- [REST API delete method for users](#rest-api-delete-method-for-users)
-- [REST API put method for users](#rest-api-put-method-for-users)
 - [REST API get method for ports](#rest-api-get-method-for-ports)
 - [REST API post method for ports](#rest-api-post-method-for-ports)
 - [REST API put method for ports](#rest-api-put-method-for-ports)
@@ -73,6 +71,7 @@ REST API Test Cases
 - [REST API Logs with Priority](#rest-api-logs-with-priority)
 - [REST API Logs with Since and Until](#rest-api-logs-with-since-and-until)
 - [REST API Logs with Syslog Identifier](#rest-api-logs-with-syslog-identifier)
+
 
 
 ## REST API put method for system
@@ -394,28 +393,433 @@ This test case checks login and authentication.
 
 #### Steps
 
-1. Connect OpenSwitch to the Ubuntu workstation as shown in the topology diagram.
+1. Connect OpenSwitch to the Ubuntu workstation as shown in the topology
+diagram.
 2. Configure the IPV4 address on the switch management interfaces.
 3. Configure the IPV4 address on the Ubuntu workstation.
 
 ##### Test 1
 
-1. Execute the Standard REST API POST method for the URI `/login` with valid credentials.
-2. Validate the GET Method HTTP return code for the URI `/login`.
+1. Execute the GET method for URI `/login` while not logged in.
+2. Validate that the GET method HTTP return code is `401 UNAUTHORIZED`.
 
 ##### Test 2
 
-1. Execute the Standard REST API POST method for URI `/login` with invalid credentials.
-2. Validate that the GET method HTTP failed the return code for URI `/login`.
+1. Execute the standard REST API POST method for URI `/login` with valid
+credentials.
+2. Validate that the POST method HTTP return code is `200 OK`.
+3. Execute the GET method for URI `/login` using the cookie returned in the
+POST's response.
+4. Validate that the GET method HTTP return code for URI `/login` is `200 OK`.
+
+##### Test 3
+
+1. Execute the standard REST API POST method for URI `/login` with a correct
+user but wrong password.
+2. Validate that POST method HTTP return code is `401 UNAUTHORIZED`.
+
+##### Test 4
+
+1. Execute the standard REST API POST method for URI `/login` with a
+non-existent user.
+2. Validate that the POST method HTTP return code is `401 UNAUTHORIZED`.
+
+##### Test 5
+
+1. Execute the standard REST API POST method for URI `/login` with a user that
+does have `READ_SWITCH_CONFIG` or `WRITE_SWITCH_CONFIG` permissions.
+2. Validate that the POST method HTTP return code is `401 UNAUTHORIZED`.
 
 ### Test result criteria
 #### Test pass criteria
-- The first test passes if the standard REST API GET method returns HTTP code `200 OK` for the URI `/login`.
-- The second test passes if the standard REST API GET method returns HTTP code `401 UNAUTHORIZED` for the URI `/login`.
+- Test 1: the HTTP return code for the GET method on `/login` is `401 UNATHORIZED`.
+- Test 2: the HTTP return code for the POST method on `/login` is `200 OK`, and
+the HTTP return code for the GET method on `/login` is also `200 OK`.
+- Test 3: the HTTP return code for the POST method on `/login` is `401 UNATHORIZED`.
+- Test 4: the HTTP return code for the POST method on `/login` is `401 UNATHORIZED`.
+- Test 5: the HTTP return code for the POST method on `/login` is `401 UNATHORIZED`.
 
 #### Test fail criteria
-- The first test fails if the standard REST API GET Method does not return HTTP code `200 OK` for the URI `/login`.
-- The second test fails if the standard REST API GET Method does not return HTTP `401 UNAUTHORIZED` for the URI `/login`.
+- Test 1: the HTTP return code for the GET method on `/login` is not `401 UNATHORIZED`.
+- Test 2: the HTTP return code for the POST method on `/login` is not `200 OK`,
+and the HTTP return code for the GET method on `/login` is also not `200 OK`.
+- Test 3: the HTTP return code for the POST method on `/login` is not `401 UNATHORIZED`.
+- Test 4: the HTTP return code for the POST method on `/login` is not `401 UNATHORIZED`.
+- Test 5: the HTTP return code for the POST method on `/login` is not `401 UNATHORIZED`.
+
+## REST API method access
+
+### Objective
+The objective of the test case is to validate that REST methods (`GET`, `POST`,
+`PUT`, `PATCH`, and `DELETE`) are restricted based on the user's permissions.
+
+### Requirements
+The requirements for this test case are:
+
+- OpenSwitch
+- Ubuntu Workstation
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+For testing purposes, a fixture function is executed for all tests described,
+to obtain base test data from the default port and create a test port. This
+base test data and test port are used later on each test to either create
+another test port, or attempt to delete or modify the test port. The setup
+steps for this are as follows:
+
+1. Query the default port `/rest/v1/system/ports/bridge_normal` and save the
+result as the base port data, to be available for all tests.
+2. Modify the base port data, changing the port's name to `test_port`, and
+create a new port with this data.
+3. Upon test finalization, using the fixture's finalizer function, the test
+port is deleted.
+
+### Description
+
+This test validates that REST methods (`GET`, `POST`, `PUT`, `PATCH`, and
+`DELETE`) are restricted based on the user's permissions. Currently there are
+only two permissions that allow a user to login and use REST: `READ_SWITCH_CONFIG`
+and `WRITE_SWITCH_CONFIG`. These permissions map to REST methods as follows:
+
+- `READ_SWITCH_CONFIG`: `GET`
+- `WRITE_SWITCH_CONFIG`: `POST`, `PUT`, `PATCH`, `DELETE`
+
+So, for example, if a user does not have the `WRITE_SWITCH_CONFIG`, they can't
+execute a POST operation.
+
+The following tests are performed while the default user `netop` is logged in:
+
+1. Verify if the user can execute a POST command.
+    a. Execute a POST command over `/rest/v1/system/ports`, using the base port
+    data and naming the port `my_test_port`.
+    b. Verify if the HTTP response is `201 CREATED`.
+
+2. Verify if the user can execute a PUT command.
+    a. Execute a PUT command over `/rest/v1/system/ports/test_port`, adding a
+    `test` key with value `test` to the `other_config` column.
+    b. Verify if the HTTP response is `200 OK`.
+
+3. Verify if the user can execute a PATCH command.
+    a. Execute a PATCH command over `/rest/v1/system/ports/test_port`, using
+    the following PATCH data:
+
+    ```
+        [{"op": "add", "path": "/other_config", "value": {}},
+         {"op": "add", path": "/other_config/patch_test", "value": "test"}]
+    ```
+
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+
+4. Verify if the user can execute a GET command.
+    a. Execute a GET command over `/rest/v1/system/ports/test_port`.
+    b. Verify if the HTTP response is `200 OK`.
+
+5. Verify if the user can execute a DELETE command.
+    a. Execute a DELETE command over `/rest/v1/system/ports/test_port`.
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+
+6. Verify if the user can execute a GET command for the full-configuration
+   resource.
+    a. Execute a GET command over `/rest/v1/system/full-configuration`.
+    b. Verify if the HTTP response is `200 OK`.
+
+7. Verify if the user can execute a PUT command for the full-configuration
+   resource.
+    a. Execute a PUT command over `/rest/v1/system/full-configuration`, using
+    the following data:
+
+    ```
+        {
+            "System": {
+                "hostname": "",
+                "asset_tag_number": ""
+            }
+        }
+    ```
+
+    b. Verify if the HTTP response is `200 OK`.
+
+8. Verify if the user can execute a GET command for the logs resource.
+    a. Execute a GET command over `/rest/v1/logs`.
+    b. Verify if the HTTP response is `200 OK`.
+
+The following tests are intended to test the restriction of REST's methods
+based on lack of permissions, while the `admin` user is logged in. However,
+currently, REST allows authentication only for users with `READ_SWITCH_CONFIG`
+and `WRITE_SWITCH_CONFIG` permissions; at the time of this writing, the only
+user with either of these permissions is `netop`, which actually has both, so
+you can't essentially test that a user without one of them can't execute a
+method not allowed by the permission. Therefore, these tests are disabled in
+production. In order to test the restriction is actually working, you have to
+build a version of REST that would allow the `admin` user to authenticate (i.e.
+by adding `SYS_MGMT` to the list of allowed permissions to login), re-enable
+these tests, and run them locally, as the `admin` user does not currently have
+either of the allowed permissions for executing REST methods. This is necessary
+until there exists, by default, a user that would be allowed to authenticate
+while having a different set of permissions that serves testing purposes.
+
+9. Verify if the user can execute a POST command.
+    a. Execute a POST command over `/rest/v1/system/ports`, using the base port
+    data and naming the port `my_test_port`.
+    b. Verify if the HTTP response is `403 FORBIDDEN`.
+
+10. Verify if the user can execute a PUT command.
+    a. Execute a PUT command over `/rest/v1/system/ports/test_port`, adding a
+    `test` key with value `test` to the `other_config` column.
+    b. Verify if the HTTP response is `403 FORBIDDEN`.
+
+11. Verify if the user can execute a PATCH command.
+    a. Execute a PATCH command over `/rest/v1/system/ports/test_port`, using
+    the following PATCH data:
+
+    ```
+        [{"op": "add", "path": "/other_config", "value": {}},
+         {"op": "add", path": "/other_config/patch_test", "value": "test"}]
+    ```
+
+    b. Verify if the HTTP response is `403 FORBIDDEN`.
+
+12. Verify if the user can execute a GET command.
+    a. Execute a GET command over `/rest/v1/system/ports/test_port`.
+    b. Verify if the HTTP response is `403 FORBIDDEN`.
+
+13. Verify if the user can execute a DELETE command.
+    a. Execute a DELETE command over `/rest/v1/system/ports/test_port`.
+    b. Verify if the HTTP response is `403 FORBIDDEN`.
+
+14. Verify if the user can execute a GET command for the full-configuration
+    resource.
+    a. Execute a GET command over `/rest/v1/system/full-configuration`.
+    b. Verify if the HTTP response is `403 FORBIDDEN`.
+
+15. Verify if the user can execute a PUT command for the full-configuration
+    resource.
+    a. Execute a PUT command over `/rest/v1/system/full-configuration`, using
+    the following data:
+
+    ```
+        {
+            "System": {
+                "hostname": "",
+                "asset_tag_number": ""
+            }
+        }
+    ```
+
+    b. Verify if the HTTP response is `403 FORBIDDEN`.
+
+16. Verify if the user can execute a GET command for the logs resource.
+    a. Execute a GET command over `/rest/v1/logs`.
+    b. Verify if the HTTP response is `403 FORBIDDEN`.
+
+### Test result criteria
+#### Test pass criteria
+
+For tests executed while the `netop` user is logged in, the tests pass if the
+following status codes are received per method:
+
+- `GET`: `200 OK`
+- `POST`: `201 CREATED`
+- `PUT`: `200 OK`
+- `PATCH`: `204 NO CONTENT`
+- `DELETE`: `204 NO CONTENT`
+
+For tests executed while the `admin` user is logged in, the tests pass if
+`403 FORBIDDEN` is received as status code for all methods.
+
+#### Test fail criteria
+
+For tests executed while the `netop` user is logged in, the tests fail if the
+following status codes are not received per method:
+
+- `GET`: `200 OK`
+- `POST`: `201 CREATED`
+- `PUT`: `200 OK`
+- `PATCH`: `204 NO CONTENT`
+- `DELETE`: `204 NO CONTENT`
+
+For tests executed while the `admin` user is logged in, the tests pass if
+`403 FORBIDDEN` is not received as status code for all methods.
+
+## REST API user account management
+
+### Objective
+The objective of this test case is to validate REST user account management for
+self-password change and user permissions query through the `/account` resource.
+
+### Requirements
+The requirements for this test case are:
+
+- OpenSwitch
+- Ubuntu Workstation
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+### Description
+
+This test case validates REST's `/account` resource's ability to change the
+currently logged in user's password, through a PUT request, and query their
+role and permissions, through a GET request.
+Unless otherwise stated, the default user `netop` (password: `netop`) is logged
+in, and the correct Cookie header is used for each request.
+
+1. Verify the user can't change their own password when supplying a wrong
+   current password.
+    a. Execute a PUT request over `/account`, supplying an incorrect current
+    password in the request body:
+
+    ```
+        {
+            "configuration":
+            {
+                "password": "wrongpassword",
+                "new_password": "newpassword"
+            }
+        }
+    ```
+
+    b. Verify if the HTTP status code is `401 UNAUTHORIZED`.
+
+2. Verify the user can't change their own password when not supplying their
+   current password.
+    a. Execute a PUT request over `/account`, omitting the current password in
+    the request body:
+
+    ```
+        {
+            "configuration":
+            {
+                "new_password": "newpassword"
+            }
+        }
+    ```
+
+    b. Verify if the HTTP status code is `400 BAD REQUEST`.
+
+3. Verify the user can't change their own password when not supplying a new
+   password.
+    a. Execute a PUT request over `/account`, omitting the new password in the
+    request body:
+
+    ```
+        {
+            "configuration":
+            {
+                "password": "netop"
+            }
+        }
+    ```
+
+    b. Verify if the HTTP status code is `400 BAD REQUEST`.
+
+4. Verify the user can't change their own password when not logged in.
+    a. Execute a PUT request over `/account`, without supplying a Cookie header,
+    using the following data:
+
+    ```
+        {
+            "configuration":
+            {
+                "password": "netop",
+                "new_password": "newpassword"
+            }
+        }
+    ```
+
+    b. Verify if the HTTP status code is `401 UNAUTHORIZED`.
+
+5. Verify a successful password change for the currently logged in user.
+    a. Execute a PUT request over `/account`, using the following data:
+
+    ```
+        {
+            "configuration":
+            {
+                "password": "netop",
+                "new_password": "newpassword"
+            }
+        }
+    ```
+
+    b. Verify if the HTTP status code is `200 OK`.
+    c. Using the cookie header from the PUT request, execute a GET request over
+    `/account`
+    d. Verify if the HTTP status code is `200 OK`
+
+6. Verify the user's role and permissions can be queried while logged in.
+    a. Execute a GET request over `/account`.
+    b. Verify if the HTTP status code is `200 OK`
+    c. Verify if the user's role is present in the response and it corresponds
+    to `ops_netop`.
+    d. Verify if the user's permissions are present in the response and that
+    they include `READ_SWITCH_CONFIG` and `WRITE_SWITCH_CONFIG` permissions.
+
+7. Verify the user's role and permission can't be queried while not logged in.
+    a. Execute a GET request over `account`, without supplying a Cookie header.
+    b. Verify if the HTTP status code is `401 UNAUTHORIZED`.
+
+### Test result criteria
+#### Test pass criteria
+
+The test passes by meeting the following criteria for each sub test:
+
+1. When using a wrong current password, a `401 UNAUTHORIZED` HTTP status code
+is received.
+2. When not supplying the user's current password, a `400 BAD REQUEST` HTTP
+status code is received.
+3. When not supplying a new current password, a `400 BAD REQUEST` HTTP status
+code is received.
+4. When attempting to change the password while not logged in, a `401 UNAUTHORIZED`
+HTTP status code is received.
+5. When logged in and while supplying all correct information, a `200 OK` HTTP
+status code is received.
+6. When logged in and the user's role and permissions are queried, a `200 OK`
+HTTP status code is recieved and the user's role and permissions are the
+expected ones.
+7. When not logged in and the user's role and permissions are queried, a
+`401 UNAUTHORIZED` HTTP status code is received.
+
+#### Test fail criteria
+
+The test fails for the following reasons for each sub test:
+
+1. When using a wrong current password, other than `401 UNAUTHORIZED` HTTP
+status code is received.
+2. When not supplying the user's current password, other than `400 BAD REQUEST`
+HTTP status code is received.
+3. When not supplying a new current password, other than `400 BAD REQUEST` HTTP
+status code is received.
+4. When attempting to change the password while not logged in, other than
+`401 UNAUTHORIZED` HTTP status code is received.
+5. When logged in and while supplying all correct information, other than `200 OK`
+HTTP status code is received.
+6. When logged in and the user's role and permissions are queried, other than
+`200 OK` HTTP status code is recieved or the user's role and permissions are
+not the expected ones.
+7. When not logged in and the user's role and permissions are queried, other
+than `401 UNAUTHORIZED` HTTP status code is received.
 
 ## REST API startup config verify
 ### Objective
@@ -456,629 +860,6 @@ Verify that the REST API startup configuration works.
 #### Test fail criteria
 - The first test fails if the standard REST API PUT method does not return HTTP code `200 OK` for the URI `/rest/v1/system`.
 - The second test fails if the standard REST API GET method does not return HTTP code `200 OK` for the URI `/rest/v1/system` or the returned data is not identical to the data used for PUT.
-
-## REST API get method for users
-
-### Objective
-The objective of the test case is to validate the `/rest/v1/system/users` through the standard REST API GET method.
-
-### Requirements
-The requirements for this test case are:
-
-- OpenSwitch
-- Ubuntu Workstation
-
-### Setup
-
-#### Topology diagram
-```ditaa
-+----------------+         +----------------+
-|                |         |                |
-|                |         |                |
-|    Local Host  +---------+    Switch 1    |
-|                |         |                |
-|                |         |                |
-+----------------+         +----------------+
-```
-
-### Description
-
-The test case validates the `/rest/v1/system/users` through the standard REST API GET method.
-
-1. Verify if the GET method returns a json object with a list of users by creating 100 new users that are part of ovsdb-client group.
-    a. Execute the GET request over `/rest/v1/system/users?depth=1`.
-    b. Verify if the HTTP response is `200 OK`.
-    c. Confirm that the returned user list has the expected data.
-
-2. Verify if the GET method returns an users URI list by creating 100 new users that are part of ovsdb-client group.
-    a. Execute the GET request over `/rest/v1/system/users`.
-    b. Verify if the HTTP response is `200 OK`.
-    c. Confirm that the returned user list has the expected data.
-
-3. Verify if the GET method returns a json object with a list of users by creating 11 new users and only 10 are part of ovsdb-client group.
-    a. Execute the GET request over `/rest/v1/system/users?depth=1`.
-    b. Verify if the HTTP response is `200 OK`.
-    c. Confirm that the returned user list has the expected data.
-
-4. Verify if the GET method returns a json object with a list of users by creating 10 new users that are part of ovsdb-client group and have extra arguments in the creation command.
-    a. Execute the GET request over `/rest/v1/system/users?depth=1`.
-    b. Verify if the HTTP response is `200 OK`.
-    c. Confirm that the returned user list has the expected data.
-
-5. Verify if the GET method returns a json object with the default user.
-    a. Execute the GET request over `/rest/v1/system/users?depth=1`.
-    b. Verify if the HTTP response is `200 OK`.
-    c. Confirm that the returned user list has the expected data.
-
-6. Verify if the GET method returns a json object when querying an specific user.
-    a. Execute the GET request over `/rest/v1/system/users/<username>`.
-    b. Verify if the HTTP response is `200 OK`.
-    c. Confirm that the returned user object has the expected data.
-
-7. Verify if the GET method not returns a json object when querying an non existent user.
-    a. Execute the GET request over `/rest/v1/system/users/<username>`.
-    b. Verify if the HTTP response is `404 NOT FOUND`.
-
-
-### Test result criteria
-#### Test pass criteria
-
-This tests passes by meeting the following criteria:
-
-- The following status code is displayed when trying to get all user using depth parameter:
-
-    A `200 OK` HTTP response.
-
-- The following status code is displayed when trying to get all users without depth parameter:
-
-    A `200 OK` HTTP response.
-
-- The following status code is displayed when trying to query a specific user:
-
-    A `200 OK` HTTP response.
-
-- The following status code is displayed when trying to query a non-existent user:
-
-    A `404 NOT FOUND` HTTP response.
-
-#### Test fail criteria
-
-The test fails when:
-
-- The following error message or anything other than `200 OK` is displayed when trying to get all users using depth parameter:
-
-    A `404 NOT FOUND` HTTP response.
-
-- The following error message or anything other than `200 OK` is displayed when trying to get all users without depth parameter:
-
-    A `404 NOT FOUND` HTTP response.
-
-- The following error message or anything other than `200 OK` is displayed when trying to get a specific user:
-
-    A `404 NOT FOUND` HTTP response.
-
-- The following error message or anything other than `404 NOT FOUND` is displayed when trying to get non-existent user:
-
-    A `200 OK` HTTP response.
-
-## REST API post method for users
-
-### Objective
-The objective of the test is to validate the `/rest/v1/system/users` through the standard REST API POST method.
-
-### Requirements
-The requirements for this test case are:
-
-- OpenSwitch
-- Ubuntu Workstation
-
-### Setup
-
-#### Topology diagram
-```ditaa
-+----------------+         +----------------+
-|                |         |                |
-|                |         |                |
-|    Local Host  +---------+    Switch 1    |
-|                |         |                |
-|                |         |                |
-+----------------+         +----------------+
-```
-
-### Description
-The test case validates the `/rest/v1/system/users` through the standard REST API POST method.
-
-1. Verify that the request passes when trying to create a new user with a valid username and password.
-    a. Execute the POST request over `/rest/v1/system/users` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "username": "test_user",
-                "password": "test_password"
-            }
-        }
-        ```
-
-    b. Verify if the HTTP response is `201 CREATED`.
-    c. Execute a GET request over `/rest/v1/system/users`.
-    d. Confirm that the user is in the returned user list.
-
-2. Verify that the request passes when trying to create a new user with a 32 characters username:
-    a. Execute the POST request over `/rest/v1/system/users` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "username": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                "password": "test_password"
-            }
-        }
-        ```
-
-    b. Verify if the HTTP response is `201 CREATED`.
-    c. Execute a GET request over `/rest/v1/system/users`.
-    d. Confirm that the user is in the returned user list.
-
-3. Verify that the request fails when trying to create a new user with an empty username:
-    a. Execute the POST request over `/rest/v1/system/users` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "username": "",
-                "password": "test_password"
-            }
-        }
-        ```
-
-    b. Verify if the HTTP response is `400 BAD REQUEST`.
-
-4. Verify that the request fails when trying to create a new user with a space as username:
-    a. Execute the POST request over `/rest/v1/system/users` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "username": " ",
-                "password": "test_password"
-            }
-        }
-        ```
-
-    b. Verify if the HTTP response is `400 BAD REQUEST`.
-
-5. Verify that the request fails when trying to create a new user with a username longer than 32 characters:
-    a. Execute the POST request over `/rest/v1/system/users` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "username": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                "password": "test_password"
-            }
-        }
-        ```
-
-    b. Verify if the HTTP response is `400 BAD REQUEST`.
-
-6. Verify that the request fails when trying to create a new user with a username that contains disallowed characters
-    a. Execute the POST request over `/rest/v1/system/users` with each of the not allowed symbols
-    b. Verify if the HTTP response is `400 BAD REQUEST`.
-
-7. Verify that the request passes when trying to create a new user with a long password
-    a. Execute the POST request over `/rest/v1/system/users` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "username": "test_user",
-                "password": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-            }
-        }
-        ```
-
-    b. Verify if the HTTP response is `201 CREATED`.
-    c. Execute a GET request over `/rest/v1/system/users`.
-    d. Confirm that the user is in the returned user list.
-
-8. Verify that the request fails when trying to create a new user with a empty username and password
-    a. Execute the POST request over `/rest/v1/system/users` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "username": "",
-                "password": ""
-            }
-        }
-        ```
-
-    b. Verify if the HTTP response is `400 BAD REQUEST`.
-
-9. Verify that the request fails when trying to create a new user with a valid username and empty password
-    a. Execute the POST request over `/rest/v1/system/users` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "username": "test_user",
-                "password": ""
-            }
-        }
-        ```
-
-    b. Verify if the HTTP response is `400 BAD REQUEST`.
-
-10. Verify that the request fails when trying to create an existent user
-    a. Execute the POST request over `/rest/v1/system/users` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "username": "existent_user",
-                "password": "password"
-            }
-        }
-        ```
-
-    b. Execute the POST request over `/rest/v1/system/users` with the same data that (a):
-    c. Verify if the HTTP response is `400 BAD REQUEST`.
-
-11. Verify that the request passes when trying to create two user with the same password and check if hashed password is different in the shadow file.
-    a. Execute the POST request over `/rest/v1/system/users` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "username": "test_user_pass_1",
-                "password": "same_password"
-            }
-        }
-        ```
-
-    b. Verify if the HTTP response is `201 CREATED`.
-    c. Execute the POST request over `/rest/v1/system/users` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "username": "test_user_pass_2",
-                "password": "same_password"
-            }
-        }
-        ```
-
-    d. Verify if the HTTP response is `201 CREATED`.
-    e. Execute a GET request over `/rest/v1/system/users`.
-    f. Confirm that the users is in the returned user list.
-    g. Read the /etc/shadow file and the users hashed password.
-    h. Verify if both hashed password are different.
-
-### Test result criteria
-#### Test pass criteria
-
-This test passes by meeting the following criteria:
-
-- The following message is displayed when trying to create a valid user:
-
-    A `201 CREATED` HTTP response.
-
-- The following error message is displayed when trying to create a user with and invalid username (empty, a space, invalid characters, more than 32 characters)
-
-    A `400 BAD REQUEST` HTTP response.
-
-- The following message is displayed when trying to create a user with a long password.
-
-    A `201 CREATED` HTTP response.
-
-- The following error message is displayed when trying to create a user with an empty username and password
-
-    A `400 BAD REQUEST` HTTP response.
-
-- The following error message is displayed when trying to create a user with a valid username and empty password
-
-    A `400 BAD REQUEST` HTTP response.
-
-- The following error message is displayed when trying to create an existent user
-
-    A `400 BAD REQUEST` HTTP response.
-
-- Creating two users with the differents usernames and same password, both users have the different hashed passwords in the /etc/shadow file.
-
-#### Test fail criteria
-
-This test fails when:
-
-- The following message or anything other than `201 CREATED` is displayed when trying to create user with a valid username:
-
-    A `201 CREATED` HTTP response.
-
-- The following error message or anything other than `400 BAD REQUEST` is displayed when trying to create a user with an invalid username (empty, a space, invalid characters, more than 32 characters)
-
-    A `400 BAD REQUEST` HTTP response.
-
-- The following message or anything other than `201 CREATED` is displayed when trying to create user with a long password:
-
-    A `201 CREATED` HTTP response.
-
-- The following error message or anything other than `400 BAD REQUEST` is displayed when trying to create user with an empty username and password:
-
-    A `400 BAD REQUEST` HTTP response.
-
-- The following error message or anything other than `400 BAD REQUEST` is displayed when trying to create user with a valid username and empty password:
-
-    A `400 BAD REQUEST` HTTP response.
-
-- The following error message or anything other than `400 BAD REQUEST` is displayed when trying to create user an existent user:
-
-    A `400 BAD REQUEST` HTTP response.
-
-- Creating two users with the differents usernames and same password, both users have the same hashed passwords in the /etc/shadow file.
-
-## REST API delete method for users
-
-### Objective
-The objective of the test case is to validate the `/rest/v1/system/users/<id>` through the standard REST API DELETE method.
-
-### Requirements
-The requirements for this test case are:
-
-- OpenSwitch
-- Ubuntu Workstation
-
-### Setup
-
-#### Topology diagram
-```ditaa
-+----------------+         +----------------+
-|                |         |                |
-|                |         |                |
-|    Local Host  +---------+    Switch 1    |
-|                |         |                |
-|                |         |                |
-+----------------+         +----------------+
-```
-
-### Description
-The test case validates the `/rest/v1/system/users/<id>` through the standard REST API DELETE method.
-
-1. Verify that the request passes when trying to delete a new user who is part of ovsdb-client group and is not logged in.
-    a. Execute the DELETE request over `/rest/v1/system/users/<id>`.
-    b. Verify if the HTTP response is `204 NO CONTENT`.
-    c. Confirm that the returned user list has the expected data.
-
-2. Verify that the request fails when trying to delete a new user who is part of ovsdb-client group and is logged in.
-    a. Execute the DELETE request over `/rest/v1/system/users/<id>`.
-    b. Verify if the HTTP response is `400 BAD REQUEST`.
-    c. Confirm that the returned user list has the expected data.
-
-3. Verify that the request fails when trying to delete the current user and is logged in.
-    a. Execute the DELETE request over `/rest/v1/system/users/<id>`.
-    b. Verify if the HTTP response is `400 BAD REQUEST`.
-    c. Confirm that the returned user list has the expected data.
-
-4. Verify that the request fails after trying to delete a nonexistent user.
-    a. Execute the DELETE request over `/rest/v1/system/users/<id>`.
-    b. Verify if the HTTP response is `404 NOT FOUND`.
-
-5. Verify that the request fails after trying to delete a new user who is not part of the ovsdb-client group.
-    a. Execute the DELETE request over `/rest/v1/system/users/<id>`.
-    b. Verify if the HTTP response is `404 NOT FOUND`.
-    c. Confirm that the returned user list has the expected data.
-
-### Test result criteria
-#### Test pass criteria
-
-This test passes by meeting the following criteria:
-
-- The following error message is displayed when trying to delete a valid user that is currently not logged:
-
-    A `204 NO CONTENT` HTTP response.
-
-- The following error message is displayed when trying to delete a valid user currently logged in:
-
-    A `400 BAD REQUEST` HTTP response.
-
-- The following error message is displayed when trying to delete a nonexistent user:
-
-    A `404 NOT FOUND` HTTP response.
-
-- The following error message is displayed when trying to delete a user who is not part of ovsdb-client group:
-
-    A `404 NOT FOUND` HTTP response.
-
-#### Test fail criteria
-
-This test fails when:
-
-- The following error message or anything other than `204 NO CONTENT` is displayed when trying to delete a valid user currently not logged:
-
-    A `400 BAD REQUEST` HTTP response.
-
-- Deleting a valid user currently logged in, the following error message or anything other than `400 BAD REQUEST`is displayed:
-
-    A `204 NO CONTENT` HTTP response.
-
-- Deleting a nonexistent user anything other than a `404 NOT FOUND` HTTP response is displayed.
-
-- Deleting a user who is not part of the ovsdb-client group, the following error message or anything other than a `404 NOT FOUND` HTTP response is displayed:
-
-    A `204 NO CONTENT` HTTP response.
-
-## REST API put method for users
-
-### Objective
-The objective of the test case is to validate the `/rest/v1/system/users/<id>` through the standard REST API PUT method.
-
-### Requirements
-The requirements for this test case are:
-
-- OpenSwitch
-- Ubuntu Workstation
-
-### Setup
-
-#### Topology diagram
-```ditaa
-+----------------+         +----------------+
-|                |         |                |
-|                |         |                |
-|    Local Host  +---------+    Switch 1    |
-|                |         |                |
-|                |         |                |
-+----------------+         +----------------+
-```
-
-#### Test setup
-
-**Switch 1** must have a user to test with the following configuration data:
-
-```
-{
-    "configuration":
-    {
-        "username": "test_user_0"
-        "password": "test"
-    }
-}
-```
-
-### Description
-The test case validates the `/rest/v1/system/users/<id>` through the standard REST API PUT method.
-
-1. Verify that the request passes when trying to update the password of a user, who is also part of ovsdb-client group but is not logged in.
-    a. Execute the PUT request over `/rest/v1/system/users/<id>` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "password": "test_password"
-            }
-        }
-        ```
-
-    b. Verify if the HTTP response is `200 OK`.
-    c. Confirm that the user can log in with the new password.
-
-2. Verify that the request fails when trying to update a user with an empty password, and the user is part of the ovsdb-client group.
-    a. Execute the PUT request over `/rest/v1/system/users/<id>` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "password": ""
-            }
-        }
-        ```
-
-    b. Verify if the HTTP response is `400 BAD REQUEST`.
-    c. Confirm that the user can still log in with the current password.
-
-3. Verify that the request fails when trying to update a nonexistent user.
-    a. Execute the PUT request over `/rest/v1/system/users/<id>` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "password": "test_password"
-            }
-        }
-        ```
-
-    b. Verify if the HTTP response is `404 NOT FOUND`.
-
-4. Verify that the request fails after trying to update the password of a user who is not part of the ovsdb-client group.
-    a. Execute the PUT request over `/rest/v1/system/users/<id>` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "password": "test_password"
-            }
-        }
-        ```
-
-    b. Verify if the HTTP response is `404 NOT FOUND`.
-
-5. Verify that the request fails after trying to update the password of a user who is part of the ovsdb-client group and then try to log in with the old password.
-    a. Execute the PUT request over `/rest/v1/system/users/<id>` with the following data:
-
-        ```
-        {
-            "configuration":
-            {
-                "password": "test_password"
-            }
-        }
-        ```
-
-    b. Verify if the HTTP response is `200 OK`.
-    c. Confirm that the user cannot log in with the old password.
-
-### Test result criteria
-#### Test pass criteria
-
-This test passes by meeting the following criteria:
-
-- The following message is displayed when trying to update a valid user that has a proper password and is part of ovsb_users group:
-
-    A `200 OK` HTTP response.
-
-- The following error message is displayed when trying to update a valid user that has an incorrect password and is part of ovsb_users group:
-
-    A `400 BAD REQUEST` HTTP response.
-
-- The following error message is displayed when trying to update a nonexistent user:
-
-    A `404 NOT FOUND` HTTP response.
-
-- The following error message is displayed when trying to update a authorized user that has a valid password but is not part of ovsb_users group:
-
-    A `404 NOT FOUND` HTTP response.
-
-- The following error message is displayed when trying to log in with the old password instead of the recently updated password:
-
-    A `400 BAD REQUEST` HTTP response.
-
-#### Test fail criteria
-
-This test fails when:
-
-- The following error message is displayed when trying to update an authorized user that has a proper password and is part of ovsb_users group:
-
-    Anything other than  a `200 OK` HTTP response.
-
-- The following message is displayed when trying to update a valid user that has an incorrect password and is a part of ovsb_users group:
-
-    Anything other than  a `400 BAD REQUEST` HTTP response.
-
-- The following message is displayed when trying to update an nonexistent user:
-
-    Anything other than  a `404 NOT FOUND` HTTP response.
-
-- The following message is displayed when trying to update an authorized user that has a valid password, but is not part of ovsb_users group:
-
-    Anything other than  a `404 NOT FOUND` HTTP response.
-
-- The following message is displayed when trying to log in with an old password instead of the recently updated password:
-
-    Anything other than  a `400 BAD REQUEST` HTTP response.
 
 REST API ports Resource test cases
 ==================================
