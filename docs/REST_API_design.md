@@ -123,9 +123,9 @@ Returns the most recent 1000 log entries from the systemd journal in JSON. The r
 `GET https://10.10.0.1/rest/v1/logs?priority=<0-7>`
 Returns log output filtered by the given log priority level. Priority levels are similar to syslog levels 0-7. All logs with the given priority level or lower are returned.
 
-`GET https://10.10.0.1/rest/v1/logs?since=yyyy-mm-dd hh:mm:ss;until=yyyy-mm-dd hh:mm:ss`
+`GET https://10.10.0.1/rest/v1/logs?since=yyyy-mm-dd hh:mm:ss&until=yyyy-mm-dd hh:mm:ss`
 Returns the output filtered by the given time window.
-Instead of a specific time, a user can also give relative words like "yesterday", "today", "now", "1 day ago", "1 hour ago", "1 minute ago". Words like "hour ago", "minute ago" and "day ago" must precede with an integer and can be in plural form too. For example, 2 hours ago or 1 hour ago. Words other than the ones mentioned above return an error.
+Instead of a specific time, a user can also give relative words like "yesterday", "today", "now", "1 day ago", "1 hour ago", "1 minute ago". Words like "hour ago", "minute ago" and "day ago" must precede with a positive integer and can be in plural form too. For example, 2 hours ago or 1 hour ago. Words other than the ones mentioned above return an error.
 
 `GET https://10.10.0.1/rest/v1/logs?since=2 hours ago`
 Returns log entries generated in the past 2 hour time window.
@@ -135,10 +135,10 @@ Returns log entries generated in the past 2 hour time window.
 Returns logs *after* the location specified by the given cursor. The cursor is maintained by the systemd journald service per log entry, and is displayed in the response for each log entry.  If the user wants to retrieve logs since the last request, the user has to provide the cursor value of the last log entry returned in the previous request. Here is an example for cursor string: `s=66e980e3c7bc46bea313de741ce481bc;i=8598c;b=78537df4874046d5ae9f251193b9f0bc;m=285fc88ec04;t=52bd96c4fa130;x=2f797c4c0bb5eafc`
 
 
-`GET https://10.10.0.1/rest/v1/logs?offset=<int>;limit=<int>`
-As the log output can be huge, a user may request the number of log entries in a response. To do so, the user needs to pass `offset` and `limit` parameters. The `Offset` parameter is the starting log entry to obtain the results which starts with 0. The `limit` parameter defines the number of JSON log entries in the response. These parameters can be used along with other filtering parameters.
-For example, to retrieve the first 10 logs since the bootup, use `GET https:////10.10.0.1/rest/v1/logs?offset=0;limit=10`. To retrieve the next 10 logs, use `GET https:////10.10.0.1/rest/v1/logs?offset=10;limit=10`. The offset in the next request is typically the previous offset plus the limit. Following is an example to request log entries filtered based on priority level 6, and limit 5 log entries in the response:
-    `GET https://10.10.0.1/rest/v1/logs?priority=6;offset=0;limit=5`
+`GET https://10.10.0.1/rest/v1/logs?offset=<int>&limit=<int>`
+As the log output can be huge, a user may request the number of log entries in a response. To do so, the user needs to pass `offset` and `limit` parameters. The `Offset` parameter is the starting log entry to obtain the results which starts with 0. The `limit` parameter defines the number of JSON log entries in the response and the valid range is 1 - 1000. These two parameters can be used along with other filtering parameters separated by `&`.
+For example, to retrieve the first 10 logs since the bootup, use `GET https:////10.10.0.1/rest/v1/logs?offset=0&limit=10`. To retrieve the next 10 logs, use `GET https:////10.10.0.1/rest/v1/logs?offset=10&limit=10`. The offset in the next request is typically the previous offset plus the limit. Following is an example to request log entries filtered based on priority level 6, and limit 5 log entries in the response:
+    `GET https://10.10.0.1/rest/v1/logs?priority=6&offset=0&limit=5`
 
 
 `Get https://10.10.0.1/rest/v1/logs?<field>=<value>`
@@ -146,9 +146,9 @@ Returns log output based on the fields matched to the given value in the systemd
     If one match field is specified, all entries with a field matching the expression are returned in response.
     ` https://10.10.0.1/rest/v1/logs?MESSAGE_ID=50c0fa81c2a545ec982a54293f1b1945`
     If two different fields are matched, only entries matching both expressions at the same time are returned.
-    `https://10.10.0.1/rest/v1/logs?MESSAGE_ID=50c0fa81c2a545ec982a54293f1b1945;SYSLOG_INDETIFIER=ops-bgpd`
+    `https://10.10.0.1/rest/v1/logs?MESSAGE_ID=50c0fa81c2a545ec982a54293f1b1945&SYSLOG_INDETIFIER=ops-bgpd`
     If two matches refer to the same field, all entries matching either expression are returned.
-    `https://10.10.0.1/rest/v1/logs?_PID=150;_PID=178`
+    `https://10.10.0.1/rest/v1/logs?_PID=150&_PID=178`
 
 The following fields are supported:
 
@@ -162,7 +162,7 @@ The following fields are supported:
 |_UID | The User ID of the process that is generating the log entry.|
 |_GID | The Group ID of the process that is generating the log entry.|
 
-Following is an example of a log API response with offset=0;limit=2 which limits the log entries to 2 in the response:
+Following is an example of a log API response with offset=0&limit=2 which limits the log entries to 2 in the response:
 ```
 [{"_BOOT_ID": "f43a84807a2d4b1389c87867fe6aaec3", "__REALTIME_TIMESTAMP": "1455653778503173", "_CAP_EFFECTIVE": "25402800cf", "__MONOTONIC_TIMESTAMP": "1556353467723", "_SYSTEMD_UNIT": "systemd-journald.service", "_MACHINE_ID": "5f7d6bb2aee84e5cb5bb3007b2911e7d", "_PID": "20", "_CMDLINE": "/lib/systemd/systemd-journald", "_SYSTEMD_CGROUP": "/system.slice/systemd-journald.service", "_SYSTEMD_SLICE": "system.slice", "PRIORITY": "6", "_EXE": "/lib/systemd/systemd-journald", "_UID": "0", "_TRANSPORT": "driver", "_GID": "0", "__CURSOR": "s=4696aa7b4c7b4090850ee29b7748df5c;i=2;b=f43a84807a2d4b1389c87867fe6aaec3;m=16a5de5454b;t=52be8ce623605;x=7ac41464416ef406", "MESSAGE": "Runtime journal is using 8.0M (max allowed 197.4M, trying to leave 296.2M free of 1.9G available \uffffffe2\uffffff86\uffffff92 current limit 197.4M).", "MESSAGE_ID": "ec387f577b844b8fa948f33cad9a75e6", "_COMM": "systemd-journal", "_HOSTNAME": "f37f0cd9a774"}, {"_BOOT_ID": "f43a84807a2d4b1389c87867fe6aaec3", "__REALTIME_TIMESTAMP": "1455653778503270", "_CAP_EFFECTIVE": "25402800cf", "__MONOTONIC_TIMESTAMP": "1556353467820", "_SYSTEMD_UNIT": "systemd-journald.service", "_MACHINE_ID": "5f7d6bb2aee84e5cb5bb3007b2911e7d", "_PID": "20", "_CMDLINE": "/lib/systemd/systemd-journald", "_SYSTEMD_CGROUP": "/system.slice/systemd-journald.service", "_SYSTEMD_SLICE": "system.slice", "PRIORITY": "6", "_EXE": "/lib/systemd/systemd-journald", "_UID": "0", "_TRANSPORT": "driver", "_GID": "0", "__CURSOR": "s=4696aa7b4c7b4090850ee29b7748df5c;i=3;b=f43a84807a2d4b1389c87867fe6aaec3;m=16a5de545ac;t=52be8ce623666;x=568d82819815b54d", "MESSAGE": "Journal started", "MESSAGE_ID": "f77379a8490b408bbe5f6940505a777b", "_COMM": "systemd-journal", "_HOSTNAME": "f37f0cd9a774"}]
 ```
