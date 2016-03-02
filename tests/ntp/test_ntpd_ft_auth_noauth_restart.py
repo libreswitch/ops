@@ -30,7 +30,8 @@ global SERVER_UNREACHABLE
 
 
 # Topology definition
-topoDict = {"topoExecution": 3000,
+topoDict = {"topoType" : "virtual",
+            "topoExecution": 3000,
             "topoTarget": "dut01",
             "topoDevices": "dut01 wrkston01 wrkston02",
             "topoLinks": "lnk01:dut01:wrkston01,lnk02:dut01:wrkston02",
