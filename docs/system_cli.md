@@ -9,6 +9,7 @@ System commands
 	- [Setting an LED state](#setting-an-led-state)
 	- [Unsetting an LED state](#unsetting-an-led-state)
 - [System Display Commands](#system-display-commands)
+        - [Showing package information](#showing-package-information)
 	- [Showing system information](#showing-system-information)
 	- [System fan information](#system-fan-information)
 	- [Showing system temperature information](#showing-system-temperature-information)
@@ -129,7 +130,51 @@ All users.
 switch(config)#no led base-loc
 ```
 
-## System Display Commands
+## System display commands
+### Showing package information
+#### Syntax
+`show version detail`
+
+#### Description
+This command lists every package present in the switch image under the PACKAGE
+column. The VERSION column displays the git hash value if the SOURCE URL is a
+git repository. If not, the VERSION column displays the version string of the
+package. SOURCE TYPE displays the type of source pointed to by SOURCE URL.
+SOURCE URL displays the download location for the source-code of the
+corresponding package in the SOURCE URI column. If version information and/or
+Source URL is not available during build-time, `show version detail` displays
+'NA' (Not Available).
+
+#### Authority
+All users.
+
+#### Parameters
+This command does not require a parameter.
+
+#### Examples
+```
+switch#show version detail
+PACKAGE     : kernel-module-gspca-spca1528
+VERSION     : 3.14.36+gitAUTOINC+a996d95104_dbe5b52e93
+SOURCE TYPE : git
+SOURCE URL  : https://git.yoctoproject.org/linux-yocto-3.14.git;bareclone=1;branch=standard/common-pc-64/base,meta;name=machine,meta
+
+PACKAGE     : python-jsonpatch
+VERSION     : 1.11
+SOURCE TYPE : http
+SOURCE URL  : http://pypi.python.org/packages/source/j/jsonpatch/jsonpatch-1.11.tar.gz
+
+PACKAGE     : ops-cli
+VERSION     : a70df32190755dabf3fb404c3cde04a03aa6be40~DIRTY
+SOURCE TYPE : other
+SOURCE URL  : NA
+
+PACKAGE     : dbus-1
+VERSION     : NA
+SOURCE TYPE : other
+SOURCE URL  : NA
+```
+
 ### Showing system information
 #### Syntax
 `show system [ < fan | temperature [ detail ] | led | power-supply >]`

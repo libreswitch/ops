@@ -97,6 +97,32 @@ base-3    18.50          normal         normal
 base-2    20.50          normal         normal
 ```
 
+5. View detailed version information.
+The 'show version detail' command displays the version, source type,
+and source URL of every package present in the switch image.
+```
+switch#show version detail
+PACKAGE     : kernel-module-gspca-spca1528
+VERSION     : 3.14.36+gitAUTOINC+a996d95104_dbe5b52e93
+SOURCE TYPE : git
+SOURCE URL  : https://git.yoctoproject.org/linux-yocto-3.14.git;bareclone=1;branch=standard/common-pc-64/base,meta;name=machine,meta
+
+PACKAGE     : python-jsonpatch
+VERSION     : 1.11
+SOURCE TYPE : http
+SOURCE URL  : http://pypi.python.org/packages/source/j/jsonpatch/jsonpatch-1.11.tar.gz
+
+PACKAGE     : ops-cli
+VERSION     : a70df32190755dabf3fb404c3cde04a03aa6be40~DIRTY
+SOURCE TYPE : other
+SOURCE URL  : NA
+
+PACKAGE     : dbus-1
+VERSION     : NA
+SOURCE TYPE : other
+SOURCE URL  : NA
+```
+
 ## CLI
 
 Click [here](/documents/user/system_cli) for the CLI commands related to the system.
