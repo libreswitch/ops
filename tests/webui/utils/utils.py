@@ -28,7 +28,7 @@ from opsvsi.opsvsitest import *
 from copy import deepcopy
 from string import rstrip
 
-BASIC_PORT_DATA = {
+PORT_DATA = {
     "configuration": {
         "name": "1",
         "interfaces": ["/rest/v1/system/interfaces/1"]
@@ -36,7 +36,7 @@ BASIC_PORT_DATA = {
     "referenced_by": [{"uri": "/rest/v1/system/bridges/bridge_normal"}]
 }
 
-BASIC_INT_DATA = {
+INT_DATA = {
     "configuration": {
         "type": "system",
         "name": "1"
