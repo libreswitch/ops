@@ -510,6 +510,7 @@ class mgmtIntfTests(OpsVsiTest):
             s1.cmd("ip netns exec swns ip address flush dev 1")
 
 
+@pytest.mark.skipif(True, reason="Skipping due to Taiga ID : 631")
 class Test_mgmt_intf:
 
     def setup_class(cls):
