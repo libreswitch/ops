@@ -66,6 +66,13 @@ REST API Test Cases
 - [Declarative configuration schema validations](#declarative-configuration-schema-validations)
 - [Custom validators](#custom-validators)
 - [HTTPS support](#https-support)
+- [REST API Logs with No Filters](#rest-api-logs-no-filters)
+- [REST API Logs with Pagination](#rest-api-logs-with-pagination)
+- [REST API Logs with Invalid Filters](#rest-api-logs-with-invalid-filters)
+- [REST API Logs with Priority](#rest-api-logs-with-priority)
+- [REST API Logs with Since and Until](#rest-api-logs-with-since-and-until)
+- [REST API Logs with Syslog Identifier](#rest-api-logs-with-syslog-identifier)
+
 
 ## REST API put method for system
 ### Objective
@@ -6703,7 +6710,7 @@ import ssl
 import httplib
 headers = {"Content-type": "application/json", "Accept": "text/plain"}
 url = '/rest/v1/system/ports'
-conn = httplib.HTTPSConnection(server_ip, 443, cert_file="/root/restEnv/server.crt, key_file="/root/restEnv/server.key")
+conn = httplib.HTTPSConnection(server_ip, 443, cert_file="/root/restEnv/server.crt", key_file="/root/restEnv/server.key")
 conn.request('GET', url, None, headers)
 response = conn.getresponse()
 
@@ -6727,3 +6734,430 @@ conn.request('GET', url, None, headers)
 response = conn.getresponse()
 
 ```
+
+## REST API Logs with No Filters
+### Objective
+The objective of the test case is to verify the logs API without any query
+arguments passed in the URI
+
+### Requirements
+The requirements for this test case are:
+
+- OpenSwitch
+- Ubuntu Workstation
+
+#### Setup
+#### Topology diagram
+```ditaa
++---------------+                 +---------------+
+|               |                 |    Ubuntu     |
+|  OpenSwitch   |eth0---------eth1|               |
+|               |      lnk01      |  Workstation  |
++---------------+                 +---------------+
+```
+
+### Description
+Get the systemd journal logs using REST API for LOGS. In case the response
+contains more entries. ,the output should truncate to 1000 entries
+
+**URL `/rest/v1/logs`**
+
+#### Steps
+
+1. Connect OpenSwitch to the Ubuntu workstation as shown in the topology
+   diagram.
+2. Execute the REST GET method  for URI: `/rest/v1/logs`
+3. Verify the status code, response content and JSON format of the response
+   data.
+4. Verify whether the length of data is less than or equal to the 1000 entries.
+
+### Test result criteria
+#### Test pass criteria
+- The GET test passes, if the REST API for LOGS returns HTTP method `200 OK`.
+  Length of  the response should be less than or equal to 1000 entries.
+
+#### Test fail criteria
+- The GET test fails if the REST API method does not return HTTP code `200 OK`
+  for the URI `/rest/v1/logs` or length of the response is more than 1000
+  entries.
+
+
+## REST API Logs with Pagination
+### Objective
+The objective of the test case is to verify the logs API and ensure different
+combinations of pagination offset and limit parameters are working well with
+the logs URI
+
+### Requirements
+The requirements for this test case are:
+
+- OpenSwitch
+- Ubuntu Workstation
+
+#### Setup
+#### Topology diagram
+```ditaa
++---------------+                 +---------------+
+|               |                 |    Ubuntu     |
+|  OpenSwitch   |eth0---------eth1|               |
+|               |      lnk01      |  Workstation  |
++---------------+                 +---------------+
+```
+
+### Description
+Get the systemd journal logs using REST API for LOGS and then apply different
+filter values of offset  and limit to test the pagination feature.
+
+**URL `/rest/v1/logs?offset=<>&limit=<>`**
+
+#### Steps
+
+1. Connect OpenSwitch to the Ubuntu workstation as shown in the topology
+   diagram.
+2. Execute the REST GET method  for URI: `/rest/v1/logs?offset=<>&limit=<>`
+3. Verify the status code, response content and JSON format of the response
+   data.
+4. Verify whether the length of data is less than or equal to the limit
+   paramater passed in the URI.
+5. Execute the REST GET method for URI: `/rest/v1/logs?offset=<>` where limit
+   is None.
+6. Verify the status code, response content and JSON format of the response
+   data.
+8. Execute the REST GET method for URI: `/rest/v1/logs?limit=<>` where offset
+   is None.
+9. Verify the status code, response content and JSON format of the response
+   data.
+10. Execute the REST GET method  for URI: `/rest/v1/logs?offset=1&limit=-1` by
+    giving a negative number to the limit parameter.
+11. Verify the status code.
+12. Execute the REST GET method  for URI: `/rest/v1/logs?offset=-1&limit=10` by
+    giving a negative number to the offset parameter.
+13. Verify the status code.
+
+### Test result criteria
+#### Test pass criteria
+- The first GET test passes, if the REST API for LOGS with both offset and
+  limit returns HTTP method `200 OK`. Length of  the response should be less
+  than or equal to the limit filter used in the URI.
+- The second GET test passes if the REST API for LOGS with limit as None
+  returns HTTP method `200OK`. Length of the response should be difference
+  between length of the data and offset number.
+- The third GET test passes if the REST API for LOGS with offset as None
+  returns HTTP method `200OK`. Length of the response should be less than or
+  equal to the limit filter.
+- The fourth  GET test passes if the REST API for LOGS with negative limit
+  returns HTTP method `400 BAD REQUEST`.
+- The fifth  GET test passes if the REST API for LOGS with negative offset
+  returns HTTP method `400 BAD REQUEST`.
+
+
+#### Test fail criteria
+- The first test fails if the REST API method does not return HTTP code
+  `200 OK` for the URI `/rest/v1/logs?ofset=<>&limit=<>` or length of the
+  response is more than the limit parameter used.
+- The second test fails if the REST API method does not return HTTP code
+  `200 OK` for the URI `/rest/v1/logs?offset=<>` or length of response is more
+  than the difference between length of data and offset number used.
+- The third test fails if the REST API method does not return HTTP code
+  `200 OK` for the URI `/rest/v1/logs?limit=<>` or length of response is more
+  than the the limit parameter used.
+- The fourth  GET test fails if the REST API for LOGS with negative limit does
+  not return HTTP method `400 BAD REQUEST`.
+- The fifth  GET test passes if the REST API for LOGS with negative offset
+  does not return HTTP method `400 BAD REQUEST`.
+
+## REST API Logs with Invalid Filters
+### Objective
+The objective of the test case is to verify and ensure that filters for logs
+API other than the desired features are discarded and shown as an error
+
+### Requirements
+The requirements for this test case are:
+
+- OpenSwitch
+- Ubuntu Workstation
+
+#### Setup
+#### Topology diagram
+```ditaa
++---------------+                 +---------------+
+|               |                 |    Ubuntu     |
+|  OpenSwitch   |eth0---------eth1|               |
+|               |      lnk01      |  Workstation  |
++---------------+                 +---------------+
+```
+
+### Description
+Get the systemd journal logs using REST API for LOGS with valid as well as
+invalid filters to catch the desired response.
+
+**URL `/rest/v1/logs?<>`**
+
+#### Steps
+
+1. Connect OpenSwitch to the Ubuntu workstation as shown in the topology
+   diagram.
+2. Execute the REST GET method  for URI: `/rest/v1/logs?priority=7` with valid
+   filter.
+3. Verify the status code, response content, JSON format and pagination for
+   the response data.
+4. Execute the REST GET method  for URI: `/rest/v1/logs?priory=7` with invalid
+   filter.
+5. Verify the status code, response content, JSON format and pagination for
+   the response data.
+6. Execute the REST GET method for URI: `/rest/v1/logs?priority=<0-7>` with
+   valid data for priority filter.
+7. Verify the status code, response content, JSON format and pagination for
+   the response data.
+8. Execute the REST GET method for URI: `/rest/v1/logs?priority=10` with
+   invalid data for priority filter.
+9. Verify the status code, response content, JSON format and pagination for
+   the response data.
+
+### Test result criteria
+#### Test pass criteria
+- The first test passes, if the response for REST call with valid filter
+  returns HTTP method `200 OK`. Length of  the response should be less than or
+  equal to the limit filter used in the URI.
+- The second test passes if the response for REST call with invalid filter
+  returns HTTP method `400 BAD_REQUEST`.
+- The third test passes if the response for REST call with valid data returns
+  HTTP method `200 OK`. Length of the response should be less than or equal to
+  the limit filter used in the URI.
+- The fourth test passes if the response for REST call with invalid data
+  returns HTTP method `400 BAD_REQUEST`
+
+#### Test fail criteria
+- The first test fails if the REST API method does not return HTTP code
+  `200 OK` for the URI `/rest/v1/logs?priority=7` or length of the response is
+  more than the limit parameter used.
+- The second test fails if the REST API method does not return HTTP code
+  `400 BAD_REQUEST` for the URI `/rest/v1/logs?priory=7`.
+- The third test fails if the REST API method does not return HTTP code
+  `200 OK` for the URI `/rest/v1/logs?priority=7` or length of response is
+  more than the the limit parameter used.
+- The fourth test fails if the REST API method does not return HTTP code
+  `400 BAD_REQUEST` for the URI `/rest/v1/logs?priory=8`.
+
+## REST API Logs with Priority
+### Objective
+The objective of the test case is to verify the priority filter for logs API
+is working fine with acceptable values and returns error in the case of
+invalid priority values.
+
+### Requirements
+The requirements for this test case are:
+
+- OpenSwitch
+- Ubuntu Workstation
+
+#### Setup
+#### Topology diagram
+```ditaa
++---------------+                 +---------------+
+|               |                 |    Ubuntu     |
+|  OpenSwitch   |eth0---------eth1|               |
+|               |      lnk01      |  Workstation  |
++---------------+                 +---------------+
+```
+
+### Description
+Get the systemd journal logs using REST API for LOGS with priority levels.
+
+**URL `/rest/v1/logs?priority=<>&offset=<>&limit=<>`**
+
+#### Steps
+
+1. Connect OpenSwitch to the Ubuntu workstation as shown in the topology
+   diagram.
+2. Execute the REST GET method  for URI:
+   `/rest/v1/logs?priority=6&offset=0&limit=10` .
+3. Verify the status code, response content, JSON format and pagination for the
+   response data.
+4. Execute the REST GET method  for URI:
+   `/rest/v1/logs?priory=-1&offset=0&limit=10` with a negative priority level.
+5. Verify the status code returned error code 400.
+
+### Test result criteria
+#### Test pass criteria
+- The first GET test passes, if the response for REST call with valid priority
+  level returns HTTP method `200 OK`. Length of  the response should be less
+  than or equal to the limit filter used in the URI.
+- The second GET test passes if the response for REST call with a negative
+  priority level returns HTTP method `400 BAD_REQUEST`.
+
+#### Test fail criteria
+- The first GET test fails if the REST API method does not return HTTP code
+  `200 OK` for the URI `/rest/v1/logs?priority=6&offset=0&limit=10` or length
+  of the response is more than the limit parameter used.
+- The second GET test fails if the REST API method does not return HTTP code
+  `400 BAD_REQUEST` for the URI `/rest/v1/logs?priory=-1&offset=0&limit=10`.
+
+## REST API Logs with Since and Until
+### Objective
+The objective of the test case is to verify the `since` and `until` filters for
+logs API by giving different time formats.
+
+### Requirements
+The requirements for this test case are:
+
+- OpenSwitch
+- Ubuntu Workstation
+
+#### Setup
+#### Topology diagram
+```ditaa
++---------------+                 +---------------+
+|               |                 |    Ubuntu     |
+|  OpenSwitch   |eth0---------eth1|               |
+|               |      lnk01      |  Workstation  |
++---------------+                 +---------------+
+```
+
+### Description
+Get the systemd journal logs using REST API for LOGS with priority levels.
+
+**URL `/rest/v1/logs?since=<>&offset=<>&limit=<>`**
+**URL `/rest/v1/logs?until=<>&offset=<>&limit=<>`**
+#### Steps
+
+1. Connect OpenSwitch to the Ubuntu workstation as shown in the topology
+   diagram.
+2. Execute the REST GET method  for URI:
+   `/rest/v1/logs?since=1 minute ago&offset=0&limit=10` .
+3. Verify the status code, response content, JSON format and pagination for
+   the response data.
+4. Execute the REST GET method  for URI:
+   `/rest/v1/logs?since=<current time stamp>&offset=0&limit=10`  by getting
+   the current time stamp in YYYY-MM-DD HH:MM:SS format.
+5. Verify the status code, response content, JSON format and pagination for
+   the response data.
+6. Execute the REST GET method  for URI:
+   `/rest/v1/logs?until=now&offset=0&limit=10`.
+7. Verify the status code, response content, JSON format and pagination for
+   the response data.
+8. Execute the REST GET method  for URI:
+   `/rest/v1/logs?until=<current time stamp>&offset=0&limit=10` by getting the
+   current time stamp in YYYY-MM-DD HH:MM:SS format .
+9. Verify the status code, response content, JSON format and pagination for the
+   response data.
+10. Execute the REST GET method  for URI:
+    `/rest/v1/logs?since=0000-00-00 00:00:00&offset=0&limit=10` by giving
+    invalid time stamp.
+11. Verify the status code.
+12. Execute the REST GET method  for URI:
+    `/rest/v1/logs?since=2020-01-01 01:01:00&offset=0&limit=10` by giving a
+    future date.
+13. Verify the status code and response content.
+14. Execute the REST GET method fo URI:
+    `/rest/vi/logs?since=-1 hour ago&offset=0&limit=10` by giving an invalid
+    negative integer in relative word.
+15. Verify the status code
+
+
+### Test result criteria
+#### Test pass criteria
+- The first GET test passes, if the response for REST call with since =
+  1 minute ago returns HTTP method `200 OK`. Length of  the response should be
+  less than or equal to the limit filter used in the URI. Time stamp of the
+  logs returned in the response must be less than 1 minute ago of the current
+  time stamp.
+- The second GET test passes if the response for the REST call with since =
+  <current time stamp> returns HTTP method `200 OK`. Length of  the response
+  should be less than or equal to the limit filter used in the URI. Time stamp
+  of the logs returned in the response must be less than 1 minute ago current
+  time stamp.
+- The third GET test passes, if the response for REST call with until = now
+  returns HTTP method `200 OK`. Length of  the response should be less than or
+  equal to the limit filter used in the URI. Time stamp of the logs returned
+  in the response must be less than 1 minute ago of the current time stamp.
+- The fourth GET test passes, if the response for REST call with until =
+  <current time stamp> returns HTTP method `200 OK`. Length of  the response
+  should be less than or equal to the limit filter used in the URI. Time stamp
+  of the logs returned in the response must be less than 1 minute ago of the
+  current time stamp.
+- The fifth GET test passes, if the response for the REST call with
+  0000-00-00 00:00:00 timestamp returns HTTP method `400 BAD_REQUEST`.
+- The sixth GET test passes, if the response for the REST call with timestap
+  with future date returns HTTP method `200 OK` and the response content is
+  empty as there will be no logs for the future time stamp.
+- The seventh GET test passes, if the response for the REST call with negative
+  integer for relative time keyword returns HTTPmethod `400 BAD_REQUEST`.
+
+#### Test fail criteria
+- The first GET test fails if the REST API method does not return HTTP code
+  `200 OK` for the URI `rest/v1/logs?since=1 minute ago&offset=0&limit=10` or
+  length of the response is more than the limit parameter used or the logs time
+  stamp in the response is not within the recent 1 minute time window or if the
+  response is empty.
+- The second GET test fails if the REST API method does not return HTTP code
+  `200 OK` for the URI `/rest/v1/logs?since=<current time stamp>&offset=0&limit=10`
+  or length of the response is more than the limit parameter used or the logs
+  time stamp in the response is not within the recent 1 minute time window or
+  if the response is empty.
+- The third GET test fails if the REST API method does not return HTTP code
+  `200 OK` for the URI `/rest/v1/logs?until=now&offset=0&limit=10` or length of
+  the response is more than the limit parameter used or the logs time stamp in
+  the response is not within the recent 1 minute time window or if the response
+  is empty.
+- The fourth GET test fails if the REST API method does not return HTTP code
+  `200 OK` for the URI `/rest/v1/logs?until=<current time stamp>&offset=0&limit=10`
+  or length of the response is more than the limit parameter used or the logs
+  time stamp in the response is not within the recent 1 minute time window or
+  if the response is empty.
+- The fifth GET test fails, if the response for the REST call does not return
+  HTTP method `400 BAD_REQUEST`.
+- The sixth GET test fails, if the response for the REST call does not return
+  HTTP method `200 OK` and the response content is not empty.
+- The seventh GET test fails, if the response for the REST call with negative
+  integer for relative time keyword does not return HTTPmethod
+  `400 BAD_REQUEST`.
+
+## REST API Logs with Syslog Identifier
+### Objective
+The objective of the test case is to verify the `SYSLOG_IDENTIFIER` filter for
+logs API.
+
+### Requirements
+The requirements for this test case are:
+
+- OpenSwitch
+- Ubuntu Workstation
+
+#### Setup
+#### Topology diagram
+```ditaa
++---------------+                 +---------------+
+|               |                 |    Ubuntu     |
+|  OpenSwitch   |eth0---------eth1|               |
+|               |      lnk01      |  Workstation  |
++---------------+                 +---------------+
+```
+
+### Description
+Get the systemd journal logs using REST API for LOGS with the SYSLOG_IDENTIFIER
+filter.
+
+**URL `/rest/v1/logs?SYSLOG_IDENTIFIER=<>&offset=<>&limit=<>`**
+
+#### Steps
+
+1. Connect OpenSwitch to the Ubuntu workstation as shown in the topology
+   diagram.
+2. Execute the REST GET method  for URI:
+   `/rest/v1/logs?SYSLOG_INDENTIFIER=systemd&offset=0&limit=10` .
+3. Verify the status code, response content, JSON format and pagination for the
+   response data.
+
+### Test result criteria
+#### Test pass criteria
+- The GET test passes, if the response for REST call returns HTTP method
+  `200 OK`. Length of  the response should be less than or equal to the limit
+  filter used in the URI. Response data is not empty and the response data
+  consists of only systemd logs and not any other daemon logs.
+
+#### Test fail criteria
+- The GET test fails if the REST API method does not return HTTP code `200 OK`
+  or the length of the response is more than the limit parameter used or the
+  response data is empty or the response data consists of logs other than the
+  systemd.
