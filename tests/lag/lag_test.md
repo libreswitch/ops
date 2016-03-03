@@ -23,6 +23,9 @@ LAG Test Cases
 * [Modify number of static LAG members upper limits](#modify-number-of-static-lag-members-upper-limits)
 * [Modify dynamic LAG without changing any setting](#modify-dynamic-lag-without-changing-any-setting)
 * [Modify static LAG without changing any setting](#modify-static-lag-without-changing-any-setting)
+* [Verify communication between 2 switches connected by L3 dynamic LAGs](#Verify-communication-between-2-switches-connected-by-L3-dynamic-lag)
+* [Verify communication between 2 switches connected by L3 static LAGs](#Verify-communication-between-2-switches-connected-by-L3-static-lag)
+* [Verify LAG interface functionality when using command shutdown for LAG](#verify-lag-interface-functionality-when-using-command-shutdown-for-lag)
 
 ## Create dynamic LAGs with different names
 ### Objective
@@ -1190,3 +1193,161 @@ This test fails in the following scenarios:
  - The interfaces reset.
  - Other unexpected behavior.
 
+## Verify communication between 2 switches connected by L3 dynamic LAGs
+### Objective
+Verify a ping between 2 switches configured with L3 dynamic LAGs works properly.
+### Requirements
+The requirements for this test case are:
+
+ - 2 Switches running OpenSwitch
+ - **FT file**: `ops/tests/lag/test_ft_lacp_l3_ping.py`
+
+### Setup
+
+#### Topology diagram
+```ditaa
+
+   +-----+------+
+   |            |
+   |  Switch 1  |
+   |            |
+   +-+---+---+--+
+     |   |   |
+     |   |   |      LAG 1
+     |   |   |
+   +-+---+---+--+
+   |            |
+   |  Switch 2  |
+   |            |
+   +-----+------+
+```
+#### Test setup
+### Description
+
+This test verifies that after configuring a L3 dynamic LAG between two switches
+a ping works properly from one switch to the other.
+
+  1. Create a dynamic LAG in both switches.
+  2. Add 3 interfaces to each LAG.
+  3. Assign IP address on the same range to each LAG.
+  4. Ping from switch1 to switch2 and viceversa.
+
+### Test result criteria
+#### Test pass criteria
+The number of packets transmitted in the ping is equal to the number of packets
+received.
+
+#### Test fail criteria
+The number of packets transmitted in the ping is not equal to the number of
+packets received.
+
+
+## Verify communication between 2 switches connected by L3 static LAGs
+### Objective
+Verify a ping between 2 switches configured with L3 static LAGs works properly.
+### Requirements
+The requirements for this test case are:
+
+ - 2 Switches running OpenSwitch
+ - **FT file**: `ops/tests/lag/test_ft_static_lag_l3_ping.py`
+
+### Setup
+
+#### Topology diagram
+```ditaa
+   +-----+------+
+   |            |
+   |  Switch 1  |
+   |            |
+   +-+---+---+--+
+     |   |   |
+     |   |   |      LAG 1
+     |   |   |
+   +-+---+---+--+
+   |            |
+   |  Switch 2  |
+   |            |
+   +-----+------+
+```
+#### Test setup
+### Description
+
+This test verifies that after configuring a L3 static LAG between two switches
+a ping works properly from one switch to the other.
+
+  1. Create a static LAG in both switches.
+  2. Add 3 interfaces to each LAG.
+  3. Assign IP address on the same range to each LAG.
+  4. Ping from switch1 to switch2 and viceversa.
+
+### Test result criteria
+#### Test pass criteria
+The number of packets transmitted in the ping is equal to the number of packets
+received.
+
+#### Test fail criteria
+The number of packets transmitted in the ping is not equal to the number of
+packets received.
+
+## Verify LAG interface functionality when using command shutdown for LAG
+
+### Objective
+To verify that LAG interfaces are not passing traffic when the command shutdown is
+used in the LAG context, or to verify that LAG interfaces are passing traffic when
+the command no shutdown is used in the LAG context.
+
+### Requirements
+The requirements for this test case are:
+
+ - 2 Switches running OpenSwitch
+ - 2 Workstations
+ - **FT file**: `ops/tests/lag/test_lag_ft_shutdown_no_shutdown.py`
+
+### Setup
+
+#### Topology diagram
+```ditaa
+
+                        +-----------+
+                        |workstation|
+                        |    01     |
+                        +-----------+
+                              |
+                        +----------+
+                        |          |
+                        |  dut01   |
+                        +----------+
+                            ||         LAG 1
+                        +----------+
+                        |          |
+                        |  dut02   |
+                        +----------+
+                             |
+                        +-----------+
+                        |workstation|
+                        |    02     |
+                        +-----------+
+```
+#### Test setup
+### Description
+This test verifies functionality of the commands shutdown and no shutdown in a LAG context
+
+To configure a LAG:
+1. Configure LAG 1.
+2. Add interfaces to LAG 1.
+3. Configure the workstations.
+4. Ping between the workstations.
+5. Use command **no shutdown** in LAG 1 in both switches. Ping between the workstations.
+6. Use command **shutdown** in LAG 1 in both switches.
+7. Ping between the workstations.
+8. Use command **no shutdown** in LAG 1 in both switches.
+9. Ping between the workstations.
+
+### Test result criteria
+#### Test pass criteria
+Ping between the workstations fails when the command **shutdonw** is used.
+Ping between the workstations is successful when the command **no shutdonw** is used.
+
+#### Test fail criteria
+Ping reach the other side when the command **shutdonw** is used.
+Ping does not reach the other side when the command **no shutdonw** is used.
