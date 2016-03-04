@@ -11,6 +11,7 @@ Layer 3 Test Cases
 - [IPv6 static routes configuration](#ipv6-static-routes-configuration)
 - [Delete IPv6 static routes](#delete-ipv6-static-routes)
 - [ECMP tests](#ecmp-tests)
+- [LAG Fastpath](#lag-fastpath)
 
 ## L3 interface configuration
 ### Objective
@@ -515,3 +516,96 @@ Same as above
 - Source IP in the ICMP response packets for all streams are all from a single nexthop.
 - Source IP in the ICMP response packets associated with a single stream vary.
 - No ICMP response packets are received
+
+## LAG Fastpath
+### Objective
+This test verifies that the ping went through fastpath with LAG configured on
+both switches. This test case verifies that the ping works when IPv4 and IPv6
+static routes are configured.
+### Requirements
+- Physical switch/workstations test setup
+- **FT File**: `ops/tests/test_layer3_ft_static_routes.py` (Static Routes IPv4 and IPv6)
+
+### Setup
+#### Topology diagram
+
+```ditaa
+
+        Routes configured on SW 1               Routes configured on SW 2
+        ip route 10.0.30.0/24 10.0.20.2         ip route 10.0.10.0/24 10.0.20.1
+        ip route 2002::/120 2001::2             ip route 2000::/120 2001::1
+
+            +------------+                              +------------+
+            |            | 2                          2 |            |
+            |            <----------------------------->             |
+            |            | (LAG 100)         (LAG  100) |            |
+            |  Switch 1  | 10.0.20.1/24    10.0.20.2/24 |  Switch 2  |
+            |            | 2001::1/120      2001::2/120 |            |
+            |            <------------------------------>            |
+            |            | 3                           3|            |
+            +-----^------+                              +------^-----+
+                1 | 10.0.10.2/24                            1 | 10.0.30.2/24
+                  | 2000::2/120                               | 2002::2/120
+                  |                                           |
+                  |                                           |
+                  |                                           |
+                  |                                           |
+                  | 10.0.10.1/24                 10.0.30.1/24 |
+      (h1-eth0) 1 | 2000::1/120                   2002::1/120 | 1 (h2-eth0)
+        +---------v---------+                       +---------v---------+
+        |                   |                       |                   |
+        |      Host 1       |                       |      Host 2       |
+        |                   |                       |                   |
+        +-------------------+                       +-------------------+
+
+Routes configured on Host 1                 Routes configured on Host 2
+ip route add 10.0.20.0/24 via 10.0.10.2     ip route add 10.0.10.0/24 via 10.0.30.2
+ip route add 10.0.30.0/24 via 10.0.10.2     ip route add 10.0.20.0/24 via 10.0.30.2
+
+ip route add 2001::0/120 via 2000::2        ip route add 2001::0/120 via 2002::1
+ip route add 2002::0/120 via 2000::2        ip route add 2000::0/120 via 2002::1
+```
+
+### Description
+Configure a topology with two hosts and two switches, connected as shown in the
+topology diagram.
+
+1. Configure LAG 100 to interface 2 on switch 1
+    * **IPv4 address** `10.0.20.1/24`
+    * **IPv6 address** `2001::1/120`
+* Configure LAG 100 to interface 2 on switch 2
+    * **IPv4 address** `10.0.20.2/24`
+    * **IPv6 address** `2001::2/120`
+* Configure two L3 interfaces on switch 1.
+    * **IPv4 addresses**: `10.0.10.2/24` and `10.0.20.1/24`.
+    * **IPv6 addresses**: `2000::2/120` and `2002::2/120`
+* Configure two L3 interfaces on switch 2.
+    * **IPv4 addresses**: `10.0.20.2/24` and `10.0.30.2/24`.
+    * **IPv6 addresses**: `20001::2/120` and `2002::2/120`
+* Connect two hosts to the following interfaces:
+    * **IPv4 address**: `10.0.10.1/24` and `10.0.30.1/24`
+    * **IPv6 address**: `2000::1/120` and `2002::1/120`
+* Configure route on host1 to reach the `10.0.20.0/24` network using the `10.0.10.2` IPv4 address.
+* Configure route on host1 to reach the `2001::0/120` network using the `2000::2` IPv6 address.
+* Configure route on host1 to reach the `10.0.30.0/24` network using the `10.0.10.2` IPv4 address.
+* Configure route on host1 to reach the `2002::0/120` network using the `2000::2` IPv6 address.
+* Configure route on host2 to reach the `10.0.10.0/24` network using the `10.0.30.2` IPv4 address.
+* Configure route on host2 to reach the `2000::0/120` network using the `2002::2` IPv6 address.
+* Configure route on host2 to reach the `10.0.20.0/24` network using the `10.0.30.2` IPv4 address.
+* Configure route on host2 to reach the `2001::0/120` network using the `2002::2` IPv6 address.
+* Ping between hosts for both IPv4 and IPv6 addresses.
+* Remove routes from switch 1 and switch 2.
+* Ping between hosts for both IPv4 and IPv6 addresses.
+
+
+### Test result criteria
+#### Test pass criteria
+- Ping from host 1 to host 2 completes successfully using IPv4 and IPv6 addresses when static routes are configured.
+- Ping from host 2 to host 1 completes successfully using IPv4 and IPv6 addresses when static routes are configured.
+- Ping from host 1 to host 2 completes unsuccessfully using IPv4 and IPv6 addresses when static routes are not configured.
+- Ping from host 2 to host 1 completes unsuccessfully using IPv4 and IPv6 addresses when static routes are not configured.
+#### Test fail criteria
+- Ping from host 1 to host 2 completes unsuccessfully using IPv4 and IPv6 addresses when static routes are configured.
+- Ping from host 2 to host 1 completes unsuccessfully using IPv4 and IPv6 addresses when static routes are configured.
+- Ping from host 1 to host 2 completes successfully using IPv4 and IPv6 addresses when static routes are not configured.
+- Ping from host 2 to host 1 completes successfully using IPv4 and IPv6 addresses when static routes are not configured.
