@@ -66,6 +66,7 @@ REST API Test Cases
 - [Declarative configuration schema validations](#declarative-configuration-schema-validations)
 - [Custom validators](#custom-validators)
 - [HTTPS support](#https-support)
+- [Auditlog support](#auditlog-support)
 
 ## REST API put method for system
 ### Objective
@@ -6727,3 +6728,110 @@ conn.request('GET', url, None, headers)
 response = conn.getresponse()
 
 ```
+
+## Auditlog support
+
+### Objective
+The test case verifies the Audit Log support in REST by logging events that
+succeeded or failed for:
+
+- Create, Update, Delete and Patch operations.
+
+### Requirements
+
+- OpenSwitch
+- Ubuntu Workstation
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|      Host      +---------+    OpenSwitch  |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+### Description
+The test case validates the Auditlog integration with REST. Everything except
+the standard REST API GET method is going to be tracked by the Auditlog daemon.
+
+1. Verify if Auditlog registers a success event when a user login.
+    a. Execute a POST request over `/login`.
+    ```
+        ?username="netop";password="netop"
+    ```
+    b. Validate that Auditlog registered the event.
+
+2. Verify if Auditlog registers a success event when creating a Bridge.
+    a. Execute a POST request over `/rest/v1/system/bridges`.
+    ```
+        {"configuration": {"datapath_type": "", "name": "br0"}}
+    ```
+    b. Verify if the HTTP response is `201 CREATED`.
+    c. Validate that Auditlog registered the event.
+
+3. Verify if Auditlog registers a failed event when creating a Bridge.
+    a. Execute a POST request over `/rest/v1/system/bridges`.
+    ```
+        {"configuration": {"datapath_type": "", "name": "br0"}}
+    ```
+    b. Verify if the HTTP response is `400 BAD REQUEST`.
+    c. Validate that Auditlog registered the event.
+
+4. Verify if Auditlog registers a success event when updating a Bridge.
+    a. Execute a PUT request over `/rest/v1/system/bridges/br0`.
+    ```
+        {"configuration": {"datapath_type": "bridge", "name": "br0"}}
+    ```
+    b. Verify if the HTTP response is `200 OK`.
+    c. Validate that Auditlog registered the event.
+
+5. Verify if Auditlog registers a failed event when updating a Bridge.
+    a. Execute a PUT request over `/rest/v1/system/bridges`.
+    ```
+        {"configuration": {"datapath_type": "bridge", "name": "br0"}}
+    ```
+    b. Verify if the HTTP response is `405 METHOD NOT ALLOWED`.
+    c. Validate that Auditlog registered the event.
+
+6. Verify if Auditlog registers a success event when deleting a Bridge.
+    a. Execute a DELETE request over `/rest/v1/system/bridges/br0`.
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+    c. Validate that Auditlog registered the event.
+
+7. Verify if Auditlog registers a failed event when deleting a Bridge.
+    a. Execute a DELETE request over `/rest/v1/system/bridges/br100`.
+    b. Verify if the HTTP response is `404 NOT FOUND`.
+    c. Validate that Auditlog registered the event.
+
+8. Verify if Auditlog registers a success event when patching a Bridge.
+    a. Execute a PATCH request over `/rest/v1/system/bridges/br0`.
+    ```
+        [{"op": "add", "path": "/datapath_type", "value": "bridge"}]
+    ```
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+    c. Validate that Auditlog registered the event.
+
+9. Verify if Auditlog registers a failed event when patching a Bridge.
+    a. Execute a PATCH request over `/rest/v1/system/bridges/br0`.
+    ```
+        [{"op": "add", "path": "/nonexistent_path", "value": "bridge"}]
+    ```
+    b. Verify if the HTTP response is `400 BAD REQUEST`.
+    c. Validate that Auditlog registered the event.
+
+### Test result criteria
+#### Test pass criteria
+For REST, the test case is considered passing if Auditlog registers all
+events except for GET requests with the proper values, such as: type of
+event, type of operation, REST user, HOST address and result(success or failed).
+
+#### Test fail criteria
+For REST, the test case is considered fail if Auditlog do not registers the
+events for CREATE, PUT, PATCH and DELETE requests with the proper values,
+such as: type of event, type of operation, REST user, HOST address and result
+(success or failed).
