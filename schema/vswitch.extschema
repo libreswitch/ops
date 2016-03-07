@@ -2316,8 +2316,7 @@
             },
             "min": 0,
             "max": "unlimited"
-          },
-          "mutable": false
+          }
         },
         "type": {
           "category": "configuration",
