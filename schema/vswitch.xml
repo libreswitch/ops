@@ -6145,12 +6145,12 @@
       <column name="ipv4_ucast_server">
         List of IPv4 unicast server destinations to which DHCP broadcast packets received on the
         port are duplicated and forwarded.
-        A maximum of 16 ipv4 unicast server configurations are allowed.
+        A maximum of 8 ipv4 unicast server configurations are allowed.
       </column>
       <column name="ipv6_ucast_server">
         List of IPv6 unicast server destinations to which DHCP broadcast packets received on the
         port are dulicated and forwarded.
-        A maximum of 16 IPv6 server configurations are allowed. The count includes IPv6 multicast
+        A maximum of 8 IPv6 server configurations are allowed. The count includes IPv6 multicast
         and link local server configuration from the column "ipv6_mcast_server".
       </column>
       <column name="ipv6_mcast_server" keyname="ipv6_address">
@@ -6158,7 +6158,7 @@
         packets received on the port are duplciated and forwarded. Value of this key referenes a
         Port table entry, packets matching the criteria are forwarded to the server through
         this port.
-        A maximum of 16 IPv6 server configurations are allowed. This count includes IPv6 unicast
+        A maximum of 8 IPv6 server configurations are allowed. This count includes IPv6 unicast
         server configurations from the column "ipv6_ucast_server".
       </column>
     </group>

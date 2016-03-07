@@ -7142,7 +7142,7 @@
               "maxLength": 15
             },
             "min": 0,
-            "max": 16
+            "max": 8
           }
         },
         "ipv6_ucast_server": {
@@ -7153,7 +7153,7 @@
               "maxLength": 49
             },
             "min": 0,
-            "max": 16
+            "max": 8
           }
         },
         "ipv6_mcast_server": {
@@ -7170,7 +7170,7 @@
               "refType" : "weak"
             },
             "min": 0,
-            "max": 16
+            "max": 8
           }
         }
       },
@@ -7332,7 +7332,7 @@
               "maxLength": 15
             },
             "min": 0,
-            "max": 16
+            "max": 8
           }
         }
       },
