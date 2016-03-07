@@ -200,8 +200,8 @@ switch(config-lag-if)#vlan trunk allowed 2
 ```
 switch(config)# interface 3
 switch(config-if)# no routing
-switch(config-lag-if)# vlan trunk native 1
-switch(config-lag-if)# vlan trunk allowed 2-5,10,17
+switch(config-if)# vlan trunk native 1
+switch(config-if)# vlan trunk allowed 2-5,10,17
 ```
 
 #### Removing a VLAN from a trunk on the interface
