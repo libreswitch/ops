@@ -3172,7 +3172,12 @@
         Default is true.
       </column>
       <column name="other_config" key="proxy_arp_enabled" type='{"type": "boolean"}'>
-        Enables proxy ARP feature on the interface.
+        Enables proxy ARP feature on the port.
+        Default is false. Port should be part of VRF in order for the feature
+        to be active.
+      </column>
+      <column name="other_config" key="local_proxy_arp_enabled" type='{"type": "boolean"}'>
+        Enables local proxy ARP feature on the port.
         Default is false. Port should be part of VRF in order for the feature
         to be active.
       </column>
