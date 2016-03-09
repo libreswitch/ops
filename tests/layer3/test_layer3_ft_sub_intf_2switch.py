@@ -33,58 +33,60 @@ topoDict = {"topoExecution": 1000,
                             wrkston01:system-category:workstation, \
                             wrkston02:system-category:workstation"}
 
+
 def l3_route(**kwargs):
     device1 = kwargs.get('device1', None)
     device2 = kwargs.get('device2', None)
     wrkstn1 = kwargs.get('device3', None)
     wrkstn2 = kwargs.get('device4', None)
 
-    retStruct = InterfaceEnable(deviceObj=device1, enable=True,
-                                interface = "1")
+    retStruct = InterfaceEnable(deviceObj = device1, enable = True,
+                                interface = device1.linkPortMapping['lnk01'])
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to enable interface")
         assert(False)
-    retStruct = InterfaceIpConfig(deviceObj=device1,
-                                  interface = "1",
-                                  addr = "20.0.1.2", mask=24, config=True)
+    retStruct = InterfaceIpConfig(deviceObj = device1,
+                                  interface = device1.linkPortMapping['lnk01'],
+                                  addr = "20.0.1.2", mask = 24, config = True)
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to enable interface")
         assert(False)
-    retStruct = InterfaceEnable(deviceObj=device1, enable=True,
-                                interface = "1.100")
+    retStruct = InterfaceEnable(deviceObj = device1, enable = True,
+                    interface = device1.linkPortMapping['lnk01'] + ".100")
 
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to enable interface")
         assert(False)
 
-    retStruct = InterfaceIpConfig(deviceObj=device1,
-                                  interface = "1.100",
-                                  addr = "192.168.1.2", mask=24, config=True)
+    retStruct = InterfaceIpConfig(deviceObj = device1,
+                    interface = device1.linkPortMapping['lnk01'] + ".100",
+                    addr = "192.168.1.2", mask = 24, config = True)
 
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to configure interface Ip address ")
         assert(False)
 
-    retStruct = Dot1qEncapsulation(deviceObj=device1, subInterface = "1.100",
-                                  dot1q = True, vlan=100)
+    retStruct = Dot1qEncapsulation(deviceObj = device1,
+                    subInterface = device1.linkPortMapping['lnk01'] + ".100",
+                    dot1q = True, vlan = 100)
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to enable interface")
         assert(False)
 
-
-    retStruct = InterfaceEnable(deviceObj=device1, enable=True,
-                                interface = "1.200")
+    retStruct = InterfaceEnable(deviceObj = device1, enable = True,
+                    interface = device1.linkPortMapping['lnk01'] + ".200")
 
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to configure interface IP address")
         assert(False)
 
-    retStruct = InterfaceIpConfig(deviceObj=device1,
-                                  interface = "1.200",
-                                  addr = "182.158.1.2", mask=24, config=True)
+    retStruct = InterfaceIpConfig(deviceObj = device1,
+                    interface = device1.linkPortMapping['lnk01'] + ".200",
+                    addr = "182.158.1.2", mask=24, config = True)
 
-    retStruct = Dot1qEncapsulation(deviceObj=device1, subInterface = "1.200",
-                                  dot1q = True, vlan=200)
+    retStruct = Dot1qEncapsulation(deviceObj = device1,
+                    subInterface = device1.linkPortMapping['lnk01'] + ".200",
+                    dot1q = True, vlan=200)
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to enable interface")
         assert(False)
@@ -93,8 +95,8 @@ def l3_route(**kwargs):
         LogOutput('error', "Failed to configure interface Ip address ")
         assert(False)
 
-    retStruct = InterfaceEnable(deviceObj=device2, enable=True,
-                                interface = device2.linkPortMapping['lnk01'])
+    retStruct = InterfaceEnable(deviceObj = device2, enable = True,
+                    interface = device2.linkPortMapping['lnk01'])
 
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to enable interface")
@@ -131,15 +133,15 @@ def l3_route(**kwargs):
     else:
         LogOutput('info', "Passed Adding Vlan to port")
 
-    retStruct = InterfaceEnable(deviceObj=device2, enable=True,
-                                interface = device2.linkPortMapping['lnk02'])
+    retStruct = InterfaceEnable(deviceObj = device2, enable = True,
+                    interface = device2.linkPortMapping['lnk02'])
 
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to enable interface")
         assert(False)
 
-    retStruct = InterfaceEnable(deviceObj=device2, enable=True,
-                                interface = device2.linkPortMapping['lnk03'])
+    retStruct = InterfaceEnable(deviceObj = device2, enable = True,
+                    interface = device2.linkPortMapping['lnk03'])
 
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to enable interface")
@@ -167,7 +169,7 @@ def l3_route(**kwargs):
         LogOutput('info', "Passed interface vlan configured")
 
     # configure Ip on the host
-    retStructObj = wrkstn1.NetworkConfig(ipAddr="192.168.1.1",
+    retStructObj = wrkstn1.NetworkConfig(ipAddr = "192.168.1.1",
                 netMask = "255.255.255.0",
                 broadcast = "192.168.1.255",
                 interface = wrkstn1.linkPortMapping['lnk02'],
@@ -177,7 +179,7 @@ def l3_route(**kwargs):
     retCmdout = wrkstn1.DeviceInteract(command=
     "ip route add 182.158.1.0/24 via 192.168.1.2")
 
-    retStructObj = wrkstn2.NetworkConfig(ipAddr="182.158.1.1",
+    retStructObj = wrkstn2.NetworkConfig(ipAddr = "182.158.1.1",
                 netMask = "255.255.255.0",
                 broadcast = "192.168.1.255",
                 interface = wrkstn2.linkPortMapping['lnk03'],
@@ -188,9 +190,9 @@ def l3_route(**kwargs):
     "ip route add 192.168.1.0/24  via 182.158.1.2")
     LogOutput('info', "Pinging between workstation1 and dut01")
 
-    retStruct = wrkstn1.Ping(ipAddr="182.158.1.1", packetCoung=10)
+    retStruct = wrkstn1.Ping(ipAddr = "182.158.1.1", packetCoung=10)
     retCode = retStruct.returnCode()
-    assert retCode  ==0, "failed to ping switch"
+    assert retCode == 0, "failed to ping switch"
 
     LogOutput('info', "IPv4 Ping from workstation 1 to dut01 return JSON:\n" \
              + str(retStruct.retValueString()))
@@ -198,10 +200,11 @@ def l3_route(**kwargs):
     packet_loss = retStruct.valueGet(key='packet_loss')
     packets_sent = retStruct.valueGet(key='packets_transmitted')
     packets_received = retStruct.valueGet(key='packets_received')
-    LogOutput('info', "Packets Sent:\t"+ str(packets_sent))
-    LogOutput('info', "Packets Recv:\t"+ str(packets_received))
-    LogOutput('info', "Packet Loss %:\t"+str(packet_loss))
-    assert packets_sent  == packets_received, "failed to ping switch"
+    LogOutput('info', "Packets Sent:\t" + str(packets_sent))
+    LogOutput('info', "Packets Recv:\t" + str(packets_received))
+    LogOutput('info', "Packet Loss %:\t" + str(packet_loss))
+    assert packets_sent == packets_received, "failed to ping switch"
+
 
 def deviceCleanup(**kwargs):
     device1 = kwargs.get('device1', None)
@@ -209,42 +212,42 @@ def deviceCleanup(**kwargs):
     wrkstn1 = kwargs.get('device3', None)
     wrkstn2 = kwargs.get('device4', None)
 
-
-    retStruct = InterfaceEnable(deviceObj=device1, enable=False,
-                                interface = "1.100")
+    retStruct = InterfaceEnable(deviceObj = device1, enable=False,
+                    interface = device1.linkPortMapping['lnk01'] + ".100")
 
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to enable interface")
         assert(False)
 
-    retStruct = InterfaceIpConfig(deviceObj=device1,
-                                  interface = "1.100",
-                                  addr = "192.168.1.2", mask=24, config=False)
+    retStruct = InterfaceIpConfig(deviceObj = device1,
+                    interface = device1.linkPortMapping['lnk01'] + ".100",
+                    addr = "192.168.1.2", mask=24, config = False)
 
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to configure interface Ip address ")
         assert(False)
 
-    retStruct = Dot1qEncapsulation(deviceObj=device1, subInterface = "1.100",
-                                  dot1q = False, vlan=100)
+    retStruct = Dot1qEncapsulation(deviceObj = device1,
+                    subInterface = device1.linkPortMapping['lnk01'] + ".100",
+                    dot1q = False, vlan=100)
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to enable interface")
         assert(False)
 
-
-    retStruct = InterfaceEnable(deviceObj=device1, enable=False,
-                                interface = "1.200")
+    retStruct = InterfaceEnable(deviceObj = device1, enable=False,
+                    interface = device1.linkPortMapping['lnk01'] + ".200")
 
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to configure interface IP address")
         assert(False)
 
-    retStruct = InterfaceIpConfig(deviceObj=device1,
-                                  interface = "1.200",
-                                  addr = "182.168.1.2", mask=24, config=False)
+    retStruct = InterfaceIpConfig(deviceObj = device1,
+                    interface = device1.linkPortMapping['lnk01'] + ".200",
+                    addr = "182.168.1.2", mask=24, config = False)
 
-    retStruct = Dot1qEncapsulation(deviceObj=device1, subInterface = "1.200",
-                                  dot1q = False, vlan=200)
+    retStruct = Dot1qEncapsulation(deviceObj = device1,
+                    subInterface = device1.linkPortMapping['lnk01'] + ".200",
+                    dot1q = False, vlan=200)
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to enable interface")
         assert(False)
@@ -294,8 +297,8 @@ def deviceCleanup(**kwargs):
     else:
         LogOutput('info', "Passed Adding Vlan to port")
 
-    DevretStruct = InterfaceEnable(deviceObj=device2, enable=False,
-                                interface = device2.linkPortMapping['lnk02'])
+    DevretStruct = InterfaceEnable(deviceObj = device2, enable=False,
+                       interface = device2.linkPortMapping['lnk02'])
 
     if DevretStruct.returnCode() != 0:
         LogOutput('error', "Failed to enable interface")
@@ -307,8 +310,8 @@ def deviceCleanup(**kwargs):
             interface = device2.linkPortMapping['lnk02'],
             access = True,
             config = False)
-    retStruct = InterfaceEnable(deviceObj=device2, enable=False,
-                                interface = device2.linkPortMapping['lnk03'])
+    retStruct = InterfaceEnable(deviceObj = device2, enable=False,
+                    interface = device2.linkPortMapping['lnk03'])
 
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to enable interface")
@@ -330,13 +333,13 @@ def deviceCleanup(**kwargs):
         LogOutput('info', "Passed interface vlan configured")
 
     # configure Ip on the host
-    retStructObj = wrkstn1.NetworkConfig(ipAddr="192.168.1.1",
-    netMask = "255.255.255.0", broadcast="192.168.1.255",
-    interface = wrkstn1.linkPortMapping['lnk02'], config=False)
+    retStructObj = wrkstn1.NetworkConfig(ipAddr = "192.168.1.1",
+    netMask = "255.255.255.0", broadcast = "192.168.1.255",
+    interface = wrkstn1.linkPortMapping['lnk02'], config = False)
     if retStructObj.returnCode() != 0:
         LogOutput('error', "Failed to configure IP on workstation")
 
-    retStructObj = wrkstn2.NetworkConfig(ipAddr="182.168.1.1",
+    retStructObj = wrkstn2.NetworkConfig(ipAddr = "182.168.1.1",
                 netMask = "255.255.255.0",
                 broadcast = "192.168.1.255",
                 interface = wrkstn2.linkPortMapping['lnk03'],
@@ -352,10 +355,6 @@ class Test_subInt:
         Test_subInt.testObj = testEnviron(topoDict=topoDict)
         # Get topology object
         Test_subInt.topoObj = Test_subInt.testObj.topoObjGet()
-        if Test_subInt.topoObj.topoType == "physical":
-            LogOutput('info',
-                      "Skipping test physical run due to defect #744")
-            pytest.skip("Skipping test physical run due to defect #744")
 
     def teardown_class(cls):
         Test_subInt.topoObj.terminate_nodes()
@@ -365,7 +364,7 @@ class Test_subInt:
         dut02Obj = self.topoObj.deviceObjGet(device = "dut02")
         wrkston1Obj = self.topoObj.deviceObjGet(device = "wrkston01")
         wrkston2Obj = self.topoObj.deviceObjGet(device = "wrkston02")
-        retValue = l3_route(device1=dut01Obj, device2=dut02Obj,
+        retValue = l3_route(device1 = dut01Obj, device2 = dut02Obj,
                             device3 = wrkston1Obj, device4 = wrkston2Obj)
 
     def test_deviceCleanup(self):
