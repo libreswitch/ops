@@ -25,9 +25,9 @@ import json
 import httplib
 import urllib
 
-from utils.fakes import *
-from utils.utils import *
-from utils.swagger_test_utility import *
+from opsvsiutils.restutils.fakes import *
+from opsvsiutils.restutils.utils import *
+from opsvsiutils.restutils.swagger_test_utility import *
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0

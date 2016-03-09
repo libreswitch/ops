@@ -94,6 +94,18 @@
             "max": 1
           }
         },
+        "ipsec_ike_policies": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "IPsec_IKE_Policy"
+            },
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
         "hostname": {
           "category": "configuration",
           "type": "string"
@@ -2304,8 +2316,7 @@
             },
             "min": 0,
             "max": "unlimited"
-          },
-          "mutable": false
+          }
         },
         "type": {
           "category": "configuration",
@@ -3803,10 +3814,23 @@
                   "internal",
                   "vlansubint",
                   "loopback",
-                  "vxlan"
+                  "vxlan",
+                  "ipsec_gre_ike"
                 ]
               ]
             }
+          }
+        },
+        "ipsec_ike_policy": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "IPsec_IKE_Policy"
+            },
+            "min": 0,
+            "max": 1
           }
         },
         "mac_in_use": {
@@ -7118,7 +7142,7 @@
               "maxLength": 15
             },
             "min": 0,
-            "max": 16
+            "max": 8
           }
         },
         "ipv6_ucast_server": {
@@ -7129,7 +7153,7 @@
               "maxLength": 49
             },
             "min": 0,
-            "max": 16
+            "max": 8
           }
         },
         "ipv6_mcast_server": {
@@ -7146,7 +7170,7 @@
               "refType" : "weak"
             },
             "min": 0,
-            "max": 16
+            "max": 8
           }
         }
       },
@@ -7262,6 +7286,273 @@
           "name"
         ]
       ]
+    },
+    "UDP_Bcast_Forwarder_Server": {
+      "columns": {
+        "src_port": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType" : "weak"
+            }
+          },
+          "mutable": false
+        },
+        "udp_dport": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 65535
+            }
+          },
+          "mutable": false
+        },
+        "dest_vrf": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRF",
+              "refType" : "weak"
+            }
+          },
+          "mutable": false
+        },
+        "ipv4_ucast_server": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 15
+            },
+            "min": 0,
+            "max": 8
+          }
+        }
+      },
+      "indexes": [
+        [
+          "src_port",
+          "udp_dport",
+          "dest_vrf"
+        ]
+      ],
+      "isRoot": true
+    },
+    "IPsec_IKE_Policy": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": "string"
+        },
+        "protocol": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set", [
+                  "AH",
+                  "ESP"
+                ]
+              ]
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "mode": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set", [
+                  "tunnel",
+                  "transport"
+                ]
+              ]
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "integrity": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set", [
+                  "SHA1HMAC",
+                  "SHA256HMAC",
+                  "SHA512HMAC"
+                ]
+              ]
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "encryption": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set", [
+                  "AES128",
+                  "AES256"
+                ]
+              ]
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "ike_integrity": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set", [
+                  "SHA1HMAC",
+                  "SHA256HMAC",
+                  "SHA512HMAC"
+                ]
+              ]
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "ike_encryption": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set", [
+                  "AES128",
+                  "AES256"
+                ]
+              ]
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "ike_group": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set", [
+                  "DIFFIE2",
+                  "DIFFIE14"
+                ]
+              ]
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "peer_auth_by": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set", [
+                  "PSK",
+                  "cert"
+                ]
+              ]
+            }
+          }
+        },
+        "psk": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "psk_selectors": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "keep_alive_seconds": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 600
+            },
+            "min": 0,
+            "max": 1
+          }
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ]
+    },
+    "Package_Info": {
+      "columns": {
+        "name": {
+          "category": "status",
+          "type": "string",
+          "mutable": false
+        },
+        "src_type": {
+          "category": "status",
+          "type": "string",
+          "mutable": true
+        },
+        "src_url": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": true
+        },
+        "version": {
+          "category": "status",
+          "type": "string",
+          "mutable": true
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true
     }
   }
 }

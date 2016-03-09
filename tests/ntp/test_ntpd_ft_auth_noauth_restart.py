@@ -30,7 +30,8 @@ global SERVER_UNREACHABLE
 
 
 # Topology definition
-topoDict = {"topoExecution": 3000,
+topoDict = {"topoType" : "virtual",
+            "topoExecution": 3000,
             "topoTarget": "dut01",
             "topoDevices": "dut01 wrkston01 wrkston02",
             "topoLinks": "lnk01:dut01:wrkston01,lnk02:dut01:wrkston02",
@@ -109,13 +110,9 @@ def validateNtpAssociationInfo(dut01, wrkston01, wrkston02):
     lines = out.split('\n')
     for line in lines:
         if WORKSTATION_IP_ADDR_SER1 in line:
-           if '.INIT.' in line:
-               return False
            assert ('.NKEY.' or '.TIME.' or '.RATE.' or '.AUTH.') not in line,\
                "### NTP client has incorrect information###\n"
         if WORKSTATION_IP_ADDR_SER2 in line:
-           if '.INIT.' in line:
-               return False
            assert ('.NKEY.' or '.TIME.' or '.RATE.' or '.AUTH.') not in line,\
                "### NTP client has incorrect information###\n"
     return True
@@ -124,7 +121,7 @@ def validateNtpAssociationInfo(dut01, wrkston01, wrkston02):
 def validateNtpStatus(dut01, wrkston01, wrkston02):
     global WORKSTATION_IP_ADDR_SER2
     out = dut01.cmdVtysh(command="do show ntp status")
-    if 'Synchronized' in out and WORKSTATION_IP_ADDR_SER2 in out:
+    if 'Synchronized' in out:
         return True
     return False
 
@@ -148,7 +145,7 @@ def restartNTPDaemon(dut01, wrkston01, wrkston02):
 def chkNTPAssociationandStatus(dut01, wrkston01, wrkston02):
     global SERVER_UNREACHABLE
     info("\n### Checking NTP associations and NTP status ###\n")
-    total_timeout = 480
+    total_timeout = 600
     timeout = 10
     check1 = False
     check2 = False
@@ -184,7 +181,7 @@ def chkNTPAssociationandStatus(dut01, wrkston01, wrkston02):
     return False
 
 #timeout increased to provide enough time to download the images from docker hub
-@pytest.mark.timeout(1200)
+@pytest.mark.timeout(2400)
 class TestNtpClientConfig:
     def setup_class(cls):
         # Test object will parse command line and formulate the env

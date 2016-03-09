@@ -1,21 +1,23 @@
-Feature Test Cases
-==================
+# Physical Interface Feature Test Cases
 
-Physical Interfaces
+## Contents
 
- [TOC]
+- [Enable/Disable Interface](#enabledisable-interface)
+- [Autonegotiation](#autonegotiation)
+- [Statistics](#statistics)
 
-##  Enable/Disable Interface ##
-### Objective ###
-Verify that enable and disabling interfaces behaves as expected.
-### Requirements ###
+##  Enable/Disable interface
+### Objective
+Verify that enable and disabling interfaces behave as expected.
+### Requirements
 The requirements for this test case are:
- - RTL
- - 1 switch
- - 3 workstations
-### Setup ###
+- RTL
+- 1 switch
+- 3 workstations
 
-#### Topology Diagram ####
+### Setup
+
+#### Topology diagram
 
 ```ditaa
                  switch                ws1
@@ -35,19 +37,10 @@ The requirements for this test case are:
            ws2         ws3
 ```
 
-#### Test Setup ####
-
-### Description ###
-  Enable/Disable Interface
+### Description
+Create two interfaces, one up and one down. Verify that status is correct and pings fail. Bring up the other interface. Verify that status is correct and pings succeed. Shutdown the interface. Verify that status is correct and pings fail.
 
   ```
-  Create two interfaces, one up and one down.
-  Verify that status is correct and pings fail.
-  Bring up the other interface.
-  Verify that status is correct and pings succeed.
-  Shutdown the interface.
-  Verify that status is correct and pings fail.
-
   dut01: vtysh cmd:     configure terminal
   dut01: vtysh cmd:     vlan 10
   dut01: vtysh cmd:     name v10
@@ -76,29 +69,27 @@ The requirements for this test case are:
        : verify   :     ping fails
   ```
 
-### Test Result Criteria ###
-```
-interface:admin_state is used, either "down" or "up"
-ping is used to determine link is up and working.
-```
-#### Test Pass Criteria ####
-```
-interface:admin_state = "up" or "down" when appropriate
-pings succeed or fail when appropriate
-```
-#### Test Fail Criteria ####
+### Test result criteria
+Interface: admin_state is either "down" or "up" and ping is used to determine if the link is up and working.
 
-##  Autonegotiation ##
-### Objective ###
-Verify autonegotiation config changes behave as expected.
-### Requirements ###
+#### Test pass criteria
+Interface: admin_state = "up" or "down" when appropriate and pings succeed.
+
+#### Test fail criteria
+Interface: admin_state = "up" or "down" when appropriate and pings fail.
+
+##  Autonegotiation
+### Objective
+Verify autonegotiation configuration changes behave as expected.
+### Requirements
 The requirements for this test case are:
- - RTL
- - 1 switch
- - 3 workstations
-### Setup ###
+- RTL
+- 1 switch
+- 3 workstations
 
-#### Topology Diagram ####
+### Setup
+
+#### Topology diagram
 ```ditaa
                  switch                ws1
           +------------------+        +------+
@@ -117,21 +108,15 @@ The requirements for this test case are:
            ws2         ws3
 ```
 
-#### Test Setup ####
+#### Test setup
 
-### Description ###
-  Autonegotiation
+### Description
+Bring up two intefaces, with default autoneg (not configured). Verify autoneg is set to "on" and pings succeed.
+Disable autoneg, verify admin_state is down, error=autoneg_required, and pings fail.
+Enable autoneg, verify autoneg is set to "on", and pings succeed.
+Remove autoneg (no autoneg) and it goes back to default (on). Verify autoneg is set to "on" and pings succeed.
 
-  ```
-  Bring up two intefaces, with default autoneg (not configured)
-  Verify autoneg set to "on" and pings succeed
-  Disable autoneg
-  Verify admin_state is donw, error=autoneg_required, and pings fails
-  Enable autoneg
-  Verify autoneg set to "on" and pings succeed
-  Remove autoneg (no autoneg), it goes back to default (on)
-  Verify autoneg set to "on" and pings succeed
-
+```
   dut01: vtysh cmd:     configure terminal
   dut01: vtysh cmd:     vlan 10
   dut01: vtysh cmd:     name v10
@@ -167,33 +152,33 @@ The requirements for this test case are:
        : verify   :     hw_intf_config:autoneg="on"
   wrkston02: shell cmd: ping <to wrkston03 ip addr>
        : verify   :     ping succeeds
-  ```
+```
 
-### Test Result Criteria ###
-```
-interface:admin_state is used, either "down" or "up"
-interface:error is used, should be "autoneg_required" when autoneg=no
-ping is used to determine link is up and working.
-```
-#### Test Pass Criteria ####
-```
-interface:admin_state = "up" or "down" when appropriate
-interface:error = "autoneg_required" when autoneg=no
-pings succeed or fail when appropriate
-```
-#### Test Fail Criteria ####
+### Test result criteria
+Interface: admin_state is either "down" or "up".
+Interface: error is used and should be "autoneg_required" when autoneg=no.
+Ping is used to determine if the link is up and working.
 
-##  Statistics ##
-### Objective ###
+#### Test pass criteria
+Interface: admin_state = "up" or "down" when appropriate and pings succeed.
+Interface: error = "autoneg_required" when autoneg=no and pings succeed.
+
+#### Test fail criteria
+Interface: admin_state = "up" or "down" when appropriate and pings fail.
+Interface: error = "autoneg_required" when autoneg=no and pings fail.
+
+## Statistics
+### Objective
 Verify interface statistics change as expected.
-### Requirements ###
+### Requirements
 The requirements for this test case are:
- - RTL
- - 1 switch
- - 3 workstations
-### Setup ###
+- RTL
+- 1 switch
+- 3 workstations
 
-#### Topology Diagram ####
+### Setup
+
+#### Topology diagram
 ```ditaa
                  switch                ws1
           +------------------+        +------+
@@ -212,18 +197,10 @@ The requirements for this test case are:
            ws2         ws3
 ```
 
-#### Test Setup ####
-### Description ###
-  ```
-  Verify Interface Statistics
+### Description
+Bring up two interfaces and collect baseline statistics. Send pings from ws2 to ws3 and verify that the statistics are as expected. Send pings from ws3 to ws2 and verify that the statistics are as expected.
 
-  Bring up two interfaces
-  Collect baseline stats
-  Send pings from ws2 to ws3
-  Verify stats are as expected
-  Send pings from ws3 to ws2
-  Verify stats are as expected
-
+```
   dut01: vtysh cmd:     configure terminal
   dut01: vtysh cmd:     vlan 10
   dut01: vtysh cmd:     name v10
@@ -256,16 +233,13 @@ The requirements for this test case are:
   dut01: vtysh cmd:     show interface 1
   dut01: vtysh cmd:     show interface 2
        : verify   :     stats not updated
-  ```
+```
 
-### Test Result Criteria ###
-```
-Use vtysh output for "show interface x"
-Expect stats to increase appropriate due to pings
-```
-#### Test Pass Criteria ####
-```
-counters increase for rx/tx packets, bytes
-counters do not change for rx/tx input errors, drops; rx crc; tx collisions
-```
-#### Test Fail Criteria ####
+### Test result criteria
+Use vtysh output for "show interface x". Statistics should increase appropriately due to pings.
+
+#### Test pass criteria
+Counters increase for rx/tx packets and bytes.
+
+#### Test fail criteria
+Counters do not change for rx/tx input errors, drops, rx crc, or tx collisions.

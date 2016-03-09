@@ -34,11 +34,33 @@
 - [Route-map configuration commands](#route-map-configuration-commands)
 	- [route-map](#route-map)
 	- [Route-map match](#route-map-match)
-		- [match prefix-list](#match-prefix-list)
+		- [match as-path](#match-as-path)
+		- [match community](#match-community)
+		- [match community exact-match](#match-community-exact-match)
+		- [match extcommunity](#match-extcommunity)
+		- [match ip address prefix-list](#match-ip-address-prefix-list)
+		- [match ipv6 address prefix-list](#match-ipv6-address-prefix-list)
+		- [match ipv6 next-hop](#match-ipv6-next-hop)
+		- [match metric](#match-metric)
+		- [match origin](#match-origin)
+		- [match probability](#match-probability)
 	- [Route-map set](#route-map-set)
+		- [set aggregator](#set-aggregator)
+		- [set as-path exclude](#set-as-path-exclude)
+		- [set as-path prepend](#set-as-path-prepend)
+		- [set atomic-aggregate](#set-atomic-aggregate)
+		- [set comm-list delete](#set-comm-list-delete)
 		- [set community](#set-community)
+		- [set community rt](#set-community-rt)
+		- [set extcommunity soo](#set-extcommunity-soo)
+		- [set ipv6 next-hop global](#set-ipv6-next-hop-global)
+		- [set local-preference](#set-local-preference)
 		- [set metric](#set-metric)
+		- [set origin](#set-origin)
+		- [set weight](#set-weight)
 	- [Route-map description](#route-map-description)
+	- [Route-map call](#route-map-call)
+	- [Route-map continue](#route-map-continue)
 - [IP prefix-list configuration commands](#ip-prefix-list-configuration-commands)
 	- [IPv4 prefix-list](#ipv4-prefix-list)
 	- [IPv6 prefix-list](#ipv6-prefix-list)
@@ -48,6 +70,25 @@
 	- [show ip bgp](#show-ip-bgp)
 	- [show ip bgp summary](#show-ip-bgp-summary)
 	- [show bgp neighbors](#show-bgp-neighbors)
+	- [show ip bgp route-map WORD](#show-ip-bgp-route-map-word)
+	- [show ip prefix list](#show-ip-prefix-list)
+	- [show ip prefix-list WORD seq num](#show-ip-prefix-list-word-seq-num)
+	- [show ip prefix list detail WORD](#show-ip-prefix-list-detail-word)
+	- [show ip prefix list summary WORD](#show-ip-prefix-list-summary-word)
+	- [show ipv6 prefix list](#show-ipv6-prefix-list)
+	- [show ipv6 prefix list WORD](#show-ipv6-prefix-list-word)
+	- [show ipv6 prefix list WORD seq num](#show-ipv6-prefix-list-word-seq-num)
+	- [show ipv6 prefix list detail](#show-ipv6-prefix-list-detail)
+	- [show ipv6 prefix list detail WORD](#show-ipv6-prefix-list-detail-word)
+	- [show ipv6 prefix list summary](#show-ipv6-prefix-list-summary)
+	- [show ipv6 prefix list summary WORD](#show-ipv6-prefix-list-summary-word)
+	- [show ipv6 prefix list WORD X:X::X:X/M](#show-ipv6-prefix-list-word-xxxxm)
+	- [show ipv6 prefix list WORD X:X::X:X/M first match](#show-ipv6-prefix-list-word-xxxxm-first-match)
+	- [show ipv6 prefix list WORD X:X::X:X/M longer](#show-ipv6-prefix-list-word-xxxxm-longer)
+	- [show ip community-list](#show-ip-community-list)
+	- [show ip extcommunity list](#show-ip-extcommunity-list)
+	- [show as-path access list](#show-as-path-access-list)
+	- [show as-path access list WORD](#show-as-path-access-list-word)
 
 ## BGP configuration commands
 
@@ -788,29 +829,260 @@ s1(config)# route-map rm1 deny 1
 ```
 
 ### Route-map match
-#### match prefix-list
+#### match as-path
+##### Syntax
+```
+[no] match as-path WORD
+```
 
+##### Description
+This command matches a BGP autonomous system path access list.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax | Description          |
+|-----------|----------|----------------------|
+| *WORD*  | Required | WORD | The AS path access list name. |
+| **no** | Optional | Literal | Deletes the AS path access list entry. |
+
+##### Examples
+```
+s1(config-route-map)# match as-path WORD
+s1(config-route-map)# no match as-path WORD
+s1(config-route-map)# no match as-path
+```
+
+#### match community
+##### Syntax
+```
+[no] match community (<1-99>|<100-500>|WORD)
+```
+
+##### Description
+This command matches a BGP community. Use this command in route-map configuration mode.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax | Description          |
+|-----------|----------|----------------------|
+| *<1-99>*  | Optional | 1-99 | The community list number (standard). |
+| *<100-500>*  | Optional | 100-500 | The community list number (expanded). |
+| *WORD*  | Optional | WORD | The community list name. |
+| **no** | Optional | Literal | Removes the match community entry. |
+
+##### Examples
+```
+s1(config-route-map)# match community 10
+s1(config-route-map)# no match community 10
+s1(config-route-map)# no match community
+```
+
+#### match community exact-match
+##### Syntax
+```
+[no] match community (<1-99>|<100-500>|WORD) exact-match
+```
+
+##### Description
+This command matches a BGP community with an exact match of communities.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax | Description          |
+|-----------|----------|----------------------|
+| *<1-99>*  | Optional | 1-99 | The community list number (standard). |
+| *<100-500>*  | Optional | 100-500 | The community list number (expanded). |
+| *WORD*  | Optional | WORD | The community list name. |
+| *Exact-match*  | Required | exact-match | Does exact matching of communities. |
+| **no** | Optional | Literal | Removes the match community exact-match entry. |
+
+##### Examples
+```
+s1(config-route-map)# match community c1 exact-match
+s1(config-route-map)# no match community c1 exact-match
+```
+
+#### match extcommunity
+##### Syntax
+```
+[no] match extcommunity (<1-99>|<100-500>|WORD)
+```
+
+##### Description
+This command matches the BGP extended community list attributes. Use this command in route-map mode.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax | Description          |
+|-----------|----------|----------------------|
+| *<1-99>*  | Optional | 1-99 | The extended community list number (standard). |
+| *<100-500>*  | Optional | 100-500 | The extended community list number (expanded). |
+| *WORD*  | Optional | WORD | The extended community list name. |
+| **no** | Optional | Literal | Removes the match extcommunity entry. |
+
+##### Examples
+```
+s1(config-route-map)# match extcommunity 10
+s1(config-route-map)# no match extcommunity 10
+s1(config-route-map)# no match extcommunity
+```
+
+#### match ip address prefix-list
 ##### Syntax
 ```
 [no] match ip address prefix-list WORD
 ```
 
 ##### Description
-This command configures a match clause for the route map to distribute any routes with a destination network number address that is permitted by a prefix-list.
+To distribute any routes that have a destination network number address that is permitted by a prefix list.
 
 ##### Authority
 Admin user.
 
 ##### Parameters
-| Parameter | Status   | Syntax |	Description          |
+| Parameter | Status   | Syntax | Description          |
 |-----------|----------|----------------------|
-| *WORD*  | Required | String of maximum length 80 characters. | The IP prefix list name. |
-| **no** | Optional | Literal | Deletes the match clause for the route map. |
+| *WORD*  | Required | WORD | The IP prefix list name. |
+| **no** | Optional | Literal | Removes the match ip address prefix-list entry. |
 
 ##### Examples
 ```
-s1(config)# route-map RMAP1 deny 1
-s1(config-route-map)# match ip address prefix-list PLIST1
+s1(config-route-map)# match ip address prefix-list pl1
+s1(config-route-map)# no match ip address prefix-list pl1
+s1(config-route-map)# no match ip address prefix-list
+```
+
+#### match ipv6 address prefix-list
+##### Syntax
+```
+[no] match ipv6 address prefix-list WORD
+```
+
+##### Description
+This command distributes IPv6 routes that have a prefix specified in an IPv6 prefix list.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax | Description          |
+|-----------|----------|----------------------|
+| *WORD*  | Required | WORD | The IPv6 prefix list. |
+| **no** | Optional | Literal | Removes the match ipv6 address prefix-list entry. |
+
+##### Examples
+```
+s1(config-route-map)# match ipv6 address prefix-list p1
+s1(config-route-map)# no match ipv6 address prefix-list p1
+```
+
+#### match ipv6 next-hop
+##### Syntax
+```
+[no] match ipv6 next-hop X:X::X:X
+```
+
+##### Description
+This command distributes IPv6 routes that have a specified next hop.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax | Description          |
+|-----------|----------|----------------------|
+| *X:X::X:X*  | Required | X:X::X:X | The IPv6 address of the next hop. |
+| **no** | Optional | Literal | Removes the match ipv6 next-hop entry. |
+
+##### Examples
+```
+s1(config-route-map)# match ipv6 next-hop 2001::1
+s1(config-route-map)# no match ipv6 next-hop 2001::1
+```
+
+#### match metric
+##### Syntax
+```
+[no] match metric <0-4294967295>
+```
+
+##### Description
+This command redistributes routes with the specified metric.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax | Description          |
+|-----------|----------|----------------------|
+| *<0-4294967295>*  | Required | Integer in the range <0-4294967295>. | The metric value. |
+| **no** | Optional | Literal | Removes the match metric entry. |
+
+##### Examples
+```
+s1(config-route-map)# match metric 400
+s1(config-route-map)# no match metric 400
+s1(config-route-map)# no match metric
+```
+
+#### match origin
+##### Syntax
+```
+[no] match origin (egp|igp|incomplete)
+```
+
+##### Description
+This command matches BGP routes based on the origin of the specified route.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax | Description          |
+|-----------|----------|----------------------|
+| *EGP*  | Optional | egp | Remote egp. |
+| *IGP*  | Optional | igp | Local igp .|
+| *Incomplete*  | Optional | incomplete | Unknown heritage. |
+| **no** | Optional | Literal | Removes the match origin entry. |
+
+##### Examples
+```
+s1(config-route-map)# match origin egp
+s1(config-route-map)# no match origin egp
+s1(config-route-map)# no match origin
+```
+
+#### match probability
+##### Syntax
+```
+[no] match probability <0-100>
+```
+
+##### Description
+This command matches the portion of BGP routes defined by a percentage value.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax | Description          |
+|-----------|----------|----------------------|
+| *<0-100>*  | Required | 0-100 | Percentage of routes. |
+| **no** | Optional | Literal | Removes the match probability entry. |
+
+##### Examples
+```
+s1(config-route-map)# match probability 50
+s1(config-route-map)# no match probability 50
+s1(config-route-map)# no match probability
 ```
 
 ### Route-map set
@@ -839,6 +1111,333 @@ s1(config)# route-map RMAP1 deny 1
 s1(config-route-map)# set community 6001:7002 additive
 s1(config-route-map)# set metric 100
 s1(config-route-map)# no set metric 100
+```
+
+#### set aggregator
+##### Syntax
+```
+[no] set aggregator as <value> <A.B.C.D>
+```
+
+##### Description
+This command sets the originating AS of an aggregated route. The value specifies from which AS the aggregate route originated. The range is from 1 to 4294967295. The `set-aggregator-ip` value must also be set to further identify the originating AS.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *value*  | Required | Integer in the range <1-4294967295>. | The AS value. |
+| *A.B.C.D* | Required | String of 80 characters maximum length. | The IPv4 address of AS. |
+| **no** | Optional | Literal | Clears the aggregator configuration for the route map. |
+
+##### Examples
+```
+s1(config)# route-map RMAP1 deny 1
+s1(config-route-map)#set aggregator as 1 9.0.0.1
+```
+
+#### set as-path exclude
+##### Syntax
+```
+[no] set as-path exclude .<value>
+```
+
+##### Description
+This command excludes the given AS number from the AS_PATH.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *value*  | Required | Integer in the range <1-4294967295>. | The AS value to be excluded from the AS_PATH. |
+| **no** | Optional | Literal | Clears the AS value exclusion from the AS_PATH. |
+
+##### Examples
+```
+s1(config)# route-map RMAP1 deny 1
+s1(config-route-map)#set as-path exclude 2
+```
+
+#### set as-path prepend
+##### Syntax
+```
+[no] set as-path prepend .<value>
+```
+
+##### Description
+This command prepends the given AS number to the AS_PATH.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *value*  | Required | Integer in the range <1-4294967295>. | The AS value to be added to the AS_PATH. |
+| **no** | Optional | Literal | Clears the AS value from the AS_PATH. |
+
+##### Examples
+```
+s1(config)# route-map RMAP1 deny 1
+s1(config-route-map)#set as-path prepend 2
+```
+
+#### set atomic-aggregate
+##### Syntax
+```
+[no] set atomic-aggregate
+```
+
+##### Description
+This command enables a warning to upstream routers, through the ATOMIC_AGGREGATE attribute, that address aggregation has occurred on an aggregate route.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| **no** | Optional | Literal | Disables the route-aggregation notification to upstream routers. |
+
+##### Examples
+```
+s1(config)# route-map RMAP1 deny 1
+s1(config-route-map)#set atomic-aggregate
+```
+
+#### set comm-list delete
+##### Syntax
+```
+[no] set comm-list <list-name> delete
+```
+
+##### Description
+This command removes the COMMUNITY attributes from the BGP routes identified in the specified community list. It also deletes matching communities for the route map.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *list-name* | Required | Integer in the range <1-99> or <100-500>, or a valid community string not exceeding 80 characters. | The community list name. |
+| **no** | Optional | Literal | Deletes the community list exclusion under the route map. |
+
+##### Examples
+```
+s1(config)# route-map RMAP1 deny 1
+s1(config-route-map)#set comm-list 1 delete
+```
+
+#### set community
+##### Syntax
+```
+[no] set community <list-name>
+```
+
+##### Description
+This command sets the COMMUNITY attributes for route-map. The community number may be one of the following:
+- aa:nn format
+- local-AS|no-advertise|no-export|internet
+- Additive
+- None
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *list-name* | Required | An integer in the range <1-99> or <100-500>, or a valid community string not exceeding 80 characters. | The community list name. |
+| **no** | Optional | Literal | Deletes the community list configuration under the route map. |
+
+##### Examples
+```
+s1(config)# route-map RMAP1 deny 1
+s1(config-route-map)#set community 6000:100
+```
+
+#### set community rt
+##### Syntax
+```
+[no] set extcommunity rt <asn-community-identifier>
+```
+
+##### Description
+This command sets the target extended community (in decimal notation) of a BGP route. The COMMUNITY attribute value has the syntax AA:NN, where AA represents an AS or IP address, and NN is the community identifier.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *asn-community-identifier* | Required | AS1:AS2, where AS is an integer in the range <1 - 4294967295>, or a string not exceeding 80 characters. | The community attribute in the form of AA:nn or IP address:nn. |
+| **no** | Optional | Literal | Deletes the configuration for the rt extended community list under the route map. |
+
+##### Examples
+```
+s1(config)# route-map RMAP1 deny 1
+s1(config-route-map)#set extcommunity rt 6000:100
+s1(config-route-map)#set extcommunity rt 9.0.0.1:100
+```
+
+#### set extcommunity soo
+##### Syntax
+```
+[no] set extcommunity soo <asn-community-identifier>
+```
+
+##### Description
+This command sets the site-of-origin extended community (in decimal notation) of a BGP route. The COMMUNITY attribute value has the syntax AA:NN, where AA represents an AS or IP address, and NN is the community identifier.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *asn-community-identifier* | Required | AS1:AS2, where AS is an integer in the range <1 - 4294967295>, or a string not exceeding 80 characters. | The community attribute in the form of AA:nn or IP address:nn. |
+| **no** | Optional | Literal | Deletes the configuration for the site-of-origin extended community list under the route map. |
+
+##### Examples
+```
+s1(config)# route-map RMAP1 deny 1
+s1(config-route-map)#set extcommunity soo 6000:100
+s1(config-route-map)#set extcommunity soo 9.0.0.1:100
+```
+
+#### set ipv6 next-hop global
+##### Syntax
+```
+[no] set ipv6 next-hop global <X:X::X:X>
+```
+
+##### Description
+This command sets the BGP-4+ global IPv6 next hop address.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *X:X::X:X*  | Required | X:X::X:X | The IPv6 address. |
+| **no** | Optional | Literal | Unsets the BGP-4+ global IPv6 next hop address for the route map. |
+
+##### Examples
+```
+s1(config)# route-map RMAP1 deny 1
+s1(config-route-map)#set ipv6 next-hop global 2001:db8:0:1
+```
+
+#### set local-preference
+##### Syntax
+```
+[no] set local-preference <value>
+```
+
+##### Description
+This command sets the BGP local preference and the local preference value of an IBGP route. The value is advertised to IBGP peers. The range is from 0 to 4294967295. A higher number signifies a preferred route among multiple routes to the same destination.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *value* | Required | Integer in the range <0-4294967295>.  | The IPv6 address. |
+| **no** | Optional | Literal | Unsets the BGP local preference for the route map. |
+
+##### Examples
+```
+s1(config)# route-map RMAP1 deny 1
+s1(config-route-map)#set local-preference 1
+```
+
+#### set metric
+##### Syntax
+```
+[no] set metric <expr>
+```
+
+##### Description
+This command specifies the relative change of metric which is used with BGP route advertisement. This command takes the route's current metric and increases or decreases it by a specified value before it is propagated. If the value is specified as negative and ends up being negative after the metric decrease, the value is interpreted as an increase in metric.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *expr* | Required | String of 80 characters maximum length. | The metric expression. |
+| **no** | Optional | Literal | Unsets the BGP local preference for the route map. |
+
+##### Examples
+```
+s1(config)# route-map RMAP1 deny 1
+s1(config-route-map)#set metric +2
+
+s1(config)# route-map RMAP1 deny 1
+s1(config-route-map)#set metric -367
+In this case -367 is treated as +367.
+```
+
+#### set origin
+##### Syntax
+```
+[no] set origin <egp | igp | incomplete>
+```
+
+##### Description
+This command sets the ORIGIN attribute of a local BGP route to one of the following:
+- `egp`: Sets the value to the Network Layer Reachablility Information (NLRI) learned from the Exterior Gateway Protocol (EGP).
+- `igp`: Sets the value to the NLRI learned from a protocol internal to the originating AS.
+- `incomplete`: If the value is not `egp` or `igp`.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| **egp** | Required | Literal  | Specifies the type-1 metric. |
+| **igp** | Required | Literal  | Specifies the type-2 metric. |
+| **incomplete** | Required | Literal  | Specifies the type-2 metric. |
+| **no** | Optional | Literal | Unsets the BGP origin attribute for the route map. |
+
+##### Examples
+```
+s1(config)# route-map RMAP1 deny 1
+s1(config-route-map)#set origin egp
+```
+
+#### set weight
+##### Syntax
+```
+[no] set weight <value>
+```
+
+##### Description
+This command sets the weight of a BGP route. A route`s weight has the most influence when two identical BGP routes are compared. A higher number signifies a greater preference.
+
+##### Authority
+Admin user.
+
+##### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *value*  | Required | Integer in the range <1-4294967295>. | The weight value. |
+| **no** | Optional | Literal | Unsets the weight attribute for the route map. |
+
+##### Examples
+```
+s1(config)# route-map RMAP1 deny 1
+s1(config-route-map)# set weight 9
 ```
 
 ### Route-map description
@@ -914,7 +1513,7 @@ s1(config-route-map)# no continue
 ```
 
 ## IP prefix-list configuration commands
-###  IPv4 prefix-list
+### IPv4 prefix-list
 #### Syntax
 ```
 [no] ip prefix-list WORD seq <num> (deny|permit) <A.B.C.D/M|any>
@@ -932,7 +1531,7 @@ Admin user.
 #### Parameters
 | Parameter | Status   | Syntax |	Description          |
 |-----------|----------|----------------------|
-| *name*  | Required | String of maximum length 80 characters. | The IP prefix-list name. |
+| *WORD*  | Required | String of maximum length 80 characters. | The IP prefix-list name. |
 | *num*  | Required | 1-4294967295 | The sequence number. |
 | *A.B.C.D/M*  | Required | A.B.C.D/M | The IPv4 prefix. |
 | *0-32*  | Required | 0-32 | Minimum prefix length to be matched. |
@@ -946,7 +1545,7 @@ s1(config)# ip prefix-list PLIST2 seq 10 permit 10.0.0.0/8
 s1(config)# no ip prefix-list PLIST1 seq 5 deny 11.0.0.0/8
 s1(config)# no ip prefix-list PLIST2
 ```
-###  IPv6 prefix-list
+### IPv6 prefix-list
 #### Syntax
 ```
 [no] ipv6 prefix-list WORD description .LINE
@@ -1104,7 +1703,7 @@ Neighbor             AS MsgRcvd MsgSent Up/Down  State
 9.0.0.2               2       4       5 00:00:28 Established
 ```
 
-###  show bgp neighbors
+### show bgp neighbors
 #### Syntax
 ```
 show bgp neighbors
@@ -1145,5 +1744,505 @@ s1# show bgp neighbors
     tcp_port_number: undefined
     statistics:
 ```
-## CLI 
+
+### show ip bgp route-map WORD
+#### Syntax
+```
+show ip bgp route-map WORD
+```
+
+#### Description
+This command displays route-map set and match attributes.
+
+#### Authority
+Admin user.
+
+#### Parameters
+| Parameter | Status   | Syntax |  Description          |
+|-----------|----------|----------------------|
+| *WORD*  | Required | WORD | Route-map name. |
+
+
+#### Examples
+```
+s1# show ip bgp route-map BGP_IN
+BGP route map table entry for BGP_IN
+Entry 1:
+     action : permit
+     Set parameters :
+     metric : 4
+     aggregator_as : 1 8.0.0.1
+     as_path_prepend : 1 1
+     atomic_aggregate : true
+     comm_list : test delete
+     ipv6_next_hop_global : 2001::4
+     local_preference : 33
+     origin : egp
+     weight : 44
+     Match parameters :
+
+s2# show ip bgp route-map BGP_OUT
+BGP route map table entry for BGP_OUT
+Entry 1:
+     action : permit
+     Set parameters :
+     Match parameters :
+     as_path : test
+     origin : egp
+     metric : 4
+     probability : 20
+```
+
+### show ip prefix list
+#### Syntax
+```
+show ip prefix list
+```
+
+#### Description
+This command displays all ip prefix list configurations.
+
+#### Authority
+Admin user.
+
+#### Parameters
+None
+
+#### Examples
+```
+s1# show ip prefix-list
+ip prefix-list BGP_IN_: 5 entries
+   seq 5 deny 11.0.0.0/8
+   seq 10 permit 10.0.0.0/8
+   seq 15 permit 150.168.15.0/24 ge 25 le 28
+   seq 20 permit 192.168.15.0/24 ge 27
+   seq 25 deny 192.168.15.0/24 le 25
+```
+
+### show ip prefix-list WORD seq num
+#### Syntax
+```
+show ip prefix list WORD seq <num>
+```
+
+#### Description
+This command displays ip prefix list configuration with a specific name and sequence number.
+
+#### Authority
+Admin user.
+
+#### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *WORD*  | Required | String of 80 characters maximum length. | The IP prefix-list name. |
+| *num*  | Required | 1-4294967295 | The sequence number. |
+
+#### Examples
+```
+s1# show ip prefix-list BGP_IN_ seq 10
+   seq 10 permit 10.0.0.0/8
+```
+### show ip prefix list detail WORD
+#### Syntax
+```
+show ip prefix-list detail WORD
+```
+
+#### Description
+This command displays the detailed ip prefix list configuration with a specific name.
+
+#### Authority
+Admin user.
+
+#### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *WORD*  | Required | String of 80 characters maximum length. | The IP prefix-list name. |
+
+#### Examples
+```
+s1# show ip prefix-list detail BGP_IN_
+ip prefix-list BGP_IN_:
+   count: 5, sequences: 5 - 25
+   seq 5 deny 11.0.0.0/8
+   seq 10 permit 10.0.0.0/8
+   seq 15 permit 150.168.15.0/24 ge 25 le 28
+   seq 20 permit 192.168.15.0/24 ge 27
+   seq 25 deny 192.168.15.0/24 le 25
+```
+
+### show ip prefix list summary WORD
+#### Syntax
+```
+show ip prefix-list summary WORD
+```
+
+#### Description
+This command displays the summarized ip prefix list configuration with a specific name.
+
+#### Authority
+Admin user.
+
+#### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *WORD*  | Required | String of 80 characters maximum length. | The IP prefix-list name. |
+
+#### Examples
+```
+s1# show ip prefix-list summary BGP_IN_
+ip prefix-list BGP_IN_:
+   count: 5, sequences: 5 - 25
+```
+### show ipv6 prefix list
+#### Syntax
+```
+show ipv6 prefix list
+```
+
+#### Description
+This command displays all ipv6 prefix list configurations.
+
+#### Authority
+Admin user.
+
+#### Parameters
+None
+
+#### Examples
+```
+s1# show ipv6 prefix-list
+ipv6 prefix-list BGP_IN: 5 entries
+   Description: IPV6 Prefix Test
+   seq 10 deny 9966:1:2::/64 ge 80 le 100
+   seq 20 permit 7d5d:1:1::/64 le 70
+   seq 30 permit 5d5d:1:1::/64 le 70
+   seq 40 permit 2ccd:1:1::/64 ge 65
+   seq 50 permit 4ddc:1:1::/64
+```
+### show ipv6 prefix list WORD
+#### Syntax
+```
+show ipv6 prefix list WORD
+```
+
+#### Description
+This command displays ipv6 prefix list configuration with a specific name.
+
+#### Authority
+Admin user.
+
+#### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *WORD*  | Required | String of 80 characters maximum length. | The IPv6 prefix-list name. |
+
+#### Examples
+```
+s1# show ipv6 prefix-list BGP_IN
+ipv6 prefix-list BGP_IN: 5 entries
+   Description: IPV6 Prefix Test
+   seq 10 deny 9966:1:2::/64 ge 80 le 100
+   seq 20 permit 7d5d:1:1::/64 le 70
+   seq 30 permit 5d5d:1:1::/64 le 70
+   seq 40 permit 2ccd:1:1::/64 ge 65
+   seq 50 permit 4ddc:1:1::/64
+```
+### show ipv6 prefix-list WORD seq num
+#### Syntax
+```
+show ipv6 prefix list <WORD> seq <num>
+```
+
+#### Description
+This command displays the ipv6 prefix list configuration with the specific name and sequence number.
+
+#### Authority
+Admin user.
+
+#### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *WORD*  | Required | String of 80 characters maximum length. | The IPv6 prefix-list name. |
+| *num*  | Required | 1-4294967295 | The sequence number. |
+
+#### Examples
+```
+s1# show ipv6 prefix-list BGP_IN seq 10
+   seq 10 deny 9966:1:2::/64 ge 80 le 100
+```
+
+### show ipv6 prefix list detail
+#### Syntax
+```
+show ipv6 prefix-list detail
+```
+
+#### Description
+This command displays the detailed ip prefix list configuration.
+
+#### Authority
+Admin user.
+
+#### Parameters
+None
+
+#### Examples
+```
+s1# show ipv6 prefix-list detail
+ipv6 prefix-list BGP_IN:
+   Description: IPV6 Prefix Test
+   count: 5, sequences: 10 - 50
+   seq 10 deny 9966:1:2::/64 ge 80 le 100
+   seq 20 permit 7d5d:1:1::/64 le 70
+   seq 30 permit 5d5d:1:1::/64 le 70
+   seq 40 permit 2ccd:1:1::/64 ge 65
+   seq 50 permit 4ddc:1:1::/64
+```
+
+### show ipv6 prefix list detail WORD
+#### Syntax
+```
+show ipv6 prefix-list detail WORD
+```
+
+#### Description
+This command displays the detailed ip prefix list configuration with a specific name.
+
+#### Authority
+Admin user.
+
+#### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *WORD*  | Required | String of 80 characters maximum length. | The IPv6 prefix-list name. |
+
+#### Examples
+```
+s1# show ipv6 prefix-list detail BGP_IN
+ipv6 prefix-list BGP_IN:
+   Description: IPV6 Prefix Test
+   count: 5, sequences: 10 - 50
+   seq 10 deny 9966:1:2::/64 ge 80 le 100
+   seq 20 permit 7d5d:1:1::/64 le 70
+   seq 30 permit 5d5d:1:1::/64 le 70
+   seq 40 permit 2ccd:1:1::/64 ge 65
+   seq 50 permit 4ddc:1:1::/64
+```
+### show ipv6 prefix list summary
+#### Syntax
+```
+show ipv6 prefix-list summary
+```
+
+#### Description
+This command displays the summarized ipv6 prefix list configuration.
+
+#### Authority
+Admin user.
+
+#### Parameters
+None
+
+#### Examples
+```
+s1# show ipv6 prefix-list summary
+ipv6 prefix-list BGP_IN:
+   Description: IPV6 Prefix Test
+   count: 5, sequences: 10 - 50
+```
+
+### show ipv6 prefix list summary WORD
+#### Syntax
+```
+show ipv6 prefix-list summary WORD
+```
+
+#### Description
+This command displays the summarized ipv6 prefix list configuration with a specific name.
+
+#### Authority
+Admin user.
+
+#### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *WORD*  | Required | String of 80 characters maximum length. | The IPv6 prefix-list name. |
+
+#### Examples
+```
+s1# show ipv6 prefix-list summary BGP_IN
+ipv6 prefix-list BGP_IN:
+   Description: IPV6 Prefix Test
+   count: 5, sequences: 10 - 50
+```
+### show ipv6 prefix list WORD X:X::X:X/M
+#### Syntax
+```
+show ipv6 prefix list WORD X:X::X:X/M
+```
+
+#### Description
+This command displays the ipv6 prefix list configuration with a specific name and ipv6 address.
+
+#### Authority
+Admin user.
+
+#### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *WORD*  | Required | String of 80 characters maximum length. | The IPv6 prefix-list name. |
+| *X:X::X:X/M*  | Required | X:X::X:X/M | The IPv6 address with prefix length M. |
+
+#### Examples
+```
+s1# show ipv6 prefix-list BGP_IN 9966:1:2::/64
+   seq 10 deny 9966:1:2::/64 ge 80 le 100
+   seq 80 permit 9966:1:2::/64 ge 110
+```
+
+### show ipv6 prefix list WORD X:X::X:X/M first-match
+#### Syntax
+```
+show ipv6 prefix list WORD first-match
+```
+
+#### Description
+This command displays the first ipv6 prefix list configuration with a specific name and ipv6 address.
+
+#### Authority
+Admin user.
+
+#### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *WORD*  | Required | String of 80 characters maximum length. | The IPv6 prefix-list name. |
+| *X:X::X:X/M*  | Required | X:X::X:X/M | The IPv6 address with prefix length M. |
+
+#### Examples
+```
+s1# show ipv6 prefix-list BGP_IN 9966:1:2::/64 first-match
+   seq 10 deny 9966:1:2::/64 ge 80 le 100
+```
+
+### show ipv6 prefix list WORD X:X::X:X/M longer
+#### Syntax
+```
+show ipv6 prefix list WORD longer.
+```
+
+#### Description
+This command displays the ipv6 prefix list configuration with a specific name, ipv6 address, and prefix-length greater than or equal to 'M'.
+
+#### Authority
+Admin user.
+
+#### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *WORD*  | Required | String of 80 characters maximum length. | The IPv6 prefix-list name. |
+| *X:X::X:X/M*  | Required | X:X::X:X/M | The IPv6 address with prefix length M. |
+
+#### Examples
+```
+s1# show ipv6  prefix-list BGP_IN 9966:1:2::/64 longer
+   seq 10 deny 9966:1:2::/64 ge 80 le 100
+   seq 60 permit 9966:1:2::/70
+   seq 80 permit 9966:1:2::/64 ge 110
+```
+
+### show ip community list
+#### Syntax
+```
+show ip community list
+```
+
+#### Description
+This command displays all community list configurations.
+
+#### Authority
+Admin user.
+
+#### Parameters
+None
+
+#### Examples
+```
+s1# show ip community-list
+ip community-list BGPClist
+    permit 2:0
+    deny 4:0
+```
+### show ip extcommunity list
+#### Syntax
+```
+show ip extcommunity list
+```
+
+#### Description
+This command displays all extended community list configuration.
+
+#### Authority
+Admin user.
+
+#### Parameters
+None
+
+#### Examples
+```
+s1# show ip extcommunity-list
+ip extcommunity-list BGPClist
+    permit 2:0
+    deny 4:0
+```
+
+### show as-path access list
+#### Syntax
+```
+show ip as-path-access-list
+```
+
+#### Description
+This command displays all as-path access list configuration.
+
+#### Authority
+Admin user.
+
+#### Parameters
+None
+
+#### Examples
+```
+s1# show ip as-path-access-list
+ip as-path access-list BGP_Filter
+    permit 3
+    deny 2
+```
+
+### show as-path access list WORD
+#### Syntax
+```
+show ip as-path-access-list WORD
+```
+
+#### Description
+This command displays the as-path access list configuration with a specific name.
+
+#### Authority
+Admin user.
+
+#### Parameters
+| Parameter | Status   | Syntax |       Description          |
+|-----------|----------|----------------------|
+| *WORD*  | Required | String of 80 characters maximum length. | The as-path-access-list name. |
+
+#### Examples
+```
+s1# show ip as-path-access-list BGP_Filter
+ip as-path access-list BGP_Filter
+    permit 3
+    deny 2
+```
+## CLI
+ 
 Click [here](http://www.openswitch.net/documents/user/bpg_cli) for CLI commands related to the BGP feature.
