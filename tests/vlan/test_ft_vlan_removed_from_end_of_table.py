@@ -422,6 +422,7 @@ class Test_vlan_state_removed_from_end_of_table:
             LogOutput('info', "Passed verifying port {pPort}".format(
                 pPort=self.dut01Obj.linkPortMapping['lnk01']))
 
+    @pytest.mark.skipif(True, reason="Skipping for Taiga ID 652")
     def test_sendTraffic_after(self):
         LogOutput('info', "############################################")
         LogOutput('info', "Step 12- Send traffic")
