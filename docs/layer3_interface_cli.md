@@ -8,6 +8,7 @@
 	- [ip address](#ip-address)
 	- [ipv6 address](#ipv6-address)
 	- [ip proxy-arp](#ip-proxy-arp)
+	- [ip local-proxy-arp](#ip-local-proxy-arp)
 	- [interface vlan](#interface-vlan)
 	- [interface](#interface)
 - [Display commands](#display-commands)
@@ -22,12 +23,12 @@
 ### routing
 
 #### Syntax
-Under the interface context.
+Enter the following syntax under the interface context.
 
 `[no] routing`
 
 #### Description
-The command enables/disables the routing for the interface.
+The command enables or disables the routing for the interface.
 
 #### Authority
 Admin.
@@ -44,12 +45,12 @@ hostname(config-if)#
 ### vrf attach
 
 #### Syntax
-Under the interface context.
+Enter the following syntax under the interface context.
 
 `[no] vrf attach <vrf-name>`
 
 #### Description
-The command attaches/detaches an interface to/from a VRF.
+The command attaches or detaches an interface to or from a VRF.
 
 #### Authority
 Admin.
@@ -70,7 +71,7 @@ hostname(config-if)#
 ### ip address
 
 #### Syntax
-Under the interface context.
+Enter the following syntax under the interface context.
 
 `[no] ip address <address/mask> [secondary]`
 
@@ -98,7 +99,7 @@ hostname(config-if)#
 ### ipv6 address
 
 #### Syntax
-Under the interface context.
+Enter the following syntax under the interface context.
 
 `[no] ipv6 address <address/prefix> [secondary]`
 
@@ -126,7 +127,7 @@ hostname(config-if)#
 
 #### Syntax
 
-Under the interface context.
+Enter the following syntax under the interface context.
 
 `[no] ip proxy-arp`
 
@@ -140,21 +141,45 @@ Admin
 none
 
 #### Example
-Configure proxy ARP on an interface
+Configure the proxy ARP on an interface
 ```
 hostname(config)# interface 1
 hostname(config-if)# ip proxy-arp
 
 ```
+###ip local-proxy-arp
+
+#### Syntax
+
+Enter the following syntax under the interface context.
+
+`[no] ip local-proxy-arp`
+
+#### Description
+The command enables or disables local proxy ARP on the specified interface. By default, the local proxy ARP is disabled.
+
+#### Authority
+Admin
+
+#### Parameter
+none
+
+#### Example
+Configure the local proxy ARP on an interface.
+```
+hostname(config)# interface 1
+hostname(config-if)# ip local-proxy-arp
+
+```
 ### interface vlan
 
 #### Syntax
-Under the config context.
+Enter the following syntax under the config context.
 
 `[no] interface vlan <vlan-id>`
 
 #### Description
-This command lets you create and configure an L3 VLAN interface corresponding to the specified VLAN ID.
+This command lets you create and configure an L3 VLAN interface that corresponds to the specified VLAN ID.
 
 #### Authority
 Admin
@@ -176,7 +201,7 @@ hostname(config-if-vlan)#
 
 #### Syntax
 
-Under the config context
+Enter the following syntax under the config context.
 
 `[no] interface <vlan-name>`
 
@@ -204,12 +229,12 @@ hostname(config-if-vlan)#
 ### show interface
 
 #### Syntax
-Under privileged mode.
+Enter the following syntax under the privileged mode.
 
 `show interface [brief | mgmt]`
 
 #### Description
-This command displays information for the interfaces, including statistics, configuration and interface state.
+This command displays information for the interfaces, including the statistics, the configuration, and the interface state.
 
 #### Authority
 Operator.
@@ -242,6 +267,7 @@ Interface 1 is up
  Admin state is up
  Hardware: Ethernet, MAC Address: 48:0f:cf:af:02:17
  Proxy ARP is enabled
+ Local Proxy ARP is enabled
  MTU 1500
  Full-duplex
  Speed 1000 Mb/s
@@ -271,7 +297,7 @@ Interface                                                          (Mb/s)    Ch#
 ### show interface vlan-name
 
 #### Syntax
-Under privileged mode.
+Enter the following syntax under the privileged mode.
 
 `show interface <vlan-name>`
 
@@ -304,12 +330,12 @@ hostname# show interface vlan10
 ### show ip interface
 
 #### Syntax
-Under privileged mode.
+Enter the following syntax under the privileged mode.
 
 `show ip interface [ifname]`
 
 #### Description
-This command displays L3 and IPv4 specific information for the interfaces including statistics, configuration and interface state. Currently this command is only supported for L3 physical interfaces and does not support other L3 VLAN interfaces.
+This command displays L3 and IPv4 specific information for the interfaces including the statistics, the configuration and the interface state. Currently this command is only supported for L3 physical interfaces and does not support other L3 VLAN interfaces.
 
 #### Authority
 Operator.
@@ -340,12 +366,12 @@ Interface 1 is up
 ### show ipv6 interface
 
 #### Syntax
-Under privileged mode.
+Enter the following syntax under the privileged mode.
 
 `show ipv6 interface [ifname]`
 
 #### Description
-This command displays L3 and IPv6 specific information for the interfaces including statistics, configuration and interface state. Currently this command is only supported for L3 physical interfaces and does not support other L3 VLAN interfaces.
+This command displays L3 and IPv6 specific information for the interfaces including the statistics, the configuration and the interface state. Currently this command is only supported for L3 physical interfaces and does not support other L3 VLAN interfaces.
 
 #### Authority
 Operator.
