@@ -354,8 +354,8 @@ def lldp_tlv(**kwargs):
 
         LogOutput('info', "CLI_Switch2")
         lnk01PrtStats = retStruct.valueGet(key='portStats')
-        if ("null" in lnk01PrtStats[device2.linkPortMapping['lnk01']]
-                ['Neighbor_chassisName']):
+        if (lnk01PrtStats[device2.linkPortMapping['lnk01']]
+                ['Neighbor_chassisName']) == "":
             break
         else:
             # Dump out the ovs-vsctl interface information
@@ -373,8 +373,8 @@ def lldp_tlv(**kwargs):
                                 str(ifconfig_output))
             Sleep(seconds=10, message="Delay")
     device2.setDefaultContext(context="vtyShell")
-    assert ("null" in lnk01PrtStats[device2.linkPortMapping['lnk01']]
-            ['Neighbor_chassisName']), \
+    assert (lnk01PrtStats[device2.linkPortMapping['lnk01']]
+            ['Neighbor_chassisName']) == "", \
         "Case Failed, Neighbor Chassis-Name is present"
     LogOutput('info', "#Case Passed,No neighbor Chassis-Name present#")
 
@@ -440,8 +440,8 @@ def lldp_tlv(**kwargs):
         assert retCode == 0, "\nFailed to show neighbor info"
         LogOutput('info', "CLI_Switch2")
         lnk01PrtStats = retStruct.valueGet(key='portStats')
-        if ("null" in lnk01PrtStats[device2.linkPortMapping['lnk01']]
-                ['Neighbor_chassisDescription']):
+        if (lnk01PrtStats[device2.linkPortMapping['lnk01']]
+                ['Neighbor_chassisDescription']) == "":
             break
         else:
             # Dump out the ovs-vsctl interface information
@@ -461,8 +461,8 @@ def lldp_tlv(**kwargs):
             Sleep(seconds=10, message="Delay")
     device2.setDefaultContext(context="vtyShell")
 
-    assert ("null" in lnk01PrtStats[device2.linkPortMapping['lnk01']]
-            ['Neighbor_chassisDescription']), \
+    assert (lnk01PrtStats[device2.linkPortMapping['lnk01']]
+            ['Neighbor_chassisDescription']) == "", \
         "Case Failed, Neighbor Chassis-Description is present"
     LogOutput('info', "#Case Passed,No neighbor Chassis-Description present#")
 
@@ -620,7 +620,7 @@ def lldp_tlv(**kwargs):
     assert retCode == 0, "Failed to exit vtysh prompt"
 
 
-@pytest.mark.skipif(True, reason="Skipping temporarily due to CLI changes.")
+@pytest.mark.timeout(1000)
 class Test_lldp_configuration:
 
     def setup_class(cls):
