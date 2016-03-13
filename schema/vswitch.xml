@@ -222,18 +222,6 @@
         </column>
       </group>
 
-    <group title="DHCP-Relay Configurations">
-        <column name="other_config" key="dhcp_relay_disabled"
-                type='{"type": "boolean"}'>
-          Set this value to <code>true</code> to disable DHCP-Relay functionality
-          globally and set it to <code>false</code> to enable it. DHCP-Relay is
-          enabled by default. If the key is missing, the configuration is assumed
-          to be enabled.
-          Though DHCP-Relay configuration is enabled globally, the functionality
-          is effective only after the port level server configuration.
-        </column>
-    </group>
-
     <group title="UDP Broadcast Forwarder Configurations">
         <column name="other_config" key="udp_bcast_forwarder_enabled"
               type='{"type": "boolean"}'>
@@ -950,6 +938,90 @@
          Default is false.
       </column>
     </group>
+
+    <group title="DHCP Configurations">
+      <column name="dhcp_config" key="v4relay_disabled"
+              type='{"type": "boolean"}'>
+        <p>
+        Set this value to <code>true</code> to disable DHCP-Relay functionality
+        globally and set it to <code>false</code> to enable it. DHCP-Relay is
+        enabled by default. If the key is missing, the configuration is assumed
+        to be enabled.
+        Though DHCP-Relay configuration is enabled globally, the functionality
+        is effective only after the port level server configuration.
+        </p>
+      </column>
+
+      <column name="dhcp_config" key="v4relay_option82_policy"
+              type='{"type": "string", "enum": ["set", ["drop", "keep", "replace"]]}'>
+        <p>
+        Specifies the forwarding policy of DHCP-Relay Option 82.
+        </p><p><code>drop</code> -
+        Drop an inbound dhcp-client request with an Option 82 field already
+        appended. If no Option 82 fields are present, drop causes the router to add
+        an Option 82 field to dhcp request and forward.
+        </p><p><code>keep</code> -
+        If the relay agent receives a client request that already has one or more Option 82
+        fields, keep causes the relay agent to retain such fields and forward the request
+        without adding another Option 82 field. But if the incoming client request does not
+        already have any Option 82 fields, the relay agent appends an Option 82 field and
+        forwards the dhcp request.
+        </p><p><code>replace</code> -
+        Replace any existing Option 82 fields from downstream relay agents
+        (and/or the originating client) with an Option 82 field for the current relay agent.
+        </p><p>
+        If the keys is missing, Option 82 configuration is assumed to be disabled.
+        </p>
+      </column>
+
+      <column name="dhcp_config" key="v4relay_option82_validation_enabled"
+              type='{"type": "boolean"}'>
+        <p>
+        Set this value to <code>true</code> to validate server response packets
+        and set it to <code>false</code> otherwise. This configuration is
+        disabled by default. If the key is missing, the configuration is assumed
+        to be disabled.
+        This configuration is valid only for drop or replace dhcp-relay Option 82 policy.
+        </p>
+      </column>
+
+      <column name="dhcp_config" key="v4relay_option82_remote_id"
+              type='{"type": "string", "enum": ["set", ["ip", "mac"]]}'>
+        <p>
+        Specifies the remote ID suboption that the switch uses in Option 82 fields
+        added or appended to DHCP client packets. The type of remote ID defines DHCP policy
+        areas in the client requests sent to the DHCP server.
+        </p><p><code>ip</code> -
+        Specifies the IP address of the interface on which the client DHCP packet
+        enters the switch.
+        </p><p><code>mac</code> -
+        Specifies the router's MAC address. (The MAC address used is the same MAC address
+        that is assigned to all interfaces configured on the routing switch.)
+        </p><p>
+        If the key is not specified, configuration is assumed to be "mac".
+        </p>
+      </column>
+
+      <column name="dhcp_config" key="v4relay_hop_count_increment_enabled"
+              type='{"type": "boolean"}'>
+        <p>
+        Set this value to <code>true</code> to enable the hop count increment in
+        the relayed DHCP requests and set it to <code>false</code> otherwise. This
+        configuration is disabled by default. If the key is missing, the configuration
+        is assumed to be disabled.
+        </p>
+      </column>
+
+      <column name="dhcp_config" key="bootp_gateway"
+              type='{"type": "string", "maxLength":15}'>
+        <p>
+        Provides a way to configure a gateway address for the DHCP relay agent
+        to use for DHCP requests, rather than the DHCP relay agent automatically assigning
+        the lowest-numbered IP address.
+        </p>
+      </column>
+    </group>
+
     <group title="QoS configuration">
       <p>
         Specifies QoS (Quality of Service) configuration options that are

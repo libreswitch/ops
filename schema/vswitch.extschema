@@ -459,6 +459,15 @@
             "min": 0,
             "max": 4
           }
+        },
+        "dhcp_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
         }
       },
       "isRoot": true,
