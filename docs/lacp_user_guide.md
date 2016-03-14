@@ -88,15 +88,15 @@ In LACP negotiations, link status decisions are made by the system with the nume
 ### Setting up LAG parameters
 
 1. Setting the LACP **mode**.
-LACP mode allows values **active**, **passive** and **off**.  The default value is **off**.
-The following example displays how to set the LACP  mode commands to active, passive or off.
+LACP mode allows values such as **active**, **passive** and **off**.  The default value is **off**.
+The following example displays how to set the LACP mode commands to active, passive, or off.
 ```
 ops-xxxx(config-lag-if)# lacp mode active
 ops-xxxx(config-lag-if)# lacp mode passive
 ops-xxxx(config-lag-if)# no lacp mode {active / passive}
 ```
 2. Setting the **hash type**.
-Hash type takes value **l2-src-dst**, **l2vid-src-dst**, **l3-src-dst** or **l4-src-dst** to control the selection of a interface from a group of aggregate interfaces with which to transmit a frame.
+The Hash type takes the value of **l2-src-dst**, **l3-src-dst** or **l4-src-dst** to control the selection of a interface in a group of aggregate interfaces. This Hash type value helps transmit a frame.
 The default hash type is **l3-src-dst**.
 ```
 ops-xxxx(config-lag-if)# hash l2-src-dst

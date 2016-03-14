@@ -260,10 +260,13 @@ switch(config-lag-if)# no lacp mode active
 
 #### Configuring hash type
 ##### Syntax
-    hash {l2-src-dst/l2vid-src-dst/l3-src-dst/l4-src-dst}
+
+```
+    hash {l2-src-dst/l3-src-dst/l4-src-dst}
+```
 
 ##### Description
-This command sets an LACP hash type to l2-src-dst, l2vid-src-dst, l3-src-dst or l4-src-dst. The default is l3-src-dst.
+This command sets an LACP hash type to l2-src-dst, l3-src-dst or l4-src-dst. The default is l3-src-dst.
 
 ##### Authority
 all users
