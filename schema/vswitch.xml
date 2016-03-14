@@ -3093,8 +3093,7 @@
           the selection of a interface from a group of aggregate interfaces
           with which to transmit a frame. This selection is performed with
           a hash function using either source and destination mac addresses
-          (l2), mac addresses plus VLAN ID (l2vid), ip addresses (l3) or
-          tcp/udp ports (l4) as parameters.
+          (l2), ip addresses (l3) or tcp/udp ports (l4) as parameters.
           Defaults to <code>l3-src-dst-hash</code> if not assigned.
         </p>
       </column>
