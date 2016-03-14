@@ -22,6 +22,7 @@
 - [Python code example for RESTD](#python-code-example-for-restd)
 	- [RESTD audit log wrapper function](#restd-audit-log-wrapper-function)
 - [C code example](#c-code-example)
+	- [Building with and linking in the audit library](#building-with-and-linking-in-the-audit-library)
 - [Interpreting and displaying audit log events](#interpreting-and-displaying-audit-log-events)
 - [Additional references](#additional-references)
 
@@ -253,6 +254,22 @@ if (cfgdata != NULL) {
 
 audit_log_user_message(audit_fd, AUDIT_USYS_CONFIG, aubuf, hostname, NULL, NULL, result);
 ```
+
+### Building with and linking in the audit library
+
+In order to successfully compile your module and link in the audit library, you will need to modify your repo's recipe file and CMake file.  We will use the ops-cli repo as an example.  The following are changes needed to use the audit library in the VTYSH code, which is in the ops-cli repo.  First you need to make changes to the repo's recipe file which is normally located at yocto/openswitch/meta-distro-openswitch/recipes-ops/mgmt/ops-cli.bb.  You need to edit the recipe and add "audit" to the DEPENDS and RDEPENDS_${PN} lines.  For example:
+
+	DEPENDS = "ops-utils ops-ovsdb audit"
+    RDEPENDS_${PN} = "audit"
+
+If your recipe does not have a DEPENDS or RDEPENDS_${PN} statement, add them.  Next you need to go to the repo's source code directory and make a change to the CMakeLists.txt file.  For the ops-cli repo, this is located in the "src/ops-cli/vtysh" directory.  Edit the CMakeLists.txt file and find the target_link_libraries line.  Add "audit" to the end of the list.  For example:
+
+	target_link_libraries(vtysh PUBLIC
+	  ${OVSCOMMON_LIBRARIES}
+	  ${OVSDB_LIBRARIES}
+	  ${OPSCLI_LIBRARIES}
+	  crypt pthread readline ops-cli audit)
+
 
 ## Interpreting and displaying audit log events
 
