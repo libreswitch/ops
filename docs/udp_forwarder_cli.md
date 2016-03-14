@@ -71,28 +71,28 @@ switch(config-if)#ip forward-protocol udp 2.2.2.2 161
 
 switch#show ip forward-protocol
 
-UDP Broadcast Forwarder
--------------------------
-UDP Bcast Forwarder : enabled
+UDP Broadcast Forwarder : enabled
 
-Interface    Server Ip    UDP Port
--------------------------------------
-1            1.1.1.1        53
-1            8.1.1.1        161
-1            4.4.4.4        137
-2            2.2.2.2        161
-
+Interface: 1
+  IP Forward Address    UDP Port
+  -----------------------------
+  4.4.4.4                137
+  1.1.1.1                53
+  8.1.1.1                161
+Interface: 2
+  IP Forward Address    UDP Port
+  -----------------------------
+  2.2.2.2                161
 
 switch#show ip forward-protocol interface 1
 
-UDP Broadcast Forwarder
--------------------------
-UDP Bcast Forwarder : enabled
+UDP Broadcast Forwarder : enabled
 
-Server IP    UDP Port
---------------------
-1.1.1.1        53
-8.1.1.1        161
-4.4.4.4        137
+Interface: 1
+  IP Forward Address    UDP Port
+  -------------------------------
+  4.4.4.4                137
+  1.1.1.1                53
+  8.1.1.1                161
 
 ```
