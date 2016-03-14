@@ -155,7 +155,7 @@ s1(config)#show ntp associations
 ```
 code         : Tally code (Explained later)
 ID           : Server number
-NAME         : NTP server FQDN/IPV4 address
+NAME         : NTP server FQDN/IPV4 address (only the first 15 characters of the name are displayed)
 REMOTE       : Remote server IP address
 VER          : NTP version (3 or 4)
 KEYID        : Key used to communicate with this server
