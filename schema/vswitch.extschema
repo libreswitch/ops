@@ -468,6 +468,18 @@
             "min": 0,
             "max": "unlimited"
           }
+        },
+        "snmp_communities": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 1 ,
+              "maxLength": 32
+            },
+            "min": 0,
+            "max": 10
+          }
         }
       },
       "isRoot": true,
@@ -7645,6 +7657,89 @@
           "transport"
         ]
       ]
+    },
+    "SNMP_Trap" : {
+      "columns" : {
+        "receiver_address" : {
+          "category" : "configuration",
+          "type" : {
+            "key" : {
+            "type" : "string",
+            "maxLength" : 45
+            }
+          }
+        },
+
+        "receiver_udp_port" : {
+          "category"  : "configuration" ,
+          "type" : {
+            "key" : {
+              "type" : "integer",
+              "minInteger" : 1,
+              "maxInteger" : 65535
+            }
+          }
+        },
+        "type" : {
+          "category" : "configuration",
+          "type" : {
+            "key" : {
+               "type"  : "string",
+               "enum": [
+                "set",
+                [
+                  "trap",
+                  "inform"
+                ]
+              ]
+            },
+            "min" : 0,
+            "max" : 1
+          }
+        },
+
+        "version" : {
+          "category" : "configuration",
+          "type" : {
+            "key" : {
+               "type"  : "string",
+               "enum": [
+                "set",
+                [
+                  "v1",
+                  "v2c",
+                  "v3"
+                ]
+              ]
+            },
+            "min" : 0,
+            "max" : 1
+          }
+        },
+
+        "community_name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+
+              "minLength": 1 ,
+              "maxLength": 32
+            },
+            "min" : 0,
+            "max" : 1
+          }
+        }
+      },
+      "indexes": [
+        [
+          "receiver_address",
+          "receiver_udp_port"
+        ]
+      ],
+
+      "maxRows" : 10,
+      "isRoot" : true
     }
   }
 }

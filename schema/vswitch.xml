@@ -129,6 +129,10 @@
         sFlow(R) configuration.
       </column>
 
+      <column name="snmp_communities">
+        Community strings to be used by the system when communicating over SNMPv1/SNMPv2c.
+      </column>
+
       <column name="other_config" key="stats-update-interval"
               type='{"type": "integer", "minInteger": 5000}'>
         <p>
@@ -344,6 +348,15 @@
           Default value is 2.
         </p>
       </column>
+   </group>
+
+   <group title="SNMP configuration">
+     <column name="other_config" key="snmp_agent_port">
+        The port on which the SNMP agent listens for SNMP requests. The default port is 161.
+     </column>
+     <column name="other_config" key="system_location">This key represents the system location.</column>
+     <column name="other_config" key="system_contact">This key represents the system contact.</column>
+     <column name="other_config" key="system_description">This key represents the system description.</column>
    </group>
 
    <group title="Syslog Remotes Configurations">
@@ -6412,6 +6425,17 @@
          Filter syslog messages with severity.  Only messages with severity higher than or equal to the specified value will be sent to the remote server.
          Default is <code>debug</code>.
       </column>
+    </group>
+  </table>
+  <table name="SNMP_Trap">
+    <group title="configuration">
+      <column name="receiver_address">The IP address of the trap receiver.</column>
+      <column name="receiver_udp_port">The UDP port of the trap receiver.</column>
+      <column name="community_name">
+        SNMPv1/SNMPv2c community strings. The default community string is "public".
+      </column>
+      <column name="type">Trap type. The default type is "trap".</column>
+      <column name="version">Trap/inform version. The default version is "v2c".</column>
     </group>
   </table>
 </database>
