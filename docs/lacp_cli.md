@@ -24,6 +24,7 @@
 	- [Display global LACP configuration](#display-global-lacp-configuration)
 	- [Display LACP aggregates](#display-lacp-aggregates)
 	- [Display LACP interface configuration](#display-lacp-interface-configuration)
+	- [LAG show running-config](#lag-show-running-config)
 
 ## LACP configuration commands
 ### Global context commands
@@ -508,4 +509,46 @@ System-id          |                    |
 System-priority    |                    |
 
 switch#
+```
+
+### LAG show running-config
+#### Syntax
+
+```
+    show running-config
+```
+
+#### Description
+This command displays the complete switch configuration, when the switch has
+LAGs configured it should display all the configuration specific to those interfaces.
+
+#### Authority
+all users
+
+#### Parameters
+No parameters
+
+#### Examples
+```
+switch# show running-config
+Current configuration:
+!
+!
+!
+!
+!
+vlan 1
+    no shutdown
+interface lag 2
+    no shutdown
+    ip address 10.2.2.2/24
+    ipv6 address 2001::1/64
+interface lag 3
+    no shutdown
+    lacp mode passive
+interface lag 1
+    no shutdown
+    lacp mode active
+    ip address 10.1.1.1/24
+    ipv6 address 2001:db8:a0b:12f0::1/64
 ```
