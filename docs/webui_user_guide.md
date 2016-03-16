@@ -13,7 +13,6 @@ OpenSwitch Web User Interface (UI)
 		- [Traffic](#traffic)
 		- [Logs](#logs)
 	- [Interfaces](#interfaces)
-	- [VLANs](#vlans)
 	- [LAGs](#lags)
 	- [ECMP](#ecmp)
 	- [Logs](#logs)
@@ -72,8 +71,6 @@ On clicking any row in the interface table/click on any port on the box graphic 
 This interface details panel has general information about the interface configuration and statistics. In addition, LLDP neighbor information and statistics are provided. The information in the interface details panel can be used to help understand the interface configuration and health as well as provide troubleshooting information via the LLDP "map" of directly connected devices.
 
 There are two options on the top-right corner of the interface details panel, a pencil icon (edit) and close (X). On clicking the edit/ pencil icon on the top-right corner of the interface details panel, a window slides out from the right where you can change the Admin State “up” and “down” for that particular interface. The X icon is used to close the interface details panel.
-
-## VLANs
 
 ## LAGs
 
