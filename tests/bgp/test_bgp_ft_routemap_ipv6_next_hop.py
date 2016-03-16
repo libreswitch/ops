@@ -538,7 +538,7 @@ def verify_routemap_match_ipv6_1(**kwargs):
 
     LogOutput('info',"### 'match ipv6 next-hop' running succesfully ###\n")
 
-
+@pytest.mark.skipif(True, reason="Skipping due to Taiga ID : 673")
 class Test_bgp_redistribute_configuration:
     def setup_class(cls):
         Test_bgp_redistribute_configuration.testObj = \
