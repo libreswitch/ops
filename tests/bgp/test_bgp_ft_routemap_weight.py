@@ -82,6 +82,7 @@ topoDict = {"topoExecution": 5000,
                             dut02:system-category:switch"}
 
 
+
 def enterConfigShell(dut):
     retStruct = dut.VtyshShell(enter=True)
     retCode = retStruct.returnCode()
@@ -91,6 +92,7 @@ def enterConfigShell(dut):
     retCode = retStruct.returnCode()
     assert retCode == 0, "Failed to enter config terminal"
     return True
+
 
 # If the context is not present already then it will be created
 def enterRouterContext(dut,as_num):
@@ -102,6 +104,7 @@ def enterRouterContext(dut,as_num):
     assert retCode == 0, "Failed to enter BGP context"
     return True
 
+
 def enterNoRouterContext(dut,as_num):
     if (enterConfigShell(dut) is False):
         return False
@@ -110,6 +113,7 @@ def enterNoRouterContext(dut,as_num):
     retCode = devIntReturn.get('returnCode')
     assert retCode == 0, "Failed to exit BGP context"
     return True
+
 
 def exitContext(dut):
     devIntReturn = dut.DeviceInteract(command="exit")
@@ -124,6 +128,7 @@ def exitContext(dut):
     retCode = retStruct.returnCode()
     assert retCode == 0, "Failed to exit vtysh prompt"
     return True
+
 
 def configure_no_route_map(dut, routemap):
     if (enterConfigShell(dut) is False):
@@ -144,6 +149,7 @@ def configure_router_id(dut, as_num, router_id):
     assert retCode == 0, "Test to set router-id failed"
     return True
 
+
 def configure_network(dut, as_num, network):
     if (enterRouterContext(dut, as_num) is False):
         return False
@@ -153,6 +159,7 @@ def configure_network(dut, as_num, network):
     retCode = devIntReturn.get('returnCode')
     assert retCode == 0, "Test to set network failed"
     return True
+
 
 def configure_neighbor(dut, as_num1, network, as_num2):
     if (enterRouterContext(dut, as_num1) is False):
@@ -164,6 +171,7 @@ def configure_neighbor(dut, as_num1, network, as_num2):
     assert retCode == 0, "Test to set neighbor config failed"
     return True
 
+
 def configure_neighbor_rmap_out(dut, as_num1, network, as_num2, routemap):
     if (enterRouterContext(dut, as_num1) is False):
         return False
@@ -171,36 +179,6 @@ def configure_neighbor_rmap_out(dut, as_num1, network, as_num2, routemap):
     devIntReturn = dut.DeviceInteract(command=cmd)
     retCode = devIntReturn.get('returnCode')
     assert retCode == 0, "Test to set neighbor route-map out config failed"
-    return True
-
-def configure_route_map_set_origin(dut, routemap, as_num, origin):
-    if (enterConfigShell(dut) is False):
-        return False
-
-    cmd = "route-map "+routemap+" permit 20"
-    cmd1 = "set origin "+origin
-    devIntReturn = dut.DeviceInteract(command=cmd)
-    devIntReturn = dut.DeviceInteract(command=cmd1)
-    return True
-
-def configure_route_map_match_origin(dut, routemap, as_num, origin):
-    if (enterConfigShell(dut) is False):
-        return False
-
-    cmd = "route-map "+routemap+" permit 20"
-    cmd1 = "match origin "+origin
-    devIntReturn = dut.DeviceInteract(command=cmd)
-    devIntReturn = dut.DeviceInteract(command=cmd1)
-    return True
-
-def configure_route_map_match_origin_deny(dut, routemap, as_num, origin):
-    if (enterConfigShell(dut) is False):
-        return False
-
-    cmd = "route-map "+routemap+" deny 20"
-    cmd1 = "match origin "+origin
-    devIntReturn = dut.DeviceInteract(command=cmd)
-    devIntReturn = dut.DeviceInteract(command=cmd1)
     return True
 
 
@@ -213,6 +191,29 @@ def configure_neighbor_rmap_in(dut, as_num1, network, as_num2, routemap):
     assert retCode == 0, "Test to set neighbor route-map in config failed"
     return True
 
+
+def configure_route_map_set_weight(dut, routemap,weight):
+    if (enterConfigShell(dut) is False):
+        return False
+
+    cmd = "route-map "+routemap+" permit 20"
+    cmd1 = "set weight "+weight
+    devIntReturn = dut.DeviceInteract(command=cmd)
+    devIntReturn = dut.DeviceInteract(command=cmd1)
+    return True
+
+
+def configure_route_map_set_localpref(dut, routemap, as_num, localpref):
+    if (enterConfigShell(dut) is False):
+        return False
+
+    cmd = "route-map "+routemap+" permit 20"
+    cmd1 = "set local-preference "+localpref
+    devIntReturn = dut.DeviceInteract(command=cmd)
+    devIntReturn = dut.DeviceInteract(command=cmd1)
+    return True
+
+
 def verify_bgp_routes(dut, network, next_hop):
     dump = SwitchVtyshUtils.vtysh_cmd(dut, "show ip bgp")
     routes = dump.split(VTYSH_CR)
@@ -220,6 +221,7 @@ def verify_bgp_routes(dut, network, next_hop):
         if network in route and next_hop in route:
             return True
     return False
+
 
 def wait_for_route(dut, network, next_hop, condition=True) :
     for i in range(MAX_WAIT_TIME):
@@ -236,6 +238,106 @@ def wait_for_route(dut, network, next_hop, condition=True) :
            MAX_WAIT_TIME)
     return found
 
+
+
+def verify_routemap_set_weight(**kwargs):
+    LogOutput('info',"\n\n########## Verifying route-map set weight##########\n")
+
+    switch1 = kwargs.get('switch1', None)
+    switch2 = kwargs.get('switch2', None)
+
+    LogOutput('info',"Configuring no router bgp on SW2")
+    result = enterNoRouterContext(switch2,AS_NUM2)
+    assert result is True,"Failed to configure router Context on SW2"
+    LogOutput('info',"Configuring route-map on SW2")
+    result=configure_route_map_set_weight(switch2,"BGP_IN2","22")
+    assert result is True, "Failed to configure route-map on SW2"
+    LogOutput('info',"Configuring route context on SW2")
+    result = enterRouterContext(switch2,AS_NUM2)
+    assert result is True, "Failed to configure router Context on SW2"
+    LogOutput('info',"Configuring router id on SW2")
+    result = configure_router_id(switch2,AS_NUM2,SW2_ROUTER_ID)
+    assert result is True, "Failed to configure router Context on SW2"
+    LogOutput('info',"Configuring networks on SW2")
+    result = configure_network(switch2,AS_NUM2,"10.0.0.0/8")
+    assert result is True, "Failed to configure network on SW2"
+    LogOutput('info',"Configuring networks on SW2")
+    result = configure_network(switch2,AS_NUM2,"11.0.0.0/8")
+    assert result is True, "Failed to configure network on SW2"
+    LogOutput('info',"Configuring neighbors on SW2")
+    result = configure_neighbor(switch2,AS_NUM2,IP_ADDR1,AS_NUM1)
+    assert result is True, "Failed to configur neighbor on SW2"
+
+    LogOutput('info',"Configuring neighbor route-map on SW2")
+    result = configure_neighbor_rmap_in(switch2, AS_NUM2, IP_ADDR1, AS_NUM1, "BGP_IN2")
+    assert result is True, "Failed to configure neighbor route-map on SW2"
+
+    exitContext(switch2)
+    wait_for_route(switch2, "10.0.0.0", "0.0.0.0")
+    wait_for_route(switch2, "11.0.0.0", "0.0.0.0")
+    wait_for_route(switch2, "9.0.0.0", "8.0.0.1")
+
+    dump = SwitchVtyshUtils.vtysh_cmd(switch2, "sh ip bgp")
+    set_weight_flag = False
+
+    lines = dump.split('\n')
+    for line in lines:
+        if ' weight 22' in line and '9.0.0.0' in line:
+            set_weight_flag = True
+
+    assert (set_weight_flag == True) , "Failed to configure 'set weight'"
+
+    LogOutput('info',"### 'set weight' running succesfully ###\n")
+
+
+def verify_routemap_set_localpref(**kwargs):
+    LogOutput('info',"\n\n########## Verifying route-map set local-preference##########\n")
+
+    switch1 = kwargs.get('switch1', None)
+    switch2 = kwargs.get('switch2', None)
+
+    LogOutput('info',"Configuring no router bgp on SW2")
+    result = enterNoRouterContext(switch2,AS_NUM2)
+    assert result is True,"Failed to configure router Context on SW2"
+    localpref = "45"
+    LogOutput('info',"Configuring route-map on SW2")
+    result=configure_route_map_set_localpref(switch2,"BGP_IN2",AS_NUM2,localpref)
+    assert result is True, "Failed to configure route-map on SW2"
+    LogOutput('info',"Configuring route context on SW2")
+    result = enterRouterContext(switch2,AS_NUM2)
+    assert result is True, "Failed to configure router Context on SW2"
+    LogOutput('info',"Configuring router id on SW2")
+    result = configure_router_id(switch2,AS_NUM2,SW2_ROUTER_ID)
+    assert result is True, "Failed to configure router Context on SW2"
+    LogOutput('info',"Configuring networks on SW2")
+    result = configure_network(switch2,AS_NUM2,"10.0.0.0/8")
+    assert result is True, "Failed to configure network on SW2"
+    LogOutput('info',"Configuring networks on SW2")
+    result = configure_network(switch2,AS_NUM2,"11.0.0.0/8")
+    assert result is True, "Failed to configure network on SW2"
+    LogOutput('info',"Configuring neighbors on SW2")
+    result = configure_neighbor(switch2,AS_NUM2,IP_ADDR1,AS_NUM1)
+    assert result is True, "Failed to configur neighbor on SW2"
+
+    LogOutput('info',"Configuring neighbor route-map on SW2")
+    result = configure_neighbor_rmap_in(switch2, AS_NUM2, IP_ADDR1, AS_NUM1, "BGP_IN2")
+    assert result is True, "Failed to configure neighbor route-map on SW2"
+
+    exitContext(switch2)
+    wait_for_route(switch2, "10.0.0.0", "0.0.0.0")
+    wait_for_route(switch2, "11.0.0.0", "0.0.0.0")
+    wait_for_route(switch2, "9.0.0.0", "8.0.0.1")
+
+    dump = SwitchVtyshUtils.vtysh_cmd(switch2, "sh ip bgp")
+    set_localpref_flag = False
+
+    lines = dump.split('\n')
+    for line in lines:
+        if '45,' in line:
+            set_localpref_flag = True
+
+    assert (set_localpref_flag == True) , "Failed to configure 'set local-preference'"
+    LogOutput('info',"'set local-preference' running succesfully")
 
 def configure(**kwargs):
     '''
@@ -323,129 +425,6 @@ def configure(**kwargs):
     result = configure_neighbor(switch2,AS_NUM2,IP_ADDR1,AS_NUM1)
     assert result is True, "Failed to configur neighbor on SW2"
 
-def verify_routemap_set_origin_1(**kwargs):
-    LogOutput('info',"\n\n########## Verifying route-map set origin Test 1##########\n")
-
-    switch1 = kwargs.get('switch1', None)
-    switch2 = kwargs.get('switch2', None)
-
-    LogOutput('info',"Configuring no router bgp on SW1")
-    result = enterNoRouterContext(switch1,AS_NUM1)
-    assert result is True,"Failed to configure router Context on SW1"
-
-    origin = "egp"
-    LogOutput('info',"Configuring route-map on SW1")
-    result=configure_route_map_set_origin(switch1,"BGP_OUT1",AS_NUM1,origin)
-    assert result is True, "Failed to configure route-map on SW1"
-
-    LogOutput('info',"Configuring route context on SW1")
-    result = enterRouterContext(switch1,AS_NUM1)
-    assert result is True, "Failed to configure router Context on SW1"
-    LogOutput('info',"Configuring router id on SW1")
-    result = configure_router_id(switch1,AS_NUM1,SW1_ROUTER_ID)
-    assert result is True, "Failed to configure router Context on SW1"
-
-    LogOutput('info',"Configuring networks on SW1")
-    result = configure_network(switch1,AS_NUM1,"9.0.0.0/8")
-    assert result is True, "Failed to configure network on SW1"
-
-    LogOutput('info',"Configuring neighbors on SW1")
-    result = configure_neighbor(switch1,AS_NUM1,IP_ADDR2,AS_NUM2)
-    assert result is True, "Failed to configur neighbor on SW1"
-
-    LogOutput('info',"Configuring neighbor route-map on SW1")
-    result = configure_neighbor_rmap_out(switch1, AS_NUM1, IP_ADDR2, AS_NUM1, "BGP_OUT1")
-    assert result is True, "Failed to configure neighbor route-map on SW1"
-
-    exitContext(switch2)
-    wait_for_route(switch2, "10.0.0.0", "0.0.0.0")
-    wait_for_route(switch2, "11.0.0.0", "0.0.0.0")
-    wait_for_route(switch2, "9.0.0.0", "8.0.0.1")
-
-    dump = SwitchVtyshUtils.vtysh_cmd(switch2, "sh ip bgp")
-    network ="9.0.0.0"
-    set_origin_flag = False
-    lines = dump.split('\n')
-    for line in lines:
-        if network in line and 'e' in line:
-            set_origin_flag = True
-
-    assert (set_origin_flag == True), "Failed to configure set origin"
-    LogOutput('info',"'set origin' running succesfully")
-
-def verify_routemap_set_origin_2(**kwargs):
-    LogOutput('info',"\n\n########## Verifying route-map set origin Test 2##########\n")
-
-    switch1 = kwargs.get('switch1', None)
-    switch2 = kwargs.get('switch2', None)
-
-    LogOutput('info',"Configuring no router bgp on SW1")
-    result = enterNoRouterContext(switch1,AS_NUM1)
-    assert result is True,"Failed to configure router Context on SW1"
-
-    origin = "egp"
-    LogOutput('info',"Configuring route-map on SW1")
-    result=configure_route_map_set_origin(switch1,"BGP_OUT1",AS_NUM1,origin)
-    assert result is True, "Failed to configure route-map on SW1"
-    LogOutput('info',"Configuring route context on SW1")
-    result = enterRouterContext(switch1,AS_NUM1)
-    assert result is True, "Failed to configure router Context on SW1"
-    LogOutput('info',"Configuring router id on SW1")
-    result = configure_router_id(switch1,AS_NUM1,SW1_ROUTER_ID)
-    assert result is True, "Failed to configure router Context on SW1"
-    LogOutput('info',"Configuring networks on SW1")
-    result = configure_network(switch1,AS_NUM1,"9.0.0.0/8")
-    assert result is True, "Failed to configure network on SW1"
-    LogOutput('info',"Configuring neighbors on SW1")
-    result = configure_neighbor(switch1,AS_NUM1,IP_ADDR2,AS_NUM2)
-    assert result is True, "Failed to configur neighbor on SW1"
-    LogOutput('info',"Configuring neighbor route-map on SW1")
-    result = configure_neighbor_rmap_out(switch1, AS_NUM1, IP_ADDR2, AS_NUM1, "BGP_OUT1")
-    assert result is True, "Failed to configure neighbor route-map on SW1"
-
-    LogOutput('info',"Configuring no router bgp on SW2")
-    result = enterNoRouterContext(switch2,AS_NUM2)
-    assert result is True,"Failed to configure router Context on SW2"
-    origin = "egp"
-    LogOutput('info',"Configuring route-map on SW2")
-    result=configure_route_map_match_origin(switch2,"BGP_IN1",AS_NUM2,origin)
-    assert result is True, "Failed to configure route-map on SW2"
-    LogOutput('info',"Configuring route context on SW2")
-    result = enterRouterContext(switch2,AS_NUM2)
-    assert result is True, "Failed to configure router Context on SW2"
-    LogOutput('info',"Configuring router id on SW2")
-    result = configure_router_id(switch2,AS_NUM2,SW2_ROUTER_ID)
-    assert result is True, "Failed to configure router Context on SW2"
-    LogOutput('info',"Configuring networks on SW2")
-    result = configure_network(switch2,AS_NUM2,"10.0.0.0/8")
-    assert result is True, "Failed to configure network on SW2"
-    LogOutput('info',"Configuring networks on SW2")
-    result = configure_network(switch2,AS_NUM2,"11.0.0.0/8")
-    assert result is True, "Failed to configure network on SW2"
-
-    LogOutput('info',"Configuring neighbors on SW2")
-    result = configure_neighbor(switch2,AS_NUM2,IP_ADDR1,AS_NUM1)
-    assert result is True, "Failed to configur neighbor on SW2"
-    LogOutput('info',"Configuring neighbor route-map on SW2")
-    result = configure_neighbor_rmap_in(switch2, AS_NUM2, IP_ADDR1, AS_NUM1, "BGP_IN1")
-    assert result is True, "Failed to configure neighbor route-map on SW2"
-
-    exitContext(switch2)
-    wait_for_route(switch2, "10.0.0.0", "0.0.0.0")
-    wait_for_route(switch2, "11.0.0.0", "0.0.0.0")
-    wait_for_route(switch2, "9.0.0.0", "8.0.0.1")
-
-    dump = SwitchVtyshUtils.vtysh_cmd(switch2, "sh ip bgp")
-    network ="9.0.0.0"
-    set_origin_flag = False
-    lines = dump.split('\n')
-    for line in lines:
-        if network in line and ' e' in line:
-            set_origin_flag = True
-    assert (set_origin_flag == True), "Failed to configure set origin"
-
-    LogOutput('info',"### set origin running succesfully ###\n")
-
 
 class Test_bgp_redistribute_configuration:
     def setup_class(cls):
@@ -464,5 +443,5 @@ class Test_bgp_redistribute_configuration:
 
         configure(switch1=dut01Obj, switch2=dut02Obj)
 
-        verify_routemap_set_origin_1(switch1=dut01Obj, switch2=dut02Obj)
-        verify_routemap_set_origin_2(switch1=dut01Obj, switch2=dut02Obj)
+        verify_routemap_set_weight(switch1=dut01Obj, switch2=dut02Obj)
+        verify_routemap_set_localpref(switch1=dut01Obj, switch2=dut02Obj)

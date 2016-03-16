@@ -82,6 +82,7 @@ SW2_ROUTER_ID = "9.0.0.2"
 AS_NUM1 = "1"
 AS_NUM2 = "2"
 
+MAX_WAIT_TIME = 100
 topoDict = {"topoExecution": 5000,
             "topoTarget": "dut01 dut02",
             "topoDevices": "dut01 dut02",
@@ -218,6 +219,28 @@ def configure_route_map_match_ipv6_deny(dut,routemap,nexthop):
     devIntReturn = dut.DeviceInteract(command=cmd1)
     return True
 
+def verify_bgp_routes(dut, network, next_hop):
+    dump = SwitchVtyshUtils.vtysh_cmd(dut, "show ipv6 bgp")
+    routes = dump.split(VTYSH_CR)
+    for route in routes:
+        if network in route and next_hop in route:
+            return True
+    return False
+
+def wait_for_route(dut, network, next_hop, condition=True) :
+    for i in range(MAX_WAIT_TIME):
+        found = verify_bgp_routes(dut, network, next_hop)
+        if found == condition:
+            if condition:
+                result = "configuration successfull"
+            else:
+                result = "configuration not successfull"
+            LogOutput('info', result)
+            return found
+        sleep(1)
+    info("### Condition not met after %s seconds ###\n" %
+           MAX_WAIT_TIME)
+    return found
 
 
 
@@ -374,8 +397,13 @@ def verify_routemap_set_ipv6(**kwargs):
     assert result is True, "Failed to configure neighbor route-map on SW1"
 
 
-    sleep(30)
     exitContext(switch2)
+    wait_for_route(switch2, "2ccd:1:1::", "2001::3")
+    wait_for_route(switch2, "9966:1:2::", "2001::3")
+    wait_for_route(switch2, "5d5d:1:1::", "2001::3")
+    wait_for_route(switch2, "7d5d:1:1::", "2001::3")
+    wait_for_route(switch2, "3dcd:1:1::", "::")
+
     dump = SwitchVtyshUtils.vtysh_cmd(switch2, "sh ipv6 bgp")
 
     set_ipv6_flag = False
@@ -428,8 +456,14 @@ def verify_routemap_match_ipv6(**kwargs):
     result = configure_neighbor_rmap_in(switch2, AS_NUM2, IP_ADDR1, AS_NUM1, "BGP_IN")
     assert result is True, "Failed to configure neighbor route-map on SW2"
 
-    sleep(50)
     exitContext(switch2)
+    wait_for_route(switch2, "2ccd:1:1::", "2001::3")
+    wait_for_route(switch2, "9966:1:2::", "2001::3")
+    wait_for_route(switch2, "5d5d:1:1::", "2001::3")
+    wait_for_route(switch2, "7d5d:1:1::", "2001::3")
+    wait_for_route(switch2, "3dcd:1:1::", "::")
+
+
     dump = SwitchVtyshUtils.vtysh_cmd(switch2, "sh ipv6 bgp")
 
     set_ipv6_flag = False
@@ -485,7 +519,6 @@ def verify_routemap_match_ipv6_1(**kwargs):
     result = configure_neighbor_rmap_in(switch2, AS_NUM2, IP_ADDR1, AS_NUM1, "BGP_IN")
     assert result is True, "Failed to configure neighbor route-map on SW2"
 
-    sleep(50)
     exitContext(switch2)
     dump = SwitchVtyshUtils.vtysh_cmd(switch2, "sh ipv6 bgp")
 
