@@ -9,11 +9,12 @@ This document describes the design of those improvements to OVSDB. These
 improvements are currently available only for the C IDL.
 
 ## Improvements
-1. [Partial update of map columns](#partial_map_updates)
-2. [On-demand fetching of non-monitored data](#on_demand_fetching)
-3. [Compound indexes](#compound_indexes)
+1. [Partial update of map columns](#Partial-update-of-map-columns)
+2. [On-demand fetching of non-monitored data](#On-demand-fetching-of-non-monitored-data)
+3. [Compound indexes](#Compound-Indexes)
+4. [jemalloc Memory Allocator](#jemalloc-Memory-Allocator)
 
-## Partial update of map columns <a name="partial_map_updates"></a>
+## Partial update of map columns
 
 ### Problem statement
 
@@ -79,7 +80,7 @@ individual elements inside map columns. The code generator automatically detects
 when the table contains a map column and generates the corresponding functions
 to insert, update, and delete the elements given a key/value information.
 
-## On-demand fetching of non-monitored data <a name="on_demand_fetching"></a>
+## On-demand fetching of non-monitored data
 
 ### Problem statement
 
@@ -196,7 +197,7 @@ fetch operation at the table level. It will return false even if there are
 pending fetch requests over rows or columns of the same table.
 
 
-## Compound Indexes <a name="#compound_indexes"></a>
+## Compound Indexes
 
 ### Fast lookups
 
@@ -283,11 +284,11 @@ changes to the OVSDB server or the OVSDB protocol.
 
                      +---------------------------------------------------------+
                      |                                                         |
-      +-----------------+Client changes to data                            IDL |
-      |              |                                                         |
-  +---v---+          |                                                         |
-  | OVSDB +------------->OVSDB Notification                                    |
-  +-------+          |   +                                                     |
+        +------------+---Client changes to data                            IDL |
+        |            |                                                         |
+    +---v---+        |                                                         |
+    | OVSDB +----------->OVSDB Notification                                    |
+    +-------+        |   +                                                     |
                      |   |   +------------+                                    |
                      |   |   |            |                                    |
                      |   |   | Insert Row +----> Insert row to indexes         |
@@ -301,3 +302,89 @@ changes to the OVSDB server or the OVSDB protocol.
                      |            +-> IDL Replica                              |
                      |                                                         |
                      +---------------------------------------------------------+
+
+
+## jemalloc Memory Allocator
+
+### Background
+
+OVSDB-Server performs a lot of memory-related operations. Many of those are
+related to allocating small pieces of memory. It requests and releases memory
+continually for creating and destroying objects like dynamic strings, json
+objects, etc.
+
+Tests revealed that by replacing the GLibC memory allocator with the [jemalloc]
+(http://www.canonware.com/jemalloc) memory allocator, OVSDB-Server's
+performance can be significantly improved, and also, in some cases, can reduce
+the memory usage.
+
+### Implementation
+
+ops-openvswitch is configured with jemalloc in the LIBS variable. Therefore,
+ovsdb-server and other components (including the IDL) from this repo are
+using jemalloc.
+
+### Notes for developers
+
+If a daemon isn't linking with jemalloc then changing to jemalloc is very easy.
+There are two options:
+1. Rebuild the daemon using the library (and changing the building instructions)
+2. Change how the daemon is loaded (systemd scripts).
+
+### Rebuild the daemon with jemalloc support
+
+In this case, libjemalloc must be compiled as a library. Change the automake,
+CMakeLists.txt or configure scripts in order to use the flag -ljemalloc. Your
+Yocto recipe must include jemalloc as a RDEPENDS and DEPENDS dependency.
+
+### systemd script
+
+In this case, add the following line (under [Service]) to your script:
+
+    Environment="LD_PRELOAD=/lib/libjemalloc.so.2"
+
+The daemon's Yocto recipe also needs to specify jemalloc as a RDEPENDS
+dependency.
+
+## Performance Improvements
+
+Several tests (insertion, updates, pubsub and transaction size) were run in
+order to compare the GLibC performance and memory usage along both jemalloc
+and tcmalloc memory allocators.
+
+The results showed favorable results for jemalloc library.
+
+- Update 1: Each of 10 parallel workers do 25000 updates over 1000 rows.
+- Update 2: Each of 10 parallel workers do 25000 updates over 200000 rows.
+- Insert: Each of 10 parallel workers insert 25000 rows.
+- Message Queue Simulation: One producer waits for requests (requested by 10
+  parallel workers).
+  For each request the producer updates 512 rows, composed of one map column
+  with 256 elements.
+- Transaction Size: The program inserts 100, 1000, 10000, 100000 and 500000
+  rows, alternating between inserting all the rows in the same transaction, or
+  inserting one row per transaction.
+
+| Test     |   GLibC   |  jemalloc  |  tcmalloc  |
+|----------|-----------|------------|------------|
+| Update 1 |   28s     |    24s     |    31s     |
+| Update 2 |   57s     |    38s     |    33s     |
+| Insert   |   38s     |    32s     |    27s     |
+| Queue    |    4s     |     4s     |     4s     |
+| Size     |  129.92s  |   119.87s  |   114.21s  |
+|            Duration (seconds)                  |
+
+
+| Test     |   GLibC   |  jemalloc  |  tcmalloc  |
+|----------|-----------|------------|------------|
+| Update 1 |    7.35   |    18.92   |   171.42   |
+| Update 2 | 1090.7    |    82.88   |   111.08   |
+| Insert   |   66.66   |    57.86   |   127.56   |
+| Queue    | 1094.40   |    28.13   |   270.47   |
+| Size     |  410.17   |   116.50   |   114.21   |
+|        Memory Usage (RSS, megabytes)           |
+
+The results show a consistent better results of jemalloc over GLibC memory
+allocator.
+TCMalloc was faster in some benchmarks, but uses a lot more of RAM than
+jemalloc.
