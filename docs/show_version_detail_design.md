@@ -5,7 +5,7 @@
 - [Use cases](#use-cases)
 - [Internal workings](#internal-workings)
 - [Block diagram](#block-diagram)
-- [Version detail text file](#version-detail-text-file)
+- [Version detail yaml file](#version-detail-yaml-file)
 - [Source code debugging](#source-code-debugging)
 - [Limitations](#limitations)
 
@@ -25,7 +25,7 @@ The metadata is gathered during build time in order to display the desired infor
 Functionality from the "package.bbclass" is leveraged, which is used by the package manager as well.
 On the build machine, the metadata per package is gathered and stored in files (also called dictionaries) at - ${PKGDATA_DIR}.
 During the packaging process, the "do_packagedata" task packages data for each recipe and installs it into a temporary, shared area. This directory defaults to the following: ${STAGING_DIR_HOST}/pkgdata
-This resource is used to generate a "Version Detail" text file that contains the desired information per package.
+This resource is used to generate a "Version Detail" yaml file that contains the desired information per package.
 This file is packaged along with the image.
 When ops-sysd comes up, it reads this file and fills the information therein into the OVSDB "Package_Info" table.
 This OVSDB information is then accessed by management entities like CLI and REST to display the package information.
@@ -44,33 +44,45 @@ The implementation of the "show version detail" CLI displays the package informa
           |
   +-------+--------+
   | version detail |
-  | file ( TEXT )  |
+  | file (YAML)  |
   | /var/lib/      |
   +----------------+
 
 ```
 
-##  Version detail text file
+##  Version detail yaml file
 The version detail file is generated during build time after the rootfs is created and before the image is generated.
 For every package present in the image, it lists the version number and the source-code path.
 Based on the source-code path, the "source-type" for the package can be https, http, ftp, git, svn, or cvs.
 If the source-type is a git repository, the version corresponds to the git hash (SRCREV).
 Otherwise, the version corresponds to a version string (PV).
 On the build server, this file is generated at - ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.version_detail.
-It is then copied to the image at - /var/lib/version_detail.
+It is then copied to the image at - /var/lib/version_detail.yaml.
 
 Sample contents of this file are shown below:
 
 ```ditaa
-PKG=ops-openvswitch SRCREV=ac19ac49778adf6cf011a3ef6e0675025f1945b5 PV=gitAUTOINC+ac19ac4977 TYPE=git SRC_URL=https://git.openswitch.net/openswitch/ops-openvswitch
-
-PKG=sed SRCREV=INVALID PV=4.2.2 TYPE=http SRC_URL=http://ftp.gnu.org/gnu/sed/sed-4.2.2.tar.gz
+PKG: ops-switchd
+PV: gitAUTOINC+107ce4f327
+SRCREV: 107ce4f327facf7fa634a57cacf659f99d44967d
+SRC_URL: https://git.openswitch.net/openswitch/ops-switchd
+TYPE: git
+---
+PKG: sed
+PV: 4.2.2
+SRCREV: INVALID
+SRC_URL: http://ftp.gnu.org/gnu/sed/sed-4.2.2.tar.gz
+TYPE: http
 ```
 Note:
 A few entries in this file will contain just the "PKG", and may or may not contain "PV".
 For example:
 ```ditaa
-PKG=packagegroup-base-ipv6 SRCREV=INVALID PV=1.0 TYPE=other SRC_URL=NA
+PKG: packagegroup-base-ipv6
+PV: '1.0'
+SRCREV: INVALID
+SRC_URL: NA
+TYPE: other
 ```
 These entries correspond to "metapackages". They exist as packages, but do not install any files. They are used to pull in other packages through dependencies. The PKGSIZE value for such metapackages is usually 0.
 
