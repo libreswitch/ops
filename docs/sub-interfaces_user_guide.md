@@ -1,8 +1,11 @@
 # L3 Subinterfaces
 
 ## Contents
+<!-- TOC depth:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [Overview](#overview)
+- [L3 Subinterfaces](#l3-subinterfaces)
+	- [Contents](#contents)
+	- [Overview](#overview)
 	- [Subinterface restrictions](#subinterface-restrictions)
 	- [How to use the feature](#how-to-use-the-feature)
 		- [Setting up the basic configuration](#setting-up-the-basic-configuration)
@@ -11,8 +14,11 @@
 			- [Condition](#condition)
 			- [Cause](#cause)
 			- [Remedy](#remedy)
-- [CLI ##](#cli-)
-- [Related features ##](#related-features-)
+	- [CLI ##](#cli-)
+		- [L3 subinterface event logs](#l3-subinterface-event-logs)
+	- [Related features ##](#related-features-)
+<!-- /TOC -->
+
 
 ## Overview
 L3 Subinterfaces are used to support router-on-a-stick configurations. Using router-on-a-stick configurations, you can separate traffic on a L3 physical interface based on VLAN and also apply policies on the subinterfaces.
@@ -62,5 +68,20 @@ The interface may be configured as an L2.
 Configure the interface as an L3 using the `routing` command.
 ## CLI ##
 Click [CLI-TBL](https://openswitch.net/cli_feature_name.html#cli_command_anchor) for the CLI commands related to the L3 subinterface feature.
+### L3 subinterface event logs
+All the events related to subinterface configuration are logged in event log.
+
+Following are the logged events:
+- Create subinterface.
+- Configure subinterface with IPv4 address.
+- Configure subinterface with IPv6 address.
+- Configure subinterface with encapsulation dot 1Q vlan ID.
+- Configure subinterface with admin up.
+- Configure subinterface with admin down.
+- Remove IPv4 address.
+- Remove IPv6 address.
+- Remove encapsulation dot 1Q vlan ID.
+- Delete subinterface.
+
 ## Related features ##
 When configuring the switch for an L3 subinterface feature, it might also be necessary to configure an interface. Browse to (http://www.openswitch.net/documents/user/layer3_interface_cli#routing) so that the parent interface is a L3 interface.

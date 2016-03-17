@@ -1,16 +1,15 @@
-# Loopback interface
+<!-- TOC depth:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-## Contents
-
-- [Overview ##](#overview-)
-- [How to use the feature ##](#how-to-use-the-feature-)
-	- [Setting up the basic configuration](#setting-up-the-basic-configuration)
-	- [Verifying the configuration](#verifying-the-configuration)
-	- [Troubleshooting the configuration](#troubleshooting-the-configuration)
-		- [Condition](#condition)
-		- [Cause](#cause)
-		- [Remedy](#remedy)
-- [CLI ##](#cli-)
+	- [Overview](#overview)
+	- [How to use the feature](#how-to-use-the-feature)
+		- [Setting up the basic configuration](#setting-up-the-basic-configuration)
+		- [Verifying the configuration](#verifying-the-configuration)
+		- [Troubleshooting the configuration](#troubleshooting-the-configuration)
+			- [Condition](#condition)
+			- [Cause](#cause)
+			- [Remedy](#remedy)
+			- [Loopback event logs](#loopback-event-logs)
+<!-- /TOC --># Loopback interface
 
 ## Overview
 A loopback interface is a virtual interface that supports IPv4 and IPv6 address configurations and remains running until you disable it. Unlike subinterfaces, loopback interfaces are independent of the state of any physical interface. For example, Router IDs are for routing protocols like OSPF.
@@ -39,6 +38,17 @@ Unable to ping the loopback interface from an external entity.
 An overlapping IP address is set on the loopback interface.
 #### Remedy
 Check for solutions in the `/var/log/messages` file.
-## CLI ##
+
+#### Loopback event logs
+All the events related to loopback configuration are logged in event log.
+
+Following are the logged events:
+- Create loopback interface.
+- Configure loopback interface with IPv4 address.
+- Configure loopback interface with IPv6 address.
+- Remove IPv4 address from loopback inetrface.
+- Remove IPv6 address from loopback interface.
+- Delete loopback interface.
+
 
 Click [CLI-TBL](https://openswitch.net/cli_feature_name.html#cli_command_anchor) for the CLI commands related to the loopback interfaces feature.
