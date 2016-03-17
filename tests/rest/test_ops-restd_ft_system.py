@@ -53,7 +53,6 @@ class systemTest(OpsVsiTest):
                            controller=None, build=True)
 
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
-        self.SWITCH_PORT = 8091
         self.PATH = "/rest/v1/system"
 
     def test_call_system_get(self):
@@ -107,17 +106,6 @@ class systemTest(OpsVsiTest):
 
         assert expected_allow == response_allow, "OPTIONS: unexpected 'allow'\
             options"
-
-        # TODO change these to propper expected values after correct OPTIONS
-        # is implemented
-        expected_access_control_allow_methods = ["DELETE", "GET", "OPTIONS",
-                                                 "POST", "PUT", "PATCH"]
-        response_access_control_allow_methods = response.getheader(
-            "access-control-allow-methods").split(", ")
-
-        assert expected_access_control_allow_methods == \
-            response_access_control_allow_methods, \
-            "OPTIONS: unexpected 'access-control-allow-methods' options"
 
         info("\n########## Finished executing OPTIONS request on %s \
             ##########\n" % self.PATH)
