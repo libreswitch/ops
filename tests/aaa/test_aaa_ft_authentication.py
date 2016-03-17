@@ -140,7 +140,7 @@ class aaaFeatureTest(OpsVsiTest):
         s1.cmdCLI("exit")
         return True
 
-    def radiusAuthEnable(self):
+    def radiusAuthEnable(self, chap=False):
         ''' This function is to enable radius authentication in DB
         with CLI command'''
         s1 = self.net.switches[0]
@@ -151,10 +151,17 @@ class aaaFeatureTest(OpsVsiTest):
         assert ('Unknown command' not in out),  \
             "Failed to enter configuration terminal"
 
-        out += s1.cmd("echo ")
-        out = s1.cmdCLI("aaa authentication login radius")
-        assert ('Unknown command' not in out), "Failed to enable radius" \
-                                               " authentication"
+        if chap:
+            out += s1.cmd("echo ")
+            out = s1.cmdCLI("aaa authentication login radius radius-auth chap")
+            assert ('Unknown command' not in out), "Failed to set chap" \
+                                               " for radius"
+        else:
+            out += s1.cmd("echo ")
+            out = s1.cmdCLI("aaa authentication login radius")
+            assert ('Unknown command' not in out), "Failed to enable radius" \
+                                                   " authentication"
+
         out += s1.cmd("echo ")
         s1.cmdCLI("exit")
         return True
@@ -239,15 +246,15 @@ class aaaFeatureTest(OpsVsiTest):
         elif i == 2:
             assert i != 2, "Failed with SSH command"
 
-    def loginSSHradius(self):
+    def loginSSHradius(self, chap=False):
         '''This function is to verify radius authentication is successful when
         radius is true and fallback is false'''
-        info('########## Test to verify SSH login with radius authenication '
+        info('########## Test to verify SSH login with radius authentication '
              'enabled and fallback disabled ##########\n')
         s1 = self.net.switches[0]
         self.noFallbackEnable()
         sleep(5)
-        self.radiusAuthEnable()
+        self.radiusAuthEnable(chap)
         sleep(5)
         ssh_newkey = 'Are you sure you want to continue connecting'
         switchIpAddress = self.getSwitchIP()
@@ -282,7 +289,11 @@ class aaaFeatureTest(OpsVsiTest):
         if loginpass == 1:
             p.sendline('exit')
             p.kill(0)
-            info(".### Passed SSH login with radius authentication ###\n")
+            if chap:
+                info(".### Passed SSH login with radius authentication and"
+                     " chap ###\n")
+            else:
+                info(".### Passed SSH login with radius authentication ###\n")
             return True
 
     def loginSSHradiusWithFallback(self):
@@ -364,6 +375,7 @@ class Test_aaafeature:
 
     def test_loginSSHradius(self):
         self.test.loginSSHradius()
+        self.test.loginSSHradius(chap=True)
 
     def test_loginSSHradiusWithFallback(self):
         self.test.loginSSHradiusWithFallback()
