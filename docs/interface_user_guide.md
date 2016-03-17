@@ -62,16 +62,20 @@ ops-as5712(config-if)#
 ```
 
 5. Set the interface MTU.
-The `mtu` command sets the interface MTU (maximum transmission unit) to between 576 bytes and 16360 bytes.
+The MTU of a communications protocol refers to the size in bytes of the largest frame (Ethernet) or packet (IP) that can be sent on the network. Different protocols support a variety of MTU sizes. Most IP over Ethernet implementations uses the Ethernet V2 frame format, which specifies an MTU of 1500 bytes. Jumbo frames are Ethernet frames containing more than 1500 bytes.
 ```
 ops-as5712(config)# mtu 2000
 ops-as5712(config)#
 ```
-The `no mtu` commands reverts the mtu of the interface to default auto mode.
+Note: Maximum configurable MTU value for jumbo frame is 9192 which allows inbound jumbo packets up to 9216(9192+padding bits(Ether_hdr+CRC)) bytes.
+
+ The `no mtu` commands reverts the mtu of the interface to default auto mode.
+ The 'mtu auto' command sets MTU to system default.
 ```
 ops-as5712(config-if)# no mtu
 ops-as5712(config-if)#
 ```
+
 
 6. Select the interface autonegotiation state.
 The `autonegotiation` command turns the autonegotiation state on or off. The `no autonegotiation` command sets the autonegotiation state to default.
