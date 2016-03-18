@@ -64,15 +64,15 @@ class mgmtIntfTests(OpsVsiTest):
     # the number of mgmt-intf test file execution instance in a temp file.
     # whenever the count reaches zero, the profile file is enabled again.
     def file_read_for_mgmt_instance_count(self):
-        file_fd = open('mgmt_sys_var','r')
+        file_fd = open('mgmt_sys_var', 'r')
         count = file_fd.read()
-        count = re.search('\d+',count)
-        num=int(count.group(0))
+        count = re.search('\d+', count)
+        num = int(count.group(0))
         file_fd.close()
         return num
 
-    def file_write_for_mgmt_instance_count(self,count_number):
-        file_fd = open('mgmt_sys_var','w+')
+    def file_write_for_mgmt_instance_count(self, count_number):
+        file_fd = open('mgmt_sys_var', 'w+')
         file_fd.write(str(count_number))
         file_fd.close()
 
@@ -511,17 +511,14 @@ class mgmtIntfTests(OpsVsiTest):
             cmd_output = s1.ovscmd("ovs-vsctl list system")
             domainname = s1.ovscmd("ovs-vsctl get system . "
                                    "domain_name").rstrip('\r\n')
-            output = s1.cmd("uname -n")
             if "domain_name=cli" in cmd_output and \
-               domainname == "cli" and \
-               "cli" in output:
+               domainname == "cli":
                 break
             else:
                 cnt -= 1
                 sleep(1)
         assert 'domain_name=cli' in cmd_output and \
                domainname == 'cli' and \
-               'cli' in output,\
                "Test to set domainname through CLI"\
                " has failed"
         info("### Successfully verified configuring"
@@ -534,7 +531,6 @@ class mgmtIntfTests(OpsVsiTest):
         cnt = 15
         while cnt:
             cmd_output = s1.ovscmd("ovs-vsctl list system")
-            output = s1.cmd("uname -n")
             if "dhcp_domain_name=dhcp_domain" in cmd_output:
                 break
             else:
