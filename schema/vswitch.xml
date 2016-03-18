@@ -1024,15 +1024,6 @@
         is assumed to be disabled.
         </p>
       </column>
-
-      <column name="dhcp_config" key="bootp_gateway"
-              type='{"type": "string", "maxLength":15}'>
-        <p>
-        Provides a way to configure a gateway address for the DHCP relay agent
-        to use for DHCP requests, rather than the DHCP relay agent automatically assigning
-        the lowest-numbered IP address.
-        </p>
-      </column>
     </group>
 
     <group title="QoS configuration">
@@ -6257,6 +6248,12 @@
         this port.
         A maximum of 8 IPv6 server configurations are allowed. This count includes IPv6 unicast
         server configurations from the column "ipv6_ucast_server".
+      </column>
+      <column name="other_config" key="bootp_gateway"
+              type='{"type": "string", "maxLength":15}'>
+        Provides a way to configure a gateway address for the DHCP relay agent
+        to use for DHCP requests, rather than the DHCP relay agent automatically assigning
+        the lowest-numbered IP address.
       </column>
     </group>
   </table>
