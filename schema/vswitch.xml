@@ -3566,6 +3566,60 @@
         daemons while updating LAG member interfaces in hardware.
       </column>
 
+      <column name="forwarding_state">
+        <p>
+          The Port's forwarding state is determined by the state of the
+          interface or interfaces in case of LAG and by the information provided
+          by protocols working at the logical port level, MSTP for example.
+        </p>
+        <p>
+          The value is set after all possible conditions have been taken into
+          account.  The conditions are evaluated by an arbiter that takes the
+          decision of which value to set on the forwarding state based on protocol
+          state.
+        </p>
+      </column>
+      <column name="forwarding_state" key="forwarding"
+        type='{ "type": "boolean" }'>
+        Enumeration that summarizes the state of the interface.  This value drives
+        the forwarding state of the data path.
+        Default value is <code>false</code>.
+      </column>
+      <column name="forwarding_state" key="port_aggregation_forwarding"
+        type='{ "type": "boolean" }'>
+        Port aggregation is set based on the information provided by protocols related
+        to link aggregation. The asserting protocol setting the value of this key
+        is defined in the port_aggregation_blocked_reason key.
+        Additionally, this key is used to aggregate the state of the links members of
+        the LAG.  For example, it is possible that all links on a LAG are blocked by
+        a security protocol.  This is reflected in this key.
+        Default value is <code>false</code>.
+      </column>
+      <column name="forwarding_state" key="port_aggregation_blocked_reason"
+          type='{ "type": "string", "enum": ["set",
+                       ["lacp"
+                       ]]}'>
+        Enumeration that identifies the asserting protocol that causes the port
+        aggregation different from "forwarding".
+        * lacp: This means that the aggregated state of the interfaces
+          is driving the forwarding state of the Port, for example, all interfaces
+          are blocked by a lacp.
+      </column>
+      <column name="forwarding_state" key="port_loop_protection_forwarding"
+        type='{ "type": "boolean" }'>
+        Port loop protection is set based on the information provided by protocols.
+        The asserting protocol setting the value of this key is defined
+        in the port_loop_protection_blocked_reason key.
+        Default value is <code>false</code>.
+      </column>
+      <column name="forwarding_state" key="port_loop_protection_blocked_reason"
+          type='{ "type": "string", "enum": ["set",
+                       ["mstp"
+                       ]]}'>
+        Enumeration that identifies the asserting protocol that causes the port loop
+        protection to be blocked.
+      </column>
+
       <column name="lacp_status">
         Key-value pairs that report lacp-specific port status.
       </column>
@@ -3960,6 +4014,45 @@
         <p>
           The administrative state of the physical network link.
         </p>
+      </column>
+
+      <column name="hw_status" key="ready"
+        type='{ "type": "boolean" }'>
+          Status information about hardware resource allocation on the interface.
+          It is set as false if there are not enough hardware resources or if the
+          resources required to configure features like ACLs in the interface have
+          not been allocated yet.  It is set as true when all the resources have
+          been allocated.
+          The default value is <code>false</code>.
+      </column>
+
+      <column name="hw_status" key="ready_state_blocked_reason"
+          type='{ "type": "string", "enum": ["set",
+                       ["acls"]]}'>
+        Enumeration that identifies the asserting protocol that causes the
+        ready to be "false".
+      </column>
+
+      <column name="forwarding_state" key="forwarding"
+        type='{ "type": "boolean" }'>
+        Enumeration that summarizes the state of the interface.
+        Default value is <code>false</code>.
+      </column>
+
+      <column name="forwarding_state" key="interface_aggregation_forwarding"
+        type='{ "type": "boolean" }'>
+        Interface aggregation is set based on the information provided by protocols
+        related to link aggregation. The asserting protocol setting
+        the value of this key to be defined in the interface_aggregation_blocked_reason
+        key.
+        Default value is <code>false</code>.
+      </column>
+
+      <column name="forwarding_state" key="interface_aggregation_blocked_reason"
+          type='{ "type": "string", "enum": ["set",
+                       ["lacp"]]}'>
+        Enumeration that identifies the asserting protocol that causes the
+        interface aggregation to be different from "forwarding".
       </column>
 
       <column name="error">
