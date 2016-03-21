@@ -70,7 +70,7 @@ Interface:split_children (sysd)
 See the [Pluggable Module Daemon (pmd)](/documents/dev/ops-pmd/DESIGN), the [Interface Daemon (intfd)](/documents/dev/ops-intfd/DESIGN), and the [Virtual Switch Daemon (vswitchd)](/documents/dev/ops-openvswitch/DESIGN).
 
 ## Functionality
-### Slit interfaces
+### Split interfaces
 A split interface is a multi-lane physical interface in which the lanes can be used as individual interfaces. For example, a 40-Gb physical interface may be implemented with four 10-Gb lanes. If this physical interface can be split, then the physical interface can operate either as one 40-Gb physical interface or as four 10-Gb physical interfaces. QSFP+ interfaces are typically splittable.
 
 QSFP+ interfaces are split using splitter cables. These are cables that have a QSFP+ transceiver on one end, with the cable splitting into four separate cables, each terminated with an SFP+ transceiver. This cable takes the four 10-Gb lanes used for 40-Gb QSFP+ modules and separates them into four individual 10-Gb cables, each with a single 10-Gb lane.  Only QSFP+ interfaces can be split.
