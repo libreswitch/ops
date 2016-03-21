@@ -973,6 +973,16 @@
         </p>
       </column>
 
+      <column name="dhcp_config" key="v4relay_option82_enabled"
+              type='{"type": "boolean"}'>
+        <p>
+        Set this value to <code>true</code> to enable the DHCP-Relay Option 82
+        and set it to <code>false</code> otherwise. This configuration is
+        disabled by default. If the key is missing, the configuration is assumed
+        to be disabled.
+        </p>
+      </column>
+
       <column name="dhcp_config" key="v4relay_option82_policy"
               type='{"type": "string", "enum": ["set", ["drop", "keep", "replace"]]}'>
         <p>
@@ -1023,13 +1033,13 @@
         </p>
       </column>
 
-      <column name="dhcp_config" key="v4relay_hop_count_increment_enabled"
+      <column name="dhcp_config" key="v4relay_hop_count_increment_disabled"
               type='{"type": "boolean"}'>
         <p>
-        Set this value to <code>true</code> to enable the hop count increment in
+        Set this value to <code>true</code> to disable the hop count increment in
         the relayed DHCP requests and set it to <code>false</code> otherwise. This
-        configuration is disabled by default. If the key is missing, the configuration
-        is assumed to be disabled.
+        configuration is enabled by default. If the key is missing, the configuration
+        is assumed to be enabled.
         </p>
       </column>
     </group>
