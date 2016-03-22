@@ -6625,4 +6625,21 @@
       <column name="version">Trap/inform version. The default version is "v2c".</column>
     </group>
   </table>
+  <table name="SNMPv3_User">
+    <group title="configuration">
+      <column name="user_name">
+        User name that should contain alphanumeric characters.
+      </column>
+      <column name="auth_protocol">
+        The authentication protocol to be used for authenticating the user.
+        The default is "none".
+      </column>
+      <column name="priv_protocol">
+        The privacy protocol to be used for encrypting the user requests.
+        The default is "none".
+      </column>
+      <column name="auth_pass_phrase">The key to be used by authentication protocol.</column>
+      <column name="priv_pass_phrase">The key to be used by privacy protocol.</column>
+    </group>
+  </table>
 </database>

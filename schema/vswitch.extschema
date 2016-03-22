@@ -8158,6 +8158,91 @@
           "direction"
         ]
       ]
+    },
+    "SNMPv3_User" : {
+      "columns" : {
+        "user_name" : {
+          "category": "configuration",
+          "type" : {
+           "key" : {
+             "type" : "string",
+             "minLength" : 1,
+             "maxLength": 32
+           }
+          }
+        },
+
+        "auth_protocol" : {
+          "category" : "configuration" ,
+          "type" : {
+            "key" : {
+              "type" : "string",
+              "enum" : [
+                "set",
+                [
+                  "md5",
+                  "sha",
+                  "none"
+                ]
+              ]
+            },
+            "min" : 0,
+            "max" : 1
+          }
+        },
+
+        "priv_protocol" : {
+          "category" : "configuration" ,
+          "type" : {
+            "key" : {
+              "type" : "string",
+              "enum" : [
+                "set",
+                [
+                  "aes",
+                  "des",
+                  "none"
+                ]
+              ]
+            },
+            "min" : 0,
+            "max" : 1
+          }
+        },
+
+        "auth_pass_phrase" : {
+          "category" : "configuration" ,
+          "type" : {
+            "key" : {
+              "type" : "string",
+              "minLength" : 8,
+              "maxLength" : 32
+            },
+            "min" : 0,
+            "max" : 1
+          }
+        },
+
+        "priv_pass_phrase" : {
+          "category" : "configuration" ,
+          "type" : {
+            "key" : {
+              "type" : "string",
+              "minLength" : 8,
+              "maxLength" : 32
+            },
+            "min" : 0,
+            "max" : 1
+          }
+        }
+      },
+      "maxRows" : 10,
+      "indexes" : [
+        [
+          "user_name"
+        ]
+      ],
+      "isRoot" : true
     }
   }
 }
