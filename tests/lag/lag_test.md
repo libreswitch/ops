@@ -26,6 +26,10 @@ LAG Test Cases
 * [Verify communication between 2 switches connected by L3 dynamic LAGs](#Verify-communication-between-2-switches-connected-by-L3-dynamic-lag)
 * [Verify communication between 2 switches connected by L3 static LAGs](#Verify-communication-between-2-switches-connected-by-L3-static-lag)
 * [Verify LAG interface functionality when using command shutdown for LAG](#verify-lag-interface-functionality-when-using-command-shutdown-for-lag)
+* [Verify communication between 2 switches connected by L2 dynamic LAGs](#Verify-communication-between-2-switches-connected-by-L2-dynamic-lag)
+* [Verify communication between 2 switches connected by L2 static LAGs](#Verify-communication-between-2-switches-connected-by-L2-static-lag)
+* [Change static LAG from L2 to L3 and viceversa](#change-static-lag-from-l2-to-l3-and-viceversa)
+* [Change interface from L2 LAG to L3 LAG and viceversa](#change-interface-from-l2-lag-to-l3-lag-and-viceversa)
 
 ## Create dynamic LAGs with different names
 ### Objective
@@ -1351,3 +1355,294 @@ Ping between the workstations is successful when the command **no shutdonw** is 
 #### Test fail criteria
 Ping reach the other side when the command **shutdonw** is used.
 Ping does not reach the other side when the command **no shutdonw** is used.
+
+
+## Verify communication between 2 switches connected by L2 dynamic LAGs
+### Objective
+Verify a ping between 2 workstations connected by 2 switches configured with L2
+dynamic LAGs works properly.
+### Requirements
+The requirements for this test case are:
+
+ - 2 Switches running OpenSwitch
+ - 2 Workstations
+ - **FT file**: `ops/tests/lag/test_ft_lacp_l2_ping.py`
+
+### Setup
+
+#### Topology diagram
+```ditaa
+ +-----------------+
+ |                 |
+ |  Workstation 1  |
+ |                 |
+ +-------+---------+
+         |
+         |
+   +-----+------+
+   |            |
+   |  Switch 1  |
+   |            |
+   +---+---+----+
+       |   |
+       |   |     LAG 1
+       |   |
+   +---+---+----+
+   |            |
+   |  Switch 2  |
+   |            |
+   +-----+------+
+         |
+         |
+ +-------+---------+
+ |                 |
+ |  Workstation 2  |
+ |                 |
+ +-----------------+
+```
+#### Test setup
+### Description
+
+This test verifies that after configuring a L2 dynamic lag between two switches
+a ping between 2 workstations connected by those switches works properly.
+
+  1. Assign an IP address on the same range to each workstation.
+  2. Configure dynamic L2 LAG on switch 1 and add the 2 interfaces connected to
+     switch 2.
+  3. Configure dynamic L2 LAG on switch 2 and add the 2 interfaces connected to
+     switch 1.
+  4. Configure LAGs and workstations interfaces with same VLAN.
+  5. Ping from workstation 1 to workstation 2 and viceversa.
+
+### Test result criteria
+#### Test pass criteria
+Ping is successful.
+
+#### Test fail criteria
+Ping is not successful.
+
+
+## Verify communication between 2 switches connected by L2 static LAGs
+### Objective
+Verify a ping between 2 workstations connected by 2 switches configured with L2
+static LAGs works properly.
+### Requirements
+The requirements for this test case are:
+
+ - 2 Switches running OpenSwitch
+ - 2 Workstations
+ - **FT file**: `ops/tests/lag/test_ft_static_lag_l2_ping.py`
+
+### Setup
+
+#### Topology diagram
+```ditaa
+
+ +-----------------+
+ |                 |
+ |  Workstation 1  |
+ |                 |
+ +-------+---------+
+         |
+         |
+   +-----+------+
+   |            |
+   |  Switch 1  |
+   |            |
+   +---+---+----+
+       |   |
+       |   |     LAG 1
+       |   |
+   +---+---+----+
+   |            |
+   |  Switch 2  |
+   |            |
+   +-----+------+
+         |
+         |
+ +-------+---------+
+ |                 |
+ |  Workstation 2  |
+ |                 |
+ +-----------------+
+```
+#### Test setup
+### Description
+
+This test verifies that after configuring a L2 static lag between two switches
+a ping between 2 workstations connected by those switches works properly.
+
+  1. Assign an IP address on the same range to each workstation.
+  2. Configure static L2 LAG on switch 1 and add the 2 interfaces connected to
+     switch 2.
+  3. Configure static L2 LAG on switch 2 and add the 2 interfaces connected to
+     switch 1.
+  4. Configure LAGs and workstations interfaces with same VLAN.
+  5. Ping from workstation 1 to workstation 2 and viceversa.
+
+### Test result criteria
+#### Test pass criteria
+Ping is successful.
+
+#### Test fail criteria
+Ping is not successful.
+
+
+## Change static LAG from L2 to L3 and viceversa
+### Objective
+Verify a static LAG switches properly from L2 to L3 and viceversa.
+### Requirements
+The requirements for this test case are:
+
+ - 2 Switches running OpenSwitch
+ - 2 Workstations
+ - **FT file**: `ops/tests/lag/test_ft_static_lag_l2_l3_change.py`
+
+### Setup
+
+#### Topology diagram
+```ditaa
+ +-----------------+
+ |                 |
+ |  Workstation 1  |
+ |                 |
+ +-------+---------+
+         |
+         |
+   +-----+------+
+   |            |
+   |  Switch 1  |
+   |            |
+   +---+---+----+
+       |   |
+       |   |     LAG 1
+       |   |
+   +---+---+----+
+   |            |
+   |  Switch 2  |
+   |            |
+   +-----+------+
+         |
+         |
+ +-------+---------+
+ |                 |
+ |  Workstation 2  |
+ |                 |
+ +-----------------+
+```
+#### Test setup
+### Description
+
+This test verifies the communication of 2 switches connected first by a L2 LAG,
+then by a L3 LAG and finally connected by a L2 LAG again.
+
+  1. Assign an IP address on the same range to each workstation.
+  2. Configure static L2 LAG on switch 1 and add the 2 interfaces connected to
+     switch 2.
+  3. Configure static L2 LAG on switch 2 and add the 2 interfaces connected to
+     switch 1.
+  4. Configure LAGs and workstations interfaces with same VLAN.
+  5. Ping from workstation 1 to workstation 2 and viceversa.
+  6. Configure LAGs as L3 and assign an IP address on the same range to
+     each LAG, but different range than the one of the workstations.
+  7. Ping from switch 1 to switch 2 and viceversa and
+     from workstation 1 to workstation 2 and viceversa.
+  8. Configure LAGs as L2 and configure LAGs and workstations
+     interfaces with same VLAN.
+  9. Ping from switch 1 to switch 2 and viceversa and
+     from workstation 1 to workstation 2 and viceversa.
+
+### Test result criteria
+#### Test pass criteria
+ * The ping between the workstations succeeds when the L2 LAG is configured and
+   fails when the L3 LAG is configured.
+ * The ping between the switches succeeds when the L3 LAG is configured and
+   fails when the L2 LAG is configured.
+
+#### Test fail criteria
+ * The ping between the workstations fails when the L2 LAG is configured or
+   succeeds when the L3 LAG is configured.
+ * The ping between the switches fails when the L3 LAG is configured or
+   succeeds when the L2 LAG is configured.
+
+
+## Change interface from L2 LAG to L3 LAG and viceversa
+### Objective
+Verify an interface switches correctly from L2 LAG to L3 LAG and viceversa.
+### Requirements
+The requirements for this test case are:
+
+ - 2 Switches running OpenSwitch
+ - 2 Workstations
+ - **FT file**: `ops/tests/lag/test_ft_static_lag_interface_l2_l3_change.py`
+
+### Setup
+
+#### Topology diagram
+```ditaa
+ +-----------------+
+ |                 |
+ |  Workstation 1  |
+ |                 |
+ +-------+---------+
+         |
+         |
+   +-----+------+
+   |            |
+   |  Switch 1  |
+   |  1  2  3   |
+   +--+--+--+---+
+      |  |  |
+ L2   |  |  |  L3
+ LAG  |  |  |  LAG
+   +--+--+--+---+
+   |  1  2  3   |
+   |  Switch 2  |
+   |            |
+   +-----+------+
+         |
+         |
+ +-------+---------+
+ |                 |
+ |  Workstation 2  |
+ |                 |
+ +-----------------+
+```
+#### Test setup
+### Description
+
+This test verifies the functionality of 2 LAGs when an interface is changed
+from a L2 LAG to a L3 LAG and viceversa.
+
+  1. Assign an IP address on the same range to each workstation.
+  2. Configure a L2 LAG on switches 1 and 2 with fallback false and add interfaces 1 and 2.
+  3. Configure a L3 LAG on switches 1 and 2 with fallback false and add interface 3.
+  4. Configure L2 LAGs and workstations interfaces with same VLAN.
+  5. Assign an IP address on the same range to each L3 LAG, but different than
+     the range of the workstations.
+  6. Ping from switch 1 to switch 2 (using IPs of step 5) and
+     from workstation 1 to workstation 2 (using IPs of step 1).
+  7. Configure interface 2 in both switches to be part of L3 LAG.
+  8. Ping from switch 1 to switch 2 (using IPs of step 5) and
+     from workstation 1 to workstation 2 (using IPs of step 1).
+  9. Configure interface 2 in both switches to be part of L2 LAG.
+  10. Ping from switch 1 to switch 2 (using IPs of step 5) and
+      from workstation 1 to workstation 2 (using IPs of step 1).
+  11. Remove interface 2 in both switches from L2 LAG.
+  12. Add interface 2 in both switches to L3 LAG.
+  13. Ping from switch 1 to switch 2 (using IPs of step 5) and
+      from workstation 1 to workstation 2 (using IPs of step 1).
+  14. Remove interface 2 in both switches from L3 LAG.
+  15. Add interface 2 in both switches to L2 LAG.
+  16. Ping from switch 1 to switch 2 (using IPs of step 5) and
+      from workstation 1 to workstation 2 (using IPs of step 1).
+
+
+### Test result criteria
+#### Test pass criteria
+ * The ping between the workstations succeeds.
+ * The ping between the switches succeeds.
+
+#### Test fail criteria
+ * The ping between the workstations fails.
+ * The ping between the switches fails.
