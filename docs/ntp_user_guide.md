@@ -33,7 +33,8 @@ The NTP Client functionality is supported on the switch.
 The switch synchronizes its time with a NTP server using the NTP protocol over a (WAN or LAN) UDP network.
 
 ## Prerequisites
-An NTP server (either local or remote) is needed with which the switch can synchronize its time.
+- An NTP server (either local or remote) is needed with which the switch can synchronize its time.
+- OpenSwitch needs to have management interface UP and enabled.
 
 ## Limitations
 - Only the NTP Client functionality alone is supported.
