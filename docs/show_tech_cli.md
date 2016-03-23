@@ -1,32 +1,30 @@
 # Show Tech Commands
 ## Contents
-
 - [Display commands](#display-commands)
-    - [Command summary](#commands-summary)
-    - [Show tech](#show-tech)
-    - [Show tech list](#show-tech-list)
-    - [Show tech feature](#show-tech-feature)
-    - [Help text](#help-text)
- 
+    - [show tech](#show-tech)
+    - [show tech list](#show-tech-list)
+    - [show tech feature](#show-tech-feature)
+    - [Show tech to file](#show-tech-to-file)
+
 ## Display commands
-### Command summary
-| Command | Usage |
-|:--------|:----------|
-| **show tech** | Runs show tech for all supported features |
-| **show tech list**| Lists all the supported show tech features |
-| **show tech FEATURE**| Runs show tech for the feature specified |
 
-
-### Show tech
+### show tech
 #### Syntax
 `show tech`
 #### Description
-Runs the `show tech` command for all the supported features.
+Displays detailed information about the switch by automatically running the collection of `show` commands associated with switch features. The show commands associated with a feature are defined in the show tech configuration file (`ops-supportability/conf/ops_showtech.yaml`).
+
 #### Authority
-All users
-#### Examples
+All users.
+
+#### Parameters
+None.
+
+#### Example
+This example shows a truncated version of the information returned by the `show tech` command. The *system* feature results in the running of three show commands: `show version`, `show system`, and `show vlan`.
 
 ```
+switch# show tech
 ====================================================
 [Begin] Feature system
 ====================================================
@@ -97,21 +95,21 @@ LLDP Hold time Multiplier :4
 
 ```
 
-The output is truncated for readability.
 
-### Show tech list
+### show tech list
 #### Syntax
 `show tech list`
 #### Description
-This command lists all the supported show tech features.
+Lists all features that are supported by the show tech command.
+
 #### Authority
-All users
+All users.
 #### Parameters
-None
-#### Examples
+None.
+#### Example
 
 ```
-ops-as5712# show tech list
+switch# show tech list
 Show Tech Supported Features List
 -----------------------------------------------------------
 Feature                    Desc
@@ -121,20 +119,21 @@ lldp                       Link Layer Discovery Protocol
 
 ```
 
-### Show tech feature
+### show tech feature
 #### Syntax
-`show tech FEATURE`
+`show tech <feature>`
 #### Description
-This command runs the show tech for the feature specified.
+Runs all `show` commands that are defined for the specified feature.
 #### Authority
-All users
+All users.
 #### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------:|:---------------------------------------|
-| **FEATURE** | Required | Feature Name (String) | Feature name as displayed in the show tech list |
-#### Examples
+| *feature* | Required | String | Feature name as displayed by the `show tech list` command. |
+#### Example
 
 ```
+swtich# show tech system
 ====================================================
 [Begin] Feature system
 ====================================================
@@ -192,25 +191,33 @@ No vlan is configured
 ====================================================
 Show Tech commands executed successfully
 ====================================================
-
 ```
+### Show tech to file
+#### Syntax
+`show tech [<feature>] localfile <filename> [force]`
 
-### Help text
-| Command | Help text |
-|:--------|:----------|
-| **show tech** | Runs show tech for all supported features |
-| **show tech list**| Lists all the supported show tech features |
-| **show tech FEATURE**| Runs show tech for the feature specified |
+#### Description
+Saves the output of the show tech command to a file.
 
-#### Example
+#### Authority
+All users.
 
+#### Parameters
+| Parameter | Status   | Syntax         | Description                           |
+|:-----------|:----------|:----------------:|:---------------------------------------|
+| *feature* | Optional | String | Feature name as displayed by the `show tech list` command. |
+| *filename* | Required | String | Name of the file where output of the command  is saved. If the specified file already exisits, it is not overwritten.|
+| *force* | Optional | Literal | If the specified output file exists, it is overwritten. |
+
+#### Examples
 ```
-switch# show tech ?
-  <cr>
-  FEATURE  Run show tech for the feature specified
-  list     List all the supported show tech features
+switch# show tech basic localfile stbasic.sta
+Show Tech output stored in file /tmp/stbasic.sta
 
-switch# show ?
-  (other commands are omitted for simplicity)
-  tech              Run show tech for all supported features
+switch# show tech basic localfile stbasic.sta
+/tmp/stbasic.sta already exists, please give different name or use force option to overwrite existing file
+
+switch# show tech basic localfile stbasic.sta force
+Show Tech output stored in file /tmp/stbasic.sta
+
 ```
