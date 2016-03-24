@@ -494,6 +494,8 @@ def configure(**kwargs):
     assert result is True, "BGP neighbor route-map configuration failed for SW2"
     exitContext(switch2)
 
+
+@pytest.mark.skipif(True, reason="Skipping due to Taiga ID : 671")
 class Test_bgp_ipv6_prefix_list_configuration:
     def setup_class(cls):
         Test_bgp_ipv6_prefix_list_configuration.testObj = \
