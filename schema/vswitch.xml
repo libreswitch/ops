@@ -1283,7 +1283,15 @@
         Set this value to specify the configuration revision number.
         Default value is 0.
       </column>
-   </group>
+    </group>
+    <group title="MSTP Status">
+      <p>
+        MSTP global status for all MSTIs.
+      </p>
+      <column name="status" key="mstp_config_digest">
+        The configuration digest for the MSTP bridge that is derived based on the VLAN membership of MST instances.
+      </column>
+    </group>
 
     <group title="Other Features">
       <column name="mirrors">
