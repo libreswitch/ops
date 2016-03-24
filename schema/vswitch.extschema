@@ -952,7 +952,7 @@
              "type": {
                  "key": {
                      "type": "integer",
-                     "minInteger": 1,
+                     "minInteger": 0,
                      "maxInteger": 200000000
                  },
                  "min": 0,
@@ -1054,8 +1054,8 @@
                 "type": {
                     "key": {
                         "type": "integer",
-                        "minInteger": 1,
-                        "maxInteger": 20000000000
+                        "minInteger": 0,
+                        "maxInteger": 200000000
                     },
                     "min": 0,
                     "max": 1
@@ -1127,8 +1127,8 @@
                 "type": {
                     "key": {
                         "type": "integer",
-                        "minInteger": 1,
-                        "maxInteger": 20000000000
+                        "minInteger": 0,
+                        "maxInteger": 200000000
                     },
                     "min": 0,
                     "max": 1
@@ -1675,7 +1675,7 @@
                 "type": {
                     "key": {
                         "type": "integer",
-                        "minInteger": 1,
+                        "minInteger": 0,
                         "maxInteger": 200000000
                     },
                     "min": 0,
