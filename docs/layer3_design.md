@@ -5,7 +5,7 @@
 OpenSwitch is designed to support layer3 features and protocols. To facilitate this, the following capabilities have been added.
 
 - [**VRF**](#vrf)
-- [**Layer3 Interfaces**](#layer3-interfaces-1)
+- [**Layer3 Interfaces**](#layer3-interfaces)
 - [**Static Routes**](#static-routes)
 - [**Slow-path Routing (Routing in kernel)**](#slow-path-routing)
 - [**Fast-path Routing (Hardware based routing)**](#fast-path-routing)
@@ -39,17 +39,17 @@ In OpenSwitch, fast-path routing refers to instances where routing happens in th
 
 ## ECMP
 Equal Cost Multipath is a scenario where a single route can have multiple "Equal Cost" route nexthops. The nexthop for a given packet is determined by its header information, usually by hashing source and destination IP addresses and source and destination L4 ports. OpenSwitch allows excluding any or all of those fields from the hashing function. OpenSwitch supports 32 ECMP nexthops per IPv4 or IPv6 prefix in the initial phase.
-OpenSwitch can also enable "resilient ECMP" if the hardware supports it. Resilient ECMP is a mechanism that perserves traffic flows in-flight when ECMP group membership changes. If a nexthop is added or removed from the ECMP group, traffic flows destined to the other members of the group are not re-distributed thereby preventing disruption of conversations traveling through those nexthops.
+OpenSwitch can also enable "resilient ECMP" if the hardware supports it. Resilient ECMP is a mechanism that perserves traffic flows in-flight when ECMP group membership changes. If a nexthop is added or removed from the ECMP group, traffic flows destined to the other members of the group are not re-distributed thereby preventing disruption of conversations travelling through those nexthops.
 NOTE: Routes for the same prefix contributed by different routing protocols are not considered "equal cost".
 
 ## InterVLAN Routing and VLAN Interfaces
-InterVLAN routing is important in scenarios where routing is needed between 2 different VLANs on a switch. When a packet is ingressing and egressing on physical interfaces that are layer2 and both the interfaces are participating in different VLANs, routing between these VLANs is achieved by creating 2 virtual interfaces. These virtual interfaces have the following properties:
+InterVLAN routing is important in scenarios where routing is needed between two different VLANs on a switch. When a packet is ingressing and egressing on physical interfaces that are layer2 and both the interfaces are participating in different VLANs, routing between these VLANs is achieved by creating two virtual interfaces. These virtual interfaces have the following properties:
 
 - Each virtual interface is associated with one of the VLANs.
 - Virtual interface is associated with a bridge. This is an internal bridge created solely for isolating VLAN traffic to the virtual interfaces.
 - Switching happens between the physical layer2 interface and the corresponding virtual interface in that VLAN.
 - The virtual interface has an IP address associated with a VRF.
-- Routing happens between the 2 virtual interfaces.
+- Routing happens between the two virtual interfaces.
 
 # High Level Architecture and Design
 
@@ -100,7 +100,7 @@ The role of each of these components is explained below
 - OVSDB - central database with the latest state of the system.
 
 ### ops-portd
-ops-portd is responsible for configuring layer3 addresses to the kernel. In OpenSwitch, each layer3 interface is associated with a unique VLAN which is not used by any other interface. ops-portd is responsible for the internal VLAN management. This daemon is also responsible for creation/deletion of logical VLAN interfaces in the OVSDB which facilitate interVLAN routing (routing between 2 different layer2 VLANs). This daemon is also responsible for updating the kernel interface admin status to UP or DOWN depending on the user configuration. In order to maintain consistency with the kernel, routes for directly connected subnets are also added to the Route table. ops-portd is responsible for adding these directly connected subnet routes to the Route table in the OVSDB.
+ops-portd is responsible for configuring layer3 addresses to the kernel. In OpenSwitch, each layer3 interface is associated with a unique VLAN which is not used by any other interface. ops-portd is responsible for the internal VLAN management. This daemon is also responsible for creation/deletion of logical VLAN interfaces in the OVSDB which facilitate interVLAN routing (routing between two different layer2 VLANs). This daemon is also responsible for updating the kernel interface admin status to UP or DOWN depending on the user configuration. In order to maintain consistency with the kernel, routes for directly connected subnets are also added to the Route table. ops-portd is responsible for adding these directly connected subnet routes to the Route table in the OVSDB.
 Refer the ops-portd Component Design for more information on this daemon.
 
 ### ops-arpmgrd
@@ -156,4 +156,3 @@ References
 ----------
 * [Linux Network Namespaces](http://man7.org/linux/man-pages/man7/namespaces.7.html)
 * [RFC 7047](https://tools.ietf.org/html/rfc7047)
-

@@ -7,6 +7,7 @@ This document provides a step-by-step reference for configuration of basic layer
 * [Static routes](#static-routes)
 * [ECMP](#ecmp)
 * [Internal VLAN Management](#internal-vlan-management)
+* [References](#references)
 
 ## Layer3 Interfaces
 OpenSwitch supports configuring IPv4 and IPv6 addresses to layer3 interfaces. Every layer3 interfaces is associated with one VRF. In the first version, only one VRF is supported and hence the association with the VRF is not necessary.
@@ -157,7 +158,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# no ip ecmp disable
 ```
 
-By default, ECMP uses 4 tuple in the hash calculation:
+By default, ECMP uses four tuple in the hash calculation:
  - SrcIP
  - DstIP
  - SrcPort
@@ -236,3 +237,9 @@ Assigned Interfaces:
 
 ops-as5712#
 ```
+
+## References
+* [Layer 3 Design](layer3_design)
+* [Layer 3 Interfaces](layer3_interface_cli)
+* [ECMP](layer3_ecmp_cli)
+* [Internal VLAN Management](vlan_user_guide)
