@@ -100,6 +100,8 @@ event_definitions:
 ### C API usage
 Every daemon that defined its event category of interest and its events in a YAML file, calls event_log_init(category_name) during initialization. This enables the daemon to log all the events in that category by using the log_events(event_name, key-values,...) API.
 
+Make sure to include "eventlog.h" and add "-lsupportability" in the make file.
+
 Following is the syntax of the APIs:
 
 `int event_log_init("event_category")`
