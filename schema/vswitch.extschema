@@ -5856,7 +5856,7 @@
           "type": {
             "key": {
               "type": "string",
-              "enum": ["set", ["strict", "wrr"] ]
+              "enum": ["set", ["strict", "dwrr"] ]
             },
             "min": 0,
             "max": 1

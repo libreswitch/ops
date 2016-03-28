@@ -2757,9 +2757,9 @@
         Strict Priority will service all packets in the queue before any
         packets in lower numbered queues as long as there are no packets
         in any higher number queue.
-        </p><p><code>wrr</code> -
-        (Deficit) Weight Round Robin will apportion available bandwidth
-        amongst all non-empty wrr queues in relation to their queue weights.
+        </p><p><code>dwrr</code> -
+        Deficit Weight Round Robin will apportion available bandwidth
+        amongst all non-empty dwrr queues in relation to their queue weights.
         </p>
         <p>
         If this parameter is missing, it is assumed to be 'strict'.
