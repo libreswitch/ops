@@ -290,8 +290,9 @@ def verify_mtu(switch_id, interface,  mtu):
     matchObj = re.search(r'MTU:\d{1,4}', devIntReturn['buffer'], re.S)
     if matchObj:
         split_list = re.split(r':', matchObj.group())
-        if (str(split_list[1]) == str(mtu)):
-            return True
+        if split_list and split_list[1]:
+            if (str(split_list[1]) == str(mtu)):
+                return True
 
     return False
 
@@ -340,8 +341,11 @@ def get_nbr_id_from_dump(switch_id, ip, dump_str):
     matchObj = re.search(regex, dump_str, re.S)
     if matchObj:
         split_list = re.split(r'\s+', matchObj.group())
-        index = split_list.index("List:")
-        return split_list[index+1]
+        if split_list:
+            index = split_list.index("List:")
+            return split_list[index + 1]
+        else:
+            return False
     else:
         return False
 
@@ -352,7 +356,10 @@ def get_packet_count(switch_id, dump_str):
     matchObj = re.search(reg_ex, dump_str, re.S)
     if matchObj:
         split_list = re.split(r'\s+', matchObj.group())
-        count = split_list.count("Router-ID")
+        if split_list:
+            count = split_list.count("Router-ID")
+        else:
+            count = 0
     else:
         count = 0
 
@@ -367,8 +374,8 @@ def get_router_id(switch_id):
                          ospf_interface)
     if matchObj:
         split_list = re.split(r'\s+', matchObj.group())
-        router_id = split_list[2]
-        return router_id
+        if split_list and split_list[2]:
+            return split_list[2]
 
     return False
 
@@ -419,7 +426,10 @@ def getTimers(dut02, timer_type):
 
     if matchObj:
         timers = re.split(r'\s+', matchObj.group())
-        timer = timers[1]
+        if timers and timers[1]:
+            timer = timers[1]
+        else:
+            timer = 0
     else:
         timer = 0
 
@@ -431,7 +441,7 @@ def getTimers(dut02, timer_type):
 def get_neighbor_state(dut):
     neighbors = SwitchVtyshUtils.vtysh_cmd(dut, "show ip ospf neighbor")
     split_list = re.split(r'\s+', neighbors)
-    if split_list:
+    if split_list and split_list[20]:
         state = split_list[20].split("/")
         return state[0]
 
@@ -489,8 +499,9 @@ def configure(dict):
 
     if OSPF_DUT_OBJ in dict:
         switch = dict[OSPF_DUT_OBJ]
-    if (not switch):
-        assert "No Object to configure"
+        if (not switch):
+            assert "No Object to configure"
+            return
 
     if OSPF_LINK_KEY in dict:
         link = dict[OSPF_LINK_KEY]
@@ -1246,33 +1257,39 @@ class Test_ospf_configuration_l2switch:
         retVal = wait_for_2way_state(dut02Obj)
         if retVal:
             state = verify_ospf_states(dut01Obj)
-            if (state == "DR"):
-                LogOutput('info', "Switch1 in DR state")
+            if (state == "DR") or (state == "DRBackup") or \
+                    (state == "DROther"):
+                LogOutput('info', "Switch1 in %s state" % state)
             else:
-                LogOutput('info', "Switch1 not in correct state")
-                assert "Switch1 not in correct state"
+                LogOutput('info', "Switch1 not in correct state, state = %s"
+                          % state)
+                assert False, "Switch1 not in correct state"
         else:
             assert False, "Switch1 not in correct state"
 
         retVal = wait_for_2way_state(dut01Obj)
         if retVal:
             state = verify_ospf_states(dut02Obj)
-            if (state == "DROther"):
-                LogOutput('info', "Switch2 in DROther state")
+            if (state == "DR") or (state == "DRBackup") or \
+                    (state == "DROther"):
+                LogOutput('info', "Switch2 in %s state" % state)
             else:
                 LogOutput('info', "Switch2 not in correct state")
-                assert "Switch2 not in correct state"
+                assert False, "Switch2 not in correct state, state = %s" \
+                              % state
         else:
             assert False, "Switch2 not in correct state"
 
         retVal = wait_for_2way_state(dut02Obj)
         if retVal:
             state = verify_ospf_states(dut03Obj)
-            if (state == "DRBackup"):
-                LogOutput('info', "Switch3 in DRBackup  state")
+            if (state == "DR") or (state == "DRBackup") or \
+                    (state == "DROther"):
+                LogOutput('info', "Switch3 in %s state" % state)
             else:
                 LogOutput('info', "Switch3 not in correct state")
-                assert "Switch3 not in correct state"
+                assert False, "Switch3 not in correct state, state = %s" \
+                              % state
         else:
             assert False, "Switch3 not in correct state"
 
