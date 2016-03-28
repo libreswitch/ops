@@ -19,7 +19,6 @@ from mininet.node import Host
 from mininet.net import Mininet
 from mininet.topo import SingleSwitchTopo
 from opsvsi.opsvsitest import OpsVsiTest, OpsVsiLink, VsiOpenSwitch
-import pytest
 
 class ShowVersionDetailCliFtTest(OpsVsiTest):
     def setupNet(self):
@@ -41,7 +40,6 @@ class ShowVersionDetailCliFtTest(OpsVsiTest):
         assert "ops-sysd" in output, "ops-sysd was not found in show version\
         detail output"
 
-@pytest.mark.skipif(True, reason="Skipping temporarily to merge reviews with circular dependencies.")
 class TestRunner:
     @classmethod
     def setup_class(cls):
