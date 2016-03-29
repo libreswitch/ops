@@ -16,8 +16,8 @@
   -     [Installing a command containing variables (.LINE) ](#installing-a-command-containing-variables-\(.LINE\))
   -     [Help strings ](#help-strings)
   -     [Installing a command with dynamic help string](#installing-a-command-with-dynamic-help-string)
-  -     [Installing a command with integer range or comma separated list input](#"installing-a-command-with-integer-range-or-comma-separated-list-input")
-  -   ["No" form of configuration commands](#"No"-form-of-configuration-commands)
+  -     [Installing a command with integer range or comma separated list input](#installing-a-command-with-integer-range-or-comma-separated-list-input)
+  -   ['No' form of configuration commands](#'no'-form-of-configuration-commands)
  -   [Hidden commands](#hidden-commands)
  -   [Disabled commands](#disabled-commands)
  -   [Show commands](#show-commands)
@@ -308,7 +308,7 @@ Care should also be taken to avoid having similar tokens with different help str
 Based on the system configuration, some commands may want to change help strings dynamically. For example, each interface supports different speeds. Dynamically, help strings should specify what speeds
 are supported instead of displaying all possible speeds without specifying whether they are supported or not. The syntax for defining a **command** with dynamic help string is	:
 
-#define DEFUN_DYN_HELPSTR(funcname, cmdname, cmdstr, helpstr, dyn_cbstr
+    #define DEFUN_DYN_HELPSTR(funcname, cmdname, cmdstr, helpstr, dyn_cbstr)
 
 The 'dyn\_cbstr' parameter of DEFUN\_DYN\_HELPSTR is the concatenation of the dynamic callback functions for all the tokens present in the `cmdstr` parameter separated by '\n'. The callback function name for each
 token is specified in the same order as the tokens in the 'cmdstr' parameter. These callbacks are optional. Below is an example:
@@ -424,7 +424,7 @@ Note : Example use case for range/comma seperated integer input.
                     "Allowed VLANs on the trunk port\n"
                     "VLAN identifier range. [2, 2-10 or 2,3,4 or 2,3-10]\n")
 
-###"No" form of configuration commands
+###'No' form of configuration commands
 Every configuration command must support a reset command to revert the configuration. For more information see the guidelines at http://openswitch.net/documents/dev/ui-guidelines.
 
 A configuration command accepting a user input must support two "no" commands - one with user input and one without the user input.
