@@ -36,21 +36,21 @@ def loopback_l3(**kwargs):
 
     LogOutput('info', "Loopback l3 reachability test")
     retStruct = LoopbackInterfaceEnable(deviceObj=switch,
-                                        loopback="1", addr="192.168.1.5",
+                                        loopback=switch.linkPortMapping['lnk01'], addr="192.168.1.5",
                                         mask=24, config=True, enable=True)
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to configure interface IP address")
         assert(False)
 
     retStruct = InterfaceEnable(deviceObj=switch, enable=True,
-                                interface="1")
+                                interface = switch.linkPortMapping['lnk01'] )
 
     if retStruct.returnCode() != 0:
         LogOutput('error', "Failed to enable interface")
         assert(False)
 
     retStruct = InterfaceIpConfig(deviceObj=switch,
-                                  interface="1",
+                                  interface = switch.linkPortMapping['lnk01'],
                                   addr="192.168.2.1", mask=24, config=True)
 
     if retStruct.returnCode() != 0:
