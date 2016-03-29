@@ -63,6 +63,43 @@
     </dd>
   </dl>
 
+  <h2>Category</h2>
+
+  <p>
+    All columns in the schema, except those related to hardware configuration, include
+    a "category" element. This element is used to define the data that is contained in
+    the column.  There are three category types:
+  </p>
+
+  <ol>
+    <li>
+      Status: Represent state data that the system writes as a result of its operation.
+      The data can come from protocols or system daemons. Hardware information columns
+      should use this category.  Columns using this category cannot be configured by
+      the user.
+    </li>
+    <li>
+      Statistics: Represent statistic data, usually counters, that the system reports.
+      This data can come from protocols, hardware or system daemons.  Columns using
+      this category cannot be configured by the user.
+    </li>
+    <li>
+      Configuration: Represent configuration data that comes from the user.  Only columns
+      using this category can be modified by the users.
+    </li>
+
+    <p>
+      Some column categories depend on the other column category. It means that the
+      column category is not explicit. The value will be dynamically interpreted by taking
+      the other column value. The tag "follows" inside the category is meant for that.
+    </p>
+    <p>
+      In other cases the category must be interpreted using a specific row value itself.
+      The column category will be calculated by mapping the specific enum value to the
+      corresponding category. The tag "per-value" inside the category is meant for that.
+    </p>
+  </ol>
+
   <table name="System" title="OpenSwitch top level configuration.">
     Configuration for an OpenSwitch system. There must be exactly
     one record in the <ref table="System"/> table.

@@ -2252,7 +2252,9 @@
     "Route": {
       "columns": {
         "vrf": {
-          "category": "configuration",
+          "category": {
+            "follows": "from"
+          },
           "relationship": "m:1",
           "type": {
             "key": {
@@ -2264,7 +2266,9 @@
           "mutable": false
         },
         "prefix": {
-          "category": "configuration",
+          "category": {
+            "follows": "from"
+          },
           "type": {
             "key": {
               "type": "string",
@@ -2274,7 +2278,14 @@
           "mutable": false
         },
         "from": {
-          "category": "status",
+          "category": {
+            "per-value": [
+              { "value": "connected", "category": "status" },
+              { "value": "static", "category": "configuration" },
+              { "value": "bgp", "category": "status" },
+              { "value": "ospf", "category": "status" }
+            ]
+          },
           "type": {
             "key": {
               "type": "string",
@@ -2312,7 +2323,9 @@
           }
         },
         "address_family": {
-          "category": "configuration",
+          "category": {
+            "follows": "from"
+          },
           "type": {
             "key": {
               "type": "string",
@@ -2330,7 +2343,9 @@
           "mutable": false
         },
         "sub_address_family": {
-          "category": "configuration",
+          "category": {
+            "follows": "from"
+          },
           "type": {
             "key": {
               "type": "string",
@@ -2349,7 +2364,9 @@
           "mutable": false
         },
         "distance": {
-          "category": "configuration",
+          "category": {
+            "follows": "from"
+          },
           "type": {
             "key": {
               "type": "integer",
@@ -2362,7 +2379,9 @@
           "mutable": false
         },
         "metric": {
-          "category": "status",
+          "category": {
+            "follows": "from"
+          },
           "type": {
             "key": {
               "type": "integer",
@@ -2375,7 +2394,9 @@
           "mutable": false
         },
         "nexthops": {
-          "category": "configuration",
+          "category": {
+            "follows": "from"
+          },
           "relationship": "1:m",
           "type": {
             "key": {
