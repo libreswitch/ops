@@ -31,20 +31,13 @@ import copy
 NUM_OF_SWITCHES = 2
 NUM_HOSTS = 2
 
-ADM_PATCH_PRT = [{"op": "add",
-                  "path": "/admin",
-                  "value": "up"}]
+PATCH_LAG_PRT = [{"op": "add", "path": "/admin", "value": "up"}]
 
-VLAN_MODE_PATCH_PRT = {"op": "add",
-                       "path": "/vlan_mode",
-                       "value": "access"}
+VLAN_MODE_PATCH_PRT = {"op": "add", "path": "/vlan_mode", "value": "access"}
 
-PATCH_PRT = {"op": "add",
-             "path": "/ports",
-             "value": []}
+PATCH_PRT = {"op": "add", "path": "/ports", "value": []}
 
-ADM_PATCH_INT = [{"op": "add",
-                  "path": "/user_config",
+ADM_PATCH_INT = [{"op": "add", "path": "/user_config",
                   "value": {"admin": "up"}}]
 
 LACP_KEY_PATCH_INT = {"op": "add",
@@ -53,6 +46,15 @@ LACP_KEY_PATCH_INT = {"op": "add",
 
 LACP_KEY_DELETE_PATCH_INT = {"op": "remove",
                              "path": "/other_config/lacp-aggregation-key"}
+
+LAG_PORT_DATA = {
+    "configuration": {
+        "name": "1",
+        "interfaces": ["/rest/v1/system/interfaces/1"],
+        "other_config": {"lacp-time": "fast"}
+    },
+    "referenced_by": [{"uri": "/rest/v1/system/bridges/bridge_normal"}]
+}
 
 ADD = "ADD"
 REMOVE = "REMOVE"
@@ -71,7 +73,7 @@ LACP_AGGREGATION_KEY = "lacp-aggregation-key"
 # The host IPs are based on 10.0.0.0/8
 
 PING_ATTEMPTS = 3
-CREATION_SLEEP_SECS = 30
+CREATION_SLEEP_SECS = 50
 DELETION_SLEEP_SECS = 30
 
 
@@ -168,7 +170,7 @@ class Test_CreateLag(OpsVsiTest):
 
     def create_lag(self, switch, lagId, interfaces, mode="active"):
         self.PORT_PATH = self.PATH_PORTS + "/" + lagId
-        port_data = copy.deepcopy(PORT_DATA)
+        port_data = copy.deepcopy(LAG_PORT_DATA)
         port_data["configuration"]["name"] = "lag" + lagId
         port_data["configuration"]["admin"] = "up"
         port_data["configuration"]["lacp"] = mode
@@ -255,7 +257,7 @@ class Test_CreateLag(OpsVsiTest):
         info("### Port Deleted. " + httplib.NO_CONTENT + ".  ###\n")
 
     def create_port(self, switch, interface):
-        port_data = copy.deepcopy(PORT_DATA)
+        port_data = copy.deepcopy(LAG_PORT_DATA)
         port_data["configuration"]["name"] = interface
         port_data["configuration"]["admin"] = "up"
         port_data["configuration"]["vlan_mode"] = "trunk"
@@ -377,7 +379,7 @@ class Test_CreateLag(OpsVsiTest):
 
     def create_port(self, switch, port):
         self.PORT_PATH = self.PATH_PORTS + "/" + port
-        port_data = copy.deepcopy(PORT_DATA)
+        port_data = copy.deepcopy(LAG_PORT_DATA)
         port_data["configuration"]["name"] = port
         port_data["configuration"]["interfaces"] = \
             ["/rest/v1/system/interfaces/" + port]
@@ -394,7 +396,7 @@ class Test_CreateLag(OpsVsiTest):
         self.PORT_PATH = self.PATH_PORTS + "/" + port
         self.INT_PATH = self.PATH_INT + "/" + port
         status_code, response_data = execute_request(self.PORT_PATH, "PATCH",
-                                                     json.dumps(ADM_PATCH_PRT),
+                                                     json.dumps(PATCH_LAG_PRT),
                                                      switch,
                                                      False)
         assert status_code == httplib.NO_CONTENT, "Error patching a Port "\
