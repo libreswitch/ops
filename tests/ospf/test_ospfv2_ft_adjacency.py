@@ -290,7 +290,7 @@ def verify_mtu(switch_id, interface,  mtu):
     matchObj = re.search(r'MTU:\d{1,4}', devIntReturn['buffer'], re.S)
     if matchObj:
         split_list = re.split(r':', matchObj.group())
-        if split_list and split_list[1]:
+        if split_list and len(split_list) > 1:
             if (str(split_list[1]) == str(mtu)):
                 return True
 
@@ -374,7 +374,7 @@ def get_router_id(switch_id):
                          ospf_interface)
     if matchObj:
         split_list = re.split(r'\s+', matchObj.group())
-        if split_list and split_list[2]:
+        if split_list and len(split_list) > 2:
             return split_list[2]
 
     return False
@@ -426,7 +426,7 @@ def getTimers(dut02, timer_type):
 
     if matchObj:
         timers = re.split(r'\s+', matchObj.group())
-        if timers and timers[1]:
+        if timers and len(timers) > 1:
             timer = timers[1]
         else:
             timer = 0
@@ -441,7 +441,7 @@ def getTimers(dut02, timer_type):
 def get_neighbor_state(dut):
     neighbors = SwitchVtyshUtils.vtysh_cmd(dut, "show ip ospf neighbor")
     split_list = re.split(r'\s+', neighbors)
-    if split_list and split_list[20]:
+    if split_list and len(split_list) > 20:
         state = split_list[20].split("/")
         return state[0]
 
