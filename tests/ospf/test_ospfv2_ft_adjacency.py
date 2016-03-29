@@ -345,9 +345,9 @@ def get_nbr_id_from_dump(switch_id, ip, dump_str):
             index = split_list.index("List:")
             return split_list[index + 1]
         else:
-            return False
+            return ""
     else:
-        return False
+        return ""
 
 
 # Function to count number of router-id instance
@@ -377,7 +377,7 @@ def get_router_id(switch_id):
         if split_list and len(split_list) > 2:
             return split_list[2]
 
-    return False
+    return ""
 
 
 # Function to get ospf states
@@ -395,7 +395,7 @@ def verify_ospf_states(dut):
         elif "<DR>" in split_list:
             return "DR"
 
-    return False
+    return ""
 
 
 # Test case to verify that the neighbors are discovered
@@ -471,7 +471,7 @@ def wait_for_2way_state(dut):
 def wait_for_adjacency(dut01, dut02_router_id, condition=True,
                        print_nbrs=False):
     hello_time = getTimers(dut01, "Hello")
-    wait_time = int(hello_time) + 30
+    wait_time = int(hello_time) + 50
     for i in range(wait_time):
         found = verify_ospf_adjacency(dut01, dut02_router_id, print_nbrs)
         if found == condition:
@@ -692,14 +692,6 @@ class Test_ospf_configuration:
             assert False, "Adjacency not formed in SW1 with SW2(Router-id %s)"\
                 % OSPF_ROUTER_ID_DUT2
 
-        retVal = wait_for_adjacency(dut02Obj, OSPF_ROUTER_ID_DUT1)
-        if retVal:
-            LogOutput('info', "Adjacency formed in SW2 with SW1 (Router-id %s)"
-                      % OSPF_ROUTER_ID_DUT1)
-        else:
-            assert False, "Adjacency not formed in SW1 with SW2(Router-id %s)"\
-                % OSPF_ROUTER_ID_DUT1
-
         LogOutput('info', "Step 3 - verify hello packets are exchanged")
         dump_str = getTcpdump(dut01Obj)
         count = get_packet_count(dut01Obj, dump_str)
@@ -733,14 +725,6 @@ class Test_ospf_configuration:
         else:
             assert False, "Adjacency not formed in SW1 with SW2(Router-id %s)"\
                 % dict_02[OSPF_ROUTER_KEY]
-
-        retVal = wait_for_adjacency(dut02Obj, dict_01[OSPF_ROUTER_KEY], True)
-        if retVal:
-            LogOutput('info', "Adjacency formed in SW2 with SW1 (Router-id %s)"
-                      % dict_01[OSPF_ROUTER_KEY])
-        else:
-            assert False, "Adjacency not formed in SW1 with SW2(Router-id %s)"\
-                % dict_01[OSPF_ROUTER_KEY]
 
         LogOutput('info', "Step 3 - verify router ID"
                   " using show ip ospf command")
@@ -785,14 +769,6 @@ class Test_ospf_configuration:
         else:
             assert False, "Adjacency not formed in SW1 with SW2(Router-id %s)"\
                 % OSPF_ROUTER_ID_DUT2
-
-        retVal = wait_for_adjacency(dut02Obj, OSPF_ROUTER_ID_DUT1, True)
-        if retVal:
-            LogOutput('info', "Adjacency formed in SW2 with SW1 (Router-id %s)"
-                      % OSPF_ROUTER_ID_DUT1)
-        else:
-            assert False, "Adjacency not formed in SW1 with SW2(Router-id %s)"\
-                % OSPF_ROUTER_ID_DUT1
 
         dump_str = getTcpdump(dut01Obj)
         neighbor_id = get_nbr_id_from_dump(dut01Obj,
@@ -861,14 +837,6 @@ class Test_ospf_configuration:
             assert False, "Adjacency not formed in SW1 with SW2(Router-id %s)"\
                 % OSPF_ROUTER_ID_DUT2
 
-        retVal = wait_for_adjacency(dut02Obj, OSPF_ROUTER_ID_DUT1, True)
-        if retVal:
-            LogOutput('info', "Adjacency formed in SW2 with SW1 (Router-id %s)"
-                      % OSPF_ROUTER_ID_DUT1)
-        else:
-            assert False, "Adjacency not formed in SW2 with SW2(Router-id %s)"\
-                % OSPF_ROUTER_ID_DUT1
-
         retVal = wait_for_adjacency(dut03Obj, OSPF_ROUTER_ID_DUT2, True)
         if retVal:
             LogOutput('info', "Adjacency formed in SW3 with SW2 (Router-id %s)"
@@ -893,14 +861,6 @@ class Test_ospf_configuration:
         OSPF_ROUTER_ID_DUT3 = dict03[OSPF_ROUTER_KEY]
 
         LogOutput('info', "Step 2 - Wait for adjacency")
-        retVal = wait_for_adjacency(dut01Obj, OSPF_ROUTER_ID_DUT2)
-        if retVal:
-            LogOutput('info', "Adjacency formed in SW1 with SW2 (Router-id %s)"
-                      % OSPF_ROUTER_ID_DUT2)
-        else:
-            assert False, "Adjacency not formed in SW1 with SW2(Router-id %s)"\
-                % OSPF_ROUTER_ID_DUT2
-
         retVal = wait_for_adjacency(dut02Obj, OSPF_ROUTER_ID_DUT1)
         if retVal:
             LogOutput('info', "Adjacency formed in SW2 with SW1 (Router-id %s)"
@@ -971,22 +931,6 @@ class Test_ospf_configuration:
         configure_router_id(dut01Obj, OSPF_ROUTER_ID_DUT1)
 
         LogOutput('info', "Step 2 - Wait for adjacency")
-        retVal = wait_for_adjacency(dut01Obj, OSPF_ROUTER_ID_DUT2)
-        if retVal:
-            LogOutput('info', "Adjacency formed in SW1 with SW2 (Router-id %s)"
-                      % OSPF_ROUTER_ID_DUT2)
-        else:
-            assert False, "Adjacency not formed in SW1 with SW2(Router-id %s)"\
-                % OSPF_ROUTER_ID_DUT2
-
-        retVal = wait_for_adjacency(dut02Obj, OSPF_ROUTER_ID_DUT1)
-        if retVal:
-            LogOutput('info', "Adjacency formed in SW2 with SW1 (Router-id %s)"
-                      % OSPF_ROUTER_ID_DUT1)
-        else:
-            assert False, "Adjacency not formed in SW2 with SW1(Router-id %s)"\
-                % OSPF_ROUTER_ID_DUT1
-
         retVal = wait_for_adjacency(dut03Obj, OSPF_ROUTER_ID_DUT2)
         if retVal:
             LogOutput('info', "Adjacency formed in SW3 with SW2 (Router-id %s)"
@@ -1050,30 +994,6 @@ class Test_ospf_configuration:
         else:
             assert False, "Adjacency not formed in SW1 with SW2(Router-id %s)"\
                 % OSPF_ROUTER_ID_DUT2
-
-        retVal = wait_for_adjacency(dut02Obj, OSPF_ROUTER_ID_DUT1)
-        if retVal:
-            LogOutput('info', "Adjacency formed in SW2 with SW1 (Router-id %s)"
-                      % OSPF_ROUTER_ID_DUT1)
-        else:
-            assert False, "Adjacency not formed in SW2 with SW1(Router-id %s)"\
-                % OSPF_ROUTER_ID_DUT1
-
-        retVal = wait_for_adjacency(dut03Obj, OSPF_ROUTER_ID_DUT2)
-        if retVal:
-            LogOutput('info', "Adjacency formed in SW3 with SW2 (Router-id %s)"
-                      % OSPF_ROUTER_ID_DUT2)
-        else:
-            assert False, "Adjacency not formed in SW3 with SW2(Router-id %s)"\
-                % OSPF_ROUTER_ID_DUT2
-
-        retVal = wait_for_adjacency(dut04Obj, OSPF_ROUTER_ID_DUT3)
-        if retVal:
-            LogOutput('info', "Adjacency formed in SW4 with SW3 (Router-id %s)"
-                      % OSPF_ROUTER_ID_DUT3)
-        else:
-            assert False, "Adjacency not formed in SW4 with SW3(Router-id %s)"\
-                % OSPF_ROUTER_ID_DUT3
 
         LogOutput('info', "Step 3 - Configuring MTU")
 
