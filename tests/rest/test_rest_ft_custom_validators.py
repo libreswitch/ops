@@ -343,6 +343,7 @@ class Test_ft_framework_rest:
 
         info('### Successful in testing REST custom validators ###\n')
 
+    @pytest.mark.skipif(True, reason="new DC module does not have this feature.")
     def test_declarativeConfigTestCustomValidators(self):
         info('########################################################\n')
         info('######   Testing DC Custom Validators Framework   ######\n')

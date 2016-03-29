@@ -250,6 +250,7 @@ class Test_ft_framework_rest:
         assert retStruct.returnCode() == 0, 'Failed to config REST environment'
         info('### Successful in config REST environment test ###\n')
 
+    @pytest.mark.skipif(True, reason="new DC module does not have this feature.")
     def test_restTestDcSchemaValidations(self):
         info('##################################################\n')
         info('######   Testing REST DC Schema Validations   ####\n')
