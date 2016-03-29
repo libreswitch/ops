@@ -55,14 +55,11 @@ ip prefix-list BGP1_IN seq 25 deny 192.168.15.0/24 le 25
 !
 !
 !
-route-map BGP1_IN permit 10
-     match ip address prefix-list BGP1_IN
-!
 router bgp 1
      bgp router-id 8.0.0.1
      network 9.0.0.0/8
      neighbor 8.0.0.2 remote-as 2
-     neighbor 8.0.0.2 route-map BGP1_IN in
+     neighbor 8.0.0.2 prefix-list BGP1_IN in
 !
 vlan 1
     no shutdown
@@ -75,15 +72,12 @@ Configuration of BGP2:
 !
 ipv6 prefix-list plist_v6 seq 10 permit 2ccd:1:1::/67
 ipv6 prefix-list plist_v6 seq 20 deny 4ddc:1:1::/64
-ip prefix-list p2 seq 4294967295 deny any
-ip prefix-list A_sample_name_to_verify_the_max_length_of_the_prefix_list_name_that_can_be_confd seq 5 permit any
-!
+ip prefix-list p2 seq 4294967295 permit any
+ip prefix-list A_sample_name_to_verify_the_max_length_of_the_prefix_list_name_that_can_be_confd seq 5 deny any
 !
 !
 route-map BGP2_Rmap1 permit 10
      match ip address prefix-list A_sample_name_to_verify_the_max_length_of_the_prefix_list_name_that_can_be_confd
-route-map BGP2_Rmap2 permit 10
-     match ip address prefix-list p2
 !
 router bgp 2
      bgp router-id 8.0.0.2
@@ -97,7 +91,7 @@ router bgp 2
      neighbor 2001::3 prefix-list plist_v6 in
      neighbor 8.0.0.1 remote-as 1
      neighbor 8.0.0.1 route-map BGP2_Rmap2 in
-     neighbor 8.0.0.1 route-map BGP2_Rmap1 out
+     neighbor 8.0.0.1 prefix-list p2 out
 !
 vlan 1
     no shutdown
@@ -191,7 +185,6 @@ AS_NUM3 = "3"
 SW1_ROUTER_ID = "8.0.0.1"
 SW2_ROUTER_ID = "8.0.0.2"
 SW3_ROUTER_ID = "8.0.0.3"
-VTYSH_CR = '\r\n'
 ROUTE_MAX_WAIT_TIME = 300
 
 # Topology definition
@@ -361,15 +354,15 @@ def configure_neighbor_prefix_list(dut, as_num1, network, as_num2, plist,\
 
 
 def verify_routes(name, dut, network, next_hop, ipv6, attempt=1):
-    LogOutput('info',"Verifying route on switch %s [attempt #%d] - Network: %s, "
-             "Next-Hop: %s " %
-             (name, attempt, network, next_hop))
+    if (enterConfigShell(dut) is False):
+        return False
+
     if ipv6 is True:
-        cmd = "show ipv6 bgp"
-    else :
-        cmd = "show ip bgp"
-    routes = SwitchVtyshUtils.vtysh_cmd(dut, cmd)
-    routes = routes.split(VTYSH_CR)
+        devIntReturn = dut.DeviceInteract(command="do show ipv6 bgp")
+    else:
+        devIntReturn = dut.DeviceInteract(command="do show ip bgp")
+    routes=  devIntReturn.get('buffer')
+    routes = routes.split('\r\n')
     for rte in routes:
         if (network in rte) and (next_hop in rte):
             return True
@@ -389,7 +382,7 @@ def wait_for_route(name, dut, network, next_hop, route_exist, ipv6):
             return found
 
         sleep(1)
-
+        LogOutput('info',"Attempt #%s" %attempt)
     LogOutput('info',"Condition not met after %s seconds " %
              ROUTE_MAX_WAIT_TIME)
     return found
@@ -419,83 +412,6 @@ def configure(**kwargs):
     switch1 = kwargs.get('switch1', None)
     switch2 = kwargs.get('switch2', None)
     switch3 = kwargs.get('switch3', None)
-    '''
-    - Enable the link.
-    - Set IP for the switches.
-    '''
-
-    # Enabling interface 1 on SW1.
-    LogOutput('info', "Enabling interface 1 on SW1")
-    retStruct = InterfaceEnable(deviceObj=switch1, enable=True,
-                                interface=switch1.linkPortMapping['lnk01'])
-    retCode = retStruct.returnCode()
-    if retCode != 0:
-        assert "Unable to enable interface1 on SW1"
-
-    # Assigning an IPv4 address on interface 1 of SW1
-    LogOutput('info', "Configuring IPv4 address on link 1 SW1")
-    retStruct = InterfaceIpConfig(deviceObj=switch1,
-                                  interface=switch1.linkPortMapping['lnk01'],
-                                  addr=IP_ADDR1, mask=DEFAULT_PL,
-                                  config=True)
-    retCode = retStruct.returnCode()
-    if retCode != 0:
-        assert "Failed to configure an IPv4 address on interface 1 of SW1"
-
-    # Enabling interface 1 on SW2
-    LogOutput('info', "Enabling interface 1 on SW2")
-    retStruct = InterfaceEnable(deviceObj=switch2, enable=True,
-                                interface=switch2.linkPortMapping['lnk01'])
-    retCode = retStruct.returnCode()
-    if retCode != 0:
-        assert "Unable to enable interface 1 on SW2"
-
-    # Assigning an IPv4 address on interface 1 for link 1 SW2
-    LogOutput('info', "Configuring IPv4 address on link 1 SW2")
-    retStruct = InterfaceIpConfig(deviceObj=switch2,
-                                  interface=switch2.linkPortMapping['lnk01'],
-                                  addr=IP_ADDR2, mask=DEFAULT_PL,
-                                  config=True)
-    retCode = retStruct.returnCode()
-    if retCode != 0:
-        assert "Failed to configure an IPv4 address on interface 1 of SW2"
-
-    # Enabling interface 2 on SW2
-    LogOutput('info', "Enabling interface 2 on SW2")
-    retStruct = InterfaceEnable(deviceObj=switch2, enable=True,
-                                interface=switch2.linkPortMapping['lnk02'])
-    retCode = retStruct.returnCode()
-    if retCode != 0:
-        assert "Unable to enable interface 2 on SW2"
-
-    # Assigning an IPv6 address on interface 1 for link 2 SW2
-    LogOutput('info', "Configuring IPv6 address on link 2 SW2")
-    retStruct = InterfaceIpConfig(deviceObj=switch2,
-                                  interface=switch2.linkPortMapping['lnk02'],
-                                  addr=IPv6_ADDR2, mask=DEFAULT_v6PL,
-                                  ipv6flag=True,config=True)
-    retCode = retStruct.returnCode()
-    if retCode != 0:
-        assert "Failed to configure an IPv6 address on interface 2 of SW2"
-
-    # Enabling interface 1 on SW3
-    LogOutput('info', "Enabling interface 1 on SW3")
-    retStruct = InterfaceEnable(deviceObj=switch3, enable=True,
-                                interface=switch3.linkPortMapping['lnk02'])
-    retCode = retStruct.returnCode()
-    if retCode != 0:
-        assert "Unable to enable interface 1 on SW3"
-
-    # Assigning an IPv6 address on interface 1 for link 2 SW3
-    LogOutput('info', "Configuring IPv6 address on link 2 SW3")
-    retStruct = InterfaceIpConfig(deviceObj=switch3,
-                                  interface=switch3.linkPortMapping['lnk02'],
-                                  addr=IPv6_ADDR3, mask=DEFAULT_v6PL,
-                                  ipv6flag=True,config=True)
-    retCode = retStruct.returnCode()
-    if retCode != 0:
-        assert "Failed to configure an IPv6 address on interface 1 of SW3"
-
 
     # Configuring ip prefix-list on switch 1
     LogOutput('info', "Configuring ip prefix list configuration on SW1")
@@ -515,11 +431,6 @@ def configure(**kwargs):
                                    "192.168.15.0/24", 0, 25)
     assert result is True, "Setting ip prefix list configuration failed for SW1"
 
-    # Configuring Route-map on switch 1
-    LogOutput('info', "Configuring route-map on SW1")
-    result = configure_route_map(switch1,"BGP1_IN","BGP1_IN")
-    assert result is True, "Setting route-map configuration failed for SW1"
-
     # Configuring BGP on switch 1
     LogOutput('info', "Configuring router-id on SW1")
     result = configure_router_id(switch1, AS_NUM1, SW1_ROUTER_ID)
@@ -532,21 +443,40 @@ def configure(**kwargs):
     LogOutput('info', "Configuring bgp neighbor on SW1")
     result = configure_neighbor(switch1, AS_NUM1, IP_ADDR2, AS_NUM2)
     assert result is True, "BGP neighbor configuration failed for SW1"
-    LogOutput('info', "Applying route-map to bgp neighbor on SW1")
-    result = configure_neighbor_rmap(switch1, AS_NUM1, IP_ADDR2, AS_NUM2,\
-                                     "BGP1_IN","in")
-    assert result is True, "BGP neighbor route-map configuration failed for SW1"
-    exitContext(switch1)
+
+    result = configure_neighbor(switch2, AS_NUM2, IPv6_ADDR3, AS_NUM3)
+    assert result is True, "BGP neighbor configuration failed for SW2"
+
+    LogOutput('info', "Applying ip prefix-list to bgp neighbor on SW1")
+    result = configure_neighbor_prefix_list(switch1, AS_NUM1, IP_ADDR2,\
+                                            AS_NUM2,"BGP1_IN","in")
+    # Enabling interface 1 on SW1.
+    LogOutput('info', "Enabling interface 1 on SW1")
+    retStruct = InterfaceEnable(deviceObj=switch1, enable=True,
+                                interface=switch1.linkPortMapping['lnk01'])
+    retCode = retStruct.returnCode()
+    if retCode != 0:
+        assert "Unable to enable interface1 on SW1"
+
+    # Assigning an IPv4 address on interface 1 of SW1
+    LogOutput('info', "Configuring IPv4 address on link 1 SW1")
+    retStruct = InterfaceIpConfig(deviceObj=switch1,
+                                  interface=switch1.linkPortMapping['lnk01'],
+                                  addr=IP_ADDR1, mask=DEFAULT_PL,
+                                  config=True)
+    retCode = retStruct.returnCode()
+    if retCode != 0:
+        assert "Failed to configure an IPv4 address on interface 1 of SW1"
 
     # Configuring ip prefix-list on switch 2
     LogOutput('info', "Configuring ip prefix list configuration on SW2")
     result = configure_prefix_list(switch2, "A_sample_name_to_verify_the_"\
                                    "max_length_of_the_prefix_list_name_that_"\
-                                   "can_be_confd", "5", "permit",\
+                                   "can_be_confd", "5", "deny",\
                                    "any", 0, 0)
     assert result is True, "Setting ip prefix list configuration failed for SW2"
     LogOutput('info', "Configuring ip prefix list configuration on SW2")
-    result = configure_prefix_list(switch2, "p2", "4294967295", "deny",\
+    result = configure_prefix_list(switch2, "p2", "4294967295", "permit",\
                                    "any", 0, 0)
     assert result is True, "Setting ip prefix list configuration failed for SW2"
 
@@ -593,9 +523,6 @@ def configure(**kwargs):
                                    "max_length_of_the_prefix_list_name_that_"\
                                    "can_be_confd")
     assert result is True, "Setting route-map configuration failed for SW2"
-    LogOutput('info', "Configuring route-map on SW2")
-    result = configure_route_map(switch2,"BGP2_Rmap2","p2")
-    assert result is True, "Setting route-map configuration failed for SW2"
 
     # Configuring BGP on switch 2
     LogOutput('info', "Configuring router-id on SW2")
@@ -618,23 +545,59 @@ def configure(**kwargs):
     result = configure_neighbor(switch2, AS_NUM2, IP_ADDR1, AS_NUM1)
     assert result is True, "BGP neighbor configuration failed for SW2"
 
-    LogOutput('info', "Applying route-map to bgp neighbor on SW2")
-    result = configure_neighbor_rmap(switch2, AS_NUM2, IP_ADDR1, AS_NUM1,\
-                                     "BGP2_Rmap1","out")
-    assert result is True, "BGP neighbor route-map configuration failed for SW2"
-
-    LogOutput('info', "Applying route-map to bgp neighbor on SW2")
-    result = configure_neighbor_rmap(switch2, AS_NUM2, IP_ADDR1, AS_NUM1,\
-                                     "BGP2_Rmap2","in")
-    assert result is True, "BGP neighbor route-map configuration failed for SW2"
-
-    result = configure_neighbor(switch2, AS_NUM2, IPv6_ADDR3, AS_NUM3)
-    assert result is True, "BGP neighbor configuration failed for SW2"
+    LogOutput('info', "Applying ipv6 prefix-list to bgp neighbor on SW2")
+    result = configure_neighbor_prefix_list(switch2, AS_NUM2, IPv6_ADDR3,\
+                                            AS_NUM3,"plist_v6","in")
 
     LogOutput('info', "Applying ipv6 prefix-list to bgp neighbor on SW2")
     result = configure_neighbor_prefix_list(switch2, AS_NUM2, IPv6_ADDR3,\
                                             AS_NUM3,"plist_v6","in")
-    exitContext(switch2)
+
+    LogOutput('info', "Applying route-map to bgp neighbor on SW2")
+    result = configure_neighbor_rmap(switch2, AS_NUM2, IP_ADDR1, AS_NUM1,\
+                                     "BGP2_Rmap1","in")
+    assert result is True, "BGP neighbor route-map configuration failed for SW2"
+
+
+    LogOutput('info', "Applying ip prefix-list to bgp neighbor on SW2")
+    result = configure_neighbor_prefix_list(switch2, AS_NUM2, IP_ADDR1,\
+                                            AS_NUM1,"p2","out")
+
+   # Enabling interface 1 on SW2
+    LogOutput('info', "Enabling interface 1 on SW2")
+    retStruct = InterfaceEnable(deviceObj=switch2, enable=True,
+                                interface=switch2.linkPortMapping['lnk01'])
+    retCode = retStruct.returnCode()
+    if retCode != 0:
+        assert "Unable to enable interface 1 on SW2"
+
+    # Assigning an IPv4 address on interface 1 for link 1 SW2
+    LogOutput('info', "Configuring IPv4 address on link 1 SW2")
+    retStruct = InterfaceIpConfig(deviceObj=switch2,
+                                  interface=switch2.linkPortMapping['lnk01'],
+                                  addr=IP_ADDR2, mask=DEFAULT_PL,
+                                  config=True)
+    retCode = retStruct.returnCode()
+    if retCode != 0:
+        assert "Failed to configure an IPv4 address on interface 1 of SW2"
+
+    # Enabling interface 2 on SW2
+    LogOutput('info', "Enabling interface 2 on SW2")
+    retStruct = InterfaceEnable(deviceObj=switch2, enable=True,
+                                interface=switch2.linkPortMapping['lnk02'])
+    retCode = retStruct.returnCode()
+    if retCode != 0:
+        assert "Unable to enable interface 2 on SW2"
+
+    # Assigning an IPv6 address on interface 1 for link 2 SW2
+    LogOutput('info', "Configuring IPv6 address on link 2 SW2")
+    retStruct = InterfaceIpConfig(deviceObj=switch2,
+                                  interface=switch2.linkPortMapping['lnk02'],
+                                  addr=IPv6_ADDR2, mask=DEFAULT_v6PL,
+                                  ipv6flag=True,config=True)
+    retCode = retStruct.returnCode()
+    if retCode != 0:
+        assert "Failed to configure an IPv6 address on interface 2 of SW2"
 
     # Configuring BGP on switch 3
     LogOutput('info', "Configuring router-id on SW3")
@@ -651,7 +614,24 @@ def configure(**kwargs):
     assert result is True, "BGP neighbor configuration failed for SW3"
     exitContext(switch3)
 
-@pytest.mark.skipif(True, reason="Route verification fails intermittently.")
+    # Enabling interface 1 on SW3
+    LogOutput('info', "Enabling interface 1 on SW3")
+    retStruct = InterfaceEnable(deviceObj=switch3, enable=True,
+                                interface=switch3.linkPortMapping['lnk02'])
+    retCode = retStruct.returnCode()
+    if retCode != 0:
+        assert "Unable to enable interface 1 on SW3"
+
+    # Assigning an IPv6 address on interface 1 for link 2 SW3
+    LogOutput('info', "Configuring IPv6 address on link 2 SW3")
+    retStruct = InterfaceIpConfig(deviceObj=switch3,
+                                  interface=switch3.linkPortMapping['lnk02'],
+                                  addr=IPv6_ADDR3, mask=DEFAULT_v6PL,
+                                  ipv6flag=True,config=True)
+    retCode = retStruct.returnCode()
+    if retCode != 0:
+        assert "Failed to configure an IPv6 address on interface 1 of SW3"
+
 class Test_bgp_ip_prefix_list_configuration:
     def setup_class(cls):
         Test_bgp_ip_prefix_list_configuration.testObj = \

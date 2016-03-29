@@ -335,46 +335,6 @@ def configure(**kwargs):
     switch1 = kwargs.get('switch1', None)
     switch2 = kwargs.get('switch2', None)
 
-    '''
-    - Enable the link.
-    - Set IP for the switches.
-    '''
-
-    # Enabling interface 1 SW1.
-    LogOutput('info', "Enabling interface1 on SW1")
-    retStruct = InterfaceEnable(deviceObj=switch1, enable=True,
-                                interface=switch1.linkPortMapping['lnk01'])
-    retCode = retStruct.returnCode()
-    if retCode != 0:
-        assert "Unable to enable interface1 on SW1"
-
-    # Assigning an IPv4 address on interface 1 of SW1
-    LogOutput('info', "Configuring IPv6 address on link 1 SW1")
-    retStruct = InterfaceIpConfig(deviceObj=switch1,
-                                  interface=switch1.linkPortMapping['lnk01'],
-                                  addr=IPv6_ADDR1, mask=DEFAULT_PL,
-                                  ipv6flag=True,config=True)
-    retCode = retStruct.returnCode()
-    if retCode != 0:
-        assert "Failed to configure an IPv6 address on interface 1 of SW1"
-
-    # Enabling interface 1 SW2
-    LogOutput('info', "Enabling interface1 on SW2")
-    retStruct = InterfaceEnable(deviceObj=switch2, enable=True,
-                                interface=switch2.linkPortMapping['lnk01'])
-    retCode = retStruct.returnCode()
-    if retCode != 0:
-        assert "Unable to enable interface 1 on SW2"
-
-    # Assigning an IPv4 address on interface 1 for link 1 SW2
-    LogOutput('info', "Configuring IPv6 address on link 1 SW2")
-    retStruct = InterfaceIpConfig(deviceObj=switch2,
-                                  interface=switch2.linkPortMapping['lnk01'],
-                                  addr=IPv6_ADDR2, mask=DEFAULT_PL,
-                                  ipv6flag=True,config=True)
-    retCode = retStruct.returnCode()
-    if retCode != 0:
-        assert "Failed to configure an IPv6 address on interface 1 of SW2"
 
     # Configuring ipv6 prefix-list on switch 1
     LogOutput('info', "Configuring ipv6 prefix configuration on SW1")
@@ -416,8 +376,27 @@ def configure(**kwargs):
                                      "BGP1_IN","in")
     assert result is True, "BGP neighbor route-map configuration failed for SW1"
     exitContext(switch1)
+    sleep(5)
 
-   # Configuring ipv6 prefix-list on switch 2
+    # Enabling interface 1 SW1.
+    LogOutput('info', "Enabling interface1 on SW1")
+    retStruct = InterfaceEnable(deviceObj=switch1, enable=True,
+                                interface=switch1.linkPortMapping['lnk01'])
+    retCode = retStruct.returnCode()
+    if retCode != 0:
+        assert "Unable to enable interface1 on SW1"
+
+    # Assigning an IPv4 address on interface 1 of SW1
+    LogOutput('info', "Configuring IPv6 address on link 1 SW1")
+    retStruct = InterfaceIpConfig(deviceObj=switch1,
+                                  interface=switch1.linkPortMapping['lnk01'],
+                                  addr=IPv6_ADDR1, mask=DEFAULT_PL,
+                                  ipv6flag=True,config=True)
+    retCode = retStruct.returnCode()
+    if retCode != 0:
+        assert "Failed to configure an IPv6 address on interface 1 of SW1"
+
+    # Configuring ipv6 prefix-list on switch 2
     LogOutput('info', "Configuring ipv6 prefix list configuration on SW2")
     result = configure_prefix_list(switch2, "A_sample_name_to_verify_the_"\
                                    "max_length_of_the_prefix_list_name_that_"\
@@ -493,9 +472,26 @@ def configure(**kwargs):
                                      "BGP2_Rmap2","in")
     assert result is True, "BGP neighbor route-map configuration failed for SW2"
     exitContext(switch2)
+    sleep(10)
 
+    # Enabling interface 1 SW2
+    LogOutput('info', "Enabling interface1 on SW2")
+    retStruct = InterfaceEnable(deviceObj=switch2, enable=True,
+                                interface=switch2.linkPortMapping['lnk01'])
+    retCode = retStruct.returnCode()
+    if retCode != 0:
+        assert "Unable to enable interface 1 on SW2"
 
-@pytest.mark.skipif(True, reason="Skipping due to Taiga ID : 671")
+    # Assigning an IPv4 address on interface 1 for link 1 SW2
+    LogOutput('info', "Configuring IPv6 address on link 1 SW2")
+    retStruct = InterfaceIpConfig(deviceObj=switch2,
+                                  interface=switch2.linkPortMapping['lnk01'],
+                                  addr=IPv6_ADDR2, mask=DEFAULT_PL,
+                                  ipv6flag=True,config=True)
+    retCode = retStruct.returnCode()
+    if retCode != 0:
+        assert "Failed to configure an IPv6 address on interface 1 of SW2"
+
 class Test_bgp_ipv6_prefix_list_configuration:
     def setup_class(cls):
         Test_bgp_ipv6_prefix_list_configuration.testObj = \
