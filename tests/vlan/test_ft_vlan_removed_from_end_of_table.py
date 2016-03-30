@@ -133,6 +133,7 @@ def cleanUp(dut, wrk1, wrk2, wrk3):
 class Test_vlan_state_removed_from_end_of_table:
 
     def setup_class(cls):
+        pytest.skip("Skipping for ALM ID 2035")
         # Create Topology object and connect to devices
         Test_vlan_state_removed_from_end_of_table.testObj = \
             testEnviron(
@@ -312,7 +313,6 @@ class Test_vlan_state_removed_from_end_of_table:
         else:
             LogOutput('info', "Passed enable interface {pInterface}".format(
                 pInterface=self.dut01Obj.linkPortMapping['lnk03']))
-
     def test_added_ports(self):
         LogOutput('info', "############################################")
         LogOutput('info', "Step 6- Verify ports assign correctly")
@@ -407,7 +407,6 @@ class Test_vlan_state_removed_from_end_of_table:
             assert(False)
         else:
             LogOutput('info', "Passed adding port to vlan " + str(2))
-
     def test_added_port(self):
         LogOutput('info', "############################################")
         LogOutput(

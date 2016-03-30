@@ -87,7 +87,6 @@ def verifyVlan(dut, pVlan, pQuantity=0):
 
 # Verify a port has been assigned to a vlan
 
-
 def verifyVlanPorts(dut, vlanID, port):
     assigned = False
     returnCLS = ShowVlan(deviceObj=dut)
@@ -130,8 +129,8 @@ def cleanUp(dut, wrk1, wrk2, wrk3):
 
 
 class Test_vlan_state_removed_from_middle_of_table:
-
     def setup_class(cls):
+        pytest.skip("Skipping for ALM ID 2035")
         # Create Topology object and connect to devices
         Test_vlan_state_removed_from_middle_of_table.testObj = \
             testEnviron(
@@ -406,7 +405,6 @@ class Test_vlan_state_removed_from_middle_of_table:
             assert(False)
         else:
             LogOutput('info', "Passed adding port to vlan " + str(2))
-
     def test_added_port(self):
         LogOutput('info', "############################################")
         LogOutput(
