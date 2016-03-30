@@ -119,6 +119,7 @@ def cleanUp(dut):
 class Test_vlan_state_transition:
 
     def setup_class(cls):
+        pytest.skip("Skipping for ALM ID 2035")
         # Create Topology object and connect to devices
         Test_vlan_state_transition.testObj = testEnviron(topoDict=topoDict)
         Test_vlan_state_transition.topoObj = \

@@ -188,6 +188,7 @@ def unConfigureWorkstation(deviceObj, int, ipAddr, netMask, broadcast):
 class Test_vlan_state_reason_transition:
 
     def setup_class(cls):
+        pytest.skip("Skipping for ALM ID 2035")
         # Create Topology object and connect to devices
         Test_vlan_state_reason_transition.testObj = \
             testEnviron(topoDict=topoDict)
