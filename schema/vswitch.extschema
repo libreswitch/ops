@@ -6055,11 +6055,8 @@
           "type": {
             "key": {
               "type": "uuid",
-              "refTable": "VRF",
-              "refType" : "weak"
-            },
-            "min":0,
-            "max":1
+              "refTable": "VRF"
+             }
           },
           "mutable": false
         },
