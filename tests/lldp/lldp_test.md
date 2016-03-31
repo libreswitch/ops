@@ -15,6 +15,11 @@
 	- [SnmpgetBulk](#snmpgetbulk)
 	- [Snmpwalk](#snmpwalk)
 	- [LLDP SNMP traps](#lldp-snmp-traps)
+	- [Test to verify the SNMP master agent port operation](#test-to-verify-the-snmp-master-agent-port-operation)
+    - [Test to verify the SNMP master communities operation](#test-to-verify-the-snmp-master-communities-operation)
+    - [Test to verify the SNMP system MIB configurations](#test-to-verify-the-snmp-system-mib-configurations)
+    - [Test to verify the SNMP version 3 configurations](#test-to-verify-the-snmp-version-3-configurations)
+
 
 ##CLI
 ### LLDP enable or disable
@@ -315,3 +320,278 @@ This test case verifies that the LLDP daemon is sending the lldpRemTablesChange 
 ##### Pass/Fail criteria
 - This test case passes if the trap is received on the receiver.
 - This test case fails if the trap is not seen on the receiver log.
+
+### Test to verify the SNMP master agent port operation
+
+#### Objective
+
+- The test verifies that when a port on which a SNMP agent is listening on to for the user queries is modified, the agent will listen on the new port. Test case is validated using snmpwalk version 2 query.
+
+
+
+#### Requirements
+
+- Physical Switch/switch, workstation Test setup
+
+
+
+#### Setup
+
+
+
+##### Topology diagram
+
+```ditaa
+
+    +--------+               +--------+
+
+    |        | <-----------> |        |
+
+    |   S1   | <-----------> |   WS   |
+
+    |        | <-----------> |        |
+
+    |        | <-----------> |        |
+
+    +--------+               +--------+
+
+```
+
+
+
+
+
+#### Description
+
+1. Create a topology with a single switch, switch 1 and a workstation WS.
+2. Configure a SNMP agent port using CLI `snmp-server agent-port <1-65535>`.
+3. Verify the configuration using `show snmp agent-port`
+4.  Walk the MIB using `snmpwalk` on configured port
+
+
+
+##### Pass/Fail criteria
+
+- The test passes if the query walks through all the OIDs on the new port.
+
+- This tests fails if the query does not walk through all the OIDs on the new port.
+
+### Test to verify the SNMP master communities operation
+
+#### Objective
+
+- The test verifies that when a new community is configured using CLI, all the snmp queries will answer to that community. Test case is validated using snmpwalk version 2 query.
+
+
+
+#### Requirements
+
+- Physical Switch/switch, workstation Test setup
+
+
+
+#### Setup
+
+
+
+##### Topology diagram
+
+```ditaa
+
+    +--------+               +--------+
+
+    |        | <-----------> |        |
+
+    |   S1   | <-----------> |   WS   |
+
+    |        | <-----------> |        |
+
+    |        | <-----------> |        |
+
+    +--------+               +--------+
+
+```
+
+
+
+
+
+#### Description
+
+1. Create a topology with a single switch, switch 1 and a workstation WS.
+2. Configure a SNMP community using CLI `snmp-server community WORD`.
+3. Verify the configration using `show snmp community`
+3. Walk the MIB.
+
+
+
+##### Pass/Fail criteria
+
+- The test passes if the query walks through all the OIDs for a configured community.
+
+- This tests fails if the query does not walk through all the OIDs for a configured community.
+
+### Test to verify the SNMP system MIB configurations
+
+#### Objective
+
+- The test verifies that when a system MIB objects are configured through CLI, the new values are reflected when walked through system MIB. Test case is validated using snmpwalk version 2 query.
+
+#### Requirements
+- Physical Switch/switch, workstation Test setup
+
+#### Setup
+##### Topology diagram
+
+```ditaa
+
+    +--------+               +--------+
+
+    |        | <-----------> |        |
+
+    |   S1   | <-----------> |   WS   |
+
+    |        | <-----------> |        |
+
+    |        | <-----------> |        |
+
+    +--------+               +--------+
+
+```
+
+#### Description
+
+1. Create a topology with a single switch, switch 1 and a workstation WS.
+2. Configure a SNMP system description using `snmp-server system-description .LINE`.
+3. Configure a SNMP system location using `snmp-server system-location .LINE`.
+4. Configure a SNMP system contact using `snmp-server system-contact .LINE`.
+5. Verify the configuration using `show anmp system`.
+6. Configure hostname using `hostname WORD`
+7. Walk the system MIB.
+
+##### Pass/Fail criteria
+- The test passes if the query walks through all the system MIB OIDs reflecting the configured values.
+- This tests fails if the query does not walk through all the system MIB OIDs or does not reflect the configured values.
+
+
+### Test to verify the SNMP version 3 configurations
+
+#### Objective
+- The test verifies that when snmpv3 user is configured, agent responds to the queries for the new user.
+
+#### Requirements
+- Physical Switch/switch, workstation Test setup
+
+#### Setup
+##### Topology diagram
+
+```ditaa
+
+    +--------+               +--------+
+
+    |        | <-----------> |        |
+
+    |   S1   | <-----------> |   WS   |
+
+    |        | <-----------> |        |
+
+    |        | <-----------> |        |
+
+    +--------+               +--------+
+
+```
+
+
+#### Description
+
+1. Create a topology with a single switch, switch 1 and a workstation WS.
+2. Configure a SNMPv3 user using CLI `snmpv3 user WORD [auth (md5|sha) auth-pass WORD [priv (aes | des) priv-pass WORD]]`
+6. Verify the configuration using `show snmpv3 user`.
+7. SNMP Walk on .1 for the configured user. (Walk on .1 walk through all the MIB OIDs registered.)
+
+##### Pass/Fail criteria
+
+- The test passes if the query walks through all the MIB OIDs.
+- This tests fails if the query does not walk through  MIB OIDs.
+
+
+### Test to verify the SNMP version 3 authnopriv configurations
+
+#### Objective
+- The test verifies that when authnopriv snmpv3 user is configured, agent responds to the queries for the new user only if authentication key is correct.
+
+#### Requirements
+- Physical Switch/switch, workstation Test setup
+
+#### Setup
+##### Topology diagram
+
+```ditaa
+
+    +--------+               +--------+
+
+    |        | <-----------> |        |
+
+    |   S1   | <-----------> |   WS   |
+
+    |        | <-----------> |        |
+
+    |        | <-----------> |        |
+
+    +--------+               +--------+
+
+```
+
+
+#### Description
+
+1. Create a topology with a single switch, switch 1 and a workstation WS.
+2. Configure a SNMPv3 user using CLI `snmpv3 user WORD [auth (md5|sha) auth-pass WORD [priv (aes | des) priv-pass WORD]]`
+6. Verify the configuration using `show snmpv3 user`.
+7. SNMP Walk on .1 for the configured user, providing the correct auth-key.(Walk on .1 walk through all the MIB OIDs registered.)
+
+##### Pass/Fail criteria
+
+- The test passes if the query walks through all the MIB OIDs.
+- This tests fails if the query does not walk through  MIB OIDs.
+
+
+### Test to verify the SNMP version 3 authpriv configurations
+
+#### Objective
+- The test verifies that when authpriv snmpv3 user is configured, agent responds to the queries for the new user only if authentication and privecy key are correct.
+
+#### Requirements
+- Physical Switch/switch, workstation Test setup
+
+#### Setup
+##### Topology diagram
+
+```ditaa
+
+    +--------+               +--------+
+
+    |        | <-----------> |        |
+
+    |   S1   | <-----------> |   WS   |
+
+    |        | <-----------> |        |
+
+    |        | <-----------> |        |
+
+    +--------+               +--------+
+
+```
+
+
+#### Description
+
+1. Create a topology with a single switch, switch 1 and a workstation WS.
+2. Configure a SNMPv3 user using CLI `snmpv3 user WORD [auth (md5|sha) auth-pass WORD [priv (aes | des) priv-pass WORD]]`
+6. Verify the configuration using `show snmpv3 user`.
+7. SNMP Walk on .1 for the configured user providing correct auth-key and priv-key.(Walk on .1 walk through all the MIB OIDs registered.)
+
+##### Pass/Fail criteria
+
+- The test passes if the query walks through all the MIB OIDs.
+- This tests fails if the query does not walk through  MIB OIDs.
