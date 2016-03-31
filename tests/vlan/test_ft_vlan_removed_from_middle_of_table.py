@@ -93,7 +93,7 @@ def verifyVlanPorts(dut, vlanID, port):
     showVlanOutput = returnCLS.valueGet()
     for myDictionary in showVlanOutput:
         if myDictionary['VLAN'] == vlanID and \
-                port in myDictionary['Ports']:
+                port in myDictionary['Interfaces']:
             assigned = True
             return assigned
     return assigned
@@ -130,7 +130,6 @@ def cleanUp(dut, wrk1, wrk2, wrk3):
 
 class Test_vlan_state_removed_from_middle_of_table:
     def setup_class(cls):
-        pytest.skip("Skipping for ALM ID 2035")
         # Create Topology object and connect to devices
         Test_vlan_state_removed_from_middle_of_table.testObj = \
             testEnviron(
