@@ -282,7 +282,7 @@ def verify_routemap_set_weight(**kwargs):
 
     lines = dump.split('\n')
     for line in lines:
-        if ' weight 22' in line and '9.0.0.0' in line:
+        if '22' in line and '9.0.0.0' in line:
             set_weight_flag = True
 
     assert (set_weight_flag == True) , "Failed to configure 'set weight'"
@@ -333,7 +333,7 @@ def verify_routemap_set_localpref(**kwargs):
 
     lines = dump.split('\n')
     for line in lines:
-        if '45,' in line:
+        if '45' in line:
             set_localpref_flag = True
 
     assert (set_localpref_flag == True) , "Failed to configure 'set local-preference'"
