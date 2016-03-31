@@ -818,6 +818,10 @@
         Specifies the URL that was used to fetch auto-provisioning script. Would not be
         present if auto-provisioning was not performed.
       </column>
+      <column name="acls">
+        List of all Access Control Lists (ACLs) in the system.  The existence of the list is
+        not an indication that it has been applied.
+      </column>
     </group>
 
     <group title="Logrotate configuration">
@@ -2562,6 +2566,51 @@
           The value is the port name that uses this VLAN.
       </column>
     </group>
+    <group title="ACL Configuration">
+      <p>
+        ACL applied to vlans.
+      </p>
+      <column name="aclv4_in_cfg">
+        ACL, potentially in flight, desired to be applied to this vlan, as identified
+        in the <ref table="ACL"/>.
+      </column>
+      <column name="aclv4_in_cfg_version">
+        The version of the 'aclv4_in_cfg' column.
+        This value is incremented by the management interface each- CLI/REST/Web UI, etc.
+        every time it changes the 'aclv4_in_cfg' value.
+        An empty value means no ACL has been configured for the vlan.
+      </column>
+    </group>
+    <group title="ACL Status">
+      <p>
+        Status of applied ACLs and ACL statistics per vlan.
+      </p>
+      <column name="aclv4_in_applied">
+        Current, successfully applied ACL to this vlan, as identified in the
+        <ref table="ACL"/>
+      </column>
+      <column name="aclv4_in_status">
+        The status of the last version of 'aclv4_in_cfg' column, that has been
+        processed by switchd.
+      </column>
+      <column name="aclv4_in_status" key="version" type='{"type":"integer"}'>
+        The version of aclv4_in_cfg that corresponds to this status.
+      </column>
+      <column name="aclv4_in_status" key="state"
+            type='{"type":"string", "enum": ["set", ["applied", "in_progress", "canceled", "rejected"]]}'>
+      </column>
+      <column name="aclv4_in_status" key="code" type='{"type":"integer"}'>
+        Numeric error code.  Expected to be 0 when state is 'applied'
+      </column>
+      <column name="aclv4_in_status" key="message" type='{"type":"string"}'>
+        Detailed reason for error state.  Expected empty when state is 'applied'
+      </column>
+      <column name="aclv4_in_statistics" key="sequence_number" type='{"type":"integer"}'>
+        Statistics for the ACL applied to this port for ACEs that have the
+        'count' keyword specified.  Statistics are key/value pairs of
+        ACL sequence number and integer representing the statistics for that entry.
+      </column>
+    </group>
    <group title="Common Columns">
       The overall purpose of these columns is described under <code>Common
       Columns</code> at the beginning of this document.
@@ -3373,7 +3422,51 @@
         Number of IPv6 DHCP relay responses dropped.
       </column>
     </group>
-
+    <group title="ACL Configuration">
+      <p>
+        ACL applied to ports.
+      </p>
+      <column name="aclv4_in_cfg">
+        ACL, potentially in flight, desired to be applied to this port, as identified
+        in the <ref table="ACL"/>.
+      </column>
+      <column name="aclv4_in_cfg_version">
+        The version of the 'aclv4_in_cfg' column.
+        This value is incremented by the management interface - CLI/REST/Web UI, etc.
+        every time it changes the 'aclv4_in_cfg' value.
+         An empty value means no ACL has been configured for the port.
+      </column>
+    </group>
+    <group title="ACL Status">
+      <p>
+        Status of applied ACLs and ACLs statistics per port.
+      </p>
+      <column name="aclv4_in_applied">
+        Current, successfully applied ACL to this port, as identified in the
+        <ref table="ACL"/>
+      </column>
+      <column name="aclv4_in_status">
+        The status of the last version of 'aclv4_in_cfg' column, that has been
+        processed by switchd.
+      </column>
+      <column name="aclv4_in_status" key="version" type='{"type":"integer"}'>
+        The version of aclv4_in_cfg that corresponds to this status.
+      </column>
+      <column name="aclv4_in_status" key="state"
+            type='{"type":"string", "enum": ["set", ["applied", "in_progress", "canceled", "rejected"]]}'>
+      </column>
+      <column name="aclv4_in_status" key="code" type='{"type":"integer"}'>
+        Numeric error code.  Expected to be 0 when state is 'applied'
+      </column>
+      <column name="aclv4_in_status" key="message" type='{"type":"string"}'>
+        Detailed reason for error state.  Expected empty when state is 'applied'
+      </column>
+      <column name="aclv4_in_statistics" key="sequence_number" type='{"type":"integer"}'>
+        Statistics for the ACL applied to this port for ACEs that have the
+        'count' keyword specified.  Statistics are key/value pairs of
+        ACL sequence number and integer representing the statistics for that entry.
+      </column>
+    </group>
     <group title="Common Columns">
       The overall purpose of these columns is described under <code>Common
       Columns</code> at the beginning of this document.
@@ -6641,5 +6734,187 @@
       <column name="auth_pass_phrase">The key to be used by authentication protocol.</column>
       <column name="priv_pass_phrase">The key to be used by privacy protocol.</column>
     </group>
+  </table>
+  <table name="ACL" title="Access Control List">
+    <group title="Access Control List Configuration">
+      <column name="name">
+        Name of an Access Control List (ACL).
+      </column>
+      <column name="list_type">
+        Type of an Access Control List  Accepted values: 'ipv4'
+      </column>
+      <column name="cfg_aces" keyname="sequence_number">
+        The desired version of the Access Control List.  Access Control Entries
+        (ACE) specified in this version of the ACL are defined
+        in <ref table="ACL_Entry"/>
+      </column>
+      <column name="cfg_version">
+        The version of the 'cfg_aces' column.
+        This value is incremented by the management interface - CLI/REST/Web UI, etc.
+        every time it changes the 'cfg_aces' value.
+      </column>
+    </group>
+    <group title="Access Control List Status">
+      <column name="cur_aces" keyname="sequence_number">
+        The currently configured version of the Access Control List.  Access Control
+        Entries (ACE) specified in this version of the ACL are defined
+        in <ref table="ACL_Entry"/>
+      </column>
+      <column name="in_progress_aces" keyname="sequence_number">
+        The in flight version of the Access Control List.  Access Control Entries
+        (ACE) specified in this ACL are defined in <ref table="ACL_Entry"/>
+      </column>
+      <column name="status"  key="status_string" type='{"type":"string"}'>
+        The status of the last version of 'cfg_aces' column, that has been
+        processed by switchd.  Accepted values are: 'in_progress', 'applied', 'rejected',
+        and 'canceled'.
+      </column>
+      <column name="status" key="version" type='{"type":"integer"}'>
+        The version of cfg_aces that corresponds to this status.
+      </column>
+      <column name="status" key="state" type='{"type":"string"}'>
+        Valid values are 'applied', 'in_progress', 'canceled', 'rejected'
+      </column>
+      <column name="status" key="code" type='{"type":"integer"}'>
+        Numeric error code.  Expected to be 0 when state is 'applied'
+      </column>
+      <column name="status" key="message" type='{"type":"string"}'>
+        Detailed reason for error state.  Expected empty when state is 'applied'
+      </column>
+    </group>
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+      <column name="other_config">
+      </column>
+      <column name="external_ids">
+      </column>
+    </group>
+  </table>
+  <table name="ACL_Entry" title="Access Control Entry">
+    <column name="comment">
+      <p>
+        Comment to associate with the specified ACE.
+        Optional parameter.
+      </p>
+    </column>
+    <column name="action">
+      <p>
+         Match Action:
+         Optional parameter for IPv4 ACL entries.
+         There are two types: "permit" and "deny"
+         If no action is specified the ACE will not be programmed in hw.
+      </p>
+    </column>
+    <column name="src_ip">
+      <p>
+        Source IPv4 Address:
+        Optional parameter.  If no IP address is specified the ACE will not
+        match on source IP address.
+
+        The following IPv4 address formats are accepted:
+        X.X.X.X/X.X.X.X
+      </p>
+    </column>
+    <column name="dst_ip">
+      <p>
+        Destination IPv4 Address:
+        Optional parameter.  If no IP address is specified the ACE will not
+        match on destination IP address
+
+        The following IPv4 address formats are accepted:
+        X.X.X.X/X.X.X.X
+      </p>
+    </column>
+    <column name="protocol">
+      <p>
+        IPv4 Protocol
+        Optional parameter.  If no protocol is specified the ACE will
+        not match on protocol.
+      </p>
+    </column>
+    <group title="ACL L4 Port Configuration">
+        L4 Port: specifies the IPv4 L4 port to be used
+        as the minimum value.  It is used in conjunction with src/dst_l4_port_max
+        and src/dst_l4_port_range_reverse to determine the desired
+        L4 port functionality:
+
+        Applicable to TCP and UDP protocols.
+
+    <column name="src_l4_port_min">
+      <p>
+        Source L4 Port: specifies the IPv4 L4 source port to be used
+        as the minimum value.  It is used in conjunction with src_l4_port_max
+        and src_l4_port_range_reverse to determine the desired source
+        L4 port functionality.
+
+        Optional parameter for IPv4 ACL entries.
+      </p>
+    </column>
+    <column name="src_l4_port_max">
+      <p>
+        Source L4 Port Max: specifies the maximum value
+        It is used in conjunction with src_l4_port_min
+        and src_l4_port_range_reverse to determine the desired source
+        L4 port functionality.
+
+        Optional parameter for IPv4 ACL entries.
+      </p>
+    </column>
+     <column name="src_l4_port_range_reverse">
+      <p>
+        Specifies if the values in src_l4_port_min and src_l4_port_max
+        should be treated as specifying values not to be matched.
+        Optional parameter for IPv4 ACL entries.
+        Applicable to TCP and UDP protocols.
+      </p>
+    </column>
+    <column name="dst_l4_port_min">
+      <p>
+        Source L4 Port: specifies the IPv4 L4 source port to be used
+        as the minimum value.  It is used in conjunction with dst_l4_port_max
+        and dst_l4_port_range_reverse to determine the desired destination
+        L4 port functionality.
+
+        Optional parameter for IPv4 ACL entries.
+      </p>
+    </column>
+    <column name="dst_l4_port_max">
+      <p>
+        Destination L4 Port Max: specifies the maximum value
+        It is used in conjunction with dst_l4_port_min
+        and dst_l4_port_range_reverse to determine the desired destination
+        L4 port functionality.
+
+        Optional parameter for IPv4 ACL entries.
+      </p>
+    </column>
+     <column name="dst_l4_port_range_reverse">
+      <p>
+        Specifies if the values in dst_l4_port_min and dst_l4_port_max
+        should be treated as specifying values not to be matched.
+        Optional parameter for IPv4 ACL entries.
+        Applicable to TCP and UDP protocols.
+      </p>
+    </column>
+    </group>
+    <column name="log">
+      <p>
+        Log Action: enable ACL logging for packets that match this
+        ACL entry
+        Optional parameter for IPv4 ACL entries
+        The following value is accepted:
+        true
+      </p>
+    </column>
+    <column name="count">
+      <p>
+        Count Action: enable hit counts in hardware for packets that
+        match this ACL entry
+        Optional parameter for IPv4 ACL entries
+        The following value is accepted:
+        true
+      </p>
+    </column>
   </table>
 </database>
