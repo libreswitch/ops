@@ -3394,6 +3394,16 @@
             "max": "unlimited"
           }
         },
+        "macs_invalid": {
+          "category": "status",
+            "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
         "oper_state": {
           "category": "status",
           "type": {
@@ -4011,6 +4021,29 @@
             "max": 512
           },
           "ephemeral": true
+        },
+        "macs_invalid_on_vlans": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VLAN",
+              "refType" : "weak"
+            },
+            "min": 0,
+            "max": 4094
+          }
+        },
+        "macs_invalid": {
+          "category": "status",
+          "type": {
+            "key": {
+            "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          }
         },
         "other_config": {
           "category": "configuration",
