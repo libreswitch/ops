@@ -27,13 +27,19 @@ import urllib
 import inspect
 import types
 
-from opsvsiutils.restutils.fakes import *
-from opsvsiutils.restutils.utils import *
+from opsvsiutils.restutils.fakes import create_fake_vlan
+from opsvsiutils.restutils.utils import execute_request, \
+    login, get_switch_ip, rest_sanity_check, update_test_field
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 
 NUM_FAKE_VLANS = 10
+
+
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.switch_ip)
 
 
 ###############################################################################
@@ -42,7 +48,9 @@ NUM_FAKE_VLANS = 10
 #                                                                             #
 ###############################################################################
 def validate_request(switch_ip, path, data, op, expected_code, expected_data):
-    status_code, response_data = execute_request(path, op, data, switch_ip)
+    cookie_header = login(switch_ip)
+    status_code, response_data = execute_request(path, op, data, switch_ip,
+                                                 xtra_header=cookie_header)
 
     assert status_code is expected_code, \
         "Wrong status code %s " % status_code
@@ -91,6 +99,7 @@ class FilterVlanTestByName (OpsVsiTest):
 
         self.switch_ip = get_switch_ip(self.net.switches[0])
         self.path = "/rest/v1/system/bridges/bridge_normal/vlans/"
+        self.cookie_header = None
 
     def test(self):
         test_field = "name"
@@ -143,7 +152,7 @@ class TestGetFilterVlanByName:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test()
 
 
@@ -166,6 +175,7 @@ class FilterVlanById (OpsVsiTest):
 
         self.switch_ip = get_switch_ip(self.net.switches[0])
         self.path = "/rest/v1/system/bridges/bridge_normal/vlans/"
+        self.cookie_header = None
 
     def test(self):
         test_field = "id"
@@ -217,7 +227,7 @@ class TestGetFilterVlanById:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test()
 
 
@@ -240,6 +250,7 @@ class FilterVlanByDescription (OpsVsiTest):
 
         self.switch_ip = get_switch_ip(self.net.switches[0])
         self.path = "/rest/v1/system/bridges/bridge_normal/vlans/"
+        self.cookie_header = None
 
     def test(self):
         test_vlans = ["Vlan-2", "Vlan-3", "Vlan-4", "Vlan-5", "Vlan-6"]
@@ -330,7 +341,7 @@ class TestGetFilterVlanByDescription:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test()
 
 
@@ -353,6 +364,7 @@ class FilterVlanByAdmin (OpsVsiTest):
 
         self.switch_ip = get_switch_ip(self.net.switches[0])
         self.path = "/rest/v1/system/bridges/bridge_normal/vlans/"
+        self.cookie_header = None
 
     def test(self):
         test_vlans = ["Vlan-2", "Vlan-3", "Vlan-4", "Vlan-5", "Vlan-6"]
@@ -448,5 +460,5 @@ class TestGetFilterVlanByAdmin:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test()

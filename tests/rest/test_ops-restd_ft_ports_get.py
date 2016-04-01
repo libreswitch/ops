@@ -26,8 +26,11 @@ import httplib
 import urllib
 import subprocess
 
-from opsvsiutils.restutils.utils import *
-from opsvsiutils.restutils.swagger_test_utility import *
+from opsvsiutils.restutils.utils import execute_request, login, \
+    get_switch_ip, rest_sanity_check, create_test_port, \
+    get_container_id, PORT_DATA
+from opsvsiutils.restutils.swagger_test_utility import \
+    swagger_model_verification
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -38,6 +41,11 @@ class myTopo(Topo):
         self.hsts = hsts
         self.sws = sws
         switch = self.addSwitch("s1")
+
+
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.SWITCH_IP)
 
 
 class QueryPortTest (OpsVsiTest):
@@ -52,13 +60,15 @@ class QueryPortTest (OpsVsiTest):
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
         self.PATH = "/rest/v1/system/ports"
         self.PORT_PATH = self.PATH + "/Port1"
+        self.cookie_header = None
 
     def query_all_ports(self):
         info("\n########## Test to Validate first GET all Ports request \
               ##########\n")
 
-        status_code, response_data = execute_request(self.PATH, "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -87,8 +97,9 @@ class QueryPortTest (OpsVsiTest):
         info("\n########## Test to Validate first GET single Port request \
             ##########\n")
 
-        status_code, response_data = execute_request(self.PORT_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PORT_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -103,29 +114,30 @@ class QueryPortTest (OpsVsiTest):
             assert False, "Malformed JSON"
 
         assert json_data["configuration"] is not None, \
-               "configuration key is not present"
+            "configuration key is not present"
         assert json_data["statistics"] is not None, \
-               "statistics key is not present"
+            "statistics key is not present"
         assert json_data["status"] is not None, "status key is not present"
         info("### Configuration, statistics and status keys present ###\n")
 
         assert json_data["configuration"] == PORT_DATA["configuration"], \
-               "Configuration data is not equal that posted data"
+            "Configuration data is not equal that posted data"
         info("### Configuration data validated ###\n")
 
         info("\n########## End Test to Validate first GET single Port request \
             ##########\n")
 
     def query_non_existent_port(self):
-        info("\n########## Test to Validate first GET Non-existent Port request \
-            ##########\n")
+        info("\n########## Test to Validate first GET Non-existent Port \
+             request  ##########\n")
 
         new_path = self.PATH + "/Port2"
-        status_code, response_data = execute_request(new_path, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            new_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.NOT_FOUND, "Wrong status code %s " \
-                                                  % status_code
+            % status_code
         info("### Status code is NOT FOUND ###\n")
 
         info("\n########## End Test to Validate first GET Non-existent Port \
@@ -133,13 +145,13 @@ class QueryPortTest (OpsVsiTest):
 
 
 class Test_QueryPort:
-    def setup (self):
+    def setup(self):
         pass
 
-    def teardown (self):
+    def teardown(self):
         pass
 
-    def setup_class (cls):
+    def setup_class(cls):
         Test_QueryPort.test_var = QueryPortTest()
         rest_sanity_check(cls.test_var.SWITCH_IP)
         # Add a test port
@@ -151,19 +163,19 @@ class Test_QueryPort:
         info("### Test Port Created  ###\n")
         cls.container_id = get_container_id(cls.test_var.net.switches[0])
 
-    def teardown_class (cls):
+    def teardown_class(cls):
         Test_QueryPort.test_var.net.stop()
 
-    def setup_method (self, method):
+    def setup_method(self, method):
         pass
 
-    def teardown_method (self, method):
+    def teardown_method(self, method):
         pass
 
-    def __del__ (self):
+    def __del__(self):
         del self.test_var
 
-    def test_run (self):
+    def test_run(self, netop_login):
         self.test_var.query_all_ports()
         self.test_var.query_port()
         self.test_var.query_non_existent_port()

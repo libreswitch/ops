@@ -1,4 +1,4 @@
-# (C) Copyright 2015 Hewlett Packard Enterprise Development LP
+# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -14,227 +14,123 @@
 #    under the License.
 #
 import pytest
+
+from opsvsi.docker import *
+from opsvsi.opsvsitest import *
+from opsvsiutils.restutils.utils import execute_request, get_switch_ip, \
+    get_json, rest_sanity_check, login
 import json
-from opstestfw.switch.CLI import *
-from opstestfw import *
-topoDict = {"topoExecution": "3000",
-            "topoTarget": "dut01",
-            "topoDevices": "dut01 wrkston01",
-            "topoLinks": "lnk01:dut01:wrkston01",
-            "topoFilters": "dut01:system-category:switch,\
-                            wrkston01:system-category:workstation,\
-                            wrkston01:docker-image:host/freeradius-ubuntu",
-            "topoLinkFilter": "lnk01:dut01:interface:eth0"}
-switchMgmtAddr = "10.10.10.2"
-restClientAddr = "10.10.10.3"
-broadcast = "10.10.10.255"
-netmask = "255.255.255.0"
-subnetMaskBits = 24
+import httplib
+
+NUM_OF_SWITCHES = 1
+NUM_HOSTS_PER_SWITCH = 0
+
+DATA = {"configuration": {"split_parent": ["/rest/v1/system/interfaces/1"],
+        "name": "1", "type": "system"}}
 
 
-def switch_reboot(dut01):
-    # Reboot switch
-    info('###  Reboot switch  ###\n')
-    dut01.Reboot()
-    rebootRetStruct = returnStruct(returnCode=0)
-    return rebootRetStruct
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.SWITCH_IP)
 
 
-def config_rest_environment(dut01, wrkston01):
-    #Configuring REST environment
-    global switchMgmtAddr
-    global restClientAddr
-
-    retStruct = InterfaceIpConfig(deviceObj=dut01,
-                                  interface="mgmt",
-                                  addr=switchMgmtAddr,
-                                  mask=subnetMaskBits,
-                                  config=True)
-    assert retStruct.returnCode() == 0, 'Failed to configure IP on switchport'
-    info('### Successfully configured ip on switch port ###\n')
-    cmdOut = dut01.cmdVtysh(command="show run")
-    info('### Running config of the switch:\n' + cmdOut + ' ###\n')
-    info('### Configuring workstations ###\n')
-    retStruct = wrkston01.NetworkConfig(
-                                ipAddr=restClientAddr,
-                                netMask=netmask,
-                                broadcast=broadcast,
-                                interface=wrkston01.linkPortMapping['lnk01'],
-                                config=True)
-    assert retStruct.returnCode() == 0, 'Failed to config IP on workstation'
-    info('### Successfully configured IP on workstation ###\n')
-    cmdOut = wrkston01.cmd("ifconfig " + wrkston01.linkPortMapping['lnk01'])
-    info('### Ifconfig info for workstation 1:\n' + cmdOut + '###\n')
-    retStruct = GetLinuxInterfaceIp(deviceObj=wrkston01)
-    assert retStruct.returnCode() == 0, 'Failed to get linux interface ip\
-    on switch'
-    info('### Successful in getting linux interface ip on workstation ###\n')
-
-    retStruct = returnStruct(returnCode=0)
-    return retStruct
+class myTopo(Topo):
+    def build(self, hsts=0, sws=1, **_opts):
+        self.hsts = hsts
+        self.sws = sws
+        switch = self.addSwitch("s1")
 
 
-def deviceCleanup(dut01, wrkston01):
-    retStruct = wrkston01.NetworkConfig(
-                                ipAddr=restClientAddr,
-                                netMask=netmask,
-                                broadcast=broadcast,
-                                interface=wrkston01.linkPortMapping['lnk01'],
-                                config=False)
-    assert retStruct.returnCode() == 0, 'Failed to unconfigure IP address\
-    on workstation 1'
-    info('### Successfully unconfigured ip on Workstation 1 ###\n')
-    cmdOut = wrkston01.cmd("ifconfig " + wrkston01.linkPortMapping['lnk01'])
-    info('### Ifconfig info for workstation 1:\n' + cmdOut + ' ###')
-    retStruct = InterfaceIpConfig(deviceObj=dut01,
-                                  interface="mgmt",
-                                  addr=switchMgmtAddr,
-                                  mask=subnetMaskBits,
-                                  config=False)
-    assert retStruct.returnCode() == 0, 'Failed to unconfigure IP address\
-    on dut01 port'
-    info('### Unconfigured IP address on dut01 port  ###\n')
-    cmdOut = dut01.cmdVtysh(command="show run")
-    info('Running config of the switch:\n' + cmdOut)
-    retStruct = returnStruct(returnCode=0)
-    return retStruct
+class QueryInterfacesId(OpsVsiTest):
+    def setupNet(self):
+        host_opts = self.getHostOpts()
+        switch_opts = self.getSwitchOpts()
+        ecmp_topo = myTopo(hsts=NUM_HOSTS_PER_SWITCH, sw=NUM_OF_SWITCHES,
+                           hopts=host_opts, sopts=switch_opts)
+        self.net = Mininet(ecmp_topo, switch=VsiOpenSwitch, host=Host,
+                           link=OpsVsiLink, controller=None, build=True)
+        self.SWITCH_IP = get_switch_ip(self.net.switches[0])
+        self.url = '/rest/v1/system/interfaces/1'
+        self.cookie_header = None
+
+    def test_interfaces_id(self):
+        status_code, response_data = execute_request(
+            self.url, "PUT", json.dumps(DATA),
+            self.SWITCH_IP, False, xtra_header=self.cookie_header)
+
+        assert status_code == httplib.OK, ("Wrong status code %s " %
+                                           status_code)
+        info('### Success in executing the rest command "PUT" for url: ' +
+             self.url + ' ###\n')
+        info('### Success in Rest PUT Interfaces id ###\n')
+
+        status_code, response_data = execute_request(
+            self.url, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
+        assert status_code == httplib.OK, ("Wrong status code %s " %
+                                           status_code)
+        d = get_json(response_data)
+        assert d['configuration'] == DATA['configuration']
+
+        info('### Success in executing the rest command "GET" for url: ' +
+             self.url + ' ###\n')
+
+        info('### Success in Rest GET Interfacesid ###\n')
+
+        assert d['configuration']['name'] == '1', 'Failed in checking the \
+            GET METHOD JSON response validation for Interface name'
+        info('### Success in Rest GET system for Interface name ###\n')
+
+        status_code, response_data = execute_request(
+            self.url, "DELETE", json.dumps(DATA), self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
+        assert status_code == httplib.NO_CONTENT, ("Wrong status code %s " %
+                                                   status_code)
+        info('### Success in executing the rest command "DELETE" for url: ' +
+             self.url + ' ###\n')
+
+        info('### Success in executing the rest command \
+        "DELETE for url=/rest/v1/system/interfaces/1" ###\n')
+
+        info('### Success in Rest DELETE Interfacesid ###\n')
+
+        status_code, response_data = execute_request(
+            self.url, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
+        assert status_code == httplib.NOT_FOUND, ("Wrong status code %s " %
+                                                  status_code)
+
+        info('### Success in executing the rest command" "GET" as not \
+             expected for url: ' + self.url + ' ###\n')
+        info('### Success in Rest Checking http code 404 for GET method \
+             #once DELETED Interfacesid ###\n')
 
 
-def restTestInterfacesid(wrkston01):
-    data = {
-        "configuration": {
-            "split_parent": ["/rest/v1/system/interfaces/1"],
-            "name": "1",
-            "other_config": {},
-            "user_config": {},
-            "split_children": [],
-            "external_ids": {},
-            "type": "system",
-            "options": {}
-        }
-    }
-    retStruct = wrkston01.RestCmd(
-        switch_ip=switchMgmtAddr,
-        url="/rest/v1/system/interfaces/1",
-        method="PUT",
-        data=data)
-    assert retStruct.returnCode(
-    ) == 0, 'Failed to Execute rest command \
-    "PUT for url=/rest/v1/system/interfaces/1"'
-    info('### Success in executing the rest command \
-    "PUT for url=/rest/v1/system/interfaces/1 ###\n')
-    info('http return code' + retStruct.data['http_retcode'])
-    assert retStruct.data['http_retcode'].find(
-        '200') != -1, 'Rest PUT Interfacesid Failed\n' +\
-        retStruct.data['response_body']
-    info('### Success in Rest PUT Interfacesid ###\n')
-    info('###' + retStruct.data['response_body'] + '###\n')
-    retStruct = wrkston01.RestCmd(
-        switch_ip=switchMgmtAddr,
-        url="/rest/v1/system/interfaces/1",
-        method="GET")
-    assert retStruct.returnCode(
-    ) == 0, 'Failed to Execute rest command \
-    "GET for url=/rest/v1/system/interfaces/1"'
-    info('### Success in executing the rest command \
-    "GET for url=/rest/v1/system/interfaces/1" ###\n')
-    info('http return code' + retStruct.data['http_retcode'])
-    assert retStruct.data['http_retcode'].find(
-        '200') != -1, 'Rest GET Interfacesid Failed\n' +\
-        retStruct.data['response_body']
-    info('### Success in Rest GET Interfacesid ###\n')
-    info('###' + retStruct.data['response_body'] + '###\n')
-    json_data = retStruct.data['response_body']
-    data_dict = json.loads(json_data)
-    data_config = data_dict["configuration"]
-    assert data_config[
-        "name"] == '1', 'Failed in checking the GET METHOD JSON\
-        response validation for Interface name'
-    info('### Success in Rest GET system for Interface name ###\n')
-    retStruct = wrkston01.RestCmd(
-        switch_ip=switchMgmtAddr,
-        url="/rest/v1/system/interfaces/1",
-        method="DELETE")
-    assert retStruct.returnCode(
-    ) == 0, 'Failed to Execute rest command \
-    "DELET for url=/rest/v1/system/interfaces/1"'
-    info('### Success in executing the rest command \
-    "DELETE for url=/rest/v1/system/interfaces/1" ###\n')
-    info('http return code' + retStruct.data['http_retcode'])
-    assert retStruct.data['http_retcode'].find(
-        '204') != -1, 'Rest DELETE Interfacesid Failed\n' +\
-        retStruct.data['response_body']
-    info('### Success in Rest DELETE Interfacesid ###\n')
-    info('###' + retStruct.data['response_body'] + '###\n')
-    retStruct = wrkston01.RestCmd(
-        switch_ip=switchMgmtAddr,
-        url="/rest/v1/system/interfaces/1",
-        method="GET")
-    assert retStruct.returnCode(
-    ) == 0, 'Failed to Execute rest command \
-    "GET for url=/rest/v1/system/interfaces/1"'
-    info('### Success in executing the rest command" \
-    "GET as not expected for url=/rest/v1/system/interfaces/1" ###\n')
-    info('http return code' + retStruct.data['http_retcode'])
-    assert retStruct.data['http_retcode'].find(
-        '404') != -1, 'Rest GET  Interfacesid not returned 404 as not\
-        expected Failed\n' + retStruct.data['response_body']
-    info('### Success in Rest Checking http code 404 for GET method\
-    once DELETED Interfacesid ###\n')
-    info('###' + retStruct.data['response_body'] + '###\n')
-    retStruct = returnStruct(returnCode=0)
-    return retStruct
+class Test_interfaces_id:
+    def setup(self):
+        pass
 
-
-class Test_ft_framework_rest:
+    def teardown(self):
+        pass
 
     def setup_class(cls):
-        # Create Topology object and connect to devices
-        Test_ft_framework_rest.testObj = testEnviron(topoDict=topoDict)
-        Test_ft_framework_rest.topoObj = \
-            Test_ft_framework_rest.testObj.topoObjGet()
-        wrkston01Obj = Test_ft_framework_rest.topoObj.deviceObjGet(
-            device="wrkston01")
-        wrkston01Obj.CreateRestEnviron()
+        Test_interfaces_id.test_var = QueryInterfacesId()
+        rest_sanity_check(cls.test_var.SWITCH_IP)
 
     def teardown_class(cls):
-        # Terminate all nodes
-        Test_ft_framework_rest.topoObj.terminate_nodes()
+        Test_interfaces_id.test_var.net.stop()
 
-    def test_reboot_switch(self):
-        info('########################################################\n')
-        info('############       Reboot the switch          ##########\n')
-        info('########################################################\n')
-        dut01Obj = self.topoObj.deviceObjGet(device="dut01")
-        retStruct = switch_reboot(dut01Obj)
-        assert retStruct.returnCode() == 0, 'Failed to reboot Switch'
-        info('### Successful in Switch Reboot piece ###\n')
+    def setup_method(self, method):
+        pass
 
-    def test_config_rest_environment(self):
-        info('#######################################################\n')
-        info('######        Configure REST environment           ####\n')
-        info('#######################################################\n')
-        dut01Obj = self.topoObj.deviceObjGet(device="dut01")
-        wrkston01Obj = self.topoObj.deviceObjGet(device="wrkston01")
-        retStruct = config_rest_environment(dut01Obj, wrkston01Obj)
-        assert retStruct.returnCode() == 0, 'Fail to config REST environment'
-        info('### Successful in config REST environment test ###\n')
+    def teardown_method(self, method):
+        pass
 
-    def test_restTestInterfacesid(self):
-        info('#######################################################\n')
-        info('######   Testing REST Interfacesid functionality   ####\n')
-        info('#######################################################\n')
-        wrkston01Obj = self.topoObj.deviceObjGet(device="wrkston01")
-        retStruct = restTestInterfacesid(wrkston01Obj)
-        assert retStruct.returnCode() == 0, 'Failed to test rest Interfacesid'
-        info('### Successful in test rest Interfacesid ###\n')
+    def __def__(self):
+        del self.test_var
 
-    def test_clean_up_devices(self):
-        info('#######################################################\n')
-        info('######    Device Cleanup - rolling back config     ####\n')
-        info('#######################################################\n')
-        dut01Obj = self.topoObj.deviceObjGet(device="dut01")
-        wrkston01Obj = self.topoObj.deviceObjGet(device="wrkston01")
-        retStruct = deviceCleanup(dut01Obj, wrkston01Obj)
-        assert retStruct.returnCode() == 0, 'Failed to cleanup device'
-        info('### Successfully Cleaned up devices ###\n')
+    def test_interfaces_id(self, netop_login):
+        self.test_var.test_interfaces_id()

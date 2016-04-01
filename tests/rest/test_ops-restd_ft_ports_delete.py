@@ -22,7 +22,8 @@ from opsvsi.opsvsitest import *
 import json
 import httplib
 
-from opsvsiutils.restutils.utils import *
+from opsvsiutils.restutils.utils import execute_request, login, \
+    get_switch_ip, rest_sanity_check, create_test_port
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 
@@ -35,6 +36,11 @@ class myTopo(Topo):
         self.hsts = hsts
         self.sws = sws
         self.switch = self.addSwitch("s1")
+
+
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.SWITCH_IP)
 
 
 class DeletePortTest (OpsVsiTest):
@@ -52,12 +58,14 @@ class DeletePortTest (OpsVsiTest):
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
         self.PATH = "/rest/v1/system/ports"
         self.PORT_PATH = self.PATH + "/Port1"
+        self.cookie_header = None
 
     def delete_port_with_depth(self):
         info("\n########## Test delete Port with depth ##########\n")
-        status_code, response_data = execute_request(self.PORT_PATH +
-                                                     "?depth=1", "DELETE",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PORT_PATH + "?depth=1", "DELETE", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.BAD_REQUEST, \
             "Is not sending No Content status code. Status code: %s" % \
             status_code
@@ -67,8 +75,10 @@ class DeletePortTest (OpsVsiTest):
 
     def delete_port(self):
         info("\n########## Test delete Port ##########\n")
-        status_code, response_data = execute_request(self.PORT_PATH, "DELETE",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PORT_PATH, "DELETE", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, \
             "Is not sending No Content status code. Status code: %s" % \
             status_code
@@ -80,8 +90,10 @@ class DeletePortTest (OpsVsiTest):
         info("\n########## Test Verify if Port is deleted from port list "
              "##########\n")
         # Verify if port has been deleted from the list
-        status_code, response_data = execute_request(self.PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
         json_data = []
         try:
             json_data = json.loads(response_data)
@@ -98,8 +110,10 @@ class DeletePortTest (OpsVsiTest):
     def verify_deleted_port(self):
         info("\n########## Test Verify if Port is found ##########\n")
         # Verify deleted port
-        status_code, response_data = execute_request(self.PORT_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PORT_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.NOT_FOUND, "Port has not be deleted"
         info("### Port not found  ###\n")
 
@@ -108,8 +122,9 @@ class DeletePortTest (OpsVsiTest):
     def delete_non_existent_port(self):
         info("\n########## Test delete non-existent Port ##########\n")
         new_path = self.PATH + "/Port2"
-        status_code, response_data = execute_request(new_path, "DELETE",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            new_path, "DELETE", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.NOT_FOUND, \
             "Validation failed, is not sending Not Found error. " + \
@@ -148,7 +163,7 @@ class Test_DeletePort:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.delete_port_with_depth()
         self.test_var.delete_port()
         self.test_var.verify_deleted_port_from_port_list()

@@ -27,7 +27,8 @@ import urllib
 
 import inspect
 
-from opsvsiutils.restutils.utils import *
+from opsvsiutils.restutils.utils import execute_request, login, \
+    get_switch_ip, get_json, rest_sanity_check
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -38,6 +39,11 @@ class myTopo(Topo):
         self.hsts = hsts
         self.sws = sws
         switch = self.addSwitch("s1")
+
+
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.SWITCH_IP)
 
 
 class QueryInterfaceDepthTest(OpsVsiTest):
@@ -54,6 +60,7 @@ class QueryInterfaceDepthTest(OpsVsiTest):
 
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
         self.PATH = "/rest/v1/system/interfaces"
+        self.cookie_header = None
 
     def get_json(self, response_data):
         json_data = {}
@@ -91,12 +98,14 @@ class QueryInterfaceDepthTest(OpsVsiTest):
     def test_recursive_get_depth_first_level(self):
         specific_interface_path = self.PATH + "/50-1"
         depth_interface_path = self.PATH + "?depth=1;name=50-1"
-        status_code, expected_data = execute_request(specific_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
-        status_code, response_data = execute_request(depth_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, expected_data = execute_request(
+            specific_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
+        status_code, response_data = execute_request(
+            depth_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
         json_expected_data = self.get_json(expected_data)
         json_data = self.get_json(response_data)[0]
 
@@ -119,12 +128,14 @@ class QueryInterfaceDepthTest(OpsVsiTest):
     def test_recursive_get_depth_second_level(self):
         specific_interface_path = self.PATH + "/50"
         depth_interface_path = self.PATH + "?depth=2;name=50-1"
-        status_code, expected_data = execute_request(specific_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
-        status_code, response_data = execute_request(depth_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, expected_data = execute_request(
+            specific_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
+        status_code, response_data = execute_request(
+            depth_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
         json_expected_data = self.get_json(expected_data)
         json_data = self.get_json(response_data)[0]
 
@@ -155,9 +166,9 @@ class QueryInterfaceDepthTest(OpsVsiTest):
 
     def test_recursive_get_validate_negative_depth_value(self):
         depth_interface_path = self.PATH + "?depth=-1"
-        status_code, response_data = execute_request(depth_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            depth_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         info("\n########## Test to Validate recursive GET Interface 50-1 "
              "depth=<negative value> request ##########\n")
@@ -172,9 +183,9 @@ class QueryInterfaceDepthTest(OpsVsiTest):
 
     def test_recursive_get_validate_string_depth_value(self):
         depth_interface_path = self.PATH + "?depth=a"
-        status_code, response_data = execute_request(depth_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            depth_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         info("\n########## Test to Validate recursive GET Interface 50-1 "
              "depth=<string> request ##########\n")
@@ -190,9 +201,10 @@ class QueryInterfaceDepthTest(OpsVsiTest):
     def test_recursive_get_validate_with_depth_zero(self):
         expected_data = self.PATH + "/50"
         depth_interface_path = self.PATH + "?depth=0"
-        status_code, response_data = execute_request(depth_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            depth_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
         json_data = self.get_json(response_data)
 
         info("\n########## Test to Validate recursive GET interfaces "
@@ -213,8 +225,10 @@ class QueryInterfaceDepthTest(OpsVsiTest):
 
     def test_all_interfaces_no_depth_parameter(self):
         expected_data = self.PATH + "/50"
-        status_code, response_data = execute_request(self.PATH, "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
         json_data = self.get_json(response_data)
 
         info("\n########## Test to Validate first GET all Interfaces "
@@ -236,12 +250,14 @@ class QueryInterfaceDepthTest(OpsVsiTest):
     def test_recursive_get_depth_first_level_specific_uri(self):
         specific_interface_path = self.PATH + "?depth=1;name=50-1"
         depth_interface_path = self.PATH + "/50-1?depth=1"
-        status_code, expected_data = execute_request(specific_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
-        status_code, response_data = execute_request(depth_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, expected_data = execute_request(
+            specific_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
+        status_code, response_data = execute_request(
+            depth_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
         json_expected_data = self.get_json(expected_data)[0]
         json_data = self.get_json(response_data)
 
@@ -264,12 +280,14 @@ class QueryInterfaceDepthTest(OpsVsiTest):
     def test_recursive_get_depth_second_level_specific_uri(self):
         specific_interface_path = self.PATH + "?depth=2;name=50-1"
         depth_interface_path = self.PATH + "/50-1?depth=2"
-        status_code, expected_data = execute_request(specific_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
-        status_code, response_data = execute_request(depth_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, expected_data = execute_request(
+            specific_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
+        status_code, response_data = execute_request(
+            depth_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
         json_expected_data = self.get_json(expected_data)[0]
         json_data = self.get_json(response_data)
 
@@ -302,9 +320,9 @@ class QueryInterfaceDepthTest(OpsVsiTest):
 
     def test_recursive_get_with_negative_depth_value_specific_uri(self):
         depth_interface_path = self.PATH + "/50-1?depth=-1"
-        status_code, response_data = execute_request(depth_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            depth_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         info("\n########## Test to Validate recursive GET Interface 50-1 "
              "depth=<negative value> specific uri request\n")
@@ -319,9 +337,9 @@ class QueryInterfaceDepthTest(OpsVsiTest):
 
     def test_recursive_get_with_string_depth_value_specific_uri(self):
         depth_interface_path = self.PATH + "/50-1?depth=a"
-        status_code, response_data = execute_request(depth_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            depth_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         info("\n########## Test to Validate recursive GET Interface 50-1 "
              "depth=<string> specific uri request\n")
@@ -337,12 +355,13 @@ class QueryInterfaceDepthTest(OpsVsiTest):
     def test_recursive_get_specific_uri_with_depth_zero(self):
         specific_interface_path = self.PATH + "?depth=1;name=50-1"
         depth_interface_path = self.PATH + "/50-1?depth=0"
-        status_code, expected_data = execute_request(specific_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
-        status_code, response_data = execute_request(depth_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, expected_data = execute_request(
+            specific_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
+        status_code, response_data = execute_request(
+            depth_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
         json_expected_data = self.get_json(expected_data)[0]
         json_data = self.get_json(response_data)
 
@@ -367,12 +386,14 @@ class QueryInterfaceDepthTest(OpsVsiTest):
     def test_recursive_get_specific_uri_no_depth_parameter(self):
         specific_interface_path = self.PATH + "?depth=1;name=50-1"
         depth_interface_path = self.PATH + "/50-1"
-        status_code, expected_data = execute_request(specific_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
-        status_code, response_data = execute_request(depth_interface_path,
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, expected_data = execute_request(
+            specific_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
+        status_code, response_data = execute_request(
+            depth_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
         json_expected_data = self.get_json(expected_data)[0]
         json_data = self.get_json(response_data)
 
@@ -434,5 +455,5 @@ class Test_QueryInterfaceDepth:
     def _del_(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.run_tests()
