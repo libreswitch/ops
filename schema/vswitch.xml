@@ -3542,6 +3542,7 @@
         This key value should be treated as opaque handle by application
         daemons while updating LAG member interfaces in hardware.
       </column>
+
       <column name="lacp_status">
         Key-value pairs that report lacp-specific port status.
       </column>
@@ -3555,6 +3556,30 @@
       </column>
       <column name="lacp_status" key="bond_status_reason">
         String identifying the reason why the bond_status is "down".
+      </column>
+
+      <column name="bond_status">
+        Key-value pairs that report bond-specific port status (both static and
+        dynamic).  This column complements the <ref column="lacp_status"/>
+        column.
+      </column>
+      <column name="bond_status" key="state"
+        type='{ "type": "string", "enum": ["set",
+                     ["up",
+                      "blocked",
+                      "down"
+                     ]]}'>
+        Enumeration summarizing the fowarding state of the bond.  It is based on
+        the aggregate state of the individual member interfaces.
+        * Forwarding: At least one member interface is eligible and should be
+          fowarding traffic according to LACP
+        * Blocked:  All member interfaces are either not eligible or should be
+          blocked according to LACP.
+          If LACP-fallback-ab is enabled, and the <ref column="lacp_status"/> is
+          defaulted, then the bond state is forwarding.  If the LACP-fallback-ab
+          is disable, then the state is blocked.
+        * Down:  All member interfaces configured to be a member of a LAG are
+          either administratively or operatively down
       </column>
     </group>
 
@@ -3969,6 +3994,28 @@
           This column will be empty for an interface that does not
           have an MTU as, for example, some kinds of tunnels do not.
         </p>
+      </column>
+
+      <column name="bond_status">
+        Key-value pairs that report the status of a bond.  This applies to both
+        static or LACP bonds.
+      </column>
+
+      <column name="bond_status" key="state"
+        type='{ "type": "string", "enum": ["set",
+                     ["up",
+                      "blocked",
+                      "down"
+                     ]]}'>
+        Enumeration indicating the forwarding state of the interface when it is
+        configured as a member of a LAG.
+        * Forwarding: The interface is eligible and should be fowarding traffic
+          according to LACP
+        * Blocked:  The interface is either not eligible or should be blocked
+          according to LACP.  If an interface is Rx disable, it is also Tx disable,
+          thus, it is blocked
+        * Down:  The interface is configured to be a member of a LAG, but it is
+          either administratively or operatively down
       </column>
 
       <column name="lacp_current">
