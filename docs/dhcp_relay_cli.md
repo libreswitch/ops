@@ -181,12 +181,29 @@ No parameters.
 #### Examples
 ```
 ops-as5712# show dhcp-relay
+
  DHCP Relay Agent                 : Enabled
  DHCP Request Hop Count Increment : Enabled
- Option 82                        : Enabled
- Response validation              : Enabled
- Option 82 handle policy          : replace
+ Option 82                        : Disabled
+ Response Validation              : Disabled
+ Option 82 Handle Policy          : replace
  Remote ID                        : mac
+
+ DHCP Relay Statistics:
+
+  Client Requests       Server Responses
+
+  Valid      Dropped    Valid      Dropped
+  ---------- ---------- ---------- ----------
+  60         10         60         10
+
+  DHCP Relay Option 82 Statistics:
+
+  Client Requests       Server Responses
+
+  Valid      Dropped    Valid      Dropped
+  ---------- ---------- ---------- ----------
+  50         8          50         8
 ```
 
 ### Show helper-address configuration

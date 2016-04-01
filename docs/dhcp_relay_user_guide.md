@@ -63,7 +63,29 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-relay
 
 ops-as5712# show dhcp-relay
-DHCP Relay Agent                 : Enabled
+
+ DHCP Relay Agent                 : Enabled
+ DHCP Request Hop Count Increment : Enabled
+ Option 82                        : Disabled
+ Response Validation              : Disabled
+ Option 82 Handle Policy          : replace
+ Remote ID                        : mac
+
+ DHCP Relay Statistics:
+
+  Client Requests       Server Responses
+
+  Valid      Dropped    Valid      Dropped
+  ---------- ---------- ---------- ----------
+  60         10         60         10
+
+  DHCP Relay Option 82 Statistics:
+
+  Client Requests       Server Responses
+
+  Valid      Dropped    Valid      Dropped
+  ---------- ---------- ---------- ----------
+  50         8          50         8
 ```
 
 ### Example 2
@@ -95,12 +117,7 @@ ops-as5712(config-if)# no ip helper-address 192.168.10.1
 ops-as5712(config-if)# no ip helper-address 192.168.20.1
 ops-as5712(config-if)# no ip helper-address 192.168.30.1
 ops-as5712# show ip helper-address
-
-IP Helper Addresses
-
- Interface: 1
-  IP Helper Address
-  -----------------
+No helper-address configuration found.
 ```
 
 ### Example 4
@@ -110,7 +127,30 @@ ops-as5712# configure terminal
 ops-as5712(config)# no dhcp-relay
 
 ops-as5712# show dhcp-relay
-DHCP Relay Agent                 : Disabled
+
+ DHCP Relay Agent                 : Disabled
+ DHCP Request Hop Count Increment : Enabled
+ Option 82                        : Disabled
+ Response Validation              : Disabled
+ Option 82 Handle Policy          : replace
+ Remote ID                        : mac
+
+ DHCP Relay Statistics:
+
+  Client Requests       Server Responses
+
+  Valid      Dropped    Valid      Dropped
+  ---------- ---------- ---------- ----------
+  60         10         60         10
+
+  DHCP Relay Option 82 Statistics:
+
+  Client Requests       Server Responses
+
+  Valid      Dropped    Valid      Dropped
+  ---------- ---------- ---------- ----------
+  50         8          50         8
+```
 ```
 
 ## Configure DHCP relay option 82
@@ -150,13 +190,29 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-relay option 82 replace validate mac
 
 switch# show dhcp-relay
+
  DHCP Relay Agent                 : Enabled
  DHCP Request Hop Count Increment : Enabled
  Option 82                        : Enabled
- Response validation              : Enabled
- Option 82 handle policy          : replace
+ Response Validation              : Enabled
+ Option 82 Handle Policy          : replace
  Remote ID                        : mac
 
+ DHCP Relay Statistics:
+
+  Client Requests       Server Responses
+
+  Valid      Dropped    Valid      Dropped
+  ---------- ---------- ---------- ----------
+  60         10         60         10
+
+  DHCP Relay Option 82 Statistics:
+
+  Client Requests       Server Responses
+
+  Valid      Dropped    Valid      Dropped
+  ---------- ---------- ---------- ----------
+  50         8          50         8
 ```
 
 ### Example 2
@@ -166,12 +222,29 @@ ops-as5712# configure terminal
 ops-as5712(config)# no dhcp-relay option 82
 
 ops-as5712# show dhcp-relay
+
  DHCP Relay Agent                 : Enabled
  DHCP Request Hop Count Increment : Enabled
  Option 82                        : Disabled
- Response validation              : Enabled
- Option 82 handle policy          : replace
+ Response Validation              : Enabled
+ Option 82 Handle policy          : replace
  Remote ID                        : mac
+
+ DHCP Relay Statistics:
+
+  Client Requests       Server Responses
+
+  Valid      Dropped    Valid      Dropped
+  ---------- ---------- ---------- ----------
+  60         10         60         10
+
+  DHCP Relay Option 82 Statistics:
+
+  Client Requests       Server Responses
+
+  Valid      Dropped    Valid      Dropped
+  ---------- ---------- ---------- ----------
+  50         8          50         8
 ```
 
 ## Configure DHCP relay BOOTP gateway
@@ -213,11 +286,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# interface 1
 ops-as5712(config-if)# no ip bootp-gateway 1.1.1.1
 ops-as5712# show dhcp-relay bootp-gateway
-
- BOOTP Gateway Entries
-
- Interface            BOOTP Gateway
- -------------------- ---------------
+No bootp-gateway configuration found.
 ```
 
 ## Configure DHCP relay hop count increment
@@ -237,7 +306,29 @@ ops-as5712# configure terminal
 ops-as5712(config)# dhcp-relay hop-count-increment
 
 ops-as5712# show dhcp-relay
+
+ DHCP Relay Agent                 : Enabled
  DHCP Request Hop Count Increment : Enabled
+ Option 82                        : Disabled
+ Response Validation              : Disabled
+ Option 82 Handle Policy          : replace
+ Remote ID                        : mac
+
+ DHCP Relay Statistics:
+
+  Client Requests       Server Responses
+
+  Valid      Dropped    Valid      Dropped
+  ---------- ---------- ---------- ----------
+  60         10         60         10
+
+  DHCP Relay Option 82 Statistics:
+
+  Client Requests       Server Responses
+
+  Valid      Dropped    Valid      Dropped
+  ---------- ---------- ---------- ----------
+  50         8          50         8
 ```
 
 ### Example 2
@@ -247,5 +338,27 @@ ops-as5712# configure terminal
 ops-as5712(config)# no dhcp-relay hop-count-increment
 
 ops-as5712# show dhcp-relay
+
+ DHCP Relay Agent                 : Enabled
  DHCP Request Hop Count Increment : Disabled
+ Option 82                        : Disabled
+ Response Validation              : Disabled
+ Option 82 Handle Policy          : replace
+ Remote ID                        : mac
+
+ DHCP Relay Statistics:
+
+  Client Requests       Server Responses
+
+  Valid      Dropped    Valid      Dropped
+  ---------- ---------- ---------- ----------
+  60         10         60         10
+
+  DHCP Relay Option 82 Statistics:
+
+  Client Requests       Server Responses
+
+  Valid      Dropped    Valid      Dropped
+  ---------- ---------- ---------- ----------
+  50         8          50         8
 ```
