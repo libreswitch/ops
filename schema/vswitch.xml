@@ -144,10 +144,10 @@
       <column name="other_config" key="stats-update-interval"
               type='{"type": "integer", "minInteger": 5000}'>
         <p>
-          Interval for updating statistics to the database, in milliseconds.
-          This option will affect the update of the <code>statistics</code>
-          column in the following tables: <code>Port</code>, <code>Interface
-          </code>.
+          Update interval for the statistics, in milliseconds.
+          This option will affect the update of <code>statistics</code>,
+          <code>DHCP-Relay Statistics</code> columns in the <code>Port</code> table,
+          <code>statistics</code> column in the <code>Interface</code> table.
         </p>
         <p>
           Default value is 5000 ms.
@@ -3405,9 +3405,10 @@
     </group>
 
     <group title="DHCP-Relay Statistics">
-      DHCP-Relay statistics counters for both IPv4 and IPv6. If certain key is missing,
-      then the assummed counter value is 0.
-
+      DHCP-Relay statistics counters for both IPv4 and IPv6. The update period
+      is controlled by <ref column="other_config" key="stats-update-interval"/>in
+      <ref table="System"/>. If certain key is missing, then the assummed
+      counter value is 0.
       <column name="dhcp_relay_statistics" key="valid_v4client_requests"
               type='{"type":"integer"}'>
         Number of valid IPv4 DHCP relay requests processed.
@@ -3423,6 +3424,22 @@
       <column name="dhcp_relay_statistics" key="dropped_v4server_responses"
               type='{"type":"integer"}'>
         Number of IPv4 DHCP relay responses dropped.
+      </column>
+      <column name="dhcp_relay_statistics" key="valid_v4client_requests_with_option82"
+              type='{"type":"integer"}'>
+        Number of valid IPv4 DHCP relay requests with option 82 processed.
+      </column>
+      <column name="dhcp_relay_statistics" key="dropped_v4client_requests_with_option82"
+              type='{"type":"integer"}'>
+        Number of IPv4 DHCP relay requests with option 82 dropped.
+      </column>
+      <column name="dhcp_relay_statistics" key="valid_v4server_responses_with_option82"
+              type='{"type":"integer"}'>
+        Number of valid IPv4 DHCP relay responses with option 82 processed.
+      </column>
+      <column name="dhcp_relay_statistics" key="dropped_v4server_responses_with_option82"
+              type='{"type":"integer"}'>
+        Number of IPv4 DHCP relay responses with option 82 dropped.
       </column>
       <column name="dhcp_relay_statistics" key="valid_v6client_requests"
               type='{"type":"integer"}'>
