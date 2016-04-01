@@ -1021,18 +1021,20 @@
                  "max": 1
              }
          },
-         "top_change_cnt" : {
+         "topology_change_count" : {
              "category": "statistics",
              "type": {
                  "key": {
-                     "type": "integer"
+                     "type": "integer",
+                     "minInteger": 0,
+                     "maxInteger": 2147483647
                  },
                  "min": 0,
                  "max": 1
              }
          },
-         "topology_change_disable" : {
-              "category": "configuration",
+         "topology_unstable" : {
+              "category": "status",
               "type": {
                   "key": {
                       "type": "boolean"
@@ -1100,11 +1102,11 @@
                       "enum": [
                       "set",
                         [
-                          "root_port",
-                          "designated_port",
-                          "alternate_port",
-                          "backup_port",
-                          "disabled_port"
+                          "Root",
+                          "Designated",
+                          "Alternate",
+                          "Backup",
+                          "Disabled"
                         ]
                       ]
                     },
@@ -1463,11 +1465,23 @@
                  "max": 1
              }
          },
-         "top_change_cnt" : {
+         "topology_unstable" : {
+              "category": "status",
+              "type": {
+                  "key": {
+                      "type": "boolean"
+                  },
+                  "min": 0,
+                  "max": 1
+              }
+         },
+         "topology_change_count" : {
              "category": "statistics",
              "type": {
                  "key": {
-                     "type": "integer"
+                     "type": "integer",
+                     "minInteger": 0,
+                     "maxInteger": 2147483647
                  },
                  "min": 0,
                  "max": 1
@@ -1534,11 +1548,11 @@
                       "enum": [
                       "set",
                         [
-                          "root_port",
-                          "designated_port",
-                          "alternate_port",
-                          "backup_port",
-                          "disabled_port"
+                          "Root",
+                          "Designated",
+                          "Alternate",
+                          "Backup",
+                          "Disabled"
                         ]
                       ]
                     },
@@ -1768,6 +1782,18 @@
                    "min": 0,
                    "max": 1
                }
+            },
+            "fwd_transition_count" : {
+                "category": "statistics",
+                "type": {
+                    "key": {
+                        "type": "integer",
+                        "minInteger": 0,
+                        "maxInteger": 2147483647
+                    },
+                    "min": 0,
+                    "max": 1
+                }
             },
             "protocol_migration_enable" : {
                "category": "configuration",
