@@ -441,7 +441,7 @@ class Test_CreateLag(OpsVsiTest):
         else:
             return []
 
-
+@pytest.mark.skipif(True, reason="Skipping due to Taiga ID : 768")
 class Test_WebUIREST:
     def setup(self):
         pass
