@@ -3786,6 +3786,15 @@
           },
           "ephemeral": true
         },
+        "bond_status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
         "lacp_status": {
           "category": "status",
           "type": {
@@ -4428,6 +4437,15 @@
           }
         },
         "hw_intf_config": {
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "bond_status": {
+          "category": "status",
           "type": {
             "key": "string",
             "value": "string",
