@@ -203,7 +203,7 @@ def l3_route(**kwargs):
     LogOutput('info', "Packets Sent:\t" + str(packets_sent))
     LogOutput('info', "Packets Recv:\t" + str(packets_received))
     LogOutput('info', "Packet Loss %:\t" + str(packet_loss))
-    assert packets_sent == packets_received, "failed to ping switch"
+    assert packets_received >= 1 , "failed to ping switch"
 
 
 def deviceCleanup(**kwargs):
