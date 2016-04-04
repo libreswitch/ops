@@ -629,6 +629,7 @@ def Revert_profile():
         os.system('rm ospf_sys_var')
 
 
+@pytest.mark.skipif(True, reason="Skipping due to Taiga ID : 769")
 class Test_ospf_configuration:
 
     # Global variables

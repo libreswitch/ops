@@ -211,7 +211,7 @@ class cfgdTest(OpsVsiTest):
         else:
             info("\n### Passed: cur_cfg, next_cfg properly set ###\n")
 
-
+@pytest.mark.skipif(True, reason="Skipping temporarily due to defect #2084")
 class Test_cfgdTest:
     def setup(self):
         pass
