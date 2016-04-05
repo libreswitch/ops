@@ -38,8 +38,7 @@ Current configuration:
 !
 !
 !
-sftp-server
-    enable
+sftp server enable
 
 switch(config)#no sftp server enable
 
