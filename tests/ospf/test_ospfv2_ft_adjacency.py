@@ -329,7 +329,7 @@ def getTcpdump(switch_id):
     retCode = devIntReturn.get('returnCode')
     assert retCode == 0, "Failed to execute command"
 
-    devIntReturn = switch_id.DeviceInteract(command="timeout 50 tcpdump -i2\
+    devIntReturn = switch_id.DeviceInteract(command="timeout 70 tcpdump -i2\
                                             -v -XX ip proto 89")
     assert retCode == 0, "Failed to get tcpdump"
     return devIntReturn['buffer']
@@ -699,6 +699,7 @@ class Test_ospf_configuration:
         if (count > 1):
             LogOutput('info', "Hello packets exchanged periodically")
         else:
+            LogOutput('info', "**** Packet Captured **** %s" % dump_str)
             assert False, "Failed to exchange hello packets"
 
         LogOutput('info', "****** Verifying that dynamic router ID is "
@@ -746,6 +747,7 @@ class Test_ospf_configuration:
             LogOutput('info', "Router-id found in hello packet")
         else:
             LogOutput('info', "Router-id not seen in hello packet")
+            LogOutput('info', "**** Packet Captured **** %s" % dump_str)
             assert "Router-id not seen in hello packet"
 
         LogOutput('info', "****** Passed ******")
@@ -781,6 +783,7 @@ class Test_ospf_configuration:
         if neighbor_id == OSPF_ROUTER_ID_DUT1:
             LogOutput('info', "Static Router-id found in hello packet")
         else:
+            LogOutput('info', "**** Packet Captured **** %s" % dump_str)
             assert False, "Static router-id not found in hello packet"
 
         LogOutput('info', "****** Passed ******")
@@ -812,6 +815,7 @@ class Test_ospf_configuration:
             LogOutput('info', "Hello packets exchanged periodically")
         else:
             LogOutput('info', "Hello packets are not exchanged")
+            LogOutput('info', "**** Packet Captured **** %s" % dump_str)
             assert "Hello packets are not exchanged"
 
         LogOutput('info', "Step 3 - verify router ID of switch1"
@@ -824,6 +828,7 @@ class Test_ospf_configuration:
             LogOutput('info', "Router-id found in hello packet")
         else:
             LogOutput('info', "Router-id not seen in hello packet")
+            LogOutput('info', "**** Packet Captured **** %s" % dump_str)
             assert "Router-id not seen in hello packet"
 
         LogOutput('info', "Step 4 - verify adjacency is formed")
@@ -862,6 +867,8 @@ class Test_ospf_configuration:
         OSPF_ROUTER_ID_DUT3 = dict03[OSPF_ROUTER_KEY]
 
         LogOutput('info', "Step 2 - Wait for adjacency")
+        # Give some time for the IFSM to establish states
+        sleep(10)
         retVal = wait_for_adjacency(dut02Obj, OSPF_ROUTER_ID_DUT1)
         if retVal:
             LogOutput('info', "Adjacency formed in SW2 with SW1 (Router-id %s)"
@@ -1026,7 +1033,6 @@ class Test_ospf_configuration:
         LogOutput('info', "****** Passed ******")
 
 
-@pytest.mark.skipif(True, reason="Skipping due to Taiga ID : 769")
 class Test_ospf_configuration_l2switch:
 
     def setup_class(cls):
