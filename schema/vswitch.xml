@@ -6499,8 +6499,8 @@
     </column>
 
     <column name="from">
-      This column specifies who has configured this entry in the database.
-      Is it the hw-vtep controller, self learned from ASIC or statically configured.
+      This specifies whether this MAC address has been added by the
+      hw-vtep controller, dynamically learnt from the ASIC or statically configured.
     </column>
 
     <column name="port">

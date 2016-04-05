@@ -5461,7 +5461,7 @@
                 "set",
                 [
                   "hw-vtep",
-                  "learning",
+                  "dynamic",
                   "static"
                 ]
               ],
