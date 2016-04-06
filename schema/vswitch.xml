@@ -291,7 +291,13 @@
           <ref table="UDP_Bcast_Forwarder_Server"/>.
         </column>
     </group>
-
+    <group title="Virtual Router Configurations">
+        <column name="other_config" key="vrrp_enable"
+                type='{"type": "boolean"}'>
+          Set this value to <code>true</code> to enable VRRP functionality globally
+          and set it to <code>false</code> to disable it. VRRP is disabled by default.
+        </column>
+    </group>
     <group title="LACP Configurations">
       <column name="lacp_config" key="lacp-system-id">
         The LACP system ID of this <ref table="Bridge"/>.  The system ID of a
@@ -1977,6 +1983,280 @@
       </column>
       <column name="designated_port">
         The designated port ID.
+      </column>
+    </group>
+  </table>
+<table name="VRRP" title="Virtual Router Redundancy Protocol(VRRP) info">
+    <p>
+        This represents information regarding a VRRP group(or VR instance).
+    </p>
+    <group title="Configurations">
+      <column name="priority">
+        The priority value of the VR. Default value is <code>100</code>.
+      </column>
+      <column name="preempt_disable">
+        Set this value to <code>true</code>, to disable preempt mode.
+        Default value is <code>false</code>.
+        In the default mode, a Backup router coming up with a higher priority than another
+        Backup that is currently operating as Master will take over the Master function.
+        When the mode is disabled, the protocol prevents higher-priority Backup from taking
+        over the Master operation from a lower-priority Backup.
+        This mode does not prevent an Owner router from resuming the Master function after
+        recovering from being unavailable. Also, the VR instance must be disabled
+        (that is, set "admin_enable" to <code>false</code>) when setting this field.
+      </column>
+      <column name="version">
+        VRRP protocol version. Default is version <code>2</code>.
+        VRRPv3 supports usage of IPv4 and IPv6 addresses while VRRPv2 only supports IPv4 addresses.
+      </column>
+      <column name="ip_address">
+        Specifies a virtual IPv4 or IPv6 address for the VR instance. For an owner, the virtual IP
+        must be one of the IP addresses configured on the interface for that VR. For a backup,
+        the virtual IP must match the virtual IP of the owner. The owner and the backups using a given
+        virtual IP must all belong to the same network or subnet.
+        For IPv6, VR's first address should be link local address. After the primary link local
+        IPv6 address is configured on the VR, user can add the global IPv6 addresses.
+
+        This column, also specifies the interface's IP address to designate as the source for
+        VRRP advertisements from the VR. By default lowest interface's IP address is used as
+        source for VRRP advertisements. Source IP configuration parameter is for IPv4 only.
+        IPv6 doesn't have a source IP address configuration parameter.
+        For IPv6, the source IP address is the link-local address of the real interface over
+        which the packet is transmitted.
+      </column>
+      <column name="ip_address_secondary">
+        Specifies secondary IPv4 or IPv6 addresses for the VRRP group. You must configure a
+        primary address before you are able to configure secondary addresses.
+      </column>
+      <column name="timers" key="advertise_interval"
+             type='{"type":"integer", "minInteger": 100, "maxInteger" : 40950}'>
+        Specifies VRRP hello interval time in milliseconds.
+        Default is <code>1000</code> milliseconds.
+      </column>
+      <column name="timers" key="preempt_delay_time"
+              type='{"type":"integer", "minInteger": 0, "maxInteger" : 1600}'>
+        Specifies a time in seconds that this router will wait before taking control
+        of the virtual IP address that will allow it to route packets.
+        Default is <code>0</code> seconds.
+
+        In normal VRRP operation, one router(say Router-1) is in the Master state
+        and one router (Router-2) is in the Backup state. Router-1 provides the
+        default gateway for the hosts. If Router-1 goes down for any reason, the
+        Backup router, Router-2, provides the default gateway for the host. When
+        Router-1 comes back on line (fail-back), it takes control of the VIP, and
+        begins sending out VRRP advertisement packets at regular intervals. The
+        backup router receives the VRRP advertisements and transitions to the backup
+        state.
+
+        When OSPF is also enabled on the routers and a fail-back event occurs, the
+        master router immediately takes control of the VIP and provides the default
+        gateway functionality. If the OSPF has not converged, the route table in the
+        master router may not be completely populated. When hosts send packets to the
+        default gateway, the master router may not know where to send them and packets
+        may be dropped.
+
+        The Preempt Delay Timer allows user to configure a period of time before the
+        VR takes control of the VIP. It doesn't transition to master state until the timer
+        period expires.
+      </column>
+      <column name="failover">
+        Specifies whether to force the Backup VR operating as Master to relinquish
+        ownership of the VR instance. Allowed values are <code>enable_with_no_monitoring</code>,
+        <code>enable_with_monitoring</code>, <code>disable</code>.
+        Failover operation involves handing off the VR's control of the virtual IP to another
+        VR. Once a failover is enabled, the VR begins sending advertisements with priority
+        zero instead of the configured priority. When the VR detects a peer VR taking control, it
+        releases control of the virtual IP and ceases VR operation until a failback is executed.
+        Failover occurs on only a backup VR operating as master.
+        If failover is enabled with monitoring option, the VR continues to monitor the virtual IP
+        after ceasing VR operation. If the master VR goes down, it then retakes control of the
+        virtual IP.
+        Default value is <code>disable</code>.
+      </column>
+      <column name="failback_enable">
+        Set this value to <code>true</code>, to force the Backup VR to take ownership
+        of the VR instance. This only takes effect if the Backup VR instance has a higher
+        priority than the current Owner, which is normal VRRP router behavior.
+        Default value is <code>false</code>.
+      </column>
+      <column name="admin_enable">
+        Set this value to <code>true</code>, to activate the VR instance.
+        Default value is <code>false</code>.
+      </column>
+      <column name="track_entities">
+        Set of VRRP track entities.
+      </column>
+    </group>
+    <group title="Status">
+     <p>
+        VRRP group status items.
+     </p>
+     <column name="virtual_mac">
+        Specifies the virtual MAC address for the VR that gets added
+        to the MAC table when the VR becomes master.
+     </column>
+     <column name="status" key="mode"
+             type='{"type": "string", "enum": ["set", ["backup", "owner", "uninitialized"]]}'>
+        <p>
+        Specifies mode of the VRRP group. Default value is <code>unintialized</code>.
+        </p><p><code>backup</code> -
+        A router configured in a VR as a Backup to the Owner configured
+        for the same VR. There must be a minimum of one Backup in a VR to support VRRP operation
+        if the Owner fails. Every backup is created with a configurable priority that determines
+        the precedence for becoming the Master of the VR if the Owner or another Backup operating
+        as the Master becomes unavailable.Default backup priority value is <code>100</code>.
+        </p><p><code>owner</code> -
+        The router configured in a VR to own the virtual IP address
+        associated with the VR.(The virtual IP address for the VR must be configured as a
+        real IP address on the interface on which the VR is configured. The Owner is automatically
+        configured with the highest VRRP router priority value <code>255</code> in the VR and operates
+        as the Master router for the VR unless it becomes unavailable to the network.
+        </p><p><code>uninitialized</code> -
+        Default value. The operational mode for the VR entry has not been yet specified.
+        The mode is set to owner or bakcup after an IP address associated for the VR.
+        </p>
+     </column>
+     <column name="status" key="state"
+             type='{"type": "string", "enum": ["set", ["master", "backup"]]}'>
+        Specifies current state of the VRRP group.
+     </column>
+     <column name="status" key="state_duration">
+        The amount of time in seconds since VRRP group moved to this state.
+     </column>
+     <column name="status" key="master_router">
+        Specifies the IP address of the master router.
+     </column>
+     <column name="status" key="is_master_local" type='{"type": "boolean"}'>
+        Specifies if this router is master. Default value is <code>false</code>.
+     </column>
+      <column name="status" key="init_to_master_last_change" type='{"type": "integer"}'>
+        Epoch time of the last change from init to master state.
+      </column>
+      <column name="status" key="init_to_backup_last_change" type='{"type": "integer"}'>
+        Epoch time of the last change from init to backup state.
+      </column>
+      <column name="status" key="master_to_backup_last_change" type='{"type": "integer"}'>
+        Epoch time of the last change from master to backup state.
+      </column>
+      <column name="status" key="backup_to_master_last_change" type='{"type": "integer"}'>
+        Epoch time of the last change from backup to master state.
+      </column>
+      <column name="status" key="master_to_init_last_change" type='{"type": "integer"}'>
+        Epoch time of the last change from master to init state.
+      </column>
+      <column name="status" key="backup_to_init_last_change" type='{"type": "integer"}'>
+        Epoch time of the last change from backup to init state.
+      </column>
+    </group>
+   <group title="Statistics">
+     <p>
+       Various statistics related to this VRRP group (or VR instance).
+     </p>
+      <column name="statistics" key="vrrpv3_advertisement_tx">
+       Number of VRRPv3 advertisement packets sent.
+      </column>
+      <column name="statistics" key="vrrpv3_advertisement_rx">
+       Number of VRRPv3 advertisement packets received.
+      </column>
+      <column name="statistics" key="vrrpv2_advertisement_tx">
+       Number of VRRPv2 advertisement packets sent.
+      </column>
+      <column name="statistics" key="vrrpv2_advertisement_rx">
+       Number of VRRPv2 advertisement packets received.
+      </column>
+      <column name="statistics" key="zero_priority_rx">
+       Number of VRRP advertisement packets received
+       with the priority field set to 0(zero).
+      </column>
+      <column name="statistics" key="zero_priority_tx">
+       Number of VRRP advertisement packets sent
+       with the priority field set to 0(zero).
+      </column>
+      <column name="statistics" key="vrrpv2_incompatibility">
+       Number of VRRPv2 incompatible packets discarded.
+      </column>
+      <column name="statistics" key="mismatched_addr_list_pkts">
+       Number of VRRP packets received wherein the list of VIPs doesn't match
+       the locally configured VIPs for a VR.
+      </column>
+      <column name="statistics" key="mismatched_auth_type_pkts">
+       Number of VRRP packets received with the authentication type not
+       equal to 0 (zero, which is no authentication).
+      </column>
+      <column name="statistics" key="ip_address_owner_conflicts">
+       Number of packets discarded due to owner IP address conflict.
+      </column>
+      <column name="statistics" key="advertise_interval_errors">
+       Number of packets discarded due to advertisement interval mismatch.
+      </column>
+      <column name="statistics" key="advertise_recv_in_init_state">
+       Number of packets discarded due to advertisements recieved in init state.
+      </column>
+      <column name="statistics" key="invalid_group">
+       Number of packets discarded due to invalid group in packet.
+      </column>
+      <column name="statistics" key="other_reasons">
+       Number of packets discarded due to other reasons.
+      </column>
+      <column name="statistics" key="near_failovers">
+       Number of occurences of near failovers on the Backup VRRP routers.
+       This makes visible any difficulties the VRRP routers are having receiving the
+       "hello" advertisement from the master router.
+      </column>
+      <column name="statistics" key="init_to_master">
+       Number of times VR state changed from init to master.
+      </column>
+      <column name="statistics" key="init_to_backup">
+       Number of times VR state changed from init to backup.
+      </column>
+      <column name="statistics" key="backup_to_master">
+       Number of times VR state changed from backup to master.
+      </column>
+      <column name="statistics" key="master_to_backup">
+       Number of times VR state changed from master to backup.
+      </column>
+      <column name="statistics" key="master_to_init">
+       Number of times VR state changed from master to init.
+      </column>
+      <column name="statistics" key="backup_to_init">
+       Number of times VR state changed from backup to init.
+      </column>
+    </group>
+  </table>
+
+  <table name="VRRP_Track_Entity" title="VRRP track entity info">
+    <p>
+        This represents information regarding entities such as ports tracked by
+        VRRP virtual routers .
+        This feature provides the ability to dynamically change the priority of
+        the virtual router(VR) when tracked entities such as ports go down.
+        In normal VRRP operation, one router(say Router-1) is in the Master state
+        and one router (Router-2) is in the Backup state. Router-1 provides the default
+        gateway for the hosts. If Router-1 goes down for any reason, the Backup router,
+        Router-2, provides the default gateway for the host.
+        If all the tracked entities configured on Router-1 go down, Router-1 begins sending
+        advertisements with a priority of zero. This causes Router-2 to take control of the
+        virtual IP.
+        A Backup VR switches to priority zero instead of its configured value when all its
+        tracked entities go down. An Owner VR always uses priority <code>255</code> and
+        never relinquishes control voluntarily.
+    </p>
+    <group title="Configurations">
+      <column name="id">
+        VRRP track entity index.
+      </column>
+      <column name="track_port">
+        Specifies an L3 interface to track.
+      </column>
+    </group>
+    <group title="Status">
+     <p>
+        These are status parameters for a particular VRRP track entity.
+     </p>
+      <column name="status_up">
+        Specifies track entity status based on configured tracked L3 interface state.
+        The status is set to <code>true</code> if the tracked L3 interface state is <code>up</code>.
+        Otherwise set to <code>false</code>. Default value is <code>false</code>.
       </column>
     </group>
   </table>
@@ -3806,6 +4086,19 @@
         This is a list of secondary IPv6 addresses and subnet mask
         in the address/mask format.
       </column>
+      <group title="Virtual Router Configurations">
+       <p>
+         The "Port" level VRRP group Configurations.
+       </p>
+      <column name="virtual_ip4_routers">
+        The port's VRRP groups (or VR instances) for IPv4 address family.
+        A maximum of <code>32</code> VRRP groups can be assigned to a port.
+      </column>
+      <column name="virtual_ip6_routers">
+        The port's VRRP groups (or VR instances) for IPv6 address family.
+        A maximum of <code>32</code> VRRP groups can be assigned to a port.
+      </column>
+      </group>
       <group title="Port level OSPFv2 Configurations">
        <p>
          The "Port" level OSPFv2 Routing Configurations.
@@ -7705,7 +7998,8 @@
 
     <p>
       Configuration for consolidated MAC table which can potentially be
-      learnt from ASIC, from the hw-vtep controller or statically configured.
+      learnt from ASIC, from the hw-vtep controller, from the VRRP or
+      statically configured.
     </p>
 
     <column name="mac_addr">
@@ -7723,7 +8017,8 @@
 
     <column name="from">
       This specifies whether this MAC address has been added by the
-      hw-vtep controller or dynamically learnt from the ASIC.
+      hw-vtep controller, VRRP protocol, dynamically learnt from the ASIC
+      or statically configured.
     </column>
 
     <column name="port">
