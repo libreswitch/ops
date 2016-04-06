@@ -416,6 +416,15 @@
             "max": "unlimited"
           }
         },
+        "broadview_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
         "bufmon_config": {
           "category": "configuration",
           "type": {

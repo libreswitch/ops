@@ -861,6 +861,40 @@
         </column>
     </group>
 
+    <group title="BroadView configuration">
+      <p>
+        The parameters in this group are used to configure BroadView agent.
+        Parameter enabled is used to enable/disable BroadView.
+        Agent sends asynch reports to the application at client_ip and client_port.
+        Parameter agent_port is the port number on which agent listens for
+        client connections. The communication on agent port is of request - response style.
+      </p>
+      <column name="broadview_config" key="enabled"
+              type='{"type": "boolean"}'>
+        Specifies whether the BroadView feature is enabled on the system.
+        False, if the value is not present.
+      </column>
+
+      <column name="broadview_config" key="client_ip" >
+        Specifies BroadView client ip address. This is the IP that BroadView Agent
+        tries to reach out to send async reports.
+        If the value is not configured then default is 127.0.0.1.
+      </column>
+
+      <column name="broadview_config" key="client_port"
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+        Specifies BroadView client tcp port number. This is the port number along with client_ip that
+        BroadView agent shoud try to reach out to send async reports.
+        If no value is set, the default is 9070.
+      </column>
+
+      <column name="broadview_config" key="agent_port"
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+        Specifies BroadView agent tcp port number. Agent listens on this port for client connections.
+        If no value is set, the default is 8080.
+      </column>
+    </group>
+
     <group title="Bufmon configuration">
       <column name="bufmon_config" key="enabled"
               type='{"type": "boolean"}'>
