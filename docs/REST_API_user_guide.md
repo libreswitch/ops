@@ -30,10 +30,10 @@ Error in accessing the URIs supported by the REST API.
 
 The URL for accessing REST API documentation rendered on the switch is:
 ```ditaa
-    http://management_interface_ip_address-or-switch_name:8091/api/index.html
+    https://management_interface_ip_address-or-switch_name/api/index.html
 ```
 
-The default port is 8091. When https is used, the corresponding default port is 18091.
+The default HTTPS port is 443. When http is used (port 80), requests get redirected to https (port 443).
 
 To access details about the supported REST API without running a switch image, see the following website for information:
 ```ditaa
