@@ -516,6 +516,16 @@
             "min": 0,
             "max": 10
           }
+        },
+        "copp_statistics": {
+          "category": "statistics",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true
         }
       },
       "isRoot": true,

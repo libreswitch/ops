@@ -1154,6 +1154,26 @@
       </column>
     </group>
 
+    <group title="COPP Statistics">
+      <p>
+        Contains key-value pairs that report overall Control Plane Policing
+        statistics regarding packets/bytes delivered to the management CPU
+        or packets/bytes dropped due to excessive rate.
+      </p>
+      <column name="copp_statistics" key="total_packets_passed">
+        Total number of protocol packets delivered to the management CPU.
+      </column>
+      <column name="copp_statistics" key="total_bytes_passed">
+        Total number of protocol bytes delivered to the management CPU.
+      </column>
+      <column name="copp_statistics" key="total_packets_dropped">
+        Total number of protocol packets dropped due to excessive rate.
+      </column>
+      <column name="copp_statistics" key="total_bytes_dropped">
+        Total number of protocol bytes dropped due to excessive rate.
+      </column>
+    </group>
+
     <group title="Common Columns">
       The overall purpose of these columns is described under <code>Common
       Columns</code> at the beginning of this document.
