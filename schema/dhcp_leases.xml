@@ -16,9 +16,12 @@
     </column>
 
     <column name="mac_address">
-      Specifies the Ethernet MAC address of the DHCP client to which IP address
-      is assigned by the DHCP server.
+      In case of IPv4 leases, specifies the Ethernet MAC address of the DHCP
+      client to which IP address is assigned by the DHCP server.
       Example: e6:8c:98:bb:b4:de.
+      In case of IPv6 leases, specifies the DHCP Unique Identifier (DUID) used
+      by the DHCP client to get an IP address from a DHCPv6 server.
+      Example: 00:01:00:01:1e:99:8b:b6:00:00:02:b5:78:f4
     </column>
 
     <column name="ip_address">
