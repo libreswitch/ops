@@ -141,6 +141,8 @@ vlan 2
 interface bridge_normal
   no routing
 ```
+Note:
+Though VLAN 1 is configured by default, it is shown in running configuration to ensure that when a switch boots up all ports belong to the default VLAN. This is an exception.
 ```
 switch# show vlan summary
 Number of existing VLANs: 5
