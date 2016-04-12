@@ -12,6 +12,7 @@ improvements are currently available only for the C IDL.
 1. [Partial update of map columns](#partial_map_updates)
 2. [On-demand fetching of non-monitored data](#on_demand_fetching)
 3. [Compound indexes](#compound_indexes)
+4. [Priority Sessions](#Priority-Sessions)
 
 ## Partial update of map columns <a name="#partial_map_updates"></a>
 
@@ -380,3 +381,43 @@ const struct ovsrec_<table> *ovsrec_<table>_index_get_data(const struct ovsdb_id
 
 `ovsrec_<table>_index_get_data` returns a pointer to the replica's row that is
 pointed by the cursor, or NULL.
+
+## Priority Sessions
+
+
+### Usage from the C IDL
+
+To change the priority of a session with the IDL run the command
+`ovsdb_idl_set_identity`, that receives an IDL and the session name.
+That function must be called after the IDL receives the initial replica.
+
+With the function `ovsdb_idl_get_priority` the priority assigned by
+the OVSDB Server can be retrieved (after an `ovsdb_idl_run`).
+
+### Usage with ovsdb-client
+
+Call the ovsdb-client with:
+```
+ovsdb-client identify <name>
+```
+It returns the priority assigned to <name> by the OVSDB Server.
+
+### Priorities file
+
+The priority file is a JSON file with the identifiers as keys,
+and the corresponding priority as the value. For example:
+```
+{
+    "0": ["criticald", "cruciald", "urgentd"],
+    "7": ["exampled],
+    "15": ["notimportantd", "notcriticald"]
+}
+```
+
+The OVSDB Server receives the path to the priorities file with the
+--priority-file flag.
+
+That file can be updated and reloaded at runtime using ovs-appctl:
+```
+ovs-appctl -t ovsdb-server ovsdb-server/priority-reload
+```

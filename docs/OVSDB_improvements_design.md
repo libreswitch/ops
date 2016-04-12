@@ -13,6 +13,7 @@ improvements are currently available only for the C IDL.
 2. [On-demand fetching of non-monitored data](#On-demand-fetching-of-non-monitored-data)
 3. [Compound indexes](#Compound-Indexes)
 4. [jemalloc Memory Allocator](#jemalloc-Memory-Allocator)
+5. [Priority Sessions](#Priority-Sessions)
 
 ## Partial update of map columns
 
@@ -388,3 +389,106 @@ The results show a consistent better results of jemalloc over GLibC memory
 allocator.
 TCMalloc was faster in some benchmarks, but uses a lot more of RAM than
 jemalloc.
+
+## Priority Sessions
+
+### Background
+Different clients have different response time requirements from the OVSDB. A
+program used by a user could wait a little more than a daemon critical for the
+correct operation of the switch.
+
+With *priority sessions* it is possible to identify the clients within the OVSDB
+Server, and the server assigns a higher priority to the process that need it the
+most.
+
+This feature is composed of:
+
+* A new JSON RPC method (`identify`), that the client uses to identify
+  the session in the server.
+* A file given to the OVSDB Server, that has the priority that must be
+  assigned to each identifier.
+* An ovs-appctl command to reload that list.
+* The required changes in the OVSDB Server to implement the feature.
+* The ability to call the `identify` command from the ovsdb-client
+  (mostly for testing purposes).
+
+### Changes to JSON RPC
+
+The method `identify` was introduced. It has a single parameter the
+name or identifier of the session. The response is a integer between 0 and 15
+(including both) with the priority assigned by the server.
+
+```
+/* Request: */
+{
+    "method": "identify",
+    "params": [{"name": "<name or identifier of the session"}],
+    "id": ...
+}
+
+/* Response: */
+{
+    "error": null,
+    "result": {"priority": <integer between [0, 15]>,
+                "uuid": "server's uuid'"},
+    "id": ...
+}
+```
+
+In case that the server doesn't support this method then it will respond with
+an error.
+
+### Priorization Algorithm
+
+The priority sessions feature has 16 different priorities, being 8 the default
+priority, 0 the highest priority and 15 the lowest priority.
+
+The OVSDB Server process the requests inside a loop that iterates over all the
+connections. With this feature the OVSDB Server responds only to the sessions
+with the corresponding priority.
+
+The sessions with priority 0 are executed always, the sessions with priority 1
+are executed in 15 of each 16 iterations, the sessions with priority 2 are
+executed in 14 of each 16 iterations and so on. Therefore, the sessions are
+executed in at least the following percentage of iterations:
+
+| Priority | Percent of Iterations (at least) |
+|:--------:|:----------------------:|
+| 0  | 100.00% |
+| 1  | 93.75%  |
+| 2  | 87.50%  |
+| 3  | 81.25%  |
+| 4  | 75.00%  |
+| 5  | 68.75%  |
+| 6  | 62.50%  |
+| 7  | 56.25%  |
+| 8  | 50.00%  |
+| 9  | 43.75%  |
+| 10 | 37.50%  |
+| 11 | 31.25%  |
+| 12 | 25.00%  |
+| 13 | 18.75%  |
+| 14 | 12.50%  |
+| 15 | 6.25%   |
+
+To avoid iterations in which the OVSDB Server "does nothing" it process the
+transactions from sessions with a lower priority, in case it doesn't have any
+other session with the "current priority" (or a higher priority).
+
+### Priorities file
+
+Instead of allowing the client to request a priority, this system works with a
+priority file. This is a json file that has a JSON map with the identifiers and
+the assigned priority, like this:
+
+```
+{
+    "0": ["criticald", "cruciald", "urgentd"],
+    "7": ["exampled],
+    "15": ["notimportantd", "notcriticald"]
+}
+```
+
+In case that an identifier wasn't specified in this file then the OVSDB Server
+assigns it the default priority (8). The file can be reloaded at runtime, using
+an ovs-appctl command.
