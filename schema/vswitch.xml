@@ -1099,6 +1099,26 @@
         is assumed to be enabled.
         </p>
       </column>
+
+      <column name="dhcp_config" key="v6relay_enabled"
+              type='{"type": "boolean"}'>
+        <p>
+        Set this value to <code>true</code> to enable DHCPv6-Relay functionality
+        globally and set it to <code>false</code> to disable it. This configuration
+        is disabled by default.
+        Though DHCPv6-Relay configuration is enabled globally, the functionality
+        is effective only after the port level server configuration.
+        </p>
+      </column>
+
+      <column name="dhcp_config" key="v6relay_option79_enabled"
+              type='{"type": "boolean"}'>
+        <p>
+        Set this value to <code>true</code> to enable the DHCPv6-Relay Option 79
+        and set it to <code>false</code> otherwise. This configuration is
+        disabled by default.
+        </p>
+      </column>
     </group>
 
     <group title="QoS configuration">
