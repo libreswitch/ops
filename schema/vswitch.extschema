@@ -8734,6 +8734,56 @@
           }
         }
       }
+    },
+    "Notification_Subscriber": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": "string",
+          "mutable": false
+        },
+        "type": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set", [
+                  "ws"
+                ]
+              ]
+            }
+          },
+          "mutable": false
+        },
+        "notification_subscriptions": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Notification_Subscription"
+            },
+            "min": 0,
+            "max": "unlimited"
+          }
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true
+    },
+    "Notification_Subscription": {
+      "columns": {
+        "resource_uri": {
+          "category": "configuration",
+          "type": "string",
+          "mutable": false
+        }
+      }
     }
   }
 }
