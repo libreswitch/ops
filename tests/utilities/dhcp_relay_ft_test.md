@@ -74,7 +74,8 @@ The requirements for this test case are:
 2. Configure server IP address as helper addresses on the DHCP relay agent.
 3. Configure the DHCP Server to assign IP address to the client.
 4. Request DHCP address on client and verify that the DHCP relay agent relays DHCP packets to client/server.
-5. Verify that the DHCP client has received an IP address.
+5. Verify that the DHCP relay statistcs are updated currectly.
+6. Verify that the DHCP client has received an IP address.
 
 ### Test results criteria
 #### Test pass criteria
@@ -104,6 +105,7 @@ This test fails if a the DHCP client does not recieve an IP address.
 3. delete the static route from server2 to dhcp client.
 4. Configure the DHCP Servers to assign IP address to the client.
 5. Request DHCP address on client and verify that the DHCP relay agent receives response from server1.
+6. Verify that the DHCP relay drop counters are updated currectly on the interface connected to server2.
 6. Verify that the DHCP client has received an IP address.
 
 ### Test results criteria
@@ -138,7 +140,8 @@ This is a manual test. Configuration is below:
 5. Verify that the DHCP Client has received an IP address.
 6. Remove server IP address as helper addresses on DHCP relay agent.
 7. Request DHCP address on client.
-8. Verify that the DHCP Client has not received an IP address.
+8. Verify that all the DHCP relay statistics are reset to 0's.
+9. Verify that the DHCP Client has not received an IP address.
 
 ### Test results criteria
 #### Test pass criteria
@@ -230,15 +233,16 @@ This test will test the DHCP relay agent to add the proper remote ID to the DHCP
 3. Create an interface on DHCP relay with two IP addresses
 interface 100
 (int-100)ip address 10.10.10.1/24
-(int-100)ip address 10.10.20.1/24
+(int-100)ip address 10.10.20.1/24 secondary
 2. Enable dhcp-relay option 82 to replace interface ip, with no server responses validation using `dhcp-relay option 82 replace ip` command.
 3. On DHCP client , request a DHCP ip address (10.10.10.x) subnet, by setting the giaddr(relay agent IP address)
 to the address of the DHCP relay in the client interface for the desired subnet. ex: 10.10.10.1
 4. Do not add option 82 information on original request.
 5. Using Sniffer validate ethernet packets going/coming from DHCP server. DHCP relay should add Option 82 to DHCP request to server appending remote ID the IP address of the multinetted interface.
-6. Verify Client recieves IP address.
-7. Delete the configured IP address and configure a new IP.
-8. Verify in the successive request the new IP is used as remote ID.
+6. Verify that the DHCP relay option 82 statistcs are updated currectly.
+7. Verify Client recieves IP address.
+8. Delete the configured IP address and configure a new IP.
+9. Verify in the successive request the new IP is used as remote ID.
 
 ### Test results criteria
 #### Test pass criteria
@@ -612,8 +616,8 @@ This test fails if lowest address on an interface is not the relay gateway.
 ### Verify that set gateway is the interface that gets DHCP addresses
 This test will verify that the set gateway IP address on a multinetted interface will be used for the relay gateway.
 ### Description
-1. Create a multinetted interface and make sure the set gateway IP subnet is used for DHCP addresses.
-2. Set the gateway for the multinetted interface using `interface 3 ip bootp-gateway <IPaddress>` command.
+1. Create a multinetted interface (Ex: interface 3) and make sure the set gateway IP subnet is used for DHCP addresses.
+2. Set the gateway for the multinetted interface 3 using `ip bootp-gateway <IPaddress>` command.
 Choose an address from the ones configured on interface 3 that is not the lowest.
 3. Request DHCP address on client.
 4. Use "Wireshark" to capture packets and make sure set gateway address is the relay gateway.
@@ -627,17 +631,17 @@ This test fails if set address on an interface is not the relay gateway.
 
 ### Verify that removal of set gateway IP address on a multinetted interface will cause the lowest address to become the default gateway
 ### Description
-1. Create a multinetted interface and make sure the set gateway IP subnet is used for DHCP addresses.
-2. Set the gateway for the multinetted interface using `interface 3 ip bootp-gateway <IPaddress>` command.
+1. Create a multinetted interface (Ex:interface 3) and make sure the set gateway IP subnet is used for DHCP addresses.
+2. Set the gateway for the multinetted interface 3 using `ip bootp-gateway <IPaddress>` command.
 Choose an address from the ones configured on interface 3 that is not the lowest.
 3. Request DHCP address on client.
 4. Use "Wireshark" to capture packets and make sure set gateway address is the relay gateway.
 5. Verify in the DHCP packets which address is the gateway.
-6. Disconnect DHCP Relay and remove gateway from multinetted interface using `no interface 3 ip bootp-gateway <IP address>` command.
+6. Disconnect DHCP Relay and remove gateway from multinetted interface 3 using `no ip bootp-gateway <IP address>` command.
 7. Use Ethereal to capture packets and make sure lowest IP address is the relay gateway.
-8. Re-add the removed gateway on interface using `interface 3 ip bootp-gateway <ip address>` command.
-9. Now physically remove the GW address from the interface using `no interface 3 ip address <ip address>` command.
-10. Verify that next time client refreashes lease it should obtain address from lowest remaining IP address on interface.
+8. Re-add the removed gateway on interface 3 using `ip bootp-gateway <ip address>` command.
+9. Now physically remove the GW address from the interface 3 using `no ip address <ip address>` command.
+10. Verify that next time client refreashes lease it should obtain address from lowest remaining IP address on interface 3.
 
 ### Test results criteria
 #### Test pass criteria
