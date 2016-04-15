@@ -190,7 +190,7 @@ def l3_route(**kwargs):
     "ip route add 192.168.1.0/24  via 182.158.1.2")
     LogOutput('info', "Pinging between workstation1 and dut01")
 
-    retStruct = wrkstn1.Ping(ipAddr = "182.158.1.1", packetCoung=10)
+    retStruct = wrkstn1.Ping(ipAddr = "182.158.1.1", packetCount=10)
     retCode = retStruct.returnCode()
     assert retCode == 0, "failed to ping switch"
 
