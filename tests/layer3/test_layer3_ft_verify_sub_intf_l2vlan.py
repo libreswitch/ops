@@ -114,7 +114,7 @@ def l3_route(**kwargs):
         LogOutput('error', "Failed to configure IP on workstation")
     LogOutput('info', "Pinging between workstation1 and dworkstation3")
 
-    retStruct = wrkstn2.Ping(ipAddr = "172.168.1.3", packetCoung=10)
+    retStruct = wrkstn2.Ping(ipAddr = "172.168.1.3", packetCount=10)
     retCode = retStruct.returnCode()
     assert retCode == 0, "failed to ping Host3"
 
@@ -154,7 +154,7 @@ def l3_route(**kwargs):
     if retStructObj.returnCode() != 0:
         LogOutput('error', "Failed to configure IP on workstation")
 
-    retStruct = wrkstn1.Ping(ipAddr = "192.168.1.1", packetCoung=10)
+    retStruct = wrkstn1.Ping(ipAddr = "192.168.1.1", packetCount=10)
     retCode = retStruct.returnCode()
     assert retCode == 0, "failed to ping switch"
 
@@ -174,7 +174,7 @@ def l3_route(**kwargs):
                     subInterface=device1.linkPortMapping['lnk01'] + ".10",
                                    dot1q=True, vlan=200, enable = True)
 
-    retStruct = wrkstn1.Ping(ipAddr = "192.168.1.1", packetCoung=10)
+    retStruct = wrkstn1.Ping(ipAddr = "192.168.1.1", packetCount=10)
     retCode = retStruct.returnCode()
     assert retCode != 0, "able to ping switch"
     LogOutput('info', "IPv4 Ping from workstation 1 to dut01 return JSON:\n" +
@@ -195,7 +195,7 @@ def l3_route(**kwargs):
                     subInterface=device1.linkPortMapping['lnk01'] + ".10",
                                    dot1q = False, vlan = 200, enable = True)
 
-    retStruct = wrkstn1.Ping(ipAddr = "192.168.1.1", packetCoung = 10)
+    retStruct = wrkstn1.Ping(ipAddr = "192.168.1.1", packetCount = 10)
     retCode = retStruct.returnCode()
     assert retCode != 0, "failed to ping switch"
 

@@ -81,7 +81,7 @@ def sub_interface(**kwargs):
         LogOutput('error', "Failed to configure IP on workstation")
         assert(False)
 
-    retStruct = wrkstn1.Ping(ipAddr = "20.0.0.1", packetCoung=10)
+    retStruct = wrkstn1.Ping(ipAddr = "20.0.0.1", packetCount=10)
     retCode = retStruct.returnCode()
     assert retCode == 0, "failed to ping switch"
 
@@ -101,7 +101,7 @@ def sub_interface(**kwargs):
                     interface=device1.linkPortMapping['lnk01'] + ".1")
 
     LogOutput('info', "shutting down interface 1.1")
-    retStruct = wrkstn1.Ping(ipAddr = "20.0.0.1", packetCoung=10)
+    retStruct = wrkstn1.Ping(ipAddr = "20.0.0.1", packetCount=10)
     sleep(20)
     retCode = retStruct.returnCode()
     assert retCode != 0, "failed to ping switch"
@@ -140,7 +140,7 @@ def sub_interface(**kwargs):
                 "ip -6 address add 2000::9/64 dev eth1.12")
     sleep(2)
     retStruct = wrkstn1.Ping(ipAddr = "2000::23",
-                             ipv6Flag = True, packetCoung=10)
+                             ipv6Flag = True, packetCount=10)
     retCode = retStruct.returnCode()
     assert retCode == 0, "failed to ping switch"
     LogOutput('info', "IPv6 Ping from workstation 1 to dut01 return \
@@ -161,7 +161,7 @@ def sub_interface(**kwargs):
                     dot1q=True, vlan=17)
     sleep(2)
     retStruct = wrkstn1.Ping(ipAddr = "2000::23",
-                             ipv6Flag = True, packetCoung=10)
+                             ipv6Flag = True, packetCount=10)
     retCode = retStruct.returnCode()
     assert retCode != 0, "Still ping success"
     LogOutput('info', "IPv6 Ping from workstation 1 to dut01 return \

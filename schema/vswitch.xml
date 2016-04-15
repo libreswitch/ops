@@ -1099,6 +1099,26 @@
         is assumed to be enabled.
         </p>
       </column>
+
+      <column name="dhcp_config" key="v6relay_enabled"
+              type='{"type": "boolean"}'>
+        <p>
+        Set this value to <code>true</code> to enable DHCPv6-Relay functionality
+        globally and set it to <code>false</code> to disable it. This configuration
+        is disabled by default.
+        Though DHCPv6-Relay configuration is enabled globally, the functionality
+        is effective only after the port level server configuration.
+        </p>
+      </column>
+
+      <column name="dhcp_config" key="v6relay_option79_enabled"
+              type='{"type": "boolean"}'>
+        <p>
+        Set this value to <code>true</code> to enable the DHCPv6-Relay Option 79
+        and set it to <code>false</code> otherwise. This configuration is
+        disabled by default.
+        </p>
+      </column>
     </group>
 
     <group title="QoS configuration">
@@ -2626,6 +2646,13 @@
         The possible values are "true" and "false".
       </column>
     </group>
+   <group title="MACs Validity">
+      <column name="macs_invalid">
+        If <code>true</code>, indicates that MACs on this VLAN are invalid. This might
+        be set by any agent of the system that decides that MACs are indeed invalid. Eventually
+        those MACs will be cleared from the system and macs_invalid will revert to <code>false</code>.
+      </column>
+   </group>
    <group title="VLAN Status">
       <column name="oper_state">
         Operational state of this VLAN.
@@ -3564,6 +3591,19 @@
         Statistics for the ACL applied to this port for ACEs that have the
         'count' keyword specified.  Statistics are key/value pairs of
         ACL sequence number and integer representing the statistics for that entry.
+      </column>
+    </group>
+    <group title="MACs Validity">
+      <column name="macs_invalid_on_vlans">
+        If a set of VLANs is specified, it indicates that MACs on this port and that set of VLANs
+        are invalid. This might be set by any agent of the system that decides that
+        MACs are indeed invalid. Eventually those MACs will be cleared from the system
+        and macs_invalid_on_vlans will revert to an empty set.
+      </column>
+      <column name="macs_invalid">
+        If <code>true</code>, indicates that MACs on this port are invalid. This might
+        be set by any agent of the system that decides that MACs are indeed invalid. Eventually
+        those MACs will be cleared from the system and macs_invalid will revert to <code>false</code>.
       </column>
     </group>
     <group title="Common Columns">
