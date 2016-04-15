@@ -8794,6 +8794,9 @@
           "relationship": "1:m",
           "type": {
             "key": {
+              "type": "string"
+            },
+            "value": {
               "type": "uuid",
               "refTable": "Notification_Subscription"
             },
@@ -8811,7 +8814,7 @@
     },
     "Notification_Subscription": {
       "columns": {
-        "resource_uri": {
+        "resource": {
           "category": "configuration",
           "type": "string",
           "mutable": false
