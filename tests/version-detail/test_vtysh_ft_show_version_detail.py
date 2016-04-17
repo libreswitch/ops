@@ -1,5 +1,3 @@
-#!/usr/bin/python
-#
 # (c) Copyright 2016 Hewlett Packard Enterprise Development LP
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -15,40 +13,39 @@
 #    under the License.
 #
 
-from mininet.node import Host
-from mininet.net import Mininet
-from mininet.topo import SingleSwitchTopo
-from opsvsi.opsvsitest import OpsVsiTest, OpsVsiLink, VsiOpenSwitch
+from opstestfw import *
+from opstestfw.switch.CLI import *
+from opstestfw.switch import *
 
-class ShowVersionDetailCliFtTest(OpsVsiTest):
-    def setupNet(self):
-        # if you override this function, make sure to
-        # either pass getNodeOpts() into hopts/sopts
-        # of the topology that you build or into
-        # addHost/addSwitch calls
-        host_opts = self.getHostOpts()
-        switch_opts = self.getSwitchOpts()
-        system_topo = SingleSwitchTopo(k=0, hopts=host_opts,
-                                       sopts=switch_opts)
-        self.net = Mininet(system_topo, switch=VsiOpenSwitch,
-                           host=Host, link=OpsVsiLink,
-                           controller=None, build=True)
-        self.s1 = self.net.switches[0]
+# Topology definition
+topoDict = {"topoExecution": 120,
+            "topoTarget": "dut01",
+            "topoDevices": "dut01",
+            "topoFilters": "dut01:system-category:switch"}
 
-    def check_show_version_detail_cli_ft(self):
-        output = self.s1.cmdCLI('show version detail')
-        assert "ops-sysd" in output, "ops-sysd was not found in show version\
-        detail output"
 
-class TestRunner:
-    @classmethod
+def check_show_version_detail_cli_ft(dut01):
+    cmdOut = dut01.cmdVtysh(command="show version detail")
+    assert 'ops-sysd' in cmdOut, "show version detail failed"
+    return True
+
+class TestShowVersionDetail:
+
     def setup_class(cls):
-        cls.test = ShowVersionDetailCliFtTest()
+        # Create Topology object and connect to devices
+        TestShowVersionDetail.testObj = testEnviron(
+            topoDict=topoDict, defSwitchContext="vtyShell")
+        TestShowVersionDetail.topoObj = \
+            TestShowVersionDetail.testObj.topoObjGet()
 
-    @classmethod
     def teardown_class(cls):
-        cls.test.stopNet()
-        cls.test = None
+        # Terminate all nodes
+        TestShowVersionDetail.topoObj.terminate_nodes()
 
-    def test_show_version_detail_cli_ft(self):
-        return self.test.check_show_version_detail_cli_ft()
+    def testShowVersionDetail(self):
+        dut01Obj = self.topoObj.deviceObjGet(device="dut01")
+        retValue = check_show_version_detail_cli_ft(dut01Obj)
+        if(retValue):
+            LogOutput('info', "Show version detail - passed")
+        else:
+            LogOutput('info', "Show version detail - failed")
