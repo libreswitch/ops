@@ -1,4 +1,4 @@
-# (C) Copyright 2015 Hewlett Packard Enterprise Development LP
+# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -13,7 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 #
-import pytest
 from opstestfw import *
 from opstestfw.switch.CLI import *
 from opstestfw.host import *
@@ -21,22 +20,6 @@ from opstestfw.host import *
 topoDict = {"topoExecution": 1000,
             "topoDevices": "dut01",
             "topoFilters": "dut01:system-category:switch"}
-
-
-def switch_reboot(dut01):
-
-    # Reboot switch
-    LogOutput('info', "Reboot switch")
-    dut01.Reboot()
-    rebootRetStruct = returnStruct(returnCode=0)
-    return rebootRetStruct
-
-
-def clear_up(dut01):
-    LogOutput('info', "Reboot switch")
-    dut01.Reboot()
-    rebootRetStruct = returnStruct(returnCode=0)
-    return rebootRetStruct
 
 
 def getInterfaceVlan(deviceObj, interface):
@@ -154,35 +137,16 @@ class Test_FT_LAG_dynamic_Negative_Tag_Untag_Vlan:
 
     def teardown_class(cls):
         # Terminate all nodes
-        clear_up(dut01Obj)
         Test_FT_LAG_dynamic_Negative_Tag_Untag_Vlan.topoObj.terminate_nodes()
 
     ##########################################################################
-    # Step 1 - Reboot Switch
-    ##########################################################################
-
-    def test_reboot_switches(self):
-
-        LogOutput('info', "\n################################################")
-        LogOutput('info', "# Step 1 - Reboot the switches")
-        LogOutput('info', "################################################")
-
-        devRebootRetStruc = switch_reboot(dut01Obj)
-
-        if devRebootRetStruc.returnCode() != 0:
-            LogOutput('error', "Failed to reboot Switch")
-            assert(False)
-        else:
-            LogOutput('info', "Passed Switch Reboot")
-
-    ##########################################################################
-    # Step 2 - Create Lag
+    # Step 1 - Create Lag
     ##########################################################################
 
     def test_create_lag(self):
 
         LogOutput('info', "\n###############################################")
-        LogOutput('info', "# Step 2 - Create Lag ")
+        LogOutput('info', "# Step 1 - Create Lag ")
         LogOutput('info', "###############################################")
 
         devLagRetStruct = lagCreation(
@@ -197,13 +161,13 @@ class Test_FT_LAG_dynamic_Negative_Tag_Untag_Vlan:
             LogOutput('info', "Passed lag creation")
 
     ##########################################################################
-    # Step 3 - Enable dynamic Lag
+    # Step 2 - Enable dynamic Lag
     ##########################################################################
 
     def test_enable_dynamic_lag(self):
 
         LogOutput('info', "\n###############################################")
-        LogOutput('info', "# Step 3 - Enable dynamic Lag ")
+        LogOutput('info', "# Step 2 - Enable dynamic Lag ")
         LogOutput('info', "###############################################")
 
         devLagDinRetStruct = lagMode(
@@ -218,13 +182,13 @@ class Test_FT_LAG_dynamic_Negative_Tag_Untag_Vlan:
             LogOutput('info', "Enable dynamic lag")
 
     ##########################################################################
-    # Step 4 - Create vlans
+    # Step 3 - Create vlans
     ##########################################################################
 
     def test_create_vlan(self):
 
         LogOutput('info', "\n################################################")
-        LogOutput('info', "# Step 4 - Create vlans ")
+        LogOutput('info', "# Step 3 - Create vlans ")
         LogOutput('info', "################################################")
 
         listVlan = [vlanAccessId, vlanTrunkId]
@@ -249,13 +213,13 @@ class Test_FT_LAG_dynamic_Negative_Tag_Untag_Vlan:
                 LogOutput('info', "Vlan created")
 
     ##########################################################################
-    # Step 5 - Add ports to the Lag
+    # Step 4 - Add ports to the Lag
     ##########################################################################
 
     def test_add_ports_lag(self):
 
         LogOutput('info', "\n################################################")
-        LogOutput('info', "# Step 5 - Add ports to the Lag ")
+        LogOutput('info', "# Step 4 - Add ports to the Lag ")
         LogOutput('info', "################################################")
 
         for currentInterface in listInterfaces:
@@ -271,13 +235,13 @@ class Test_FT_LAG_dynamic_Negative_Tag_Untag_Vlan:
                 LogOutput('info', "Port tagged")
 
     #######################################################################
-    # Step 6 - Enable Interfaces
+    # Step 5 - Enable Interfaces
     ##########################################################################
 
     def test_enable_interface(self):
 
         LogOutput('info', "\n###############################################")
-        LogOutput('info', "# Step 6 - Enable Interfaces ")
+        LogOutput('info', "# Step 5 - Enable Interfaces ")
         LogOutput('info', "###############################################")
 
         for currentInterface in listInterfaces:
@@ -292,13 +256,13 @@ class Test_FT_LAG_dynamic_Negative_Tag_Untag_Vlan:
                 LogOutput('info', "Interface enabled")
 
     ##########################################################################
-    # Step 7 - Enable vlan access in Lag
+    # Step 6 - Enable vlan access in Lag
     ##########################################################################
 
     def test_enable_vlan_trunk_lag(self):
 
         LogOutput('info', "\n###############################################")
-        LogOutput('info', "# Step 7  - Enable vlan trunk in lag ")
+        LogOutput('info', "# Step 6  - Enable vlan trunk in lag ")
         LogOutput('info', "###############################################")
 
         lagInterface = "lag " + str(lagId)
@@ -317,13 +281,13 @@ class Test_FT_LAG_dynamic_Negative_Tag_Untag_Vlan:
             LogOutput('info', "Passed to enable vlan access in lag")
 
     ##########################################################################
-    # Step 8 - Validated access vlan show in lag
+    # Step 7 - Validated access vlan show in lag
     ##########################################################################
 
     def test_validated_trunk_vlan_lag(self):
 
         LogOutput('info', "\n###############################################")
-        LogOutput('info', "# Step 8 - Validated access vlan show in Lag ")
+        LogOutput('info', "# Step 7 - Validated access vlan show in Lag ")
         LogOutput('info', "###############################################")
 
         lagInterface = "interface lag " + str(lagId)
@@ -342,13 +306,13 @@ class Test_FT_LAG_dynamic_Negative_Tag_Untag_Vlan:
             LogOutput('Info', "Vlan was corrected configured")
 
     ##########################################################################
-    # Step 9 - Validated access vlan show in lag
+    # Step 8 - Validated access vlan show in lag
     ##########################################################################
 
     def test_enable_vlan_access_lag(self):
 
         LogOutput('info', "\n###############################################")
-        LogOutput('info', "# Step 9 - Enable vlan access in lag ")
+        LogOutput('info', "# Step 8 - Enable vlan access in lag ")
         LogOutput('info', "###############################################")
 
         lagInterface = "lag " + str(lagId)
@@ -367,13 +331,13 @@ class Test_FT_LAG_dynamic_Negative_Tag_Untag_Vlan:
             LogOutput('info', "Passed to enable vlan access in lag")
 
     #######################################################################
-    # Step 10 - Validated access vlan show in lag
+    # Step 9 - Validated access vlan show in lag
     ##########################################################################
 
     def test_validated_access_vlan_lag(self):
 
         LogOutput('info', "\n###############################################")
-        LogOutput('info', "# Step 10 - Validated access vlan show in Lag ")
+        LogOutput('info', "# Step 9 - Validated access vlan show in Lag ")
         LogOutput('info', "###############################################")
 
         lagInterface = "interface lag " + str(lagId)

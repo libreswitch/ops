@@ -13,25 +13,33 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 #
+###############################################################################
+# Name:        StaticLagDeleteNonExistingLags.py
+#
+# Description: Tests that a previously configured static Link Aggregation does
+#              not stop forwarding traffic when attempting to delete several
+#              non-existent Link Aggregations with different names that may not
+#              be supported
+#
+# Author:      Jose Hernandez
+#
+# Topology:  |Host| ----- |Switch| ---------------------- |Switch| ----- |Host|
+#                                   (Static LAG - 2 links)
+#
+# Success Criteria:  PASS -> Non-existent LAGs cannot be deleted and they
+#                            don't affect the functioning LAG
+#
+#                    FAILED -> Functioning LAG configuration is changed or any
+#                              of the non-existing LAGs don't produce errors
+#                              when attempting to delete them
+#
+###############################################################################
 
-##########################################################################
-# Name:        lagDynamicNonConsecutiveInterfaces
-#
-# Objective:   To a static LAG can be created with non-consecutive interfaces
-#
-# Author:      Pablo Araya M.
-#               Adapted from: StaticLagConvertToDynamic by Jose Pablo Hernandez
-#
-# Topology:
-#              Client 1 <-> OpenSwitch_1
-#                                ||  LAG
-#              Client 2 <-> OpenSwitch_2
-#
-##########################################################################
 
 import pytest
 from opstestfw import *
 from opstestfw.switch.CLI import *
+from opstestfw.host import *
 
 topoDict = {"topoExecution": 3000,
             "topoDevices": "dut01 dut02 wrkston01 wrkston02",
@@ -42,13 +50,9 @@ topoDict = {"topoExecution": 3000,
             "topoFilters": "dut01:system-category:switch,\
                             dut02:system-category:switch,\
                             wrkston01:system-category:workstation,\
-                            wrkston02:system-category:workstation",
-            "topoLinkFilter":     "lnk01:dut01:interface:2,\
-                                    lnk02:dut01:interface:1,\
-                                lnk02:dut02:interface:1,\
-                                lnk03:dut01:interface:3,\
-                                lnk03:dut02:interface:3,\
-                                lnk04:dut02:interface:2"}
+                            wrkston02:system-category:workstation"}
+
+# Reboots switch
 
 
 def switch_reboot(deviceObj):
@@ -332,7 +336,7 @@ def createLAG(deviceObj, lagId, configure, intArray, mode):
             LogOutput(
                 'info', "Created LAG" + str(lagId) + " on " +
                 deviceObj.device)
-        retStruct = addInterfacesToLAG(deviceObj, lagId, intArray)
+        retStruct = addInterfacesToLAG(deviceObj, 1, intArray)
         if retStruct.returnCode() != 0:
             return False
         if mode != 'off':
@@ -381,99 +385,95 @@ def createLAG(deviceObj, lagId, configure, intArray, mode):
                 return False
     return True
 
-# Change LAG mode and verify configuration is consistent
+# Function to try and delete a non-existent LAG. It assumes there is only
+# 1 other LAG and then matches the information present in DUT to verify it
+# wasn't modified
 
 
-def changeLagMode(deviceObj, lagId, mode):
-    # Variables
-    modeHelper = ''
-    retStructOriginal = lacpAggregatesShow(
-        deviceObj=deviceObj, lagId=str(lagId))
-    if retStructOriginal.returnCode() != 0:
-        return False
-    if mode == 'off':
-        modeHelper = 'off'
-    else:
-        modeHelper = mode
-    retStruct = lagMode(lagId=str(lagId), deviceObj=deviceObj, lacpMode=mode)
+def deleteLAGNegative(
+        deviceObj, lagId, goodLagId, goodLagMode, goodLagInterfaces,
+        goodLagHash, goodLagFallback, goodLagFastFlag):
+    retStruct = lagCreation(
+        deviceObj=deviceObj, lagId=str(lagId), configFlag=False)
     if retStruct.returnCode() != 0:
+        LogOutput('info', "Failed to delete LAG " + str(lagId) +
+                  " as expected on " + deviceObj.device)
+    else:
+        LogOutput('error', "Deleted LAG " + str(lagId) +
+                  " unexpectedly on " + deviceObj.device)
         return False
-    retStruct = lacpAggregatesShow(deviceObj=deviceObj, lagId=str(lagId))
-    if retStructOriginal.returnCode() != 0:
+    retStruct = lacpAggregatesShow(deviceObj=deviceObj)
+    if retStruct.returnCode() != 0:
+        LogOutput('error', "Failed to verify if deleting LAG" +
+                  str(lagId) + " procuded changes on device " +
+                  deviceObj.device)
         return False
-    if len(retStruct.valueGet(key=str(lagId))['interfaces']) !=\
-            len(retStructOriginal.valueGet(key=str(lagId))['interfaces']):
-        text1 = ""
-        for i in retStruct.valueGet(key=str(lagId))['interfaces']:
-            text1 = " " + i
-        text2 = ""
-        for i in retStructOriginal.valueGet(key=str(lagId))['interfaces']:
-            text2 = " " + i
+    if len(retStruct.dataKeys()) != 1:
+        for i in retStruct.dataKeys():
+            helperText += "\n" + i
         LogOutput(
-            'error', "Number of interfaces on LAG changed. Before:" + text2 +
-            ". After: " + text1)
-        return false
-    for i in xrange(0, len(
-            retStructOriginal.valueGet(key=str(lagId))['interfaces'])):
-        coincidence = False
-        try:
-            for k in xrange(0, len(
-                    retStruct.valueGet(key=str(lagId))['interfaces'])):
-                if retStruct.valueGet(key=str(lagId))['interfaces'][k] ==\
-                        retStructOriginal.valueGet(
-                        key=str(lagId))['interfaces'][i]:
-                    coincidence = True
-                    break
-            if not coincidence:
-                LogOutput('error', "Interface " +
-                          retStructOriginal.valueGet(key=str(lagId))
-                          ['interfaces'][i] + " is no longer present in LAG")
-                return False
-        except:
+            'error',
+            "Expected to find only 1 LAG in configuration, found " +
+            str(len(retStruct.dataKeys())) + " with the following IDs:\n" +
+            helperText)
+        return False
+    if retStruct.dataKeys()[0] == lagId:
+        LogOutput('error', "Found deleted LAG ID on device " +
+                  deviceObj.device + " configuration")
+        return False
+    if retStruct.valueGet(key=goodLagId)['lacpMode'] != goodLagMode:
+        LogOutput(
+            'error',
+            "Remaining LAG LACP mode altered. Expected: " + str(goodLagMode) +
+            " - Found: " + str(retStruct.valueGet(key=goodLagId)['lacpMode']))
+        return False
+    if retStruct.valueGet(key=goodLagId)['hashType'] != goodLagHash:
+        LogOutput(
+            'error',
+            "Remaining LAG hashing algorithm altered. Expected: " +
+            str(goodLagHash) + " - Found: " +
+            str(retStruct.valueGet(key=goodLagId)['hashType']))
+        return False
+    if retStruct.valueGet(key=goodLagId)['fallbackFlag'] != goodLagFallback:
+        LogOutput(
+            'error',
+            "Remaining LAG fallback flag altered. Expected: " +
+            str(goodLagFallback) + " - Found: " +
+            str(retStruct.valueGet(key=goodLagId)['fallbackFlag']))
+        return False
+    if retStruct.valueGet(key=goodLagId)['lacpFastFlag'] != goodLagFastFlag:
+        LogOutput(
+            'error',
+            "Remaining LAG fast speed setting altered. Expected: " +
+            str(goodLagFastFlag) + " - Found: " +
+            str(retStruct.valueGet(key=goodLagId)['lacpFastFlag']))
+        return False
+    if len(retStruct.valueGet(key=goodLagId)['interfaces']) !=\
+            len(goodLagInterfaces):
+        helperText1 = ''
+        helperText2 = ''
+        for i in retStruct.valueGet(key=goodLagId)['interfaces']:
+            helperText1 += "\n" + i
+        for i in goodLagInterfaces:
+            helperText2 += "\n" + i
+        LogOutput(
+            'error',
+            "Number of links in remaining LAG was modified. Expected: " +
+            str(len(goodLagInterfaces)) + " with interfaces:\n" +
+            helperText2 + "\n Found: " +
+            str(len(retStruct.valueGet(key=goodLagId)['interfaces'])) +
+            " with interfaces: \n" + helperText1)
+        return False
+    for i in goodLagInterfaces:
+        found = False
+        for k in retStruct.valueGet(key=goodLagId)['interfaces']:
+            if i == k:
+                found = True
+                break
+        if not found:
             LogOutput(
-                'error', "Found unidentified error when comparing for \
-                changes on interfaces members of LAG")
-            LogOutput(
-                'error', "Dumping information before change:\n" +
-                retStructOriginal.buffer())
-            LogOutput(
-                'error', "Dumping information after change:\n" +
-                retStruct.buffer())
+                'error', "Could not find interface " + i + "in remaining LAG")
             return False
-    if retStruct.valueGet(key=str(lagId))['lacpFastFlag'] !=\
-            retStructOriginal.valueGet(key=str(lagId))['lacpFastFlag']:
-        LogOutput(
-            'error',
-            "Heartbeat settings on LAG changed. Before:" +
-            retStructOriginal.valueGet(key=str(lagId))['lacpFastFlag'] +
-            ". After: " +
-            retStruct.valueGet(key=str(lagId))['lacpFastFlag'])
-        return False
-    if retStruct.valueGet(key=str(lagId))['hashType'] !=\
-            retStructOriginal.valueGet(key=str(lagId))['hashType']:
-        LogOutput(
-            'error',
-            "Hash settings on LAG changed. Before:" +
-            retStructOriginal.valueGet(key=str(lagId))['hashType'] +
-            ". After: " +
-            retStruct.valueGet(key=str(lagId))['hashType'])
-        return False
-    if retStruct.valueGet(key=str(lagId))['fallbackFlag'] !=\
-            retStructOriginal.valueGet(key=str(lagId))['fallbackFlag']:
-        LogOutput(
-            'error',
-            "Fallback settings on LAG changed. Before:" +
-            retStructOriginal.valueGet(key=str(lagId))['fallbackFlag'] +
-            ". After: " +
-            retStruct.valueGet(key=str(lagId))['fallbackFlag'])
-        return False
-    if retStruct.valueGet(key=str(lagId))['lacpMode'] != modeHelper:
-        LogOutput('error', "The LAG have been configured in LACP mode " +
-                  modeHelper + " but instead it is in LACP mode " +
-                  retStruct.valueGet(key=str(lagId))['lacpMode'])
-        return False
-    LogOutput('info', "Changed LAG" + str(lagId) + " to LACP " +
-              modeHelper + "mode on device " + deviceObj.device)
     return True
 
 # Add VLAN to interface
@@ -490,8 +490,8 @@ def addInterfaceVLAN(deviceObj, vlanId, enable, int):
                   int)
         if retStruct.returnCode() != 0:
             LogOutput(
-                'error', "Failed to add VLAN " + str(vlanId) + " to \
-                interface " + int)
+                'error', "Failed to add VLAN " + str(vlanId) +
+                " to interface " + int)
             return False
     else:
         retStruct = AddPortToVlan(
@@ -631,37 +631,55 @@ def pingBetweenWorkstations(deviceObj1, deviceObj2, ipAddr, success):
             return False
     return True
 
+# Clean up devices
 
-def cleanup(dut01Obj, dut02Obj, wrkston01Obj, wrkston02Obj):
+
+def clean_up_devices(dut01Obj, dut02Obj, wrkston01Obj, wrkston02Obj):
     LogOutput('info', "\n############################################")
-    LogOutput('info', "CLEANUP")
+    LogOutput('info', "Device Cleanup - rolling back config")
     LogOutput('info', "############################################")
     finalResult = []
 
-    LogOutput('info', "\nCLEANUP - Unconfiguring workstation 1")
+    LogOutput('info', "Unconfigure workstations")
+    LogOutput('info', "Unconfiguring workstation 1")
     finalResult.append(configureWorkstation(
-        wrkston01Obj,
-        wrkston01Obj.linkPortMapping['lnk01'], "140.1.1.10",
-        "255.255.255.0", "140.1.1.255", False))
-    LogOutput('info', "\nCLEANUP - Unconfiguring workstation 2")
+        wrkston01Obj, wrkston01Obj.linkPortMapping['lnk01'],
+        "140.1.1.10", "255.255.255.0", "140.1.1.255", False))
+    LogOutput('info', "Unconfiguring workstation 2")
     finalResult.append(configureWorkstation(
-        wrkston02Obj,
-        wrkston02Obj.linkPortMapping['lnk04'], "140.1.1.11",
-        "255.255.255.0", "140.1.1.255", False))
+        wrkston02Obj, wrkston02Obj.linkPortMapping['lnk04'],
+        "140.1.1.11", "255.255.255.0", "140.1.1.255", False))
 
-    LogOutput('info', "\nCLEANUP - Reboot the switches")
-    devRebootRetStruct = switch_reboot(dut01Obj)
-    if devRebootRetStruct.returnCode() != 0:
-        LogOutput('error', "Failed to reboot Switch 1")
-        finalResult.append(devRebootRetStruct.returnCode())
-    else:
-        LogOutput('info', "Passed Switch 1 Reboot piece")
-    devRebootRetStruct = switch_reboot(dut02Obj)
-    if devRebootRetStruct.returnCode() != 0:
-        LogOutput('error', "Failed to reboot Switch 2")
-        finalResult.append(devRebootRetStruct.returnCode())
-    else:
-        LogOutput('info', "Passed Switch 2 Reboot piece")
+    LogOutput('info', "Delete LAGs on DUTs")
+    finalResult.append(createLAG(dut01Obj, '1', False, [], 'off'))
+    finalResult.append(createLAG(dut02Obj, '1', False, [], 'off'))
+
+    LogOutput('info', "Disable interfaces on DUTs")
+    LogOutput('info', "Configuring switch dut01")
+    finalResult.append(
+        enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk01'],
+                           False))
+    finalResult.append(
+        enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk02'],
+                           False))
+    finalResult.append(
+        enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk03'],
+                           False))
+
+    LogOutput('info', "Configuring switch dut02")
+    finalResult.append(
+        enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk02'],
+                           False))
+    finalResult.append(
+        enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk03'],
+                           False))
+    finalResult.append(
+        enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk04'],
+                           False))
+
+    LogOutput('info', "Remove VLAN from DUTs")
+    finalResult.append(configureVLAN(dut01Obj, 900, False))
+    finalResult.append(configureVLAN(dut02Obj, 900, False))
 
     for i in finalResult:
         if not i:
@@ -671,24 +689,42 @@ def cleanup(dut01Obj, dut02Obj, wrkston01Obj, wrkston02Obj):
     LogOutput('info', "Cleaned up devices")
 
 
-class Test_lagDynamicNonConsecutiveInterfaces:
+class Test_ft_framework_basics:
 
     def setup_class(cls):
         # Create Topology object and connect to devices
-        Test_lagDynamicNonConsecutiveInterfaces.testObj = \
-            testEnviron(topoDict=topoDict)
-        Test_lagDynamicNonConsecutiveInterfaces.topoObj =\
-            Test_lagDynamicNonConsecutiveInterfaces.testObj.topoObjGet()
+        Test_ft_framework_basics.testObj = testEnviron(topoDict=topoDict)
+        Test_ft_framework_basics.topoObj =\
+            Test_ft_framework_basics.testObj.topoObjGet()
 
     def teardown_class(cls):
-        dut01Obj = cls.topoObj.deviceObjGet(device="dut01")
-        dut02Obj = cls.topoObj.deviceObjGet(device="dut02")
-        wrkston01Obj = cls.topoObj.deviceObjGet(device="wrkston01")
-        wrkston02Obj = cls.topoObj.deviceObjGet(device="wrkston02")
-        cleanup(dut01Obj, dut02Obj, wrkston01Obj, wrkston02Obj)
-
+        # clean devices
+        clean_up_devices(
+            cls.topoObj.deviceObjGet(device="dut01"),
+            cls.topoObj.deviceObjGet(device="dut02"),
+            cls.topoObj.deviceObjGet(device="wrkston01"),
+            cls.topoObj.deviceObjGet(device="wrkston02"))
         # Terminate all nodes
-        Test_lagDynamicNonConsecutiveInterfaces.topoObj.terminate_nodes()
+        Test_ft_framework_basics.topoObj.terminate_nodes()
+
+    def test_reboot_switch(self):
+        LogOutput('info', "\n############################################")
+        LogOutput('info', "Reboot the switches")
+        LogOutput('info', "############################################")
+        dut01Obj = self.topoObj.deviceObjGet(device="dut01")
+        devRebootRetStruct = switch_reboot(dut01Obj)
+        if devRebootRetStruct.returnCode() != 0:
+            LogOutput('error', "Failed to reboot Switch 1")
+            assert(devRebootRetStruct.returnCode() == 0)
+        else:
+            LogOutput('info', "Passed Switch 1 Reboot piece")
+        dut02Obj = self.topoObj.deviceObjGet(device="dut02")
+        devRebootRetStruct = switch_reboot(dut02Obj)
+        if devRebootRetStruct.returnCode() != 0:
+            LogOutput('error', "Failed to reboot Switch 2")
+            assert(devRebootRetStruct.returnCode() == 0)
+        else:
+            LogOutput('info', "Passed Switch 2 Reboot piece")
 
     def test_createLAGs(self):
         LogOutput('info', "\n############################################")
@@ -699,9 +735,9 @@ class Test_lagDynamicNonConsecutiveInterfaces:
 
         assert(createLAG(dut01Obj, '1', True, [
                dut01Obj.linkPortMapping['lnk02'],
-               dut01Obj.linkPortMapping['lnk03']], 'active'))
+               dut01Obj.linkPortMapping['lnk03']], 'off'))
         assert(createLAG(dut02Obj, '1', True, [dut02Obj.linkPortMapping[
-               'lnk02'], dut02Obj.linkPortMapping['lnk03']], 'active'))
+               'lnk02'], dut02Obj.linkPortMapping['lnk03']], 'off'))
 
     def test_configureVLANs(self):
         LogOutput('info', "\n############################################")
@@ -768,7 +804,58 @@ class Test_lagDynamicNonConsecutiveInterfaces:
             wrkston02Obj.linkPortMapping[
                 'lnk04'], "140.1.1.11", "255.255.255.0", "140.1.1.255", True))
 
-    def test_pingBetweenClients(self):
+    def test_pingBetweenClients1(self):
+        LogOutput('info', "\n############################################")
+        LogOutput('info', "Test ping between clients work")
+        LogOutput('info', "############################################")
+        wrkston01Obj = self.topoObj.deviceObjGet(device="wrkston01")
+        wrkston02Obj = self.topoObj.deviceObjGet(device="wrkston02")
+        assert(pingBetweenWorkstations(
+            wrkston01Obj, wrkston02Obj, "140.1.1.11", True))
+
+    def test_deleteLAGs1(self):
+        LogOutput('info', "\n############################################")
+        LogOutput('info', "Delete non-existent LAGs")
+        LogOutput('info', "############################################")
+        dut01Obj = self.topoObj.deviceObjGet(device="dut01")
+        LogOutput('info', 'With ID XX')
+        assert(deleteLAGNegative(dut01Obj, 'XX', '1', 'off', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 0')
+        assert(deleteLAGNegative(dut01Obj, '0', '1', 'off', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID -1')
+        assert(deleteLAGNegative(dut01Obj, '-1', '1', 'off', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 2000')
+        assert(deleteLAGNegative(dut01Obj, '2000', '1', 'off', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 2001')
+        assert(deleteLAGNegative(dut01Obj, '2001', '1', 'off', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID @%&$#()')
+        assert(deleteLAGNegative(dut01Obj, '@%&$#()', '1', 'off', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 60000')
+        assert(deleteLAGNegative(dut01Obj, '60000', '1', 'off', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 600')
+        assert(deleteLAGNegative(dut01Obj, '600', '1', 'off', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 2')
+        assert(deleteLAGNegative(dut01Obj, '2', '1', 'off', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+
+    def test_pingBetweenClients2(self):
         LogOutput('info', "\n############################################")
         LogOutput('info', "Test ping between clients work")
         LogOutput('info', "############################################")
