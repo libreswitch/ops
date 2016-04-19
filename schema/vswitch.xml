@@ -6305,6 +6305,10 @@
         <column name="paths">
           The list of paths.
         </column>
+        <column name="route_info" key="cost" type='{"type": "integer", "maxInteger": 16777215}'>
+          The cost metric of the route.
+          The default value is <code>16777215</code>, which is maximum metric value.
+        </column>
         <column name="route_info" key="area_id" type='{"type": "integer"}'>
           The area ID of the route.
         </column>
@@ -6323,7 +6327,7 @@
         </column>
         <column name="route_info" key="type2_cost" type='{"type": "integer", "maxInteger": 16777215}'>
           The External Type 2 route cost.
-          The default value is 16777215.
+          The default value is <code>16777215</code>, which is maximum metric value.
         </column>
         <column name="route_info" key="ext_tag" type='{"type": "string"}'>
           The tag of the route.
