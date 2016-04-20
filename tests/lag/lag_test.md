@@ -725,7 +725,7 @@ The requirements for this test case are:
 
  - 2 Switches running OpenSwitch
  - 2 workstations`
- - **FT file**: `ops/tests/lacp/DynamicLagConvertToStatic.py`
+ - **FT file**: `ops-lacpd/ops-tests/feature/test_ft_lag_convert_to_lacp.py`
 
 ### Setup
 
