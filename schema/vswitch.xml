@@ -4572,6 +4572,439 @@
       <column name="pm_info" key="vendor_serial_number">
         The vendor's module serial number.
       </column>
+      <column name="pm_info" key="temperature"
+        type='{"type":"real", "minReal": -128, "maxReal": 128}'>
+        Internally measured transceiver temperature, ranging from -128 to 128, in units of Celsius.
+        This value is from DOM supporting SFP+/QSFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal temperature exceeds high alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal temperature is below low alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal temperature exceeds high warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal temperature is below low warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_high_alarm_threshold"
+        type='{"type":"real", "minReal": -128, "maxReal": 128}'>
+        Alarm high threshold value of internal temperature, ranging from -128 to 128, in units of Celsius.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_low_alarm_threshold"
+        type='{"type":"real", "minReal": -128, "maxReal": 128}'>
+        Alarm low threshold value of internal temperature, ranging from -128 to 128, in units of Celsius.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_high_warning_threshold"
+        type='{"type":"real", "minReal": -128, "maxReal": 128}'>
+        Warning high threshold value of internal temperature, ranging from -128 to 128, in units of Celsius.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_low_warning_threshold"
+        type='{"type":"real", "minReal": -128, "maxReal": 128}'>
+        Warning low threshold value of internal temperature, ranging from -128 to 128, in units of Celsius.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc"
+        type='{"type":"real", "minReal": 0, "maxReal": 6.55}'>
+        Internally measured transceiver supply voltage, ranging from 0 to 6.55, in units of Volts.
+        This value is from DOM supporting SFP+/QSFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal supply voltage exceeds high alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal supply voltage is below low alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal supply voltage exceeds high warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal supply voltage is below low warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_high_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal": 6.55}'>
+        Alarm high threshold value of internal supply voltage, ranging from 0 to 6.55, in units of Volts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_low_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal": 6.55}'>
+        Alarm low threshold value of internal supply voltage, ranging from 0 to 6.55, in units of Volts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_high_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal": 6.55}'>
+        Warning high threshold value of internal supply voltage, ranging from 0 to 6.55, in units of Volts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_low_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal": 6.55}'>
+        Warning low threshold value of internal supply voltage, ranging from 0 to 6.55, in units of Volts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Transceiver TX bias current, ranging from 0 to 131, in units of milliamps.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current exceeds high alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current is below low alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current exceeds high warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current is below low warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_high_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Alarm high threshold value of TX bias current, ranging from 0 to 131, in units of milliamps.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_low_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Alarm low threshold value of TX bias current, ranging from 0 to 131, in units of milliamps.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_high_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Warning high threshold value of TX bias current, ranging from 0 to 131, in units of milliamps.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_low_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Warning low threshold value of TX bias current, ranging from 0 to 131, in units of milliamps.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Transceiver received average optical power, ranging from 0 to 6.5535, in units of milliwatts.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power exceeds high alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power is below low alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power exceeds high warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power is below low warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_high_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Alarm high threshold value of received average optical power.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_low_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Alarm low threshold value of received average optical power.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_high_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Warning high threshold value of received average optical power.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_low_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Warning low threshold value of received average optical power.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Transceiver output power, ranging from 0 to 6.5535, in units of milliwatts.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate output power exceeds high alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate output power is below low alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate output power exceeds high warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate output power is below low warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_high_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Alarm high threshold value of output power, ranging from 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_low_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Alarm low threshold value of output power, ranging from 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_high_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Warning high threshold value of output power, ranging from 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_low_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Warning low threshold value of output power, ranging from 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx1_bias"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Transceiver TX bias current in channel 1 of QSFP+ module, ranging from 0 to 131, in units of milliamps.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx1_bias_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 1 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx1_bias_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 1 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx1_bias_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 1 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx1_bias_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 1 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx1_power"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Transceiver received average optical power in channel 1 of QSFP+ module.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx1_power_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 1 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx1_power_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 1 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx1_power_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 1 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx1_power_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 1 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx2_bias"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Transceiver TX bias current in channel 2 of QSFP+ module, ranging from 0 to 131, in units of milliamps.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx2_bias_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 2 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx2_bias_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 2 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx2_bias_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 2 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx2_bias_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 2 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx2_power"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Transceiver received average optical power in channel 2 of QSFP+ module.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx2_power_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 2 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx2_power_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 2 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx2_power_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 2 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx2_power_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 2 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx3_bias"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Transceiver TX bias current in channel 3 of QSFP+ module, ranging from 0 to 131, in units of milliamps.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx3_bias_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 3 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx3_bias_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 3 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx3_bias_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 3 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx3_bias_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 3 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx3_power"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Transceiver received average optical power in channel 3 of QSFP+ module.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx3_power_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 3 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx3_power_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 3 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx3_power_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 3 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx3_power_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 3 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx4_bias"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Transceiver TX bias current in channel 4 of QSFP+ module, ranging from 0 to 131, in units of milliamps.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx4_bias_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 4 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx4_bias_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 4 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx4_bias_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 4 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx4_bias_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 4 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx4_power"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Transceiver received average optical power in channel 4 of QSFP+ module.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx4_power_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 4 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx4_power_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 4 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx4_power_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 4 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx4_power_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 4 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
     </group>
 
     <group title="Statistics">
