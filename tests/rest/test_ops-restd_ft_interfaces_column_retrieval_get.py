@@ -426,6 +426,7 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         info(TEST_END % test_title)
 
 
+@pytest.mark.skipif(True, reason="fix Bug #657")
 class Test_ColretrieveInterface:
     def setup(self):
         pass
