@@ -40,7 +40,7 @@ OpenSwitch Web User Interface (UI)
 # Overview
 The OpenSwitch web UI provides an easy-to-see visual representation displaying the state of the switch. Easy-to-use view and configuration screens help the user to understand and configure complex features.
 
-# Accessing web UI
+# Accessing the web UI
 To access the web UI, open a web browser (Google Chrome preferred) and enter the IP address of the switch management interface.
 
 # Screens
@@ -134,14 +134,15 @@ An interface can be removed from the LAG by selecting it and clicking the less t
 
 #### Attributes
 LAG Attributes includes the following configuration options:
-- **Aggregation Mode:** Aggregation Mode can be Active, Passive, or Off.
-- **Rate:** Rate can be slow or fast.
-- **Fallback:** Fallback is true or false.
-- **Hash:** Options for Hash are:
- - L3 Src/Dst
- - L2 Src/Dst
- - L2 VID Src/Dst
- - L4 Src/Dst
+- **Aggregation Mode:** Aggregation Mode can be active, passive, or off (static LAG). The default setting is off.
+- **Rate:** Rate at which LACP control packets are sent to an LACP-supported interface to detect status and fault in the LAG:
+  - **Fast LACP:** LACP packets are sent every second.
+  - **Slow LACP (default):** LACP packets are sent every 30 seconds.
+- **Fallback:** Fallback is true or false (default).
+- **Hash:** Hashing is used to determine how the LAG chooses which interface to forward traffic:
+ - **L2 Src/Dst:** Layer 2 Source/Destination pair.
+ - **L3 Src/Dst (default):** Layer 3 Source/Destination pair.
+ - **L4 Src/Dst:** Layer 4 Source/Destination pair.
 
 ### Remove LAG
 The currently selected LAG can be removed by clicking the minus sign (-).
