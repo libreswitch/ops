@@ -327,7 +327,7 @@ def setupLldp(**kwargs):
     info('CLI_Switch1 Return Structure')
     retStruct.printValueString()
 
-
+@pytest.mark.skipif(True, reason="waiting for desicion when Modular ft comes out")
 @pytest.mark.timeout(1000)
 class Test_lldp_configuration:
     def setup_class(cls):

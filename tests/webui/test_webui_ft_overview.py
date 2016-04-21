@@ -24,10 +24,16 @@ import json
 import httplib
 import urllib
 
-from webui.utils.utils import *
+from opsvsiutils.restutils.utils import execute_request, get_switch_ip, \
+    get_json, rest_sanity_check, login
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
+
+
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.SWITCH_IP)
 
 
 class myTopo(Topo):
@@ -53,13 +59,15 @@ class Test_OverviewData(OpsVsiTest):
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
         self.PATHBASE = "/rest/v1/system/subsystems/base"
         self.PATHSYS = "/rest/v1/system"
+        self.cookie_header = None
 
     def test_overview_data(self):
         info("\n########## Test to Validate Base Info ##########\n")
         # Get data
-        status_code, response_data = execute_request(self.PATHBASE, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATHBASE, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to get base information"
 
         # Verify Data
@@ -78,9 +86,9 @@ class Test_OverviewData(OpsVsiTest):
 
         info("\n########## Test to Validate System Info ##########\n")
         # Get data
-        status_code, response_data = execute_request(self.PATHSYS, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATHSYS, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
         assert status_code == httplib.OK, "Failed to get base information"
 
         # Verify Data
@@ -117,5 +125,5 @@ class Test_OverviewPage:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test_overview_data()

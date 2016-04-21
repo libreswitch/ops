@@ -24,7 +24,8 @@ import json
 import httplib
 import urllib
 
-from webui.utils.utils import *
+from opsvsiutils.restutils.utils import execute_request, get_switch_ip, \
+    get_json, rest_sanity_check, login
 import copy
 
 NUM_OF_SWITCHES = 1
@@ -43,6 +44,25 @@ OTHER_PATCH = [{"op": "add",
                           "pause": "rxtx"}}]
 REMOVE_PATCH = [{"op": "remove",
                  "path": "/user_config"}]
+PORT_DATA = {
+    "configuration": {
+        "name": "1",
+        "interfaces": ["/rest/v1/system/interfaces/1"]
+    },
+    "referenced_by": [{"uri": "/rest/v1/system/bridges/bridge_normal"}]
+}
+
+INT_DATA = {
+    "configuration": {
+        "type": "system",
+        "name": "1"
+    }
+}
+
+
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.SWITCH_IP)
 
 
 class myTopo(Topo):
@@ -69,6 +89,7 @@ class Test_CreatePatch(OpsVsiTest):
         self.PATH = "/rest/v1/system"
         self.PATH_PORTS = self.PATH + "/ports"
         self.PATH_INT = self.PATH + "/interfaces"
+        self.cookie_header = None
 
     def test_patch_port_int_admin(self):
         port_data = copy.deepcopy(PORT_DATA)
@@ -76,18 +97,19 @@ class Test_CreatePatch(OpsVsiTest):
         self.PORT_PATH = self.PATH_PORTS + "/1"
         self.INT_PATH = self.PATH_INT + "/1"
         # Create port
-        status_code, response_data = execute_request(self.PATH_PORTS,
-                                                     "POST",
-                                                     json.dumps(port_data),
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH_PORTS, "POST", json.dumps(port_data), self.SWITCH_IP,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.CREATED, "Error creating a Port. Status"\
             " code: %s Response data: %s " % (status_code, response_data)
         info("### Port Created. Status code is 201 CREATED  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.PORT_PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PORT_PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query added Port"
         json_data = get_json(response_data)
 
@@ -99,18 +121,19 @@ class Test_CreatePatch(OpsVsiTest):
         port_data["configuration"]["admin"] = "up"
         int_data["configuration"]["user_config"] = {}
         int_data["configuration"]["user_config"]["admin"] = "up"
-        status_code, response_data = execute_request(self.PORT_PATH, "PATCH",
-                                                     json.dumps(ADM_PATCH_PRT),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.PORT_PATH, "PATCH", json.dumps(ADM_PATCH_PRT), self.SWITCH_IP,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error patching a Port "\
             "Status code: %s Response data: %s " % (status_code, response_data)
         info("### Port Patched. Status code is 204 NO CONTENT  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.PORT_PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PORT_PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query patched Port"
         json_data = get_json(response_data)
 
@@ -118,20 +141,20 @@ class Test_CreatePatch(OpsVsiTest):
             "Configuration data is not equal that posted data"
         info("### Configuration data validated ###\n")
 
-        status_code, response_data = execute_request(self.INT_PATH,
-                                                     "PATCH",
-                                                     json.dumps(ADM_PATCH_INT),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.INT_PATH, "PATCH", json.dumps(ADM_PATCH_INT),
+            self.SWITCH_IP, False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error patching an "\
             "Interface. Status code: %s Response data: %s "\
             % (status_code, response_data)
         info("### Interface Patched. Status code is 204 NO CONTENT  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.INT_PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.INT_PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query patched Port"
         json_data = get_json(response_data)
 
@@ -153,20 +176,20 @@ class Test_CreatePatch(OpsVsiTest):
         int_data["configuration"]["user_config"]["pause"] = "rxtx"
         # Patch
         info("\n########## Test to Validate Patch Other ##########\n")
-        status_code, response_data = execute_request(self.INT_PATH,
-                                                     "PATCH",
-                                                     json.dumps(OTHER_PATCH),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.INT_PATH, "PATCH", json.dumps(OTHER_PATCH),
+            self.SWITCH_IP, False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error patching an "\
             "Interface. Status code: %s Response data: %s "\
             % (status_code, response_data)
         info("### Interface Patched. Status code is 204 NO CONTENT  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.INT_PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.INT_PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query patched Port"
         json_data = get_json(response_data)
 
@@ -177,20 +200,20 @@ class Test_CreatePatch(OpsVsiTest):
         # Remove data
         int_data = copy.deepcopy(INT_DATA)
         int_data["configuration"]["name"] = "2"
-        status_code, response_data = execute_request(self.INT_PATH,
-                                                     "PATCH",
-                                                     json.dumps(REMOVE_PATCH),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.INT_PATH, "PATCH", json.dumps(REMOVE_PATCH), self.SWITCH_IP,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error patching an "\
             "Interface. Status code: %s Response data: %s "\
             % (status_code, response_data)
         info("### Interface Patched. Status code is 204 NO CONTENT  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.INT_PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.INT_PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query patched Port"
         json_data = get_json(response_data)
 
@@ -224,6 +247,6 @@ class Test_WebUIREST:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test_patch_port_int_admin()
         self.test_var.test_patch_other()
