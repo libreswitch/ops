@@ -65,19 +65,19 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         self.switch_ip = get_switch_ip(self.net.switches[0])
         self.cookie_header = None
 
-    def get_columns_to_retrieve(self, columns):
-        appended_columns = ""
-        if columns:
-            appended_columns = ','.join(columns)
-        return appended_columns
+    def get_keys_to_retrieve(self, keys):
+        appended_keys = ""
+        if keys:
+            appended_keys = ','.join(keys)
+        return appended_keys
 
-    def validate_retrieved_data_by_columns(self, complete_data_rows, data_rows,
-                                           columns):
-        if (len(complete_data_rows) == len(data_rows) and len(columns) > 0 and
+    def validate_retrieved_data_by_keys(self, complete_data_rows, data_rows,
+                                        keys):
+        if (len(complete_data_rows) == len(data_rows) and len(keys) > 0 and
            len(complete_data_rows) > 0 and len(data_rows) > 0):
             for i in range(len(data_rows)):
-                assert len(data_rows[i]['configuration']) == len(columns), \
-                    "The amount of columns are different to %s." % len(columns)
+                assert len(data_rows[i]['configuration']) == len(keys), \
+                    "The amount of keys are different to %s." % len(keys)
                 for key in data_rows[i]["configuration"]:
                     assert data_rows[i]["configuration"][key] is not None, \
                         "The value is empty for key %s" % key
@@ -92,9 +92,9 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         # Test Setup
         test_title = "- Single column retrieval in GET request"
         info(TEST_START % test_title)
-        columns = ["name"]
-        appended_columns = self.get_columns_to_retrieve(columns)
-        new_path = self.path + "columns=" + appended_columns
+        keys = ["name"]
+        appended_keys = self.get_keys_to_retrieve(keys)
+        new_path = self.path + "keys=" + appended_keys
         # 1 - Query Resource
         response, response_data = execute_request(
             self.path, "GET", None, self.switch_ip, True,
@@ -113,10 +113,10 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         data_rows = get_json(response_data)
         info("### Data successfully retrieved. Status code 200 OK ###\n")
         # Test
-        # 2 - Validate that data exist in rows by columns retrieval
+        # 2 - Validate that data exist in rows by keys retrieval
         result = \
-            self.validate_retrieved_data_by_columns(complete_data_rows,
-                                                    data_rows, columns)
+            self.validate_retrieved_data_by_keys(complete_data_rows,
+                                                 data_rows, keys)
         assert result is True, "Wrong data length: %s <--> %s\n" \
             % (len(complete_data_rows), len(data_rows))
         info("### Retrieved data validated ###\n")
@@ -127,9 +127,9 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         # Test Setup
         test_title = "- Multiple column retrieval in GET request"
         info(TEST_START % test_title)
-        columns = ["name", "type"]
-        appended_columns = self.get_columns_to_retrieve(columns)
-        new_path = self.path + "columns=" + appended_columns
+        keys = ["name", "type"]
+        appended_keys = self.get_keys_to_retrieve(keys)
+        new_path = self.path + "keys=" + appended_keys
         # 1 - Query Resource
         response, response_data = execute_request(
             self.path, "GET", None, self.switch_ip, True,
@@ -148,10 +148,10 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         data_rows = get_json(response_data)
         info("### Data successfully retrieved. Status code 200 OK ###\n")
         # Test
-        # 2 - Validate that data exist in rows by columns retrieval
+        # 2 - Validate that data exist in rows by keys retrieval
         result = \
-            self.validate_retrieved_data_by_columns(complete_data_rows,
-                                                    data_rows, columns)
+            self.validate_retrieved_data_by_keys(complete_data_rows,
+                                                 data_rows, keys)
         assert result is True, "Wrong data length: %s <--> %s\n" \
             % (len(complete_data_rows), len(data_rows))
         info("### Retrieved data validated ###\n")
@@ -162,11 +162,11 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         # Test Setup
         test_title = "- Column retrieval without depth argument in GET request"
         info(TEST_START % test_title)
-        columns = ["name"]
-        appended_columns = self.get_columns_to_retrieve(columns)
+        keys = ["name"]
+        appended_keys = self.get_keys_to_retrieve(keys)
         fixed_path = "/rest/v1/system/interfaces" \
                      "?selector=configuration;sort=name;"
-        new_path = fixed_path + "columns=" + appended_columns
+        new_path = fixed_path + "keys=" + appended_keys
         # 1 - Query Resource
         response, response_data = execute_request(
             new_path, "GET", None, self.switch_ip, True,
@@ -180,14 +180,14 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         # Test Teardown
         info(TEST_END % test_title)
 
-    def test_column_retrieval_with_empty_columns_argument(self):
+    def test_column_retrieval_with_empty_keys_argument(self):
         # Test Setup
-        test_title = "- Column retrieval with empty columns argument in " \
+        test_title = "- Column retrieval with empty keys argument in " \
                      "GET request"
         info(TEST_START % test_title)
-        columns = []
-        appended_columns = self.get_columns_to_retrieve(columns)
-        new_path = self.path + "columns=" + appended_columns
+        keys = []
+        appended_keys = self.get_keys_to_retrieve(keys)
+        new_path = self.path + "keys=" + appended_keys
         # 1 - Query Resource
         response, response_data = execute_request(
             new_path, "GET", None, self.switch_ip, True,
@@ -205,9 +205,9 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         test_title = "- Column retrieval with invalid column key in " \
                      "GET request"
         info(TEST_START % test_title)
-        columns = ["foo"]
-        appended_columns = self.get_columns_to_retrieve(columns)
-        new_path = self.path + "columns=" + appended_columns
+        keys = ["foo"]
+        appended_keys = self.get_keys_to_retrieve(keys)
+        new_path = self.path + "keys=" + appended_keys
         # 1 - Query Resource
         response, response_data = execute_request(
             new_path, "GET", None, self.switch_ip, True,
@@ -224,10 +224,10 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         # Test Setup
         test_title = "- Column retrieval in GET request by specifying filter"
         info(TEST_START % test_title)
-        columns = ["name", "type"]
-        appended_columns = self.get_columns_to_retrieve(columns)
+        keys = ["name", "type"]
+        appended_keys = self.get_keys_to_retrieve(keys)
         fixed_path = self.path + ";name=10"
-        new_path = self.path + "columns=" + appended_columns + ";name=10"
+        new_path = self.path + "keys=" + appended_keys + ";name=10"
         # 1 - Query Resource
         response, response_data = execute_request(
             fixed_path, "GET", None, self.switch_ip, True,
@@ -246,10 +246,10 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         data_rows = get_json(response_data)
         info("### Data successfully retrieved. Status code 200 OK ###\n")
         # Test
-        # 2 - Validate that data exist in rows by columns retrieval
+        # 2 - Validate that data exist in rows by keys retrieval
         result = \
-            self.validate_retrieved_data_by_columns(complete_data_rows,
-                                                    data_rows, columns)
+            self.validate_retrieved_data_by_keys(complete_data_rows,
+                                                 data_rows, keys)
         assert result is True, "Wrong data length: %s <--> %s\n" \
             % (len(complete_data_rows), len(data_rows))
         info("### Retrieved data validated ###\n")
@@ -260,10 +260,10 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         # Test Setup
         test_title = "- Column retrieval in GET request with pagination"
         info(TEST_START % test_title)
-        columns = ["name", "type"]
-        appended_columns = self.get_columns_to_retrieve(columns)
+        keys = ["name", "type"]
+        appended_keys = self.get_keys_to_retrieve(keys)
         fixed_path = self.path + ";limit=10;offset=10;"
-        new_path = fixed_path + "columns=" + appended_columns
+        new_path = fixed_path + "keys=" + appended_keys
         # 1 - Query Resource
         response, response_data = execute_request(
             fixed_path, "GET", None, self.switch_ip, True,
@@ -282,10 +282,10 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         data_rows = get_json(response_data)
         info("### Data successfully retrieved. Status code 200 OK ###\n")
         # Test
-        # 2 - Validate that data exist in rows by columns retrieval
+        # 2 - Validate that data exist in rows by keys retrieval
         result = \
-            self.validate_retrieved_data_by_columns(complete_data_rows,
-                                                    data_rows, columns)
+            self.validate_retrieved_data_by_keys(complete_data_rows,
+                                                 data_rows, keys)
         assert result is True, "Wrong data length: %s <--> %s\n" \
             % (len(complete_data_rows), len(data_rows))
         info("### Retrieved data validated ###\n")
@@ -296,10 +296,10 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         # Test Setup
         test_title = "- Column retrieval in GET request with depth > 1"
         info(TEST_START % test_title)
-        columns = ["name", "type"]
-        appended_columns = self.get_columns_to_retrieve(columns)
+        keys = ["name", "type"]
+        appended_keys = self.get_keys_to_retrieve(keys)
         fixed_path = "/rest/v1/system/interfaces?depth=2;sort=name;"
-        new_path = fixed_path + "columns=" + appended_columns
+        new_path = fixed_path + "keys=" + appended_keys
         # 1 - Query Resource
         response, response_data = execute_request(
             fixed_path, "GET", None, self.switch_ip, True,
@@ -318,10 +318,10 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         data_rows = get_json(response_data)
         info("### Data successfully retrieved. Status code 200 OK ###\n")
         # Test
-        # 2 - Validate that data exist in rows by columns retrieval
+        # 2 - Validate that data exist in rows by keys retrieval
         result = \
-            self.validate_retrieved_data_by_columns(complete_data_rows,
-                                                    data_rows, columns)
+            self.validate_retrieved_data_by_keys(complete_data_rows,
+                                                 data_rows, keys)
         assert result is True, "Wrong data length: %s <--> %s\n" \
             % (len(complete_data_rows), len(data_rows))
         info("### Retrieved data validated ###\n")
@@ -332,10 +332,10 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         # Test Setup
         test_title = "- Column retrieval in requests other than GET"
         info(TEST_START % test_title)
-        columns = ["name"]
-        appended_columns = self.get_columns_to_retrieve(columns)
+        keys = ["name"]
+        appended_keys = self.get_keys_to_retrieve(keys)
         fixed_path = "/rest/v1/system/interfaces?"
-        new_path = fixed_path + "columns=" + appended_columns
+        new_path = fixed_path + "keys=" + appended_keys
         # 1 - Query Resource
         requests = ["POST", "PUT", "DELETE"]
         for request in requests:
@@ -356,10 +356,10 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         test_title = "- Column retrieval in GET request with all applicable "
         "arguments"
         info(TEST_START % test_title)
-        columns = ["name"]
-        appended_columns = self.get_columns_to_retrieve(columns)
+        keys = ["name"]
+        appended_keys = self.get_keys_to_retrieve(keys)
         fixed_path = self.path + "name=10;limit=1;"
-        new_path = fixed_path + "columns=" + appended_columns
+        new_path = fixed_path + "keys=" + appended_keys
         # 1 - Query Resource
         response, response_data = execute_request(
             fixed_path, "GET", None, self.switch_ip, True,
@@ -378,25 +378,25 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         data_rows = get_json(response_data)
         info("### Data successfully retrieved. Status code 200 OK ###\n")
         # Test
-        # 2 - Validate that data exist in rows by columns retrieval
+        # 2 - Validate that data exist in rows by keys retrieval
         result = \
-            self.validate_retrieved_data_by_columns(complete_data_rows,
-                                                    data_rows, columns)
+            self.validate_retrieved_data_by_keys(complete_data_rows,
+                                                 data_rows, keys)
         assert result is True, "Wrong data length: %s <--> %s\n" \
             % (len(complete_data_rows), len(data_rows))
         info("### Retrieved data validated ###\n")
         # Test Teardown
         info(TEST_END % test_title)
 
-    def test_column_retrieval_separate_columns_argument(self):
+    def test_column_retrieval_separate_keys_argument(self):
         # Test Setup
-        test_title = "- Column retrieval in GET request with columns "
+        test_title = "- Column retrieval in GET request with keys "
         "arguments added separately"
         info(TEST_START % test_title)
-        columns = ["name", "type"]
-        appended_columns = self.get_columns_to_retrieve(columns)
-        new_path = self.path + "columns=" + columns[0] + ";columns=" + \
-            columns[1]
+        keys = ["name", "type"]
+        appended_keys = self.get_keys_to_retrieve(keys)
+        new_path = self.path + "keys=" + keys[0] + ";keys=" + \
+            keys[1]
         # 1 - Query Resource
         response, response_data = execute_request(
             self.path, "GET", None, self.switch_ip, True,
@@ -415,10 +415,10 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         data_rows = get_json(response_data)
         info("### Data successfully retrieved. Status code 200 OK ###\n")
         # Test
-        # 2 - Validate that data exist in rows by columns retrieval
+        # 2 - Validate that data exist in rows by keys retrieval
         result = \
-            self.validate_retrieved_data_by_columns(complete_data_rows,
-                                                    data_rows, columns)
+            self.validate_retrieved_data_by_keys(complete_data_rows,
+                                                 data_rows, keys)
         assert result is True, "Wrong data length: %s <--> %s\n" \
             % (len(complete_data_rows), len(data_rows))
         info("### Retrieved data validated ###\n")
@@ -426,7 +426,6 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         info(TEST_END % test_title)
 
 
-@pytest.mark.skipif(True, reason="fix Bug #657")
 class Test_ColretrieveInterface:
     def setup(self):
         pass
@@ -459,8 +458,8 @@ class Test_ColretrieveInterface:
     def test_run_call_test_column_retrieval_without_depth_argument(self, netop_login):
         self.test_var.test_column_retrieval_without_depth_argument()
 
-    def test_run_call_test_column_retrieval_with_empty_columns_argument(self, netop_login):
-        self.test_var.test_column_retrieval_with_empty_columns_argument()
+    def test_run_call_test_column_retrieval_with_empty_keys_argument(self, netop_login):
+        self.test_var.test_column_retrieval_with_empty_keys_argument()
 
     def test_run_call_test_column_retrieval_with_nonexistent_column_key(self, netop_login):
         self.test_var.test_column_retrieval_with_nonexistent_column_key()
@@ -480,5 +479,5 @@ class Test_ColretrieveInterface:
     def test_run_call_test_column_retrieval_with_applicable_arguments(self, netop_login):
         self.test_var.test_column_retrieval_with_applicable_arguments()
 
-    def test_run_call_test_column_retrieval_separate_columns_argument(self, netop_login):
-        self.test_var.test_column_retrieval_separate_columns_argument()
+    def test_run_call_test_column_retrieval_separate_keys_argument(self, netop_login):
+        self.test_var.test_column_retrieval_separate_keys_argument()
