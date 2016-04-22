@@ -535,6 +535,15 @@
             "max": "unlimited"
           },
           "ephemeral": true
+        },
+        "other_info": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
         }
       },
       "isRoot": true,
@@ -3532,6 +3541,30 @@
           },
           "ephemeral": true
         },
+        "aclv4_in_statistics_clear_requested": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aclv4_in_statistics_clear_performed": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
         "other_config": {
           "category": "configuration",
           "type": {
@@ -4047,6 +4080,30 @@
             "max": 512
           },
           "ephemeral": true
+        },
+        "aclv4_in_statistics_clear_requested": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aclv4_in_statistics_clear_performed": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
         },
         "macs_invalid_on_vlans": {
           "category": "status",
@@ -8581,7 +8638,21 @@
               "type": "integer",
               "minInteger": 0,
               "maxInteger": 4294967295
-            }
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "in_progress_version": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
           }
         },
         "status": {
