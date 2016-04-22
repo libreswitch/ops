@@ -22,6 +22,7 @@ from opstestfw.switch.OVS import *
 
 # Topology definition
 topoDict = {"topoExecution": 1000,
+            "topoType": "physical",
             "topoTarget": "dut01",
             "topoDevices": "dut01 wrkston01 wrkston02 wrkston03 wrkston04",
             "topoLinks": "lnk01:dut01:wrkston01,lnk02:dut01:wrkston02,lnk03:dut01:wrkston03,lnk04:dut01:wrkston04",
@@ -313,18 +314,6 @@ def ping_vlan(**kwargs):
         caseReturnCode = 1
 
 
-    #Ping From Host1 to Host 2
-    retStruct = host1.Ping(ipAddr="10.0.0.10", packetCount=1)
-    retCode = retStruct.returnCode()
-    assert retCode==0, "\n##### Failed to do IPv4 ping, Case Failed #####"
-    LogOutput('info',"\n##### Ping Passed, Case Passed #####\n\n")
-
-
-    retStruct = host1.Ping(ipAddr="1000::10", packetCount=1, ipv6Flag=True)
-    retCode = retStruct.returnCode()
-    assert retCode==0, "\n##### Failed to do IPv6 ping, Case Failed #####"
-    LogOutput('info',"\n##### Ping Passed, Case Passed #####\n\n")
-
     #Ping from host 1 to host 3
     retStruct = host1.Ping(ipAddr="20.0.0.10", packetCount=1)
     retCode = retStruct.returnCode()
@@ -345,6 +334,18 @@ def ping_vlan(**kwargs):
 
 
     retStruct = host1.Ping(ipAddr="3000::10", packetCount=1, ipv6Flag=True)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "\n##### Failed to do IPv6 ping, Case Failed #####"
+    LogOutput('info',"\n##### Ping Passed, Case Passed #####\n\n")
+
+    #Ping From Host1 to Host 2
+    retStruct = host1.Ping(ipAddr="10.0.0.10", packetCount=1)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "\n##### Failed to do IPv4 ping, Case Failed #####"
+    LogOutput('info',"\n##### Ping Passed, Case Passed #####\n\n")
+
+
+    retStruct = host1.Ping(ipAddr="1000::10", packetCount=1, ipv6Flag=True)
     retCode = retStruct.returnCode()
     assert retCode==0, "\n##### Failed to do IPv6 ping, Case Failed #####"
     LogOutput('info',"\n##### Ping Passed, Case Passed #####\n\n")
@@ -404,7 +405,6 @@ def ping_vlan(**kwargs):
     assert retCode!=0, "\n##### Ping Passed, Case Failed #####"
     LogOutput('info',"\n##### Failed to do IPv6 ping, Case Passed #####\n\n")
 
-@pytest.mark.skipif(True, reason="skipped test case due to random gate job failures.")
 @pytest.mark.timeout(1000)
 class Test_vlan_ping:
     def setup_class (cls):

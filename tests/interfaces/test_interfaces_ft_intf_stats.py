@@ -61,6 +61,7 @@ from opstestfw.switch.CLI import *
 # Topology definition
 
 topoDict = {"topoExecution": 1000,
+            "topoType": "physical",
             "topoTarget": "dut01",
             "topoDevices": "dut01 wrkston01 wrkston02",
             "topoLinks": "lnk01:dut01:wrkston01, \
@@ -81,7 +82,6 @@ WS2_IP = NET_1 + ".2"
 NET1_MASK = "255.255.255.0"
 NET1_BCAST = NET_1 + ".0"
 
-@pytest.mark.skipif(True, reason="Skipping since it fails randomly")
 class Test_template:
 
     def setup(self):
