@@ -253,7 +253,17 @@
         </p>
       </column>
 
-      <group title="TFTP Server Configurations">
+      <column name="other_config" key="acl_log_timer_interval"
+           type='{"type":"integer", "minInteger": 30, "maxInteger": 300}'>
+         <p>
+             This key specifies the interval in seconds of the ACL logging timer.
+         </p>
+         <p>
+             Default value is 300 seconds.
+         </p>
+       </column>
+
+       <group title="TFTP Server Configurations">
         <column name="other_config" key="tftp_server_enable"
                 type='{"type": "boolean"}'>
           Set this value to <code>true</code> to enable TFTP server
@@ -1264,7 +1274,26 @@
         Total number of protocol bytes dropped due to excessive rate.
       </column>
     </group>
-
+    <group title="ACL Limits">
+       <column name="other_info" key="max_acls"
+           type='{"type":"integer", "minInteger": 0, "maxInteger": 4294967295}'>
+          <p>
+             Total number of ACLs that may be configured in the system.
+           </p>
+        </column>
+        <column name="other_info" key="max_aces"
+           type='{"type":"integer", "minInteger": 0, "maxInteger": 4294967295}'>
+          <p>
+             Total number of ACL entries that may be configured in the system.
+          </p>
+        </column>
+        <column name="other_info" key="max_aces_per_acl"
+           type='{"type":"integer", "minInteger": 0, "maxInteger": 512}'>
+           <p>
+              Total number of ACL entries that may be configured in one ACL.
+           </p>
+        </column>
+    </group>
     <group title="Common Columns">
       The overall purpose of these columns is described under <code>Common
       Columns</code> at the beginning of this document.
@@ -2714,25 +2743,28 @@
     </group>
     <group title="ACL Configuration">
       <p>
-        ACL applied to vlans.
+        ACL applied to VLANs.
       </p>
       <column name="aclv4_in_cfg">
-        ACL, potentially in flight, desired to be applied to this vlan, as identified
+        ACL, potentially in flight, desired to be applied to this VLAN, as identified
         in the <ref table="ACL"/>.
       </column>
       <column name="aclv4_in_cfg_version">
         The version of the 'aclv4_in_cfg' column.
         This value is incremented by the management interface each- CLI/REST/Web UI, etc.
         every time it changes the 'aclv4_in_cfg' value.
-        An empty value means no ACL has been configured for the vlan.
+        An empty value means no ACL has been configured for the VLAN.
+      </column>
+      <column name="aclv4_in_statistics_clear_requested">
+        The number of times a request was made to clear the ACL statistics for this VLAN.
       </column>
     </group>
     <group title="ACL Status">
       <p>
-        Status of applied ACLs and ACL statistics per vlan.
+        Status of applied ACLs and ACL statistics per VLAN.
       </p>
       <column name="aclv4_in_applied">
-        Current, successfully applied ACL to this vlan, as identified in the
+        Current, successfully applied ACL to this VLAN, as identified in the
         <ref table="ACL"/>
       </column>
       <column name="aclv4_in_status">
@@ -2755,6 +2787,9 @@
         Statistics for the ACL applied to this port for ACEs that have the
         'count' keyword specified.  Statistics are key/value pairs of
         ACL sequence number and integer representing the statistics for that entry.
+      </column>
+      <column name="aclv4_in_statistics_clear_performed">
+        The number of times that ACL statistics for this VLAN have been cleared..
       </column>
     </group>
    <group title="Common Columns">
@@ -3599,6 +3634,9 @@
         every time it changes the 'aclv4_in_cfg' value.
          An empty value means no ACL has been configured for the port.
       </column>
+      <column name="aclv4_in_statistics_clear_requested">
+       The number of times a request was made to clear the ACL statistics for this port.
+      </column>
     </group>
     <group title="ACL Status">
       <p>
@@ -3628,6 +3666,9 @@
         Statistics for the ACL applied to this port for ACEs that have the
         'count' keyword specified.  Statistics are key/value pairs of
         ACL sequence number and integer representing the statistics for that entry.
+      </column>
+      <column name="aclv4_in_statistics_clear_performed">
+        The number of times the ACL statistics for this port have been cleared.
       </column>
     </group>
     <group title="MACs Validity">
@@ -6939,6 +6980,11 @@
       <column name="in_progress_aces" keyname="sequence_number">
         The in flight version of the Access Control List.  Access Control Entries
         (ACE) specified in this ACL are defined in <ref table="ACL_Entry"/>
+      </column>
+      <column name="in_progress_version">
+        The version of the 'in_progress' Access Control List.  This value is copied from
+        the cfg_version column when the ACL processing begins. This value is cleared
+        when the ACL status is updated to 'applied' or 'rejected.'
       </column>
       <column name="status"  key="status_string" type='{"type":"string"}'>
         The status of the last version of 'cfg_aces' column, that has been
