@@ -3885,6 +3885,65 @@
             "max": 1
           }
         },
+        "mclag_remote_interfaces": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "MCLAG_Remote_Interface",
+              "refType" : "strong"
+            },
+            "min": 0,
+            "max": 4
+          }
+        },
+        "mac_learn_disable": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flood_block": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "egress_redirect_to_port": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType" : "weak"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "egress_blocked_to_ports": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType" : "weak"
+            },
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
         "bond_active_slave": {
           "category": "configuration",
           "type": {
@@ -4635,6 +4694,15 @@
             "max": "unlimited"
           }
         },
+        "mclag_status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
         "hw_bond_config": {
           "type": {
             "key": "string",
@@ -4667,6 +4735,293 @@
           "name"
         ]
       ]
+    },
+    "MCLAG": {
+      "columns": {
+        "isl_port": {
+          "category": "configuration",
+          "relationship":"reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "isl_timers": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "integer",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "device_priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 15
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "split_brain_handling": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set",
+                 [
+                  "one-fragment-active",
+                  "dual-active"
+                 ]
+              ]
+            },
+            "min":0,
+            "max":1
+          }
+        },
+        "oper_status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "peer_status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "isl_statistics": {
+          "category": "statistics",
+          "type": {
+            "key": "string",
+            "value": "integer",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true
+        },
+        "keepalive_udp_port": {
+          "category": "configuration",
+           "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1024,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "keepalive_src_ip": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            }
+          }
+        },
+        "keepalive_peer_ip": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            }
+          }
+        },
+        "keepalive_vrf": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRF",
+              "refType" : "weak"
+            }
+          }
+        },
+        "keepalive_timers": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "integer",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "keepalive_port": {
+          "category": "status",
+          "relationship":"reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "keepalive_status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "keepalive_statistics": {
+          "category": "statistics",
+          "type": {
+            "key": "string",
+            "value": "integer",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true
+        }
+       },
+       "isRoot": true,
+       "maxRows": 1
+     },
+      "MCLAG_Remote_Interface": {
+      "columns": {
+        "name": {
+          "category": "status",
+          "type": "string",
+          "mutable": false
+        },
+        "lacp_partner_system_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "lacp_partner_port_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "lacp_partner_key": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "lacp_partner_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set",
+                 [
+                  "up",
+                  "down"
+                 ]
+              ]
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "admin_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set",
+                 [
+                  "up",
+                  "down"
+                 ]
+              ]
+            },
+            "min":0,
+            "max":1
+          }
+        },
+        "link_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set",
+                 [
+                  "up",
+                  "down"
+                 ]
+              ]
+            },
+            "min":0,
+            "max":1
+          }
+        },
+        "link_speed": {
+          "category": "status",
+          "type": {
+            "key": "integer",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "duplex": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set",
+                [
+                  "half",
+                  "full"
+                ]
+              ]
+            },
+            "min": 0,
+            "max": 1
+          }
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true
     },
     "Fan": {
       "columns": {
