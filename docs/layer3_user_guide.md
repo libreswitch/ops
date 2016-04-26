@@ -55,10 +55,16 @@ Interface 1 is up
             0 input packets              0 bytes
             0 input error                0 dropped
             0 CRC/FCS
+       L3:
+            ucast: 0 packets, 0 bytes
+            mcast: 0 packets, 0 bytes
  TX
             0 output packets             0 bytes
             0 input error                0 dropped
             0 collision
+       L3:
+            ucast: 0 packets, 0 bytes
+            mcast: 0 packets, 0 bytes
 
 ops-as5712# show ip interface
 
@@ -68,10 +74,10 @@ Interface 1 is up
  IPv4 address: 192.168.1.1/24
  MTU 0
  RX
-          ucast: 10 packets, 750 bytes
+          ucast: 0 packets, 0 bytes
           mcast: 0 packets, 0 bytes
  TX
-          ucast: 10 packets, 750 bytes
+          ucast: 0 packets, 0 bytes
           mcast: 0 packets, 0 bytes
 
 ops-as5712# show interface brief
