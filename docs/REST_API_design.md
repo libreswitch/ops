@@ -54,11 +54,9 @@ During the switch image build time, the REST API servicing module generates and 
 
 The new OVSDB schema is an extended schema file based on the original OVSDB schema file. The new schema is marked with two additional groups of tags, which indicate how this feature exposes each resource through the REST API:
 
-- The "category": ["configuration" | "status" | "statistics"] tags
-indicate for each column of a table, whether the attribute is categorized as configuration (readable and writable), status (read-only), or statistics (mostly counters that change frequently). For those columns of the table that are not marked with any one of the category tags, they are not exposed in the REST API.
+- The "category": ["configuration" | "status" | "statistics"] tags indicate for each column of a table, whether the attribute is categorized as configuration (readable and writable), status (read-only), or statistics (mostly counters that change frequently). For those columns of the table that are not marked with any one of the category tags, they are not exposed in the REST API.
 
-- The "relationship": ["1:m" | "m:1" | "reference"] tags
-indicate for those columns pointing to other tables, whether the relationship between the table cited in the column and the current table is child ("1:m"), parent ("m:1"), or reference. The REST API utilizes this information to construct a resource structure among the tables in the schema file.
+- The "relationship": ["1:m" | "m:1" | "reference"] tags indicate for those columns pointing to other tables, whether the relationship between the table cited in the column and the current table is child ("1:m"), parent ("m:1"), or reference. The REST API utilizes this information to construct a resource structure among the tables in the schema file.
 
 The two groups of tags can be used simultaneously when the column refers to another table. For the columns that are tagged with "relationship", the "category" tag can be either "configuration" (read-write) or "status" (read-only).
 
@@ -217,7 +215,7 @@ Following is an example of a log API response with offset=0&limit=2 which limits
 ```
 
 ## Notifications support
-Clients can subscribe to resources to be notified about changes within the database. The REST daemon is the entry point for subscribing. Clients can subscribe to specific resources or a collection of resource changes through REST APIs. The REST daemon receives notifications from the OVSDB indicating changes and are notified to the clients.
+Clients can subscribe to resources to be notified of changes within the database. The REST daemon is the entry point for subscribing. Clients can subscribe to specific resources or a collection of resource changes through REST APIs. The REST daemon receives change notifications from the OVSDB and notifies the clients.
 
 ```ditaa
     +------------+
@@ -253,7 +251,7 @@ The REST daemon maintains a reference to the WebSocket upon connection establish
 OVSDB changes trigger pushes to the client using the WebSocket identified by its `name`. Reference to the WebSocket, along with the associated subscriber and notification subscription resources, are removed upon WebSocket disconnect.
 
 ### Monitor request
-Clients subscribe to resource changes through REST APIs. Sending a POST request to, for example, `/rest/v1/system/notification_subscribers/3562910982/notification_subscriptions`,  creates a new `Notification_Subscription` resource and subscribes the client for notifications. The subscription request includes a `name` attribute for identifying the subscription unique to the subscriber, and `resource` to monitor. The client can subscribe to a specific resource or a collection of resources. For example, to subscribe to a specific resource for changes, the client can subscribe to the `/rest/v1/system/vrfs/vrf_default` URI, and  the `/rest/v1/system/vrfs` URI for a collection of `VRF` changes. Subscribing to a resource monitors for modifications and deletions. Subscriptions for URIs without an explicit parent subscribes to the complete collection. Subscribing to a collection that has a parent monitors a collection of resources that are children of that parent, and only monitors for additions and deletions. For example, subscribing to `/rest/v1/system/vrfs/vrf_default/bgp_routers`  monitors `BGP_Router` resources that are children of the `vrf_default` resource.
+Clients subscribe to resource changes through REST APIs. Sending a POST request to, for example, `/rest/v1/system/notification_subscribers/3562910982/notification_subscriptions`,  creates a new `Notification_Subscription` resource and subscription notifications are sent to the client. The subscription request includes a `name` attribute for identifying the subscription unique to the subscriber, and a `resource` to monitor. The client can subscribe to a specific resource or a collection of resources. For example, to subscribe to a specific resource for changes, the client can subscribe to the `/rest/v1/system/vrfs/vrf_default` URI, and  the `/rest/v1/system/vrfs` URI for a collection of `VRF` changes. Subscribing to a resource monitors for modifications and deletions. Subscriptions for URIs without an explicit parent subscribes to the complete collection. Subscribing to a collection that has a parent also monitors a collection of resources that are children of that parent, and only monitors child resource collections for additions and deletions. For example, subscribing to `/rest/v1/system/vrfs/vrf_default/bgp_routers`  monitors the `BGP_Router` resources that are children of the `vrf_default` resource.
 
 **Example: Monitor request JSON**
 
@@ -273,11 +271,11 @@ A second IDL is used to monitor for specific changes to increase the performance
 ### Notifications
 When changes in the database are detected, the REST daemon notifies the corresponding clients that subscribed. The notification is pushed to the client in JSON format, which includes the URI and the attributes updated. Notifications do not require a response.
 
-The notification message contains the `notifications` field and includes URIs for resources that are `added`, `modified`, and `deleted`. When a resource that belongs to a monitored parent is added, the `added` field contains a list of changes that includes the URI of the `subscription` and `resource` added, and the initial `values`.
+The notification message contains the `notifications` field and includes URIs for resources that are `added`, `modified`, and `deleted`. When a resource that belongs to a monitored parent is added, the `added` field contains a list of changes that includes the URI of the `subscription`, the `resource` added, and the initial `values`.
 
-When a resource is modified, the `modified` field contains a list of changes that includes the URI of the `subscription` and `resource` modified, and the `new_values` of attributes that were updated.
+When a resource is modified, the `modified` field contains a list of changes that includes the URI of the `subscription`,  the `resource` modified, and the `new_values` of attributes that were updated.
 
-When a resource is deleted, the `deleted` field contains a list of changes that includes the URI of the `subscription` and `resource` deleted.
+When a resource is deleted, the `deleted` field contains a list of changes that includes the URI of the `subscription` and the `resource` deleted.
 
 **Notification JSON**
 
