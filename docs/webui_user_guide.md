@@ -140,9 +140,9 @@ LAG Attributes includes the following configuration options:
   - **Slow LACP (default):** LACP packets are sent every 30 seconds.
 - **Fallback:** Fallback is true or false (default).
 - **Hash:** Hashing is used to determine how the LAG chooses which interface to forward traffic:
- - **L2 Src/Dst:** Layer 2 Source/Destination pair.
- - **L3 Src/Dst (default):** Layer 3 Source/Destination pair.
- - **L4 Src/Dst:** Layer 4 Source/Destination pair.
+ - **L2 Src/Dst (source/destination):** Layer 2 hashing mode.
+ - **L3 Src/Dst (default):** Layer 3 hashing mode.
+ - **L4 Src/Dst:** Layer 4 hashing mode.
 
 ### Remove LAG
 The currently selected LAG can be removed by clicking the minus sign (-).
