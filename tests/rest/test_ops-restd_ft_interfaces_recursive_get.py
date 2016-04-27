@@ -415,6 +415,22 @@ class QueryInterfaceDepthTest(OpsVsiTest):
         info("########## End Test to Validate GET specific Interface with "
              "no depth request ##########\n")
 
+    def test_recursive_get_depth_out_range(self):
+        depth_interface_path = self.PATH + "?depth=11;name=50-1"
+        status_code, expected_data = execute_request(
+            depth_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
+        info("\n########## Test to Validate recursive GET Interface 50-1 "
+             "out of range request ##########\n")
+
+        assert status_code == httplib.BAD_REQUEST, \
+            "Wrong status code %s " % status_code
+        info("### Status code is BAD REQUEST ###\n")
+
+        info("########## End Test to Validate recursive GET Interface 50-1 "
+             "out of range request ##########\n")
+
     def run_tests(self):
         """
         This method will inspect itself to retrieve all existing methods.
