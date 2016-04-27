@@ -3377,13 +3377,36 @@
         <column name="other_config" key="lacp-fallback"
           type='{"type": "boolean"}'>
           <p>
-            The LACP fallback which should be used on this <ref table="Port"/>.
-            Set this value to <code>true</code> to enable always one interface active
-            and set to <code>false</code> to block all interfaces when LACP = off.
+            Specifies if fallback should be used on this <ref table="Port"/>.
+            Set this value to <code>true</code> to enable the member interfaces
+            based on the fallback mode and set to <code>false</code> to block
+            all interfaces when LACP = off.
             If not specified, lacp-fallback is assumed to be false.
           </p>
         </column>
 
+        <column name="other_config" key="lacp_fallback_mode"
+          type='{"type": "string", "enum": ["set", ["priority", "all_active"]]}'>
+          <p>
+            Specifies the mode used when fallback is enabled.  Priority mode uses
+            the LACP interface priority to decide which port remains forwarding
+            when no partner is detected.  The all_active mode keeps all interfaces
+            forwarding when no partner is detected.
+            The default value is <code>priority</code>.
+          </p>
+        </column>
+
+        <column name="other_config" key="lacp_fallback_timeout"
+          type='{"type": "integer", "minInteger": 0, "maxInteger": 900}'>
+          <p>
+            Defines the time period during which fallback remains active.  The
+            timer starts at the point when the interface state machine expires
+            and configures the default partner.  The unit is seconds.
+            A value of 0 means that the timer doesn't run and fallback is active
+            until it is disabled by the user or a partner is detected.
+            The default value is <code>0</code>.
+          </p>
+        </column>
       </group>
     </group>
    <group title="L3 Configuration">

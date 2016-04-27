@@ -186,9 +186,21 @@ per second (_"fast"_) or once every 30 seconds (_"slow"_).
 
 The `lacp-fallback` key is used to determine the behavior or a LAG using LACP to
 negotiate when there is no partner. A value of _"true"_ means that the LAG
-fallback to active/backup mode, where a single link in the _"up"_ state is kept
-up while the others are blocked. If set to _"false"_ the LAG blocks all its
-members until it can negotiate with a partner.
+falls back to a mode defined by the lacp_fallback_mode. If set to _"false"_ the
+LAG blocks all its members until it can negotiate with a partner.
+
+The `lacp_fallback_mode` key is used to defined the mode to which the LAG falls
+back when no partner is detected.  The _"priority"_ mode uses the value in the
+`lacp_port_priority` key of the LAG members to define which interface is not
+blocked and should go to collecting/distributing.  The _"all\_active"_ mode
+keeps all interfaces in collecting/distributing.  __Note__ that this mode is
+likely to create loops, it is recommended that this mode is only used to connect
+with hosts.
+
+The `lacp_fallback_timeout` key is used to determine the time during which
+fallback will be active.  The timer starts counting when the interface's state
+machine gets to the defaulted state.  When the timer expires the interfaces will
+get blocked as if fallback were disabled.
 
 #### _Interface_ Table
 The lacpd daemon also monitors the `other_config` map in the Interface table for
