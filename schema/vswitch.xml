@@ -1540,6 +1540,9 @@
         unique.
       </column>
 
+      <column name="table_id">
+        Kernel table_id assigned for routing table of this VRF.
+      </column>
       <column name="ports">
         Ports included in the VRF.
       </column>

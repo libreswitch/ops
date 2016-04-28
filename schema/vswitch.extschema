@@ -837,6 +837,18 @@
           },
           "mutable": false
         },
+        "table_id" : {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
         "ports": {
           "category": "configuration",
           "relationship": "reference",
