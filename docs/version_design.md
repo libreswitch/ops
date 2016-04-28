@@ -75,7 +75,7 @@ The implementation of the "show version detail" CLI displays the package informa
           |
   +-------+--------+
   | version detail |
-  | file (YAML)  |
+  | file (YAML)    |
   | /var/lib/      |
   +----------------+
 
