@@ -4942,10 +4942,11 @@
     <column name="split_children">
       For a split parent interface, this is the reference to the list of children <ref table="Interface"/>s.
     </column>
-    <column name="subintf_parent" keyname="name">
-      For the Layer3 subinterfaces created, this column keeps the reference to
-      the parent interface <ref table="Interface"/> as a key:value pair of
-      dot1q encapsulation vlan id and the uuid of parent interface row entry.
+    <column name="subintf_parent" keyname="dot1q_tag">
+      For a subinterface, this column holds the reference to the
+      parent interface <ref table="Interface"/>. The key is the
+      dot1q encapsulation vlan id and the value is the uuid of parent
+      interface.
     </column>
     </group>
 

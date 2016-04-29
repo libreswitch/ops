@@ -4541,7 +4541,7 @@
               "refTable": "Interface"
             },
             "min": 0,
-            "max": "unlimited"
+            "max": 1
           }
         },
         "lldp_neighbor_info": {
