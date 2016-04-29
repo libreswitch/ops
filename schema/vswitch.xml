@@ -87,18 +87,19 @@
       Configuration: Represent configuration data that comes from the user.  Only columns
       using this category can be modified by the users.
     </li>
-
-    <p>
-      Some column categories depend on the other column category. It means that the
-      column category is not explicit. The value will be dynamically interpreted by taking
-      the other column value. The tag "follows" inside the category is meant for that.
-    </p>
-    <p>
-      In other cases the category must be interpreted using a specific row value itself.
-      The column category will be calculated by mapping the specific enum value to the
-      corresponding category. The tag "per-value" inside the category is meant for that.
-    </p>
   </ol>
+
+  <p>
+    Some column categories depend on the other column category. It means that the
+    column category is not explicit. The value will be dynamically interpreted by taking
+    the other column value. The tag "follows" inside the category is meant for that.
+  </p>
+
+  <p>
+    In other cases the category must be interpreted using a specific row value itself.
+    The column category will be calculated by mapping the specific enum value to the
+    corresponding category. The tag "per-value" inside the category is meant for that.
+  </p>
 
   <table name="System" title="OpenSwitch top level configuration.">
     Configuration for an OpenSwitch system. There must be exactly
