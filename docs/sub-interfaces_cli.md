@@ -50,7 +50,7 @@ All Users
 | Parameter | Status   | Syntax |	Description |
 |-----------|----------|----------------------|
 | **L3_interface** | Required | System defined | Name of the interface. System defined.  |
-| **subinterface** | Required | Integer | Subinterface ID from 1 to 2147483647 |
+| **subinterface** | Required | Integer | Subinterface ID from 1 to 4294967293 |
 #### Examples
 ```
 ops-as5712# configure terminal
@@ -78,7 +78,7 @@ ops-as5712(config-subif)# ip address 16.93.50.2/24
 ###  Set or unset IPv6 addresses
 #### Syntax
 ```
-[no] ip address <ipv6_address/prefix-length>
+[no] ipv6 address <ipv6_address/prefix-length>
 ```
 #### Description
 This command sets or unsets the IPv6 address for a subinterface.
