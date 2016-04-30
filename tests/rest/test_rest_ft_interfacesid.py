@@ -25,8 +25,8 @@ import httplib
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 
-DATA = {"configuration": {"split_parent": ["/rest/v1/system/interfaces/1"],
-        "name": "1", "type": "system"}}
+DATA = {"configuration": {"name": "bridge_normal", "type": "internal",
+                          "user_config": {"admin": "up"}}}
 
 
 @pytest.fixture
@@ -50,7 +50,7 @@ class QueryInterfacesId(OpsVsiTest):
         self.net = Mininet(ecmp_topo, switch=VsiOpenSwitch, host=Host,
                            link=OpsVsiLink, controller=None, build=True)
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
-        self.url = '/rest/v1/system/interfaces/1'
+        self.url = '/rest/v1/system/interfaces/bridge_normal'
         self.cookie_header = None
 
     def test_interfaces_id(self):
@@ -78,7 +78,7 @@ class QueryInterfacesId(OpsVsiTest):
 
         info('### Success in Rest GET Interfacesid ###\n')
 
-        assert d['configuration']['name'] == '1', 'Failed in checking the \
+        assert d['configuration']['name'] == 'bridge_normal', 'Failed in checking the \
             GET METHOD JSON response validation for Interface name'
         info('### Success in Rest GET system for Interface name ###\n')
 
@@ -92,7 +92,7 @@ class QueryInterfacesId(OpsVsiTest):
              self.url + ' ###\n')
 
         info('### Success in executing the rest command \
-        "DELETE for url=/rest/v1/system/interfaces/1" ###\n')
+        "DELETE for url=/rest/v1/system/interfaces/bridge_normal" ###\n')
 
         info('### Success in Rest DELETE Interfacesid ###\n')
 
