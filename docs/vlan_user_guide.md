@@ -174,21 +174,21 @@ interface 1
 ```
 ```
 switch#show vlan
-...................................................................................
-VLAN  Name         Status    Reason        Reserved       Ports
-...................................................................................
-3003  vlan3003     down     admin_down     (null)
-1     vlan1        up       ok             (null)         2, 1
-1212  vlan1212     up       ok             (null)
-33    vlan33       up       ok             (null)         2
-2     vlan2        up       ok             (null)
+--------------------------------------------------------------------------------------
+VLAN    Name            Status   Reason         Reserved       Interfaces
+--------------------------------------------------------------------------------------
+1       DEFAULT_VLAN_1  up       ok                            1, 2
+2       VLAN2           down     no_member_port
+33      VLAN33          up       ok                            2
+1212    VLAN1212        down     no_member_port
+3003    VLAN3003        down     admin_down
 ```
 ```
 switch#show vlan 33
-...................................................................................
-VLAN  Name         Status    Reason        Reserved       Ports
-...................................................................................
-33    vlan33       up       ok             (null)         2
+--------------------------------------------------------------------------------------
+VLAN    Name            Status   Reason         Reserved       Interfaces
+--------------------------------------------------------------------------------------
+33      VLAN33          up       ok                            2
 ```
 
 ## Configuring internal VLAN range
