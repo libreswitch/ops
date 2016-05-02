@@ -352,17 +352,19 @@ switch#show vlan
 `
 
 ```
-|VLAN   |    Name    |     Status  |      Reason  |   Reserved  |  Ports  |
-|-------|------------|-------------|--------------|-------------|---------|
-| 1     |   default  |   active    |    ADMIN/UP  |   No        |  1,L2   |
-| 33    |   asdf     |   active    |    ADMIN/UP  |   L3        |   1     |
+--------------------------------------------------------------------------------------
+VLAN    Name            Status   Reason         Reserved       Interfaces
+--------------------------------------------------------------------------------------
+1       DEFAULT_VLAN_1  down     no_member_port
+33      VLAN33          up       ok             l3port         1
 ```
 
 `
 switch#show vlan 33
 `
 ```
-|VLAN   |    Name    |     Status  |      Reason  |   Reserved  |  Ports  |
-|-------|------------|-------------|--------------|-------------|---------|
-| 33    |   asdf     |   active    |    ADMIN/UP  |   L3        |   1     |
+--------------------------------------------------------------------------------------
+VLAN    Name            Status   Reason         Reserved       Interfaces
+--------------------------------------------------------------------------------------
+33      VLAN33          up       ok             l3port
 ```
