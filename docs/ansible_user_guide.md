@@ -150,8 +150,8 @@ This role can be executed on the host by running the site.yml file, which is sho
 ```
 ---
 - hosts: OpenSwitch
-     roles:
-     - switch
+  roles:
+    - switch
 ```
 
 For more detailed information about writing roles, refer to:
