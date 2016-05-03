@@ -3648,7 +3648,7 @@
                      ]]}'>
         Enumeration summarizing the fowarding state of the bond.  It is based on
         the aggregate state of the individual member interfaces.
-        * Forwarding: At least one member interface is eligible and should be
+        * Up: At least one member interface is eligible and should be
           fowarding traffic according to LACP
         * Blocked:  All member interfaces are either not eligible or should be
           blocked according to LACP.
@@ -4125,7 +4125,7 @@
                      ]]}'>
         Enumeration indicating the forwarding state of the interface when it is
         configured as a member of a LAG.
-        * Forwarding: The interface is eligible and should be fowarding traffic
+        * Up: The interface is eligible and should be fowarding traffic
           according to LACP
         * Blocked:  The interface is either not eligible or should be blocked
           according to LACP.  If an interface is Rx disable, it is also Tx disable,
