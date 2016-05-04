@@ -651,7 +651,7 @@ def relay_with_server_unreachable(**kwargs):
 
     return True
 
-
+@pytest.mark.skipif(True, reason=" Temporarily skip execution till service file name changes are merged")
 class Test_dhcp_relay_configuration:
 
     def setup_class(cls):

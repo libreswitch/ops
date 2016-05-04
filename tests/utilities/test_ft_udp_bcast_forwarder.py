@@ -1086,7 +1086,7 @@ def udp_bcast_forwarder_reboot(**kwargs):
 
     return True
 
-
+@pytest.mark.skipif(True, reason=" Temporarily skip execution till service file name changes are merged")
 class Test_udp_bcast_forwarder_configuration:
 
     def setup_class(cls):
