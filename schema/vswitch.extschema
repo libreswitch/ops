@@ -544,6 +544,30 @@
             "min": 0,
             "max": "unlimited"
           }
+        },
+        "loop_protect_disable_timer": {
+            "category": "configuration",
+            "type": {
+                "key":{
+                    "type": "integer",
+                    "minInteger": 0,
+                    "maxInteger": 604800
+                },
+                "min": 0,
+                "max": 1
+            }
+        },
+        "loop_protect_transmit_interval": {
+            "category": "configuration",
+            "type": {
+                "key":{
+                    "type": "integer",
+                    "minInteger": 1,
+                    "maxInteger": 10
+                },
+                "min": 0,
+                "max": 1
+            }
         }
       },
       "isRoot": true,
@@ -4305,6 +4329,76 @@
             "min": 0,
             "max": "unlimited"
           }
+        },
+        "loop_protect_enable": {
+            "category": "configuration",
+            "type": {
+                "key": {
+                    "type": "boolean"
+                },
+                "min": 0,
+                "max": 1
+            }
+        },
+        "loop_protect_port_disabled": {
+            "category": "status",
+            "type": {
+                "key": {
+                    "type": "boolean"
+                },
+                "min": 0,
+                "max": 1
+            }
+        },
+        "loop_protect_status": {
+            "category": "status",
+            "type": {
+                "key": "string",
+                "value": "string",
+                "min": 0,
+                "max": "unlimited"
+            }
+        },
+        "loop_protect_action": {
+            "category": "configuration",
+            "type": {
+                "key": {
+                    "type": "string",
+                    "enum": [
+                        "set",
+                        [
+                         "do-not-disable",
+                         "tx-disable",
+                         "tx-rx-disable"
+                        ]
+                    ]
+                },
+                "min": 0,
+                "max": 1
+            }
+        },
+        "loop_protect_statistics": {
+            "category": "statistics",
+            "type": {
+                "key": "string",
+                "value": "integer",
+                "min": 0,
+                "max": "unlimited"
+            },
+            "ephemeral": true
+        },
+        "loop_protect_vlan": {
+            "category": "configuration",
+            "relationship": "reference",
+            "type": {
+                "key": {
+                    "type": "uuid",
+                    "refTable": "VLAN",
+                    "refType" : "weak"
+                },
+                "min": 0,
+                "max": 4094
+            }
         }
       },
       "indexes": [

@@ -1302,6 +1302,20 @@
       <column name="other_config"/>
       <column name="external_ids"/>
     </group>
+
+    <group title="Loop-protect Configuration">
+    <p>Contains global configuration for the Loop-protect feature.</p>
+      <column name="loop_protect_disable_timer">
+        This specifies the time in seconds for which the ports are to be disabled on
+        detecting a loop.
+        Default value is <code>0</code> i.e the port is disabled indefinitely.
+      </column>
+      <column name="loop_protect_transmit_interval">
+        This specifies the time interval in seconds between successive transmissions of
+        loop-protect packets.
+        Default value is <code>5</code> seconds.
+      </column>
+    </group>
   </table>
 
   <table name="Subsystem" title="system board, daughter card, line card, etc.">
@@ -3936,6 +3950,44 @@
       <column name="other_config"/>
       <column name="external_ids"/>
     </group>
+
+    <group title="Loop-protect per port Configuration">
+      <column name="loop_protect_enable">
+        When set to <code>true</code>, Loop-protect is enabled on this port.
+        Default value is <code>false</code>.
+      </column>
+      <column name="loop_protect_action">
+        This determines action for the Loop-protect feature.The value is set to
+        "tx-port-disable" for disabling the sending port on detecting a loop,
+        "tx-rx-disable" disables both sending and receiving ports when loop
+        is detected and "do-not-disable" will not disable any port.
+        Default value is <code>tx-port-disable</code>.
+      </column>
+      <column name="loop_protect_vlans">
+        List of VLANs on which loop-protect should operate if enabled by loop_protect_enable.
+        If not specified, native VLAN will be protected.
+      </column>
+   </group>
+
+   <group title="Loop-protect Status">
+      <column name="loop_protect_status" key="detected_on_vlan">
+        This contains the VLAN on which the loop is detected.
+      </column>
+      <column name="loop_protect_status" key="last_loop_detected_time">
+        This has the last timestamp as integer containing epoch time,when the loop was
+        detected by the Loop-protect feature.
+      </column>
+       <column name="loop_protect_port_disabled">
+        This value will be set to <code>true</code>,if the port is disabled by Loop-protect.
+        Default value is <code>false</code>.
+      </column>
+   </group>
+
+   <group title="Loop-protect Statistics">
+      <column name="loop_protect_statistics" key="loop_count">
+        Number of times a loop has been detected on this port.
+      </column>
+   </group>
   </table>
 
   <table name="Interface" title="One physical network device in a Port.">
