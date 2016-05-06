@@ -516,6 +516,42 @@ class PatchSystemTest(OpsVsiTest):
         info("### Configuration data validated %s ###\n" % post_patch_data)
         info(TEST_END % test_title)
 
+    def test_patch_test_with_malformed_value(self):
+        # Test Setup
+        test_title = "using \"op\": \"test\" with a malformed path value"
+        info(TEST_START % test_title)
+        data = "test data"
+        eval_list = ['a/b', '/ab', 'ab/', 'a//b', 'a///b', 'a\\/b']
+
+        # 1 - Query Resource
+        response, response_data = execute_request(
+            self.path, "GET", None, self.switch_ip, True,
+            xtra_header=self.cookie_header)
+        etag = response.getheader("Etag")
+        status_code = response.status
+        assert status_code == httplib.OK, "Wrong status code %s " % status_code
+
+        headers = {"If-Match": etag}
+        headers.update(self.cookie_header)
+        for i in range(len(eval_list)):
+            patch = [{"op": "add", "path": "/other_config", "value": {}},
+                     {"op": "add", "path": "/other_config/" + eval_list[i],
+                      "value": data},
+                     {"op": "test", "path": "/other_config/" + eval_list[i],
+                      "value": data}]
+            info("%s\n" % patch)
+            status_code, response_data = execute_request(self.path, "PATCH",
+                                                         json.dumps(patch),
+                                                         self.switch_ip, False,
+                                                         headers)
+            info("REST API response after evaluate the patch with "
+                 "string %s in path: %s\n" % (eval_list[i], response_data))
+            assert status_code == httplib.BAD_REQUEST, \
+                "Wrong status code %s " % status_code
+
+        info("### Configuration data validated ###\n")
+        info(TEST_END % test_title)
+
     def test_patch_test_operation_for_existent_value(self):
         # Test Setup
         test_title = "using \"op\": \"test\" for existent value"
@@ -1173,6 +1209,9 @@ class Test_PatchSystem:
     def test_run_call_test_patch_test_operation_nonexistent_value(self,
                                                                   netop_login):
         self.test_var.test_patch_test_operation_nonexistent_value()
+
+    def test_run_call_test_patch_test_with_malformed_value(self, netop_login):
+        self.test_var.test_patch_test_with_malformed_value()
 
     def test_run_call_test_patch_test_operation_for_existent_value(self,
                                                                    netop_login):
