@@ -13,7 +13,7 @@
 ###  logrotate period ###
 #### Syntax ####
 ```
-    [no] logrotate period ( hourly | weekly | monthly )
+    logrotate period ( hourly | weekly | monthly )
 ```
 #### Description ####
 
@@ -40,7 +40,7 @@ If no parameter is specified, the default value of `daily` is used.
 
 #### Syntax ####
 ```
-   [no] logrotate maxsize <filesize>
+   logrotate maxsize <filesize>
 ```
 #### Description ####
 
@@ -71,7 +71,7 @@ Specify the maximum file size in megabytes (MB) for the log rotation. The range 
 #### Syntax ####
 
 ```
-   [no] logrotate target <URI>
+   logrotate target <URI>
 ```
 #### Description ####
 This command sends the rotated log files to a specified remote host Universal Resource Identifier (URI) by using the `tftp` protocol. If no URI is specified, the rotated and compressed log files are stored locally in the `/var/log/` path. To prevent rotated logs from being sent to a remote host, use the `no` form of the command (`no logrotate target *URI*`).
