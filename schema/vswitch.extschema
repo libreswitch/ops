@@ -1990,6 +1990,71 @@
             "max": 1
           }
         },
+        "match_ipv4_prefix_list" : {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Prefix_List",
+              "refType" : "weak"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "match_ipv6_prefix_list" : {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Prefix_List",
+              "refType" : "weak"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "match_community_list" : {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "BGP_Community_Filter",
+              "refType" : "weak"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "match_extcommunity_list" : {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "BGP_Community_Filter",
+              "refType" : "weak"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "match_as_path" : {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "BGP_ASPath_Filter",
+              "refType" : "weak"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
         "match": {
           "category": "configuration",
           "type": {
@@ -2004,6 +2069,19 @@
           "type": {
             "key": "string",
             "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "set_community_list_delete" : {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "BGP_Community_Filter",
+              "refType" : "weak"
+            },
             "min": 0,
             "max": "unlimited"
           }
