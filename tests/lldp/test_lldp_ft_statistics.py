@@ -84,24 +84,12 @@ def lldp_statistics(**kwargs):
     retCode = retStruct.returnCode()
     assert retCode == 0, "Failed to exit vtysh prompt"
 
-    # Configuring lldp on SW1
-    LogOutput('info', "\n\n\nConfig lldp on SW1")
-    retStruct = LldpConfig(deviceObj=device1, enable=True)
-    retCode = retStruct.returnCode()
-    assert retCode == 0, "Unable to configure LLDP on SW1"
-
     # Enabling interface 1 SW1
     LogOutput('info', "Enabling interface on SW1")
     retStruct = InterfaceEnable(deviceObj=device1, enable=True,
                                 interface=device1.linkPortMapping['lnk01'])
     retCode = retStruct.returnCode()
     assert retCode == 0, "Unable to enabling interafce on SW1"
-
-    # Configuring lldp on SW2
-    LogOutput('info', "\n\n\nConfig lldp on SW2")
-    retStruct = LldpConfig(deviceObj=device2, enable=True)
-    retCode = retStruct.returnCode()
-    assert retCode == 0, "Configure lldp on SW2"
 
     # Enabling interface 1 SW2
     LogOutput('info', "Enabling interface on SW2")
@@ -110,13 +98,46 @@ def lldp_statistics(**kwargs):
     retCode = retStruct.returnCode()
     assert retCode == 0, "Unable to enable interface on SW2"
 
-    # Waiting for neighbour entry to flood
-    Sleep(seconds=23, message="\nWaiting")
+    # Configuring lldp on SW1
+    LogOutput('info', "\n\n\nConfig lldp on SW1")
+    retStruct = LldpConfig(deviceObj=device1, enable=True)
+    retCode = retStruct.returnCode()
+    assert retCode == 0, "Unable to configure LLDP on SW1"
 
-    # Showing the transmitted and received packets ,must be either 6 or greater
-    LogOutput('info', "\nShowing Lldp statistics on SW1")
+    # Configuring lldp on SW2
+    LogOutput('info', "\n\n\nConfig lldp on SW2")
+    retStruct = LldpConfig(deviceObj=device2, enable=True)
+    retCode = retStruct.returnCode()
+    assert retCode == 0, "Configure lldp on SW2"
+
+    # Waiting for neighbour entry to flood
+    Sleep(seconds=10, message="\nWaiting")
+
+    # Verify the transmitted and received packets
+    LogOutput('info', "\nShowing LLDP statistics on SW1")
     device1.setDefaultContext(context="linux")
-    for retry in range(1, 3):
+    tx_packets_cnt = 0
+    rx_packets_cnt = 0
+    stats_updated = False
+
+    for retry in range(1, 10):
+        retStruct = ShowLldpStatistics(deviceObj=device1)
+        retCode = retStruct.returnCode()
+        assert retCode == 0, "Failed to show lldp statistics"
+
+        retStruct.valueGet(key='globalStats')
+        Global = retStruct.valueGet(key='globalStats')
+
+        rx_packets_cnt = int(Global['Total_Packets_Received'])
+        tx_packets_cnt = int(Global['Total_Packets_Transmitted'])
+
+        if (rx_packets_cnt == 0 or tx_packets_cnt == 0):
+            LogOutput('info', "\n\n\n lldp on statistics not updated")
+            Sleep(seconds=5, message="\nWaiting")
+            continue
+
+        Sleep(seconds=15, message="\nWaiting to send more packets")
+
         retStruct = ShowLldpStatistics(deviceObj=device1)
         retCode = retStruct.returnCode()
         assert retCode == 0, "Failed to show lldp statistics"
@@ -127,36 +148,50 @@ def lldp_statistics(**kwargs):
                   str(Global['Total_Packets_Received']))
         LogOutput('info', "\nTotal Packets Transmitted: " +
                   str(Global['Total_Packets_Transmitted']))
-        if (int(Global['Total_Packets_Received']) >= 3 and
-                int(Global['Total_Packets_Transmitted']) >= 3):
+
+        if (int(Global['Total_Packets_Received']) >= (rx_packets_cnt + 1) and
+                int(Global['Total_Packets_Transmitted']) >= (tx_packets_cnt + 1)):
+            stats_updated = True
             break
-        else:
-            LogOutput('info', "Didn't receive statistics")
-            devCmd = "ovs-vsctl list interface "\
-                + str(device1.linkPortMapping['lnk01'])\
-                + " | grep lldp_statistics"
-            statistics_output = device1.cmd(devCmd)
-            opstestfw.LogOutput('info', "ovs-vsctl list interface output:\n"
-                                + str(statistics_output))
-            devCmd = "ip netns exec swns ifconfig "\
-                + str(device1.linkPortMapping['lnk01'])
-            ifconfig_output = device1.cmd(devCmd)
-            opstestfw.LogOutput('info', devCmd
-                                + " output\n"
-                                + str(ifconfig_output))
-            Sleep(seconds=10, message="Delay")
+
     # end loop
-    # Set my default context to linux temporarily
-    device1.setDefaultContext(context="vtyShell")
-    assert (int(Global['Total_Packets_Received']) >= 3), \
-        "\nCase for packets received failed"
-    assert (int(Global['Total_Packets_Transmitted']) >= 3), \
-        "\nCase for packets transmitted failed"
 
-    LogOutput('info', "Case Passed")
+    if stats_updated is False:
+        LogOutput('info', "Didn't Update LLDP Tx/Rx statistics")
+        # Dump Device1
+        LogOutput('info', "Device1 DUMP:")
+        device1.setDefaultContext(context="linux")
+        devCmd = "ovs-vsctl list interface "\
+        + str(device1.linkPortMapping['lnk01'])
+        neighbor_output = device1.cmd(devCmd)
+        opstestfw.LogOutput('info', "ovs-vsctl list interface output:\n"
+                    + str(neighbor_output))
+        devCmd = "ip netns exec swns ifconfig "\
+        + str(device1.linkPortMapping['lnk01'])
+        ifconfig_output = device1.cmd(devCmd)
+        opstestfw.LogOutput('info', devCmd + " output\n"
+                    + str(ifconfig_output))
 
-@pytest.mark.skipif(True, reason="skipped test case due to random gate job failures.")
-@pytest.mark.timeout(500)
+        # Dump Device2
+        LogOutput('info', "Device2 DUMP")
+        device2.setDefaultContext(context="linux")
+        devCmd = "ovs-vsctl list interface "\
+        + str(device2.linkPortMapping['lnk01'])
+        neighbor_output = device2.cmd(devCmd)
+        opstestfw.LogOutput('info', "ovs-vsctl list interface output:\n"
+                    + str(neighbor_output))
+        devCmd = "ip netns exec swns ifconfig "\
+        + str(device2.linkPortMapping['lnk01'])
+        ifconfig_output = device2.cmd(devCmd)
+        opstestfw.LogOutput('info', devCmd + " output\n"
+                    + str(ifconfig_output))
+        assert False, "\nCase for LLDP packets Tx/Rx Failed"
+    else:
+        # Set my default context to linux temporarily
+        device1.setDefaultContext(context="vtyShell")
+        LogOutput('info', "Case LLDP Tx/Rx Passed")
+
+@pytest.mark.timeout(1000)
 class Test_lldp_configuration:
 
     def setup_class(cls):
