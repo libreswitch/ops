@@ -34,7 +34,7 @@ from opsvsiutils.restutils.utils import execute_request, login, \
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 OFFSET_TEST = 0
-LIMIT_TEST = 10
+LIMIT_TEST = 1000
 
 
 class myTopo(Topo):
@@ -187,12 +187,10 @@ class LogsSinceUntilTest (OpsVsiTest):
              "##########\n")
 
         bug_flag = True
-        until_test = "now"
 
-        self.LOGS_PATH = self.PATH + "?until=%s&offset=%s&limit=%s" % \
-            (until_test, OFFSET_TEST, LIMIT_TEST)
+        self.LOGS_PATH = self.PATH + "?until=now"
 
-        info("logs path %s" % self.LOGS_PATH)
+        info("logs path %s\n" % self.LOGS_PATH)
         status_code, response_data = execute_request(
             self.LOGS_PATH, "GET", None, self.SWITCH_IP,
             xtra_header=self.cookie_header)

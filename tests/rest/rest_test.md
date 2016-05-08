@@ -6927,7 +6927,7 @@ Get the systemd journal logs using REST API for LOGS with priority levels.
 5. Verify the status code, response content, JSON format and pagination for
    the response data.
 6. Execute the REST GET method  for URI:
-   `/rest/v1/logs?until=now&offset=0&limit=10`.
+   `/rest/v1/logs?until=now`.
 7. Verify the status code, response content, JSON format and pagination for
    the response data.
 8. Execute the REST GET method  for URI:
