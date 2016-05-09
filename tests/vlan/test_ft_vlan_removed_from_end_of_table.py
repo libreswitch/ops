@@ -58,12 +58,16 @@ topoDict = {"topoExecution": 1000,
 
 def capture(deviceObj, interface="eth0", number=1):
     command = 'nmap -sP 10.1.1.1-254' + "\n"
+    # Adding a delay of 2 sec so as all the workstations and links are ready
+    time.sleep(2)
     deviceObj.expectHndl.send(command)
+    # time to run the nmap command
     time.sleep(5)
     deviceObj.expectHndl.expect('#')
     result = re.findall('\(\d*\s\w*\s\w*\)', deviceObj.expectHndl.before)
     hostsNumber = re.findall('\d?', result[0])
     if hostsNumber[1] != number:
+        LogOutput('error', str(deviceObj.expectHndl.before))
         return 1
     else:
         return 0
@@ -129,7 +133,6 @@ def cleanUp(dut, wrk1, wrk2, wrk3):
     else:
         LogOutput('info', "Passed Switch Reboot piece")
 
-@pytest.mark.skipif(True, reason="Skipping since it fails randomly")
 class Test_vlan_state_removed_from_end_of_table:
 
     def setup_class(cls):
@@ -427,6 +430,7 @@ class Test_vlan_state_removed_from_end_of_table:
         LogOutput('info', "############################################")
         if capture(self.wrkston01,
                    self.wrkston01.linkPortMapping['lnk01'], '2') != 0:
+            LogOutput('error', str(ShowVlan(deviceObj=self.dut01Obj).buffer()))
             LogOutput('error', "Failed to send traffic")
             assert(False)
         else:
