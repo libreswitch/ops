@@ -21,7 +21,8 @@ import pytest
 from opsvsi.docker import *
 from opsvsi.opsvsitest import *
 from opsvsiutils.restutils.utils import execute_request, login, \
-    get_switch_ip, rest_sanity_check, get_json
+    get_switch_ip, rest_sanity_check, get_json, get_server_crt, \
+    remove_server_crt
 
 import json
 import httplib
@@ -108,10 +109,12 @@ class Test_LogsSyslogIdentifier:
 
     def setup_class(cls):
         Test_LogsSyslogIdentifier.test_var = LogsSyslogIdentifierTest()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.SWITCH_IP)
 
     def teardown_class(cls):
         Test_LogsSyslogIdentifier.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass

@@ -28,7 +28,8 @@ import subprocess
 
 from opsvsiutils.restutils.fakes import create_fake_vlan
 from opsvsiutils.restutils.utils import get_switch_ip, execute_request, \
-    rest_sanity_check, get_json, login, get_container_id
+    rest_sanity_check, get_json, login, get_container_id, \
+    get_server_crt, remove_server_crt
 from opsvsiutils.restutils.swagger_test_utility import \
     swagger_model_verification
 
@@ -136,6 +137,7 @@ class TestPutExistingVlan:
 
     def setup_class(cls):
         TestPutExistingVlan.test_var = UpdateExistingVlan()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestPutExistingVlan.test_var.vlan_path,
                          TestPutExistingVlan.test_var.switch_ip,
@@ -146,6 +148,7 @@ class TestPutExistingVlan:
 
     def teardown_class(cls):
         TestPutExistingVlan.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass
@@ -242,6 +245,7 @@ class TestPutVlanInvalidName:
 
     def setup_class(cls):
         TestPutVlanInvalidName.test_var = UpdateVlanInvalidName()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestPutVlanInvalidName.test_var.vlan_path,
                          TestPutVlanInvalidName.test_var.switch_ip,
@@ -250,6 +254,7 @@ class TestPutVlanInvalidName:
 
     def teardown_class(cls):
         TestPutVlanInvalidName.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass
@@ -340,6 +345,7 @@ class TestPutVlanInvalidId:
 
     def setup_class(cls):
         TestPutVlanInvalidId.test_var = UpdateVlanInvalidId()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestPutVlanInvalidId.test_var.vlan_path,
                          TestPutVlanInvalidId.test_var.switch_ip,
@@ -348,6 +354,7 @@ class TestPutVlanInvalidId:
 
     def teardown_class(cls):
         TestPutVlanInvalidId.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass
@@ -438,6 +445,7 @@ class TestPutVlanInvalidDescription:
 
     def setup_class(cls):
         TestPutVlanInvalidDescription.test_var = UpdateVlanInvalidDescription()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestPutVlanInvalidDescription.test_var.vlan_path,
                          TestPutVlanInvalidDescription.test_var.switch_ip,
@@ -446,6 +454,7 @@ class TestPutVlanInvalidDescription:
 
     def teardown_class(cls):
         TestPutVlanInvalidDescription.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass
@@ -535,6 +544,7 @@ class TestPutVlanInvalidAdmin:
 
     def setup_class(cls):
         TestPutVlanInvalidAdmin.test_var = UpdateVlanInvalidAdmin()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.SWITCH_IP)
         create_fake_vlan(TestPutVlanInvalidAdmin.test_var.vlan_path,
                          TestPutVlanInvalidAdmin.test_var.SWITCH_IP,
@@ -543,6 +553,7 @@ class TestPutVlanInvalidAdmin:
 
     def teardown_class(cls):
         TestPutVlanInvalidAdmin.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass
@@ -633,6 +644,7 @@ class TestPutVlanInvalidOtherConfig:
 
     def setup_class(cls):
         TestPutVlanInvalidOtherConfig.test_var = UpdateVlanInvalidOtherConfig()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestPutVlanInvalidOtherConfig.test_var.vlan_path,
                          TestPutVlanInvalidOtherConfig.test_var.switch_ip,
@@ -641,6 +653,7 @@ class TestPutVlanInvalidOtherConfig:
 
     def teardown_class(cls):
         TestPutVlanInvalidOtherConfig.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass
@@ -731,6 +744,7 @@ class TestPutVlanInvalidExternalIds:
 
     def setup_class(cls):
         TestPutVlanInvalidExternalIds.test_var = UpdateVlanInvalidExternalIds()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestPutVlanInvalidExternalIds.test_var.vlan_path,
                          TestPutVlanInvalidExternalIds.test_var.switch_ip,
@@ -739,6 +753,7 @@ class TestPutVlanInvalidExternalIds:
 
     def teardown_class(cls):
         TestPutVlanInvalidExternalIds.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass

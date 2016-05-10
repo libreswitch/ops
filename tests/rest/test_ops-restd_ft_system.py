@@ -27,7 +27,8 @@ import urllib
 import subprocess
 
 from opsvsiutils.restutils.utils import execute_request, login, \
-    get_switch_ip, rest_sanity_check, get_container_id
+    get_switch_ip, rest_sanity_check, get_container_id, \
+    get_server_crt, remove_server_crt
 from opsvsiutils.restutils.swagger_test_utility import \
     swagger_model_verification
 
@@ -264,11 +265,13 @@ class Test_system:
 
     def setup_class(cls):
         Test_system.test_var = systemTest()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.SWITCH_IP)
         cls.container_id = get_container_id(cls.test_var.net.switches[0])
 
     def teardown_class(cls):
         Test_system.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass

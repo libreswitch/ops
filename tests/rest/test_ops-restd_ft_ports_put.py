@@ -27,7 +27,7 @@ from copy import deepcopy
 from opsvsiutils.restutils.utils import execute_request, login, \
     rest_sanity_check, get_switch_ip, create_test_port, \
     get_container_id, compare_dict, execute_port_operations, \
-    PORT_DATA
+    PORT_DATA, get_server_crt, remove_server_crt
 from opsvsiutils.restutils.swagger_test_utility import \
     swagger_model_verification
 
@@ -384,6 +384,7 @@ class Test_ModifyPort:
 
     def setup_class(cls):
         Test_ModifyPort.test_var = ModifyPortTest()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.SWITCH_IP)
         # Add a test port
         info("\n########## Creating Test Port  ##########\n")
@@ -395,6 +396,7 @@ class Test_ModifyPort:
 
     def teardown_class(cls):
         Test_ModifyPort.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass

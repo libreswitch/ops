@@ -28,7 +28,8 @@ import subprocess
 
 from opsvsiutils.restutils.utils import execute_request, login, \
     get_switch_ip, rest_sanity_check, create_test_port, \
-    get_container_id, PORT_DATA
+    get_container_id, PORT_DATA, get_server_crt, \
+    remove_server_crt
 from opsvsiutils.restutils.swagger_test_utility import \
     swagger_model_verification
 
@@ -153,6 +154,7 @@ class Test_QueryPort:
 
     def setup_class(cls):
         Test_QueryPort.test_var = QueryPortTest()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.SWITCH_IP)
         # Add a test port
         info("\n########## Creating Test Port  ##########\n")
@@ -165,6 +167,7 @@ class Test_QueryPort:
 
     def teardown_class(cls):
         Test_QueryPort.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass
