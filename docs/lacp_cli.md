@@ -17,7 +17,9 @@
 		- [Entering into LAG context](#entering-into-lag-context)
 		- [Configuring LACP mode](#configuring-lacp-mode)
 		- [Configuring hash type](#configuring-hash-type)
+		- [Configuring LACP fallback](#configuring-lacp-fallback)
 		- [Configuring LACP fallback mode](#configuring-lacp-fallback-mode)
+		- [Configuring LACP fallback timeout](#configuring-lacp-fallback-timeout)
 		- [Configuring LACP rate](#configuring-lacp-rate)
 		- [Configuring shutdown](#configuring-shutdown)
 - [LAG display commands](#lag-display-commands)
@@ -283,16 +285,16 @@ switch(config)# interface lag 1
 switch(config-lag-if)# hash l2-src-dst
 ```
 
-#### Configuring LACP fallback mode
+#### Configuring LACP fallback
 ##### Syntax
 
 ```
-    lacp fallback
+[no] lacp fallback
 ```
 
 ##### Description
-This command enables an LACP fallback mode.
-The **no** form of the command disables the an LACP fallback mode.
+This command enables LACP fallback.
+The **no** form of the command disables LACP fallback.
 
 ##### Authority
 all users
@@ -308,7 +310,64 @@ switch(config-lag-if)# lacp fallback
 switch(config-lag-if)# no lacp fallback
 ```
 
-##### Configuring LACP rate
+#### Configuring LACP fallback mode
+##### Syntax
+
+```
+lacp fallback mode priority|all_active
+no lacp fallback mode all_active
+```
+
+##### Description
+This command sets LACP fallback mode to **priority** or **all_active**.
+The **no** form of the command takes only **all_active** mode and sets LACP fallback mode to **priority**.
+
+##### Authority
+all users
+
+##### Parameters
+
+| Parameter | Status   | Syntax         | Description                           |
+|-----------|----------|----------------|---------------------------------------|
+| *mode* | Required | **priority** or **all_active**| Keyword to set LACP fallback mode. |
+
+##### Examples
+
+```
+switch(config)# interface lag 1
+switch(config-lag-if)# lacp fallback mode all_active
+switch(config-lag-if)# no lacp fallback mode all_active
+```
+
+#### Configuring LACP fallback timeout
+##### Syntax
+
+```
+[no] lacp fallback timeout <1-900>
+```
+
+##### Description
+This command sets LACP fallback timeout value.
+The **no** form of the command sets LACP fallback timeout to **0**.
+
+##### Authority
+all users
+
+##### Parameters
+
+| Parameter | Status   | Syntax         | Description                           |
+|-----------|----------|----------------|---------------------------------------|
+| *timeout* | Required | 1-900 | Value in seconds to set LACP fallback timeout. |
+
+##### Examples
+
+```
+switch(config)# interface lag 1
+switch(config-lag-if)# lacp fallback timeout 150
+switch(config-lag-if)# no lacp fallback timeout 150
+```
+
+#### Configuring LACP rate
 ##### Syntax
 
 ```
@@ -331,7 +390,7 @@ switch(config)# interface lag 1
 switch(config-lag-if)# lacp rate fast
 ```
 
-##### Configuring no shutdown
+#### Configuring no shutdown
 ##### Syntax
 
 ```
@@ -354,7 +413,7 @@ switch(config)# interface lag 1
 switch(config-lag-if)# no shutdown
 ```
 
-##### Configuring shutdown
+#### Configuring shutdown
 ##### Syntax
 
 ```
@@ -427,6 +486,8 @@ Aggregate-name        : lag100
 Aggregated-interfaces : 1
 Heartbeat rate        : slow
 Fallback              : false
+Fallback mode         : priority
+Fallback timeout      : 0
 Hash                  : l3-src-dst
 Aggregate mode        : active
 
@@ -436,6 +497,8 @@ Aggregate-name        : lag100
 Aggregated-interfaces : 1
 Heartbeat rate        : slow
 Fallback              : false
+Fallback mode         : priority
+Fallback timeout      : 0
 Hash                  : l3-src-dst
 Aggregate mode        : active
 
@@ -443,6 +506,8 @@ Aggregate-name        : lag200
 Aggregated-interfaces : 3 2
 Heartbeat rate        : slow
 Fallback              : false
+Fallback mode         : all_active
+Fallback timeout      : 100
 Hash                  : l3-src-dst
 Aggregate mode        : active
 
