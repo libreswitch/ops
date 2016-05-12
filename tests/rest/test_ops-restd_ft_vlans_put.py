@@ -26,9 +26,11 @@ import httplib
 import urllib
 import subprocess
 
-from opsvsiutils.restutils.fakes import *
-from opsvsiutils.restutils.utils import *
-from opsvsiutils.restutils.swagger_test_utility import *
+from opsvsiutils.restutils.fakes import create_fake_vlan
+from opsvsiutils.restutils.utils import get_switch_ip, execute_request, \
+    rest_sanity_check, get_json, login, get_container_id
+from opsvsiutils.restutils.swagger_test_utility import \
+    swagger_model_verification
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -74,6 +76,11 @@ class myTopo(Topo):
 #   Basic update to existing VLAN                                             #
 #                                                                             #
 ###############################################################################
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.SWITCH_IP)
+
+
 class UpdateExistingVlan(OpsVsiTest):
     def setupNet(self):
         self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
@@ -94,6 +101,8 @@ class UpdateExistingVlan(OpsVsiTest):
         self.vlan = "%s/%s/vlans/%s" % (self.path,
                                         DEFAULT_BRIDGE,
                                         self.vlan_name)
+        self.SWITCH_IP = get_switch_ip(self.net.switches[0])
+        self.cookie_header = None
 
     def test(self):
         data = deepcopy(base_vlan_data)
@@ -102,10 +111,9 @@ class UpdateExistingVlan(OpsVsiTest):
         info("\n########## Executing PUT to %s ##########\n" % self.vlan_path)
         info("Testing Path: %s\n" % self.vlan_path)
 
-        response_status, response_data = execute_request(self.vlan,
-                                                         "PUT",
-                                                         json.dumps(data),
-                                                         self.switch_ip)
+        response_status, response_data = execute_request(
+            self.vlan, "PUT", json.dumps(data), self.switch_ip,
+            xtra_header=self.cookie_header)
 
         assert response_status == httplib.OK, \
             "Response status received: %s\n" % response_status
@@ -148,7 +156,7 @@ class TestPutExistingVlan:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         info("container_id_test %s\n" % self.container_id)
         swagger_model_verification(self.container_id,
                                    "/system/bridges/{pid}/vlans/{id}",
@@ -161,6 +169,8 @@ class TestPutExistingVlan:
 #   Update VLAN name field with invalid values                                #
 #                                                                             #
 ###############################################################################
+
+
 class UpdateVlanInvalidName(OpsVsiTest):
     def setupNet(self):
         self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
@@ -181,6 +191,8 @@ class UpdateVlanInvalidName(OpsVsiTest):
         self.vlan = "%s/%s/vlans/%s" % (self.path,
                                         DEFAULT_BRIDGE,
                                         self.vlan_name)
+        self.SWITCH_IP = get_switch_ip(self.net.switches[0])
+        self.cookie_header = None
 
     def test(self):
         data = deepcopy(test_vlan_data)
@@ -205,10 +217,9 @@ class UpdateVlanInvalidName(OpsVsiTest):
             info("Testing field \"name\" as [%s] with value: %s\n" % (field,
                                                                       value))
 
-            response_status, response_data = execute_request(self.vlan,
-                                                             "PUT",
-                                                             json.dumps(value),
-                                                             self.switch_ip)
+            response_status, response_data = execute_request(
+                self.vlan, "PUT", json.dumps(value), self.switch_ip,
+                xtra_header=self.cookie_header)
 
             assert response_status == httplib.BAD_REQUEST, \
                 "Response status received: %s\n" % response_status
@@ -249,7 +260,7 @@ class TestPutVlanInvalidName:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test()
 
 
@@ -278,6 +289,8 @@ class UpdateVlanInvalidId(OpsVsiTest):
         self.vlan = "%s/%s/vlans/%s" % (self.path,
                                         DEFAULT_BRIDGE,
                                         self.vlan_name)
+        self.SWITCH_IP = get_switch_ip(self.net.switches[0])
+        self.cookie_header = None
 
     def test(self):
         data = deepcopy(test_vlan_data)
@@ -302,10 +315,9 @@ class UpdateVlanInvalidId(OpsVsiTest):
             info("Testing field \"id\" as [%s] with value: %s\n" % (field,
                                                                     value))
 
-            response_status, response_data = execute_request(self.vlan,
-                                                             "PUT",
-                                                             json.dumps(value),
-                                                             self.switch_ip)
+            response_status, response_data = execute_request(
+                self.vlan, "PUT", json.dumps(value), self.switch_ip,
+                xtra_header=self.cookie_header)
 
             assert response_status == httplib.BAD_REQUEST, \
                 "Response status received: %s\n" % response_status
@@ -346,7 +358,7 @@ class TestPutVlanInvalidId:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test()
 
 
@@ -375,6 +387,8 @@ class UpdateVlanInvalidDescription(OpsVsiTest):
         self.vlan = "%s/%s/vlans/%s" % (self.path,
                                         DEFAULT_BRIDGE,
                                         self.vlan_name)
+        self.SWITCH_IP = get_switch_ip(self.net.switches[0])
+        self.cookie_header = None
 
     def test(self):
         data = deepcopy(test_vlan_data)
@@ -399,10 +413,9 @@ class UpdateVlanInvalidDescription(OpsVsiTest):
             info("Testing field \"description\" as [%s] with value: "
                  "%s\n" % (field, value))
 
-            response_status, response_data = execute_request(self.vlan,
-                                                             "PUT",
-                                                             json.dumps(value),
-                                                             self.switch_ip)
+            response_status, response_data = execute_request(
+                self.vlan, "PUT", json.dumps(value), self.switch_ip,
+                xtra_header=self.cookie_header)
 
             assert response_status == httplib.BAD_REQUEST, \
                 "Response status received: %s\n" % response_status
@@ -443,7 +456,7 @@ class TestPutVlanInvalidDescription:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test()
 
 
@@ -465,13 +478,14 @@ class UpdateVlanInvalidAdmin(OpsVsiTest):
                            build=True)
 
         self.path = "/rest/v1/system/bridges"
-        self.switch_ip = get_switch_ip(self.net.switches[0])
+        self.SWITCH_IP = get_switch_ip(self.net.switches[0])
         self.vlan_id = 1
         self.vlan_name = "fake_vlan"
         self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
         self.vlan = "%s/%s/vlans/%s" % (self.path,
                                         DEFAULT_BRIDGE,
                                         self.vlan_name)
+        self.cookie_header = None
 
     def test(self):
         data = deepcopy(test_vlan_data)
@@ -496,10 +510,9 @@ class UpdateVlanInvalidAdmin(OpsVsiTest):
             info("Testing field \"admin\" as %s with value: %s\n" % (field,
                                                                      value))
 
-            response_status, response_data = execute_request(self.vlan,
-                                                             "PUT",
-                                                             json.dumps(value),
-                                                             self.switch_ip)
+            response_status, response_data = execute_request(
+                self.vlan, "PUT", json.dumps(value), self.SWITCH_IP,
+                xtra_header=self.cookie_header)
 
             assert response_status == httplib.BAD_REQUEST, \
                 "Response status received: %s\n" % response_status
@@ -522,9 +535,9 @@ class TestPutVlanInvalidAdmin:
 
     def setup_class(cls):
         TestPutVlanInvalidAdmin.test_var = UpdateVlanInvalidAdmin()
-        rest_sanity_check(cls.test_var.switch_ip)
+        rest_sanity_check(cls.test_var.SWITCH_IP)
         create_fake_vlan(TestPutVlanInvalidAdmin.test_var.vlan_path,
-                         TestPutVlanInvalidAdmin.test_var.switch_ip,
+                         TestPutVlanInvalidAdmin.test_var.SWITCH_IP,
                          TestPutVlanInvalidAdmin.test_var.vlan_name,
                          TestPutVlanInvalidAdmin.test_var.vlan_id)
 
@@ -540,7 +553,7 @@ class TestPutVlanInvalidAdmin:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test()
 
 
@@ -569,6 +582,8 @@ class UpdateVlanInvalidOtherConfig(OpsVsiTest):
         self.vlan = "%s/%s/vlans/%s" % (self.path,
                                         DEFAULT_BRIDGE,
                                         self.vlan_name)
+        self.SWITCH_IP = get_switch_ip(self.net.switches[0])
+        self.cookie_header = None
 
     def test(self):
         data = deepcopy(test_vlan_data)
@@ -593,10 +608,9 @@ class UpdateVlanInvalidOtherConfig(OpsVsiTest):
             info("Testing field \"other_config\" as [%s] with value: "
                  "%s\n" % (field, value))
 
-            response_status, response_data = execute_request(self.vlan,
-                                                             "PUT",
-                                                             json.dumps(value),
-                                                             self.switch_ip)
+            response_status, response_data = execute_request(
+                self.vlan, "PUT", json.dumps(value), self.switch_ip,
+                xtra_header=self.cookie_header)
 
             assert response_status == httplib.BAD_REQUEST, \
                 "Response status received: %s\n" % response_status
@@ -637,7 +651,7 @@ class TestPutVlanInvalidOtherConfig:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test()
 
 
@@ -666,6 +680,8 @@ class UpdateVlanInvalidExternalIds(OpsVsiTest):
         self.vlan = "%s/%s/vlans/%s" % (self.path,
                                         DEFAULT_BRIDGE,
                                         self.vlan_name)
+        self.SWITCH_IP = get_switch_ip(self.net.switches[0])
+        self.cookie_header = None
 
     def test(self):
         data = deepcopy(test_vlan_data)
@@ -690,10 +706,9 @@ class UpdateVlanInvalidExternalIds(OpsVsiTest):
             info("Testing field \"external_ids\" as %s with value: "
                  "%s\n" % (field, value))
 
-            response_status, response_data = execute_request(self.vlan,
-                                                             "PUT",
-                                                             json.dumps(value),
-                                                             self.switch_ip)
+            response_status, response_data = execute_request(
+                self.vlan, "PUT", json.dumps(value), self.switch_ip,
+                xtra_header=self.cookie_header)
 
             assert response_status == httplib.BAD_REQUEST, \
                 "Response status received: %s\n" % response_status
@@ -734,5 +749,5 @@ class TestPutVlanInvalidExternalIds:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test()

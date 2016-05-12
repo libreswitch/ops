@@ -28,12 +28,13 @@ import subprocess
 import time
 import datetime
 
-from opsvsiutils.restutils.utils import *
+from opsvsiutils.restutils.utils import execute_request, login, \
+    get_switch_ip, rest_sanity_check, get_json
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 OFFSET_TEST = 0
-LIMIT_TEST = 10
+LIMIT_TEST = 1000
 
 
 class myTopo(Topo):
@@ -41,6 +42,11 @@ class myTopo(Topo):
         self.hsts = hsts
         self.sws = sws
         switch = self.addSwitch("s1")
+
+
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.SWITCH_IP)
 
 
 class LogsSinceUntilTest (OpsVsiTest):
@@ -54,6 +60,7 @@ class LogsSinceUntilTest (OpsVsiTest):
 
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
         self.PATH = "/rest/v1/logs"
+        self.cookie_header = None
 
     def verify_timestamp(self, json_data):
         for t in json_data:
@@ -72,8 +79,9 @@ class LogsSinceUntilTest (OpsVsiTest):
             (since_test, OFFSET_TEST, LIMIT_TEST)
 
         info("logs path %s" % self.LOGS_PATH)
-        status_code, response_data = execute_request(self.LOGS_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.LOGS_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -104,8 +112,9 @@ class LogsSinceUntilTest (OpsVsiTest):
 
         self.LOGS_PATH = self.PATH + "?since=%s&offset=%s&limit=%s" % \
             (since_test, OFFSET_TEST, LIMIT_TEST)
-        status_code, response_data = execute_request(self.LOGS_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.LOGS_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -135,18 +144,21 @@ class LogsSinceUntilTest (OpsVsiTest):
         since_test = "0000-00-00%2000:00:00"
         self.LOGS_PATH = self.PATH + "?since=%s&offset=%s&limit=%s" \
             % (since_test, OFFSET_TEST, LIMIT_TEST)
-        status_code, response_data = execute_request(self.LOGS_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.LOGS_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.BAD_REQUEST, "Wrong status code %s " \
             % status_code
-        info("### Status code for since 0000-00-00 00:00:00 case is okay ###\n")
+        info("### Status code for since 0000-00-00 00:00:00 "
+             "case is okay ###\n")
 
         since_test = "2050-01-01%2001:00:00"
         self.LOGS_PATH = self.PATH + "?since=%s&offset=%s&limit=%s" \
             % (since_test, OFFSET_TEST, LIMIT_TEST)
-        status_code, response_data = execute_request(self.LOGS_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.LOGS_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s "\
             % status_code
@@ -158,12 +170,14 @@ class LogsSinceUntilTest (OpsVsiTest):
         since_test = "-1%20hour%20ago"
         self.LOGS_PATH = self.PATH + "?since=%s&offset=%s&limit=%s" \
             % (since_test, OFFSET_TEST, LIMIT_TEST)
-        status_code, response_data = execute_request(self.LOGS_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.LOGS_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.BAD_REQUEST, "Wrong status code %s "\
             % status_code
-        info("### Status code for since parameter with negative value is okay ###\n")
+        info("### Status code for since parameter with negative "
+             "value is okay ###\n")
 
         info("\n########## End Test to Validate negative test case for logs" +
              " with since timestamp ##########\n")
@@ -173,14 +187,13 @@ class LogsSinceUntilTest (OpsVsiTest):
              "##########\n")
 
         bug_flag = True
-        until_test = "now"
 
-        self.LOGS_PATH = self.PATH + "?until=%s&offset=%s&limit=%s" % \
-            (until_test, OFFSET_TEST, LIMIT_TEST)
+        self.LOGS_PATH = self.PATH + "?until=now"
 
-        info("logs path %s" % self.LOGS_PATH)
-        status_code, response_data = execute_request(self.LOGS_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        info("logs path %s\n" % self.LOGS_PATH)
+        status_code, response_data = execute_request(
+            self.LOGS_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -211,8 +224,9 @@ class LogsSinceUntilTest (OpsVsiTest):
 
         self.LOGS_PATH = self.PATH + "?until=%s&offset=%s&limit=%s" % \
             (until_test, OFFSET_TEST, LIMIT_TEST)
-        status_code, response_data = execute_request(self.LOGS_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.LOGS_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " \
             % status_code
@@ -260,17 +274,17 @@ class Test_LogsSinceUntil:
     def __del__(self):
         del self.test_var
 
-    def test_logs_with_since_relative_filter(self):
+    def test_logs_with_since_relative_filter(self, netop_login):
         self.test_var.logs_with_since_relative_filter()
 
-    def test_logs_with_since_timestamp_filter(self):
+    def test_logs_with_since_timestamp_filter(self, netop_login):
         self.test_var.logs_with_since_timestamp_filter()
 
-    def test_logs_with_since_negative_test_cases(self):
+    def test_logs_with_since_negative_test_cases(self, netop_login):
         self.test_var.logs_with_since_negative_test_cases()
 
-    def test_logs_with_until_relative_filter(self):
+    def test_logs_with_until_relative_filter(self, netop_login):
         self.test_var.logs_with_until_relative_filter()
 
-    def test_logs_with_until_timestamp_filter(self):
+    def test_logs_with_until_timestamp_filter(self, netop_login):
         self.test_var.logs_with_until_timestamp_filter()

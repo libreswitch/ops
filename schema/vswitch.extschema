@@ -535,6 +535,15 @@
             "max": "unlimited"
           },
           "ephemeral": true
+        },
+        "other_info": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
         }
       },
       "isRoot": true,
@@ -827,6 +836,18 @@
             }
           },
           "mutable": false
+        },
+        "table_id" : {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          }
         },
         "ports": {
           "category": "configuration",
@@ -2252,19 +2273,22 @@
     "Route": {
       "columns": {
         "vrf": {
-          "category": "configuration",
+          "category": {
+            "follows": "from"
+          },
           "relationship": "m:1",
           "type": {
             "key": {
               "type": "uuid",
-              "refTable": "VRF",
-              "refType" : "weak"
+              "refTable": "VRF"
             }
           },
           "mutable": false
         },
         "prefix": {
-          "category": "configuration",
+          "category": {
+            "follows": "from"
+          },
           "type": {
             "key": {
               "type": "string",
@@ -2274,7 +2298,14 @@
           "mutable": false
         },
         "from": {
-          "category": "status",
+          "category": {
+            "per-value": [
+              { "value": "connected", "category": "status" },
+              { "value": "static", "category": "configuration" },
+              { "value": "bgp", "category": "status" },
+              { "value": "ospf", "category": "status" }
+            ]
+          },
           "type": {
             "key": {
               "type": "string",
@@ -2312,7 +2343,9 @@
           }
         },
         "address_family": {
-          "category": "configuration",
+          "category": {
+            "follows": "from"
+          },
           "type": {
             "key": {
               "type": "string",
@@ -2330,7 +2363,9 @@
           "mutable": false
         },
         "sub_address_family": {
-          "category": "configuration",
+          "category": {
+            "follows": "from"
+          },
           "type": {
             "key": {
               "type": "string",
@@ -2349,7 +2384,9 @@
           "mutable": false
         },
         "distance": {
-          "category": "configuration",
+          "category": {
+            "follows": "from"
+          },
           "type": {
             "key": {
               "type": "integer",
@@ -2362,7 +2399,9 @@
           "mutable": false
         },
         "metric": {
-          "category": "status",
+          "category": {
+            "follows": "from"
+          },
           "type": {
             "key": {
               "type": "integer",
@@ -2375,7 +2414,9 @@
           "mutable": false
         },
         "nexthops": {
-          "category": "configuration",
+          "category": {
+            "follows": "from"
+          },
           "relationship": "1:m",
           "type": {
             "key": {
@@ -3002,8 +3043,7 @@
           "type": {
             "key": {
               "type": "uuid",
-              "refTable": "VRF",
-              "refType" : "weak"
+              "refTable": "VRF"
             }
           },
           "mutable": false
@@ -3088,8 +3128,7 @@
           "type": {
             "key": {
               "type": "uuid",
-              "refTable": "VRF",
-              "refType" : "weak"
+              "refTable": "VRF"
             }
           },
           "mutable": false
@@ -3250,8 +3289,7 @@
           "type": {
             "key": {
               "type": "uuid",
-              "refTable": "VRF",
-              "refType" : "weak"
+              "refTable": "VRF"
             }
           }
         },
@@ -3515,6 +3553,30 @@
           },
           "ephemeral": true
         },
+        "aclv4_in_statistics_clear_requested": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aclv4_in_statistics_clear_performed": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
         "other_config": {
           "category": "configuration",
           "type": {
@@ -3764,6 +3826,26 @@
             "max": "unlimited"
           },
           "ephemeral": true
+        },
+
+        "forwarding_state": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true
+        },
+        "bond_status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
         },
         "lacp_status": {
           "category": "status",
@@ -4021,6 +4103,30 @@
             "max": 512
           },
           "ephemeral": true
+        },
+        "aclv4_in_statistics_clear_requested": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aclv4_in_statistics_clear_performed": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
         },
         "macs_invalid_on_vlans": {
           "category": "status",
@@ -4295,6 +4401,25 @@
           },
           "ephemeral": true
         },
+        "hw_status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true
+        },
+        "forwarding_state": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
         "link_resets": {
           "category": "statistics",
           "type": {
@@ -4407,6 +4532,15 @@
           }
         },
         "hw_intf_config": {
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "bond_status": {
+          "category": "status",
           "type": {
             "key": "string",
             "value": "string",
@@ -6287,7 +6421,7 @@
             },
             "value": {
               "type": "integer",
-              "minInteger": 1,
+              "minInteger": 0,
               "maxInteger": 255
             },
             "min": 0,
@@ -8546,7 +8680,21 @@
               "type": "integer",
               "minInteger": 0,
               "maxInteger": 4294967295
-            }
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "in_progress_version": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
           }
         },
         "status": {

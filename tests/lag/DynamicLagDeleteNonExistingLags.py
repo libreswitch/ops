@@ -14,24 +14,27 @@
 #    under the License.
 #
 ###############################################################################
-# Name:        DynamicLagModifyMaxNumberOfMembers.py
+# Name:        DynamicLagDeleteNonExistingLags.py
 #
-# Description: Tests that a previously configured dynamic Link Aggregation can
-#              be modified to have between 7 and 8 members
+# Description: Tests that a previously configured dynamic Link Aggregation does
+#              not stop forwarding traffic when attempting to delete several
+#              non-existent Link Aggregations with different names that may not
+#              be supported
 #
 # Author:      Jose Hernandez
 #
 # Topology:  |Host| ----- |Switch| ---------------------- |Switch| ----- |Host|
-#                                   (Dynamic LAG - 8 links)
+#                                   (Dynamic LAG - 2 links)
 #
-# Success Criteria:  PASS -> LAGs are modified to support 7 or 8 members
-#                            and pass traffic
+# Success Criteria:  PASS -> Non-existent LAGs cannot be deleted and they
+#                            don't affect the functioning LAG
 #
-#                    FAILED -> LAGs cannot be modified to 7 or 8 members or
-#                              traffic cannot pass after any of these
-#                              modifications
+#                    FAILED -> Functioning LAG configuration is changed or any
+#                              of the non-existing LAGs don't produce errors
+#                              when attempting to delete them
 #
 ###############################################################################
+
 
 import pytest
 from opstestfw import *
@@ -43,13 +46,7 @@ topoDict = {"topoExecution": 3000,
             "topoLinks": "lnk01:dut01:wrkston01,\
                           lnk02:dut01:dut02,\
                           lnk03:dut01:dut02,\
-                          lnk04:dut01:dut02,\
-                          lnk05:dut01:dut02,\
-                          lnk06:dut01:dut02,\
-                          lnk07:dut01:dut02,\
-                          lnk08:dut01:dut02,\
-                          lnk09:dut01:dut02,\
-                          lnk10:dut02:wrkston02",
+                          lnk04:dut02:wrkston02",
             "topoFilters": "dut01:system-category:switch,\
                             dut02:system-category:switch,\
                             wrkston01:system-category:workstation,\
@@ -325,83 +322,6 @@ def enableDutInterface(deviceObj, int, enable):
                 'info', "Disabled " + deviceObj.device + " interface " + int)
     return True
 
-# Add/remove a single interface from a LAG
-
-
-def addInterfaceToLAG(deviceObj, lagId, int, config, expectedIntArray):
-    if config:
-        LogOutput('info', "Adding interface " + str(int) +
-                  " to LAG" + lagId + " on device " + deviceObj.device)
-    else:
-        LogOutput('info', "Removing interface " + str(int) +
-                  " to LAG" + lagId + " on device " + deviceObj.device)
-    returnStruct = InterfaceLagIdConfig(
-        deviceObj=deviceObj, interface=int, lagId=lagId, enable=config)
-    if returnStruct.returnCode() != 0:
-        return False
-    if config:
-        LogOutput(
-            'info', "Verifying if interface " + str(int) +
-            " was added to LAG")
-    else:
-        LogOutput(
-            'info', "Verifying if interface " + str(int) +
-            " was removed from LAG")
-    # verify if device is added/removed from LAG
-    returnStruct = InterfaceLagShow(deviceObj=deviceObj, interface=int)
-    if returnStruct.returnCode() != 0:
-        LogOutput('info', "Unable to verify change in interface " + str(int))
-        return False
-    if config:
-        helper = False
-        for i in returnStruct.valueGet(key='localPort').keys():
-            if i == 'lagId':
-                helper = True
-                break
-        if not helper:
-            LogOutput(
-                'error', "The interface " + str(int) +
-                " was verified to not be in a LAG")
-            return False
-        if returnStruct.valueGet(key='localPort')['lagId'] != str(lagId):
-            LogOutput('error', "The interface " + str(int) +
-                      " was verified to not be added to LAG " + str(lagId))
-            return False
-        else:
-            LogOutput('info', "The interface " + str(int) +
-                      " was verified to be added to LAG " + str(lagId))
-    else:
-        for i in returnStruct.valueGet(key='localPort').keys():
-            if i == 'lagId':
-                LogOutput('error', "The interface " + str(int) +
-                          " was verified to still be in a LAG with ID: " +
-                          returnStruct.valueGet(key='localPort')['lagId'])
-                return False
-        LogOutput('info', "The interface " + str(int) +
-                  " was verified to not be in a LAG")
-    returnStruct = lacpAggregatesShow(deviceObj=deviceObj, lagId=lagId)
-    if returnStruct.returnCode() != 0:
-        LogOutput('error', "Unable to verify integrity of resulting LAG")
-        return False
-    if len(returnStruct.valueGet(key=lagId)['interfaces']) !=\
-            len(expectedIntArray):
-        LogOutput(
-            'error',
-            "The resulting number of interfaces in LAG is different \
-            than expected")
-        return False
-    for i in expectedIntArray:
-        compareResult = False
-        for k in returnStruct.valueGet(key=lagId)['interfaces']:
-            if i == k:
-                compareResult = True
-                break
-        if not compareResult:
-            LogOutput(
-                'error', 'Could not find interface ' + i + ' on resulting LAG')
-            return False
-    return True
-
 # Create/delete a LAG and add interfaces
 
 
@@ -431,9 +351,6 @@ def createLAG(deviceObj, lagId, configure, intArray, mode):
                 deviceObj.device)
             return False
         if len(retStruct.dataKeys()) == 0:
-            print "----"
-            print retStruct.buffer()
-            print "----"
             LogOutput('error', "No LAGs were configured on device")
             return False
         if retStruct.valueGet(key=str(lagId)) is None:
@@ -466,6 +383,97 @@ def createLAG(deviceObj, lagId, configure, intArray, mode):
                 LogOutput(
                     'error', "The LAG was not deleted from configuration")
                 return False
+    return True
+
+# Function to try and delete a non-existent LAG. It assumes there is only
+# 1 other LAG and then matches the information present in DUT to verify it
+# wasn't modified
+
+
+def deleteLAGNegative(
+        deviceObj, lagId, goodLagId, goodLagMode, goodLagInterfaces,
+        goodLagHash, goodLagFallback, goodLagFastFlag):
+    retStruct = lagCreation(
+        deviceObj=deviceObj, lagId=str(lagId), configFlag=False)
+    if retStruct.returnCode() != 0:
+        LogOutput('info', "Failed to delete LAG " + str(lagId) +
+                  " as expected on " + deviceObj.device)
+    else:
+        LogOutput('error', "Deleted LAG " + str(lagId) +
+                  " unexpectedly on " + deviceObj.device)
+        return False
+    retStruct = lacpAggregatesShow(deviceObj=deviceObj)
+    if retStruct.returnCode() != 0:
+        LogOutput('error', "Failed to verify if deleting LAG" +
+                  str(lagId) + " procuded changes on device " +
+                  deviceObj.device)
+        return False
+    if len(retStruct.dataKeys()) != 1:
+        for i in retStruct.dataKeys():
+            helperText += "\n" + i
+        LogOutput(
+            'error',
+            "Expected to find only 1 LAG in configuration, found " +
+            str(len(retStruct.dataKeys())) + " with the following IDs:\n" +
+            helperText)
+        return False
+    if retStruct.dataKeys()[0] == lagId:
+        LogOutput('error', "Found deleted LAG ID on device " +
+                  deviceObj.device + " configuration")
+        return False
+    if retStruct.valueGet(key=goodLagId)['lacpMode'] != goodLagMode:
+        LogOutput(
+            'error',
+            "Remaining LAG LACP mode altered. Expected: " + str(goodLagMode) +
+            " - Found: " + str(retStruct.valueGet(key=goodLagId)['lacpMode']))
+        return False
+    if retStruct.valueGet(key=goodLagId)['hashType'] != goodLagHash:
+        LogOutput(
+            'error',
+            "Remaining LAG hashing algorithm altered. Expected: " +
+            str(goodLagHash) + " - Found: " +
+            str(retStruct.valueGet(key=goodLagId)['hashType']))
+        return False
+    if retStruct.valueGet(key=goodLagId)['fallbackFlag'] != goodLagFallback:
+        LogOutput(
+            'error',
+            "Remaining LAG fallback flag altered. Expected: " +
+            str(goodLagFallback) + " - Found: " +
+            str(retStruct.valueGet(key=goodLagId)['fallbackFlag']))
+        return False
+    if retStruct.valueGet(key=goodLagId)['lacpFastFlag'] != goodLagFastFlag:
+        LogOutput(
+            'error',
+            "Remaining LAG fast speed setting altered. Expected: " +
+            str(goodLagFastFlag) + " - Found: " +
+            str(retStruct.valueGet(key=goodLagId)['lacpFastFlag']))
+        return False
+    if len(retStruct.valueGet(key=goodLagId)['interfaces']) !=\
+            len(goodLagInterfaces):
+        helperText1 = ''
+        helperText2 = ''
+        for i in retStruct.valueGet(key=goodLagId)['interfaces']:
+            helperText1 += "\n" + i
+        for i in goodLagInterfaces:
+            helperText2 += "\n" + i
+        LogOutput(
+            'error',
+            "Number of links in remaining LAG was modified. Expected: " +
+            str(len(goodLagInterfaces)) + " with interfaces:\n" +
+            helperText2 + "\n Found: " +
+            str(len(retStruct.valueGet(key=goodLagId)['interfaces'])) +
+            " with interfaces: \n" + helperText1)
+        return False
+    for i in goodLagInterfaces:
+        found = False
+        for k in retStruct.valueGet(key=goodLagId)['interfaces']:
+            if i == k:
+                found = True
+                break
+        if not found:
+            LogOutput(
+                'error', "Could not find interface " + i + "in remaining LAG")
+            return False
     return True
 
 # Add VLAN to interface
@@ -639,14 +647,12 @@ def clean_up_devices(dut01Obj, dut02Obj, wrkston01Obj, wrkston02Obj):
         "140.1.1.10", "255.255.255.0", "140.1.1.255", False))
     LogOutput('info', "Unconfiguring workstation 2")
     finalResult.append(configureWorkstation(
-        wrkston02Obj, wrkston02Obj.linkPortMapping['lnk10'],
+        wrkston02Obj, wrkston02Obj.linkPortMapping['lnk04'],
         "140.1.1.11", "255.255.255.0", "140.1.1.255", False))
 
-    LogOutput('info', "Delete LAGs from DUTs")
-    LogOutput('info', "Configuring switch dut01")
-    finalResult.append(createLAG(dut01Obj, '1', False, None, None))
-    LogOutput('info', "Configuring switch dut02")
-    finalResult.append(createLAG(dut02Obj, '1', False, None, None))
+    LogOutput('info', "Delete LAGs on DUTs")
+    finalResult.append(createLAG(dut01Obj, '1', False, [], 'off'))
+    finalResult.append(createLAG(dut02Obj, '1', False, [], 'off'))
 
     LogOutput('info', "Disable interfaces on DUTs")
     LogOutput('info', "Configuring switch dut01")
@@ -659,24 +665,6 @@ def clean_up_devices(dut01Obj, dut02Obj, wrkston01Obj, wrkston02Obj):
     finalResult.append(
         enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk03'],
                            False))
-    finalResult.append(
-        enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk04'],
-                           False))
-    finalResult.append(
-        enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk05'],
-                           False))
-    finalResult.append(
-        enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk06'],
-                           False))
-    finalResult.append(
-        enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk07'],
-                           False))
-    finalResult.append(
-        enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk08'],
-                           False))
-    finalResult.append(
-        enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk09'],
-                           False))
 
     LogOutput('info', "Configuring switch dut02")
     finalResult.append(
@@ -687,24 +675,6 @@ def clean_up_devices(dut01Obj, dut02Obj, wrkston01Obj, wrkston02Obj):
                            False))
     finalResult.append(
         enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk04'],
-                           False))
-    finalResult.append(
-        enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk05'],
-                           False))
-    finalResult.append(
-        enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk06'],
-                           False))
-    finalResult.append(
-        enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk07'],
-                           False))
-    finalResult.append(
-        enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk08'],
-                           False))
-    finalResult.append(
-        enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk09'],
-                           False))
-    finalResult.append(
-        enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk10'],
                            False))
 
     LogOutput('info', "Remove VLAN from DUTs")
@@ -728,7 +698,7 @@ class Test_ft_framework_basics:
             Test_ft_framework_basics.testObj.topoObjGet()
 
     def teardown_class(cls):
-        # clean devices
+        # clean up devices
         clean_up_devices(
             cls.topoObj.deviceObjGet(device="dut01"),
             cls.topoObj.deviceObjGet(device="dut02"),
@@ -762,24 +732,12 @@ class Test_ft_framework_basics:
         LogOutput('info', "############################################")
         dut01Obj = self.topoObj.deviceObjGet(device="dut01")
         dut02Obj = self.topoObj.deviceObjGet(device="dut02")
+
         assert(createLAG(dut01Obj, '1', True, [
-            dut01Obj.linkPortMapping['lnk02'],
-            dut01Obj.linkPortMapping['lnk03'],
-            dut01Obj.linkPortMapping['lnk04'],
-            dut01Obj.linkPortMapping['lnk05'],
-            dut01Obj.linkPortMapping['lnk06'],
-            dut01Obj.linkPortMapping['lnk07'],
-            dut01Obj.linkPortMapping['lnk08'],
-            dut01Obj.linkPortMapping['lnk09']], 'active'))
-        assert(createLAG(dut02Obj, '1', True, [
-            dut02Obj.linkPortMapping['lnk02'],
-            dut02Obj.linkPortMapping['lnk03'],
-            dut02Obj.linkPortMapping['lnk04'],
-            dut02Obj.linkPortMapping['lnk05'],
-            dut02Obj.linkPortMapping['lnk06'],
-            dut02Obj.linkPortMapping['lnk07'],
-            dut02Obj.linkPortMapping['lnk08'],
-            dut02Obj.linkPortMapping['lnk09']], 'passive'))
+               dut01Obj.linkPortMapping['lnk02'],
+               dut01Obj.linkPortMapping['lnk03']], 'active'))
+        assert(createLAG(dut02Obj, '1', True, [dut02Obj.linkPortMapping[
+               'lnk02'], dut02Obj.linkPortMapping['lnk03']], 'passive'))
 
     def test_configureVLANs(self):
         LogOutput('info', "\n############################################")
@@ -798,7 +756,7 @@ class Test_ft_framework_basics:
         assert(configureVLAN(dut02Obj, 900, True))
         assert(
             addInterfaceVLAN(dut02Obj, 900, True,
-                             dut02Obj.linkPortMapping['lnk10']))
+                             dut02Obj.linkPortMapping['lnk04']))
         assert(addInterfaceVLAN(dut02Obj, 900, True, 'lag 1'))
 
     def test_enableDUTsInterfaces(self):
@@ -817,24 +775,6 @@ class Test_ft_framework_basics:
         assert(
             enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk03'],
                                True))
-        assert(
-            enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk04'],
-                               True))
-        assert(
-            enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk05'],
-                               True))
-        assert(
-            enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk06'],
-                               True))
-        assert(
-            enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk07'],
-                               True))
-        assert(
-            enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk08'],
-                               True))
-        assert(
-            enableDutInterface(dut01Obj, dut01Obj.linkPortMapping['lnk09'],
-                               True))
 
         LogOutput('info', "Configuring switch dut02")
         assert(
@@ -845,24 +785,6 @@ class Test_ft_framework_basics:
                                True))
         assert(
             enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk04'],
-                               True))
-        assert(
-            enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk05'],
-                               True))
-        assert(
-            enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk06'],
-                               True))
-        assert(
-            enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk07'],
-                               True))
-        assert(
-            enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk08'],
-                               True))
-        assert(
-            enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk09'],
-                               True))
-        assert(
-            enableDutInterface(dut02Obj, dut02Obj.linkPortMapping['lnk10'],
                                True))
 
     def test_configureWorkstations(self):
@@ -880,7 +802,7 @@ class Test_ft_framework_basics:
         assert(configureWorkstation(
             wrkston02Obj,
             wrkston02Obj.linkPortMapping[
-                'lnk10'], "140.1.1.11", "255.255.255.0", "140.1.1.255", True))
+                'lnk04'], "140.1.1.11", "255.255.255.0", "140.1.1.255", True))
 
     def test_pingBetweenClients1(self):
         LogOutput('info', "\n############################################")
@@ -891,80 +813,90 @@ class Test_ft_framework_basics:
         assert(pingBetweenWorkstations(
             wrkston01Obj, wrkston02Obj, "140.1.1.11", True))
 
-    def test_modifyLAGs1(self):
+    def test_deleteLAGs1(self):
         LogOutput('info', "\n############################################")
-        LogOutput('info', "Delete 1 member from LAG")
+        LogOutput('info', "Delete non-existent LAGs on both DUTs")
         LogOutput('info', "############################################")
         dut01Obj = self.topoObj.deviceObjGet(device="dut01")
         dut02Obj = self.topoObj.deviceObjGet(device="dut02")
-        LogOutput('info', "Delete 1 LAG member from dut01")
-        assert(
-            addInterfaceToLAG(
-                dut01Obj, '1', dut01Obj.linkPortMapping['lnk02'],
-                False, [
-                    dut01Obj.linkPortMapping['lnk03'],
-                    dut01Obj.linkPortMapping['lnk04'],
-                    dut01Obj.linkPortMapping['lnk05'],
-                    dut01Obj.linkPortMapping['lnk06'],
-                    dut01Obj.linkPortMapping['lnk07'],
-                    dut01Obj.linkPortMapping['lnk08'],
-                    dut01Obj.linkPortMapping['lnk09']]))
-        LogOutput('info', "Delete 1 LAG member from dut02")
-        assert(
-            addInterfaceToLAG(
-                dut02Obj, '1', dut02Obj.linkPortMapping['lnk02'],
-                False, [
-                    dut02Obj.linkPortMapping['lnk03'],
-                    dut02Obj.linkPortMapping['lnk04'],
-                    dut02Obj.linkPortMapping['lnk05'],
-                    dut02Obj.linkPortMapping['lnk06'],
-                    dut02Obj.linkPortMapping['lnk07'],
-                    dut02Obj.linkPortMapping['lnk08'],
-                    dut02Obj.linkPortMapping['lnk09']]))
+
+        LogOutput('info', 'Attemtpt to delete LAGs on dut01')
+        LogOutput('info', 'With ID XX')
+        assert(deleteLAGNegative(dut01Obj, 'XX', '1', 'active', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 0')
+        assert(deleteLAGNegative(dut01Obj, '0', '1', 'active', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID -1')
+        assert(deleteLAGNegative(dut01Obj, '-1', '1', 'active', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 2000')
+        assert(deleteLAGNegative(dut01Obj, '2000', '1', 'active', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 2001')
+        assert(deleteLAGNegative(dut01Obj, '2001', '1', 'active', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID @%&$#()')
+        assert(deleteLAGNegative(dut01Obj, '@%&$#()', '1', 'active', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 60000')
+        assert(deleteLAGNegative(dut01Obj, '60000', '1', 'active', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 600')
+        assert(deleteLAGNegative(dut01Obj, '600', '1', 'active', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 2')
+        assert(deleteLAGNegative(dut01Obj, '2', '1', 'active', [
+            dut01Obj.linkPortMapping['lnk02'],
+            dut01Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+
+        LogOutput('info', 'Attemtpt to delete LAGs on dut01')
+        LogOutput('info', 'With ID XX')
+        assert(deleteLAGNegative(dut02Obj, 'XX', '1', 'passive', [
+            dut02Obj.linkPortMapping['lnk02'],
+            dut02Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 0')
+        assert(deleteLAGNegative(dut02Obj, '0', '1', 'passive', [
+            dut02Obj.linkPortMapping['lnk02'],
+            dut02Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID -1')
+        assert(deleteLAGNegative(dut02Obj, '-1', '1', 'passive', [
+            dut02Obj.linkPortMapping['lnk02'],
+            dut02Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 2000')
+        assert(deleteLAGNegative(dut02Obj, '2000', '1', 'passive', [
+            dut02Obj.linkPortMapping['lnk02'],
+            dut02Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 2001')
+        assert(deleteLAGNegative(dut02Obj, '2001', '1', 'passive', [
+            dut02Obj.linkPortMapping['lnk02'],
+            dut02Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID @%&$#()')
+        assert(deleteLAGNegative(dut02Obj, '@%&$#()', '1', 'passive', [
+            dut02Obj.linkPortMapping['lnk02'],
+            dut02Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 60000')
+        assert(deleteLAGNegative(dut02Obj, '60000', '1', 'passive', [
+            dut02Obj.linkPortMapping['lnk02'],
+            dut02Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 600')
+        assert(deleteLAGNegative(dut02Obj, '600', '1', 'passive', [
+            dut02Obj.linkPortMapping['lnk02'],
+            dut02Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
+        LogOutput('info', 'With ID 2')
+        assert(deleteLAGNegative(dut02Obj, '2', '1', 'passive', [
+            dut02Obj.linkPortMapping['lnk02'],
+            dut02Obj.linkPortMapping['lnk03']], 'l3-src-dst', False, False))
 
     def test_pingBetweenClients2(self):
-        LogOutput('info', "\n############################################")
-        LogOutput('info', "Test ping between clients work")
-        LogOutput('info', "############################################")
-        wrkston01Obj = self.topoObj.deviceObjGet(device="wrkston01")
-        wrkston02Obj = self.topoObj.deviceObjGet(device="wrkston02")
-        assert(pingBetweenWorkstations(
-            wrkston01Obj, wrkston02Obj, "140.1.1.11", True))
-
-    def test_modifyLAGs2(self):
-        LogOutput('info', "\n############################################")
-        LogOutput('info', "Add 1 member to LAG")
-        LogOutput('info', "############################################")
-        dut01Obj = self.topoObj.deviceObjGet(device="dut01")
-        dut02Obj = self.topoObj.deviceObjGet(device="dut02")
-        LogOutput('info', "Add 1 LAG member to dut01")
-        assert(
-            addInterfaceToLAG(
-                dut01Obj, '1', dut01Obj.linkPortMapping['lnk02'],
-                True, [
-                    dut01Obj.linkPortMapping['lnk02'],
-                    dut01Obj.linkPortMapping['lnk03'],
-                    dut01Obj.linkPortMapping['lnk04'],
-                    dut01Obj.linkPortMapping['lnk05'],
-                    dut01Obj.linkPortMapping['lnk06'],
-                    dut01Obj.linkPortMapping['lnk07'],
-                    dut01Obj.linkPortMapping['lnk08'],
-                    dut01Obj.linkPortMapping['lnk09']]))
-        LogOutput('info', "Add 1 LAG member to dut02")
-        assert(
-            addInterfaceToLAG(
-                dut02Obj, '1', dut02Obj.linkPortMapping['lnk02'],
-                True, [
-                    dut02Obj.linkPortMapping['lnk02'],
-                    dut02Obj.linkPortMapping['lnk03'],
-                    dut02Obj.linkPortMapping['lnk04'],
-                    dut02Obj.linkPortMapping['lnk05'],
-                    dut02Obj.linkPortMapping['lnk06'],
-                    dut02Obj.linkPortMapping['lnk07'],
-                    dut02Obj.linkPortMapping['lnk08'],
-                    dut02Obj.linkPortMapping['lnk09']]))
-
-    def test_pingBetweenClients3(self):
         LogOutput('info', "\n############################################")
         LogOutput('info', "Test ping between clients work")
         LogOutput('info', "############################################")

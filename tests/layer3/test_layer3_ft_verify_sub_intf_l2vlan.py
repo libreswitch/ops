@@ -23,6 +23,7 @@ from opstestfw.switch import *
 
 # Topology definition
 topoDict = {"topoExecution": 1000,
+            "topoType": "physical",
             "topoTarget": "dut01 ",
             "topoDevices": "dut01 wrkston01 wrkston02 wrkston03",
             "topoLinks": "lnk01:dut01:wrkston01,\
@@ -209,7 +210,6 @@ def l3_route(**kwargs):
     LogOutput('info', "Packets Recv:\t" + str(packets_received))
     LogOutput('info', "Packet Loss %:\t" + str(packet_loss))
     assert packets_received == 0, "able to ping switch"
-
 
 class Test_subInt:
 

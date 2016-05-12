@@ -16,42 +16,144 @@
 
 
 ## Overview
-The diagnostic dump command is used to collect internal diagnostic information from single or multiple daemons mapped to a single feature.
+The diagnostic dump command lets you display or save diagnostic information about an OpenSwitch feature.
 
-## Using the diag-dump command to access feature information
+### Listing features that support diagnostic dump
+Run following command to see all features that support diagnostic information:
+```diag-dump list```
 
-There are various ways to get access to supported feature information using the `diag-dump` command as shown in the following sections.
+##### Example
+```
+switch# diag-dump list
+Diagnostic Dump Supported Features List
+-------------------------------------------------------------------------
+Feature                                  Description
+-------------------------------------------------------------------------
+lldp                                     Link Layer Discovery
+lacp                                     Link Aggregation Con
+fand                                     System Fan
+routing                                  Routing protocols
+ospfv2                                   Open Shortest Path F
+bgp                                      Border Gateway Proto
+sub-interface                            sub-interface
+loopback                                 Loopback interface
+```
 
-### List diagnostic supported features
-Execute the CLI "diag-dump list" command to get the list of supported features with descriptions on the console.
+### Viewing basic diagnostic information for a feature
+Run the command:
+```diag-dump <feature-name> basic```
 
-### Basic diagnostic on console
-Execute the CLI "diag-dump <feature> basic" command to get basic diagnostic information on the console.
+##### Example
+```
+switch# diag-dump lldp basic
+=========================================================================
+[Start] Feature lldp Time : Thu Apr 14 02:54:18 2016
 
-### Basic diagnostic to file
-Execute the CLI "diag-dump <feature> basic <filename>" command to get basic diagnostic information into a file.
+=========================================================================
+-------------------------------------------------------------------------
+[Start] Daemon ops-lldpd
+-------------------------------------------------------------------------
 
-### Troubleshooting the configuration
+LLDP : DISABLED
+
+    intf name   |   OVSDB interface     |   LLDPD Interface     |    LLDP Status        |  Link State
+==============================================================================================
+bridge_normal   |    Yes                |    Yes                |    rxtx               |    down
+51-3            |    Yes                |No             |
+53              |    Yes                |No             |
+49-4            |    Yes                |No             |
+51-1            |    Yes                |No             |
+35              |    Yes                |No             |
+6               |    Yes                |No             |
+39              |    Yes                |No             |
+4               |    Yes                |No             |
+50-1            |    Yes                |No             |
+53-3            |    Yes                |No             |
+25              |    Yes                |No             |
+50-4            |    Yes                |No             |
+40              |    Yes                |No             |
+51-4            |    Yes                |No             |
+37              |    Yes                |No             |
+48              |    Yes                |No             |
+49              |    Yes                |No             |
+50-2            |    Yes                |No             |
+52              |    Yes                |No             |
+11              |    Yes                |No             |
+22              |    Yes                |No             |
+5               |    Yes                |No             |
+36              |    Yes                |No             |
+34              |    Yes                |No             |
+49-2            |    Yes                |No             |
+54-3            |    Yes                |No             |
+17              |    Yes                |No             |
+20              |    Yes                |No             |
+46              |    Yes                |No             |
+9               |    Yes                |No             |
+42              |    Yes                |No             |
+49-3            |    Yes                |No             |
+23              |    Yes                |No             |
+47              |    Yes                |No             |
+12              |    Yes                |No             |
+30              |    Yes                |No             |
+24              |    Yes                |No             |
+27              |    Yes                |No             |
+50              |    Yes                |No             |
+13              |    Yes                |No             |
+33              |    Yes                |No             |
+51              |    Yes                |No             |
+49-1            |    Yes                |No             |
+43              |    Yes                |No             |
+28              |    Yes                |No             |
+45              |    Yes                |No             |
+50-3            |    Yes                |No             |
+16              |    Yes                |No             |
+8               |    Yes                |No             |
+3               |    Yes                |No             |
+15              |    Yes                |No             |
+51-2            |    Yes                |No             |
+53-1            |    Yes                |No             |
+29              |    Yes                |No             |
+26              |    Yes                |No             |
+18              |    Yes                |No             |
+52-1            |    Yes                |No             |
+53-4            |    Yes                |No             |
+14              |    Yes                |No             |
+
+-------------------------------------------------------------------------
+[End] Daemon ops-lldpd
+-------------------------------------------------------------------------
+=========================================================================
+[End] Feature lldp
+=========================================================================
+Diagnostic dump captured for feature lldp
+
+
+```
+### Saving basic diagnostic information to a file
+Run the command:
+```diag-dump <feature-name> basic <filename>```
+
+
+### Troubleshooting
 
 #### Condition
-The 'diag-dump' command results in the following error
-'Failed to capture diagnostic information'
+The **diag-dump** command displays the message: **Failed to capture diagnostic information**
 
 
-#### Cause
-1. The ops_diagdump.yaml file is not present in the `/etc/openswitch/supportability/ops_diagdump.yaml` path.
-2. The user may not have read permission.
-3. The content of the yaml file is incorrect.
+#### Causes
+1. The configuration file (**/etc/openswitch/supportability/ops_featuremapping.yaml**) is missing.
+2. You may not have read permission for the configuration file.
+3. The content of the configuration file is incorrect.
 
 
 #### Remedy
-1. Ensure that the yaml file is present in its `/etc/openswitch/supportability/ops_diagdump.yaml` path.
-2. Ensure that the user has read permission for the yaml file.
-3. Verify that the content of the yaml file is correct using the yaml lint tool.
-4. Verify that the structure of the configuration is valid.
-
-### Feature to daemon mapping
-The `/etc/openswitch/supportability/ops_diagdump.yaml` file contains "feature to daemon mapping" configurations.
+1. Ensure that the configuration file (**/etc/openswitch/supportability/ops_featuremapping.yaml**) exists.
+2. Ensure that the you have read permission for the configuration file.
+3. Verify that the content of the configuration file is correct using the yaml lint tool.
+4. Verify that the structure of the configuration file is valid.
 
 ## References
-* [Reference 1] 'diagnostic_user_guide.md'
+
+* [High-Level Design of Diagnostic Dump](http://www.openswitch.net/documents/dev/ops-diag/diagnostic_design)
+* [Diagnostic Dump Commands](http://www.openswitch.net/documents/user/diagnostic_cli)
+* [Component Test Cases for Diagnostic](http://www.openswitch.net/documents/user/diagnostic_test)

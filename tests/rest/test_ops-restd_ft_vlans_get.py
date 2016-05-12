@@ -25,9 +25,12 @@ import httplib
 import urllib
 import subprocess
 
-from opsvsiutils.restutils.fakes import *
-from opsvsiutils.restutils.utils import *
-from opsvsiutils.restutils.swagger_test_utility import *
+from opsvsiutils.restutils.fakes import create_fake_vlan
+from opsvsiutils.restutils.utils import execute_request, login, \
+    get_switch_ip, rest_sanity_check, get_container_id, \
+    compare_dict
+from opsvsiutils.restutils.swagger_test_utility import \
+    swagger_model_verification
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -55,6 +58,11 @@ class myTopo(Topo):
 #   Query for Bridge Normal                                                   #
 #                                                                             #
 ###############################################################################
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.switch_ip)
+
+
 class QueryDefaultBridgeNormal(OpsVsiTest):
     def setupNet(self):
         self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
@@ -68,6 +76,7 @@ class QueryDefaultBridgeNormal(OpsVsiTest):
                            build=True)
 
         self.switch_ip = get_switch_ip(self.net.switches[0])
+        self.cookie_header = None
 
     def test(self):
         expected_data = ["/rest/v1/system/bridges/%s" % DEFAULT_BRIDGE]
@@ -76,10 +85,9 @@ class QueryDefaultBridgeNormal(OpsVsiTest):
         info("\n########## Executing GET to /system/bridges ##########\n")
         info("Testing Path: %s\n" % path)
 
-        response_status, response_data = execute_request(path,
-                                                         "GET",
-                                                         None,
-                                                         self.switch_ip)
+        response_status, response_data = execute_request(
+            path, "GET", None, self.switch_ip, xtra_header=self.cookie_header)
+
         assert response_status == httplib.OK, \
             "Response status received: %s\n" % response_status
         info("Response status received: %s\n" % response_status)
@@ -114,7 +122,7 @@ class TestGetDefaultBridgeNormal:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test()
 
 
@@ -140,6 +148,7 @@ class QueryVlansAssociated(OpsVsiTest):
         self.vlan_id = 1
         self.vlan_name = "fake_vlan"
         self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
+        self.cookie_header = None
 
     def test(self):
         expected_data = "%s/%s" % (self.vlan_path, self.vlan_name)
@@ -149,10 +158,8 @@ class QueryVlansAssociated(OpsVsiTest):
              "(VLAN added) ##########\n")
         info("Testing path: %s\n" % path)
 
-        response_status, response_data = execute_request(path,
-                                                         "GET",
-                                                         None,
-                                                         self.switch_ip)
+        response_status, response_data = execute_request(
+            path, "GET", None, self.switch_ip, xtra_header=self.cookie_header)
 
         assert response_status == httplib.OK, \
             "Response status received: %s\n" % response_status
@@ -193,7 +200,7 @@ class TestGetVlansAssociated:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test()
 
 
@@ -219,6 +226,7 @@ class QueryVlanByName(OpsVsiTest):
         self.vlan_id = 1
         self.vlan_name = "fake_vlan"
         self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
+        self.cookie_header = None
 
     def test(self):
         path = "%s/%s" % (self.vlan_path, self.vlan_name)
@@ -235,10 +243,9 @@ class QueryVlanByName(OpsVsiTest):
              "{id} ##########\n")
         info("Testing path: %s\n" % path)
 
-        response_status, response_data = execute_request(path,
-                                                         "GET",
-                                                         None,
-                                                         self.switch_ip)
+        response_status, response_data = execute_request(
+            path, "GET", None, self.switch_ip, xtra_header=self.cookie_header)
+
         expected_response = json.loads(response_data)
 
         assert response_status == httplib.OK, \
@@ -282,7 +289,7 @@ class TestGetVlanByName:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         info("container_id_test %s\n" % self.container_id)
         swagger_model_verification(self.container_id,
                                    "/system/bridges/{pid}/vlans/{id}",
@@ -311,6 +318,7 @@ class QueryNonExistentVlanByName(OpsVsiTest):
         self.switch_ip = get_switch_ip(self.net.switches[0])
         self.vlan_name = "not_found"
         self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
+        self.cookie_header = None
 
     def test(self):
         path = "%s/%s" % (self.vlan_path, self.vlan_name)
@@ -319,10 +327,8 @@ class QueryNonExistentVlanByName(OpsVsiTest):
              "##########\n")
         info("Testing path: %s\n" % path)
 
-        response_status, response_data = execute_request(path,
-                                                         "GET",
-                                                         None,
-                                                         self.switch_ip)
+        response_status, response_data = execute_request(
+            path, "GET", None, self.switch_ip, xtra_header=self.cookie_header)
 
         assert response_status == httplib.NOT_FOUND, \
             "Response status received: %s\n" % response_status
@@ -359,5 +365,5 @@ class TestGetNonExistentVlan:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test()

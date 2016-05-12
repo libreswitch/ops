@@ -20,7 +20,8 @@ import pytest
 
 from opsvsi.docker import *
 from opsvsi.opsvsitest import *
-from opsvsiutils.restutils.utils import *
+from opsvsiutils.restutils.utils import execute_request, login, \
+    get_switch_ip, get_json, rest_sanity_check
 
 import json
 import httplib
@@ -40,6 +41,11 @@ class myTopo(Topo):
         switch = self.addSwitch("s1")
 
 
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.SWITCH_IP)
+
+
 class LogsPaginationTest (OpsVsiTest):
     def setupNet(self):
         self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
@@ -52,6 +58,7 @@ class LogsPaginationTest (OpsVsiTest):
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
         self.PATH = "/rest/v1/logs"
         self.LOGS_PATH = self.PATH
+        self.cookie_header = None
 
     def logs_with_offset_limit(self):
         info("\n########## Test to Validate logs with pagination parameters \
@@ -59,8 +66,9 @@ class LogsPaginationTest (OpsVsiTest):
 
         self.LOGS_PATH = (self.PATH + "?offset=%s&limit=%s") % \
                          (OFFSET_TEST, LIMIT_TEST)
-        status_code, response_data = execute_request(self.LOGS_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.LOGS_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -83,24 +91,27 @@ class LogsPaginationTest (OpsVsiTest):
              " parameters ##########\n")
 
         self.LOGS_PATH = (self.PATH + "?offset=1&limit=-1")
-        status_code, response_data = execute_request(self.LOGS_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.LOGS_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.BAD_REQUEST, "Wrong status code %s " \
             % status_code
         info("### Status code for negative limit is okay ###\n")
 
         self.LOGS_PATH = (self.PATH + "?offset=-1&limit=-1")
-        status_code, response_data = execute_request(self.LOGS_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.LOGS_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.BAD_REQUEST, "Wrong status code %s " \
             % status_code
         info("### Status code for negative offset and limit is OK ###\n")
 
         self.LOGS_PATH = (self.PATH + "?offset=-1&limit=1")
-        status_code, response_data = execute_request(self.LOGS_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.LOGS_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.BAD_REQUEST, "Wrong status code %s " \
             % status_code
@@ -116,8 +127,9 @@ class LogsPaginationTest (OpsVsiTest):
         offset_test = None
 
         self.LOGS_PATH = self.PATH + "?limit=%s" % LIMIT_TEST
-        status_code, response_data = execute_request(self.LOGS_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.LOGS_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -142,8 +154,9 @@ class LogsPaginationTest (OpsVsiTest):
         limit_test = None
 
         self.LOGS_PATH = self.PATH + "?offset=%s" % OFFSET_TEST
-        status_code, response_data = execute_request(self.LOGS_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.LOGS_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -181,14 +194,14 @@ class Test_LogsPagination:
     def __del__(self):
         del self.test_var
 
-    def test_logs_with_offset_limit(self):
+    def test_logs_with_offset_limit(self, netop_login):
         self.test_var.logs_with_offset_limit()
 
-    def test_logs_with_offset_limit_negative_test_cases(self):
+    def test_logs_with_offset_limit_negative_test_cases(self, netop_login):
         self.test_var.logs_with_offset_limit_negative_test_cases()
 
-    def test_logs_with_offset_None(self):
+    def test_logs_with_offset_None(self, netop_login):
         self.test_var.logs_with_offset_None()
 
-    def test_logs_with_limit_None(self):
+    def test_logs_with_limit_None(self, netop_login):
         self.test_var.logs_with_limit_None()

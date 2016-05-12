@@ -20,12 +20,88 @@ from opstestfw import *
 from opstestfw.switch.CLI import *
 from opstestfw.switch.OVS import *
 
+PING_BYTES = 128
+
 # Topology definition
 topoDict = {"topoExecution": 1000,
+            "topoType": "physical",
             "topoTarget": "dut01",
             "topoDevices": "dut01 wrkston01 wrkston02 wrkston03 wrkston04",
             "topoLinks": "lnk01:dut01:wrkston01,lnk02:dut01:wrkston02,lnk03:dut01:wrkston03,lnk04:dut01:wrkston04",
             "topoFilters": "dut01:system-category:switch,wrkston01:system-category:workstation,wrkston02:system-category:workstation,wrkston03:system-category:workstation,wrkston04:system-category:workstation"}
+
+
+def baseline_stats(switch, cmd, virtual_if):
+    returnStructure = switch.DeviceInteract(command=cmd)
+    buf = returnStructure.get('buffer')
+    rx = dict()
+    tx = dict()
+    if virtual_if:
+        rxTokens = re.findall(r'RX\s*\r\n\s*L3:\s*\r\n\s*ucast:\s*(\d*)\s*packets,\s*(\d*)\s*bytes\s*', buf)
+        txTokens = re.findall(r'TX\s*\r\n\s*L3:\s*\r\n\s*ucast:\s*(\d*)\s*packets,\s*(\d*)\s*bytes\s*', buf)
+    else:
+        rxTokens = re.findall(r'RX\s*\r\n\s*ucast:\s*(\d*)\s*packets,\s*(\d*)\s*bytes\s*', buf)
+        txTokens = re.findall(r'TX\s*\r\n\s*ucast:\s*(\d*)\s*packets,\s*(\d*)\s*bytes\s*', buf)
+    if rxTokens:
+        rx['packets'] = rxTokens[0][0]
+        rx['bytes'] = rxTokens[0][1]
+    if txTokens:
+        tx['packets'] = txTokens[0][0]
+        tx['bytes'] = txTokens[0][1]
+
+    return {'RX':rx, 'TX':tx}
+
+def verify_l3_stats(switch, cmd, base_stats, ping_cnt, virtual_if):
+    # Retry loop around tx and rx stats.
+    for iteration in range(0, 5):
+        pass_cases = 0
+        returnStructure = switch.DeviceInteract(command=cmd)
+        buf = returnStructure.get('buffer')
+        rx = dict()
+        tx = dict()
+        if virtual_if:
+            rxTokens = re.findall(r'RX\s*\r\n\s*L3:\s*\r\n\s*ucast:\s*(\d*)\s*packets,\s*(\d*)\s*bytes\s*', buf)
+            txTokens = re.findall(r'TX\s*\r\n\s*L3:\s*\r\n\s*ucast:\s*(\d*)\s*packets,\s*(\d*)\s*bytes\s*', buf)
+        else:
+            rxTokens = re.findall(r'RX\s*\r\n\s*ucast:\s*(\d*)\s*packets,\s*(\d*)\s*bytes\s*', buf)
+            txTokens = re.findall(r'TX\s*\r\n\s*ucast:\s*(\d*)\s*packets,\s*(\d*)\s*bytes\s*', buf)
+        if rxTokens:
+            rx['packets'] = rxTokens[0][0]
+            rx['bytes'] = rxTokens[0][1]
+        if txTokens:
+            tx['packets'] = txTokens[0][0]
+            tx['bytes'] = txTokens[0][1]
+        if int(rx['packets']) < (ping_cnt + int(base_stats['RX']['packets'])):
+            LogOutput('info', "Retrying statistic - waiting for rx_packets to update")
+            Sleep(seconds=5, message="\nWaiting")
+            continue
+        pass_cases = pass_cases + 1
+        if int(tx['packets']) < (ping_cnt + int(base_stats['TX']['packets'])):
+            LogOutput('info', "Retrying statistic - waiting for tx_packets to update")
+            Sleep(seconds=5, message="\nWaiting")
+            continue
+        if int(rx['bytes']) < ((ping_cnt + int(base_stats['RX']['packets'])) * PING_BYTES):
+            LogOutput('info', "Retrying statistic - waiting for rx_bytes to update")
+            Sleep(seconds=5, message="\nWaiting")
+            continue
+        pass_cases = pass_cases + 1
+        if int(tx['bytes']) < ((ping_cnt + int(base_stats['TX']['packets'])) * PING_BYTES):
+            LogOutput('info', "Retrying statistic - waiting for tx_bytes to update")
+            Sleep(seconds=5, message="\nWaiting")
+            continue
+        pass_cases = pass_cases + 1
+        if pass_cases == 4:
+            break
+
+    # Verify RX_packets
+    assert int(rx['packets']) >= (ping_cnt + int(base_stats['RX']['packets'])), "rx_packets wrong."
+    # Verify TX_packets
+    assert int(tx['packets']) >= (ping_cnt + int(base_stats['TX']['packets'])), "tx_packets wrong."
+    # Verify RX_bytes
+    assert int(rx['bytes']) >= ((ping_cnt + int(base_stats['RX']['packets'])) * PING_BYTES), "rx_bytes wrong."
+    # Verify TX_bytes
+    assert int(tx['bytes']) >= ((ping_cnt + int(base_stats['TX']['packets'])) * PING_BYTES), "tx_bytes wrong."
+
 
 def ping_vlan(**kwargs):
     switch = kwargs.get('switch',None)
@@ -313,18 +389,6 @@ def ping_vlan(**kwargs):
         caseReturnCode = 1
 
 
-    #Ping From Host1 to Host 2
-    retStruct = host1.Ping(ipAddr="10.0.0.10", packetCount=1)
-    retCode = retStruct.returnCode()
-    assert retCode==0, "\n##### Failed to do IPv4 ping, Case Failed #####"
-    LogOutput('info',"\n##### Ping Passed, Case Passed #####\n\n")
-
-
-    retStruct = host1.Ping(ipAddr="1000::10", packetCount=1, ipv6Flag=True)
-    retCode = retStruct.returnCode()
-    assert retCode==0, "\n##### Failed to do IPv6 ping, Case Failed #####"
-    LogOutput('info',"\n##### Ping Passed, Case Passed #####\n\n")
-
     #Ping from host 1 to host 3
     retStruct = host1.Ping(ipAddr="20.0.0.10", packetCount=1)
     retCode = retStruct.returnCode()
@@ -348,6 +412,43 @@ def ping_vlan(**kwargs):
     retCode = retStruct.returnCode()
     assert retCode==0, "\n##### Failed to do IPv6 ping, Case Failed #####"
     LogOutput('info',"\n##### Ping Passed, Case Passed #####\n\n")
+
+    #Ping From Host1 to Host 2
+    retStruct = host1.Ping(ipAddr="10.0.0.10", packetCount=1)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "\n##### Failed to do IPv4 ping, Case Failed #####"
+    LogOutput('info',"\n##### Ping Passed, Case Passed #####\n\n")
+
+
+    retStruct = host1.Ping(ipAddr="1000::10", packetCount=1, ipv6Flag=True)
+    retCode = retStruct.returnCode()
+    assert retCode==0, "\n##### Failed to do IPv6 ping, Case Failed #####"
+    LogOutput('info',"\n##### Ping Passed, Case Passed #####\n\n")
+
+    LogOutput('info',"\n##### Baselining L3 stats #####\n")
+    #Baselining stats on L3 interfaces
+    returnStructure = switch.VtyshShell(enter=True)
+    base_vlan10 = baseline_stats(switch, "show interface vlan10", True)
+    base_vlan20 = baseline_stats(switch, "show interface vlan20", True)
+    base_ip_intf4 = baseline_stats(switch, "show ip interface %d"%interface4, False)
+    base_ipv6_intf4 = baseline_stats(switch, "show ipv6 interface %d"%interface4, False)
+
+    #Ping host 3 host 4 from host 1
+    host1.Ping(ipAddr="20.0.0.10", packetCount=5)
+    host1.Ping(ipAddr="2000::10", packetCount=5, ipv6Flag=True)
+    host1.Ping(ipAddr="30.0.0.10", packetCount=5)
+    host1.Ping(ipAddr="3000::10", packetCount=5, ipv6Flag=True)
+
+    #Verify L3 statistics on L3 interfaces
+    returnStructure = switch.VtyshShell(enter=True)
+    LogOutput('info',"\n##### Verify interface vlan10 stats #####\n")
+    verify_l3_stats(switch, "show interface vlan10", base_vlan10, 20, True)
+    LogOutput('info',"\n##### Verify interface vlan20 stats #####\n")
+    verify_l3_stats(switch, "show interface vlan20", base_vlan20, 10, True)
+    LogOutput('info',"\n##### Verify ip phy interface stats #####\n")
+    verify_l3_stats(switch, "show ip interface %d"%interface4, base_ip_intf4, 5, False)
+    LogOutput('info',"\n##### Verify ipv6 phy interface stats #####\n")
+    verify_l3_stats(switch, "show ipv6 interface %d"%interface4, base_ipv6_intf4, 5, False)
 
     #Unconfiguring vlans
 
@@ -404,7 +505,6 @@ def ping_vlan(**kwargs):
     assert retCode!=0, "\n##### Ping Passed, Case Failed #####"
     LogOutput('info',"\n##### Failed to do IPv6 ping, Case Passed #####\n\n")
 
-@pytest.mark.skipif(True, reason="skipped test case due to random gate job failures.")
 @pytest.mark.timeout(1000)
 class Test_vlan_ping:
     def setup_class (cls):

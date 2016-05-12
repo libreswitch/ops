@@ -63,6 +63,44 @@
     </dd>
   </dl>
 
+  <h2>Category</h2>
+
+  <p>
+    All columns in the schema, except those related to hardware configuration, include
+    a "category" element. This element is used to define the data that is contained in
+    the column.  There are three category types:
+  </p>
+
+  <ol>
+    <li>
+      Status: Represent state data that the system writes as a result of its operation.
+      The data can come from protocols or system daemons. Hardware information columns
+      should use this category.  Columns using this category cannot be configured by
+      the user.
+    </li>
+    <li>
+      Statistics: Represent statistic data, usually counters, that the system reports.
+      This data can come from protocols, hardware or system daemons.  Columns using
+      this category cannot be configured by the user.
+    </li>
+    <li>
+      Configuration: Represent configuration data that comes from the user.  Only columns
+      using this category can be modified by the users.
+    </li>
+  </ol>
+
+  <p>
+    Some column categories depend on the other column category. It means that the
+    column category is not explicit. The value will be dynamically interpreted by taking
+    the other column value. The tag "follows" inside the category is meant for that.
+  </p>
+
+  <p>
+    In other cases the category must be interpreted using a specific row value itself.
+    The column category will be calculated by mapping the specific enum value to the
+    corresponding category. The tag "per-value" inside the category is meant for that.
+  </p>
+
   <table name="System" title="OpenSwitch top level configuration.">
     Configuration for an OpenSwitch system. There must be exactly
     one record in the <ref table="System"/> table.
@@ -216,7 +254,17 @@
         </p>
       </column>
 
-      <group title="TFTP Server Configurations">
+      <column name="other_config" key="acl_log_timer_interval"
+           type='{"type":"integer", "minInteger": 30, "maxInteger": 300}'>
+         <p>
+             This key specifies the interval in seconds of the ACL logging timer.
+         </p>
+         <p>
+             Default value is 300 seconds.
+         </p>
+       </column>
+
+       <group title="TFTP Server Configurations">
         <column name="other_config" key="tftp_server_enable"
                 type='{"type": "boolean"}'>
           Set this value to <code>true</code> to enable TFTP server
@@ -1227,7 +1275,26 @@
         Total number of protocol bytes dropped due to excessive rate.
       </column>
     </group>
-
+    <group title="ACL Limits">
+       <column name="other_info" key="max_acls"
+           type='{"type":"integer", "minInteger": 0, "maxInteger": 4294967295}'>
+          <p>
+             Total number of ACLs that may be configured in the system.
+           </p>
+        </column>
+        <column name="other_info" key="max_aces"
+           type='{"type":"integer", "minInteger": 0, "maxInteger": 4294967295}'>
+          <p>
+             Total number of ACL entries that may be configured in the system.
+          </p>
+        </column>
+        <column name="other_info" key="max_aces_per_acl"
+           type='{"type":"integer", "minInteger": 0, "maxInteger": 512}'>
+           <p>
+              Total number of ACL entries that may be configured in one ACL.
+           </p>
+        </column>
+    </group>
     <group title="Common Columns">
       The overall purpose of these columns is described under <code>Common
       Columns</code> at the beginning of this document.
@@ -1474,6 +1541,9 @@
         unique.
       </column>
 
+      <column name="table_id">
+        Kernel table_id assigned for routing table of this VRF.
+      </column>
       <column name="ports">
         Ports included in the VRF.
       </column>
@@ -2677,25 +2747,28 @@
     </group>
     <group title="ACL Configuration">
       <p>
-        ACL applied to vlans.
+        ACL applied to VLANs.
       </p>
       <column name="aclv4_in_cfg">
-        ACL, potentially in flight, desired to be applied to this vlan, as identified
+        ACL, potentially in flight, desired to be applied to this VLAN, as identified
         in the <ref table="ACL"/>.
       </column>
       <column name="aclv4_in_cfg_version">
         The version of the 'aclv4_in_cfg' column.
         This value is incremented by the management interface each- CLI/REST/Web UI, etc.
         every time it changes the 'aclv4_in_cfg' value.
-        An empty value means no ACL has been configured for the vlan.
+        An empty value means no ACL has been configured for the VLAN.
+      </column>
+      <column name="aclv4_in_statistics_clear_requested">
+        The number of times a request was made to clear the ACL statistics for this VLAN.
       </column>
     </group>
     <group title="ACL Status">
       <p>
-        Status of applied ACLs and ACL statistics per vlan.
+        Status of applied ACLs and ACL statistics per VLAN.
       </p>
       <column name="aclv4_in_applied">
-        Current, successfully applied ACL to this vlan, as identified in the
+        Current, successfully applied ACL to this VLAN, as identified in the
         <ref table="ACL"/>
       </column>
       <column name="aclv4_in_status">
@@ -2718,6 +2791,9 @@
         Statistics for the ACL applied to this port for ACEs that have the
         'count' keyword specified.  Statistics are key/value pairs of
         ACL sequence number and integer representing the statistics for that entry.
+      </column>
+      <column name="aclv4_in_statistics_clear_performed">
+        The number of times that ACL statistics for this VLAN have been cleared..
       </column>
     </group>
    <group title="Common Columns">
@@ -3340,13 +3416,36 @@
         <column name="other_config" key="lacp-fallback"
           type='{"type": "boolean"}'>
           <p>
-            The LACP fallback which should be used on this <ref table="Port"/>.
-            Set this value to <code>true</code> to enable always one interface active
-            and set to <code>false</code> to block all interfaces when LACP = off.
+            Specifies if fallback should be used on this <ref table="Port"/>.
+            Set this value to <code>true</code> to enable the member interfaces
+            based on the fallback mode and set to <code>false</code> to block
+            all interfaces when LACP = off.
             If not specified, lacp-fallback is assumed to be false.
           </p>
         </column>
 
+        <column name="other_config" key="lacp_fallback_mode"
+          type='{"type": "string", "enum": ["set", ["priority", "all_active"]]}'>
+          <p>
+            Specifies the mode used when fallback is enabled.  Priority mode uses
+            the LACP interface priority to decide which port remains forwarding
+            when no partner is detected.  The all_active mode keeps all interfaces
+            forwarding when no partner is detected.
+            The default value is <code>priority</code>.
+          </p>
+        </column>
+
+        <column name="other_config" key="lacp_fallback_timeout"
+          type='{"type": "integer", "minInteger": 0, "maxInteger": 900}'>
+          <p>
+            Defines the time period during which fallback remains active.  The
+            timer starts at the point when the interface state machine expires
+            and configures the default partner.  The unit is seconds.
+            A value of 0 means that the timer doesn't run and fallback is active
+            until it is disabled by the user or a partner is detected.
+            The default value is <code>0</code>.
+          </p>
+        </column>
       </group>
     </group>
    <group title="L3 Configuration">
@@ -3470,6 +3569,61 @@
         This key value should be treated as opaque handle by application
         daemons while updating LAG member interfaces in hardware.
       </column>
+
+      <column name="forwarding_state">
+        <p>
+          The Port's forwarding state is determined by the state of the
+          interface or interfaces in case of LAG and by the information provided
+          by protocols working at the logical port level, MSTP for example.
+        </p>
+        <p>
+          The value is set after all possible conditions have been taken into
+          account.  The conditions are evaluated by an arbiter that takes the
+          decision of which value to set on the forwarding state based on protocol
+          state.
+        </p>
+      </column>
+      <column name="forwarding_state" key="forwarding"
+        type='{ "type": "boolean" }'>
+        Enumeration that summarizes the state of the interface.  This value drives
+        the forwarding state of the data path.
+        Default value is <code>false</code>.
+      </column>
+      <column name="forwarding_state" key="port_aggregation_forwarding"
+        type='{ "type": "boolean" }'>
+        Port aggregation is set based on the information provided by protocols related
+        to link aggregation. The asserting protocol setting the value of this key
+        is defined in the port_aggregation_blocked_reason key.
+        Additionally, this key is used to aggregate the state of the links members of
+        the LAG.  For example, it is possible that all links on a LAG are blocked by
+        a security protocol.  This is reflected in this key.
+        Default value is <code>false</code>.
+      </column>
+      <column name="forwarding_state" key="port_aggregation_blocked_reason"
+          type='{ "type": "string", "enum": ["set",
+                       ["lacp"
+                       ]]}'>
+        Enumeration that identifies the asserting protocol that causes the port
+        aggregation different from "forwarding".
+        * lacp: This means that the aggregated state of the interfaces
+          is driving the forwarding state of the Port, for example, all interfaces
+          are blocked by a lacp.
+      </column>
+      <column name="forwarding_state" key="port_loop_protection_forwarding"
+        type='{ "type": "boolean" }'>
+        Port loop protection is set based on the information provided by protocols.
+        The asserting protocol setting the value of this key is defined
+        in the port_loop_protection_blocked_reason key.
+        Default value is <code>false</code>.
+      </column>
+      <column name="forwarding_state" key="port_loop_protection_blocked_reason"
+          type='{ "type": "string", "enum": ["set",
+                       ["mstp"
+                       ]]}'>
+        Enumeration that identifies the asserting protocol that causes the port loop
+        protection to be blocked.
+      </column>
+
       <column name="lacp_status">
         Key-value pairs that report lacp-specific port status.
       </column>
@@ -3483,6 +3637,30 @@
       </column>
       <column name="lacp_status" key="bond_status_reason">
         String identifying the reason why the bond_status is "down".
+      </column>
+
+      <column name="bond_status">
+        Key-value pairs that report bond-specific port status (both static and
+        dynamic).  This column complements the <ref column="lacp_status"/>
+        column.
+      </column>
+      <column name="bond_status" key="state"
+        type='{ "type": "string", "enum": ["set",
+                     ["up",
+                      "blocked",
+                      "down"
+                     ]]}'>
+        Enumeration summarizing the fowarding state of the bond.  It is based on
+        the aggregate state of the individual member interfaces.
+        * Up: At least one member interface is eligible and should be
+          fowarding traffic according to LACP
+        * Blocked:  All member interfaces are either not eligible or should be
+          blocked according to LACP.
+          If LACP-fallback-ab is enabled, and the <ref column="lacp_status"/> is
+          defaulted, then the bond state is forwarding.  If the LACP-fallback-ab
+          is disable, then the state is blocked.
+        * Down:  All member interfaces configured to be a member of a LAG are
+          either administratively or operatively down
       </column>
     </group>
 
@@ -3562,6 +3740,9 @@
         every time it changes the 'aclv4_in_cfg' value.
          An empty value means no ACL has been configured for the port.
       </column>
+      <column name="aclv4_in_statistics_clear_requested">
+       The number of times a request was made to clear the ACL statistics for this port.
+      </column>
     </group>
     <group title="ACL Status">
       <p>
@@ -3591,6 +3772,9 @@
         Statistics for the ACL applied to this port for ACEs that have the
         'count' keyword specified.  Statistics are key/value pairs of
         ACL sequence number and integer representing the statistics for that entry.
+      </column>
+      <column name="aclv4_in_statistics_clear_performed">
+        The number of times the ACL statistics for this port have been cleared.
       </column>
     </group>
     <group title="MACs Validity">
@@ -3836,6 +4020,45 @@
         </p>
       </column>
 
+      <column name="hw_status" key="ready"
+        type='{ "type": "boolean" }'>
+          Status information about hardware resource allocation on the interface.
+          It is set as false if there are not enough hardware resources or if the
+          resources required to configure features like ACLs in the interface have
+          not been allocated yet.  It is set as true when all the resources have
+          been allocated.
+          The default value is <code>false</code>.
+      </column>
+
+      <column name="hw_status" key="ready_state_blocked_reason"
+          type='{ "type": "string", "enum": ["set",
+                       ["acls"]]}'>
+        Enumeration that identifies the asserting protocol that causes the
+        ready to be "false".
+      </column>
+
+      <column name="forwarding_state" key="forwarding"
+        type='{ "type": "boolean" }'>
+        Enumeration that summarizes the state of the interface.
+        Default value is <code>false</code>.
+      </column>
+
+      <column name="forwarding_state" key="interface_aggregation_forwarding"
+        type='{ "type": "boolean" }'>
+        Interface aggregation is set based on the information provided by protocols
+        related to link aggregation. The asserting protocol setting
+        the value of this key to be defined in the interface_aggregation_blocked_reason
+        key.
+        Default value is <code>false</code>.
+      </column>
+
+      <column name="forwarding_state" key="interface_aggregation_blocked_reason"
+          type='{ "type": "string", "enum": ["set",
+                       ["lacp"]]}'>
+        Enumeration that identifies the asserting protocol that causes the
+        interface aggregation to be different from "forwarding".
+      </column>
+
       <column name="error">
         If the configuration of the <ref table="Interface"/> failed,
         OpenSwitch sets this column to an error
@@ -3891,6 +4114,28 @@
           This column will be empty for an interface that does not
           have an MTU as, for example, some kinds of tunnels do not.
         </p>
+      </column>
+
+      <column name="bond_status">
+        Key-value pairs that report the status of a bond.  This applies to both
+        static or LACP bonds.
+      </column>
+
+      <column name="bond_status" key="state"
+        type='{ "type": "string", "enum": ["set",
+                     ["up",
+                      "blocked",
+                      "down"
+                     ]]}'>
+        Enumeration indicating the forwarding state of the interface when it is
+        configured as a member of a LAG.
+        * Up: The interface is eligible and should be fowarding traffic
+          according to LACP
+        * Blocked:  The interface is either not eligible or should be blocked
+          according to LACP.  If an interface is Rx disable, it is also Tx disable,
+          thus, it is blocked
+        * Down:  The interface is configured to be a member of a LAG, but it is
+          either administratively or operatively down
       </column>
 
       <column name="lacp_current">
@@ -4327,6 +4572,439 @@
       </column>
       <column name="pm_info" key="vendor_serial_number">
         The vendor's module serial number.
+      </column>
+      <column name="pm_info" key="temperature"
+        type='{"type":"real", "minReal": -128, "maxReal": 128}'>
+        Internally measured transceiver temperature, ranging from -128 to 128, in units of Celsius.
+        This value is from DOM supporting SFP+/QSFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal temperature exceeds high alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal temperature is below low alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal temperature exceeds high warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal temperature is below low warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_high_alarm_threshold"
+        type='{"type":"real", "minReal": -128, "maxReal": 128}'>
+        Alarm high threshold value of internal temperature, ranging from -128 to 128, in units of Celsius.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_low_alarm_threshold"
+        type='{"type":"real", "minReal": -128, "maxReal": 128}'>
+        Alarm low threshold value of internal temperature, ranging from -128 to 128, in units of Celsius.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_high_warning_threshold"
+        type='{"type":"real", "minReal": -128, "maxReal": 128}'>
+        Warning high threshold value of internal temperature, ranging from -128 to 128, in units of Celsius.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="temperature_low_warning_threshold"
+        type='{"type":"real", "minReal": -128, "maxReal": 128}'>
+        Warning low threshold value of internal temperature, ranging from -128 to 128, in units of Celsius.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc"
+        type='{"type":"real", "minReal": 0, "maxReal": 6.55}'>
+        Internally measured transceiver supply voltage, ranging from 0 to 6.55, in units of Volts.
+        This value is from DOM supporting SFP+/QSFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal supply voltage exceeds high alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal supply voltage is below low alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal supply voltage exceeds high warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate internal supply voltage is below low warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_high_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal": 6.55}'>
+        Alarm high threshold value of internal supply voltage, ranging from 0 to 6.55, in units of Volts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_low_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal": 6.55}'>
+        Alarm low threshold value of internal supply voltage, ranging from 0 to 6.55, in units of Volts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_high_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal": 6.55}'>
+        Warning high threshold value of internal supply voltage, ranging from 0 to 6.55, in units of Volts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="vcc_low_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal": 6.55}'>
+        Warning low threshold value of internal supply voltage, ranging from 0 to 6.55, in units of Volts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Transceiver TX bias current, ranging from 0 to 131, in units of milliamps.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current exceeds high alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current is below low alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current exceeds high warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current is below low warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_high_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Alarm high threshold value of TX bias current, ranging from 0 to 131, in units of milliamps.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_low_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Alarm low threshold value of TX bias current, ranging from 0 to 131, in units of milliamps.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_high_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Warning high threshold value of TX bias current, ranging from 0 to 131, in units of milliamps.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_bias_low_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Warning low threshold value of TX bias current, ranging from 0 to 131, in units of milliamps.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Transceiver received average optical power, ranging from 0 to 6.5535, in units of milliwatts.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power exceeds high alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power is below low alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power exceeds high warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power is below low warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_high_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Alarm high threshold value of received average optical power.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_low_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Alarm low threshold value of received average optical power.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_high_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Warning high threshold value of received average optical power.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="rx_power_low_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Warning low threshold value of received average optical power.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Transceiver output power, ranging from 0 to 6.5535, in units of milliwatts.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate output power exceeds high alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate output power is below low alarm level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate output power exceeds high warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate output power is below low warning level.
+        This value is from DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_high_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Alarm high threshold value of output power, ranging from 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_low_alarm_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Alarm low threshold value of output power, ranging from 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_high_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Warning high threshold value of output power, ranging from 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx_power_low_warning_threshold"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Warning low threshold value of output power, ranging from 0 to 6.5535, in units of milliwatts.
+        This is a factory preset value in DOM supporting SFP+ module.
+      </column>
+      <column name="pm_info" key="tx1_bias"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Transceiver TX bias current in channel 1 of QSFP+ module, ranging from 0 to 131, in units of milliamps.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx1_bias_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 1 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx1_bias_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 1 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx1_bias_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 1 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx1_bias_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 1 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx1_power"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Transceiver received average optical power in channel 1 of QSFP+ module.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx1_power_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 1 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx1_power_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 1 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx1_power_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 1 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx1_power_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 1 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx2_bias"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Transceiver TX bias current in channel 2 of QSFP+ module, ranging from 0 to 131, in units of milliamps.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx2_bias_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 2 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx2_bias_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 2 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx2_bias_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 2 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx2_bias_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 2 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx2_power"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Transceiver received average optical power in channel 2 of QSFP+ module.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx2_power_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 2 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx2_power_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 2 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx2_power_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 2 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx2_power_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 2 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx3_bias"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Transceiver TX bias current in channel 3 of QSFP+ module, ranging from 0 to 131, in units of milliamps.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx3_bias_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 3 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx3_bias_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 3 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx3_bias_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 3 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx3_bias_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 3 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx3_power"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Transceiver received average optical power in channel 3 of QSFP+ module.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx3_power_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 3 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx3_power_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 3 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx3_power_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 3 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx3_power_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 3 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx4_bias"
+        type='{"type":"real", "minReal": 0, "maxReal" : 131}'>
+        Transceiver TX bias current in channel 4 of QSFP+ module, ranging from 0 to 131, in units of milliamps.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx4_bias_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 4 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx4_bias_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 4 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx4_bias_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 4 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="tx4_bias_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate TX bias current in channel 4 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx4_power"
+        type='{"type":"real", "minReal": 0, "maxReal" : 6.5535}'>
+        Transceiver received average optical power in channel 4 of QSFP+ module.
+        The valid value range is 0 to 6.5535, in units of milliwatts.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx4_power_high_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 4 of QSFP+ module exceeds high alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx4_power_low_alarm"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 4 of QSFP+ module is below low alarm level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx4_power_high_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 4 of QSFP+ module exceeds high warning level.
+        This value is from DOM supporting QSFP+ module.
+      </column>
+      <column name="pm_info" key="rx4_power_low_warning"
+        type='{"type": "string", "enum": ["set", ["On", "Off"]]}'>
+        Flag to indicate received average optical power in channel 4 of QSFP+ module is below low warning level.
+        This value is from DOM supporting QSFP+ module.
       </column>
     </group>
 
@@ -6268,6 +6946,10 @@
         <column name="paths">
           The list of paths.
         </column>
+        <column name="route_info" key="cost" type='{"type": "integer", "maxInteger": 16777215}'>
+          The cost metric of the route.
+          The default value is <code>16777215</code>, which is maximum metric value.
+        </column>
         <column name="route_info" key="area_id" type='{"type": "integer"}'>
           The area ID of the route.
         </column>
@@ -6286,7 +6968,7 @@
         </column>
         <column name="route_info" key="type2_cost" type='{"type": "integer", "maxInteger": 16777215}'>
           The External Type 2 route cost.
-          The default value is 16777215.
+          The default value is <code>16777215</code>, which is maximum metric value.
         </column>
         <column name="route_info" key="ext_tag" type='{"type": "string"}'>
           The tag of the route.
@@ -6902,6 +7584,11 @@
       <column name="in_progress_aces" keyname="sequence_number">
         The in flight version of the Access Control List.  Access Control Entries
         (ACE) specified in this ACL are defined in <ref table="ACL_Entry"/>
+      </column>
+      <column name="in_progress_version">
+        The version of the 'in_progress' Access Control List.  This value is copied from
+        the cfg_version column when the ACL processing begins. This value is cleared
+        when the ACL status is updated to 'applied' or 'rejected.'
       </column>
       <column name="status"  key="status_string" type='{"type":"string"}'>
         The status of the last version of 'cfg_aces' column, that has been

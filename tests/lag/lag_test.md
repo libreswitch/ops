@@ -23,13 +23,18 @@ LAG Test Cases
 * [Modify number of static LAG members upper limits](#modify-number-of-static-lag-members-upper-limits)
 * [Modify dynamic LAG without changing any setting](#modify-dynamic-lag-without-changing-any-setting)
 * [Modify static LAG without changing any setting](#modify-static-lag-without-changing-any-setting)
-* [Verify communication between 2 switches connected by L3 dynamic LAGs](#Verify-communication-between-2-switches-connected-by-L3-dynamic-lag)
-* [Verify communication between 2 switches connected by L3 static LAGs](#Verify-communication-between-2-switches-connected-by-L3-static-lag)
+* [Verify communication between 2 switches connected by L3 dynamic LAGs](#verify-communication-between-2-switches-connected-by-l3-dynamic-lags)
+* [Verify communication between 2 switches connected by L3 static LAGs](#verify-communication-between-2-switches-connected-by-l3-static-lags)
 * [Verify LAG interface functionality when using command shutdown for LAG](#verify-lag-interface-functionality-when-using-command-shutdown-for-lag)
-* [Verify communication between 2 switches connected by L2 dynamic LAGs](#Verify-communication-between-2-switches-connected-by-L2-dynamic-lag)
-* [Verify communication between 2 switches connected by L2 static LAGs](#Verify-communication-between-2-switches-connected-by-L2-static-lag)
+* [Verify communication between 2 switches connected by L2 dynamic LAGs](#verify-communication-between-2-switches-connected-by-l2-dynamic-lags)
+* [Verify communication between 2 switches connected by L2 static LAGs](#verify-communication-between-2-switches-connected-by-l2-static-lags)
 * [Change static LAG from L2 to L3 and viceversa](#change-static-lag-from-l2-to-l3-and-viceversa)
 * [Change interface from L2 LAG to L3 LAG and viceversa](#change-interface-from-l2-lag-to-l3-lag-and-viceversa)
+* [Static LAG statistics basic summary](#static-lag-statistics-basic-summary)
+* [Dynamic LAG statistics basic summary](#dynamic-lag-statistics-basic-summary)
+* [Static LAG statistics when aggregation members change](#static-lag-statistics-when-aggregation-members-change)
+* [Dynamic LAG statistics when aggregation members change](#dynamic-lag-statistics-when-aggregation-members-change)
+* [LAG statistics cleanup on aggregation recreation](#lag-statistics-cleanup-on-aggregation-recreation)
 
 ## Create dynamic LAGs with different names
 ### Objective
@@ -720,7 +725,7 @@ The requirements for this test case are:
 
  - 2 Switches running OpenSwitch
  - 2 workstations`
- - **FT file**: `ops/tests/lacp/DynamicLagConvertToStatic.py`
+ - **FT file**: `ops-lacpd/ops-tests/feature/test_ft_lag_convert_to_lacp.py`
 
 ### Setup
 
@@ -1646,3 +1651,349 @@ from a L2 LAG to a L3 LAG and viceversa.
 #### Test fail criteria
  * The ping between the workstations fails.
  * The ping between the switches fails.
+
+
+## Static LAG statistics basic summary
+### Objective
+To verify LAG statistics reflect LAG configuration and individual ports statistics
+### Requirements
+The requirements for this test case are:
+
+ - 2 Switches running OpenSwitch
+ - 2 Workstations with IP addresses on the same range and capable of using iperf
+ - **FT file**: `ops-lacpd/ops-tests/feature/test_ft_lag_statistics.py`
+
+### Setup
+
+#### Topology diagram
+```ditaa
+           +-----------------+
+           |                 |
+           |      Host 1     |
+           |                 |
+           +-----------------+
+                    |
+                    |
+    +-------------------------------+
+    |                               |
+    |                               |
+    |            Switch 1           |
+    |                               |
+    +-------------------------------+
+         |         |        |
+         |         |        |
+         |         |        |
+    +-------------------------------+
+    |                               |
+    |                               |
+    |            Switch 2           |
+    |                               |
+    +-------------------------------+
+                    |
+                    |
+           +-----------------+
+           |                 |
+           |     Host 2      |
+           |                 |
+           +-----------------+
+```
+#### Test setup
+### Description
+
+Tests that a configured static Link Aggregation can summarize accurate individual interfaces statistics as they change.
+
+To test LAG statistics do the following:
+- Create a static LAG on both switches with members being the interfaces that interconnect them
+- Configure an access VLAN and set it on the switches host interface and the LAG
+- Validate the hosts can reach each other using ping
+- For each LAG on each switch, obtain its statistics and verify all counters are the sum of all individual interfaces and its other information (LAG id, mode, aggregated interfaces) matches the expected settings
+- On each host initiate iperf UDP servers
+- On each host start iperf as client and send traffic for 30 seconds to the other one
+- Gather the stats from the LAG interfaces and verify they still compare with the current values reported on each interface
+
+
+### Test result criteria
+#### Test pass criteria
+ * The ping between the workstations succeeds.
+ * The values reported by LAG statistics correspond with the LAG configuration and the counters with the sum of individual interfaces' counters.
+
+#### Test fail criteria
+ * The ping between the workstations fails.
+ * The values reported by LAG statistics do not correspond with the LAG configuration and/or the counters with the sum of individual interfaces' counters.
+
+
+## Dynamic LAG statistics basic summary
+### Objective
+To verify dynamic LAG statistics reflect LAG configuration and individual ports statistics.
+### Requirements
+The requirements for this test case are:
+
+ - 2 Switches running OpenSwitch
+ - 2 Workstations with IP addresses on the same range and capable of using iperf
+ - **FT file**: `ops-lacpd/ops-tests/feature/test_ft_lacp_statistics.py`
+
+### Setup
+
+#### Topology diagram
+```ditaa
+           +-----------------+
+           |                 |
+           |      Host 1     |
+           |                 |
+           +-----------------+
+                    |
+                    |
+    +-------------------------------+
+    |                               |
+    |                               |
+    |            Switch 1           |
+    |                               |
+    +-------------------------------+
+         |         |        |
+         |         |        |
+         |         |        |
+    +-------------------------------+
+    |                               |
+    |                               |
+    |            Switch 2           |
+    |                               |
+    +-------------------------------+
+                    |
+                    |
+           +-----------------+
+           |                 |
+           |     Host 2      |
+           |                 |
+           +-----------------+
+```
+#### Test setup
+### Description
+
+Tests that a configured dynamic Link Aggregation can summarize accurate individual interfaces statistics as they change.
+
+To test LAG statistics do the following:
+- Create a dynamic LAG on both switches with members being the interfaces that interconnect them
+- Configure an access VLAN and set it on the switches host interface and the LAG
+- Validate the hosts can reach each other using ping
+- For each LAG on each switch, obtain its statistics and verify all counters are the sum of all individual interfaces and its other information (LAG id, mode, aggregated interfaces) matches the expected settings
+- On each host initiate iperf UDP servers
+- On each host start iperf as client and send traffic for 30 seconds to the other one
+- Gather the stats from the LAG interfaces and verify they still compare with the current values reported on each interface
+
+
+### Test result criteria
+#### Test pass criteria
+ * The ping between the workstations succeeds.
+ * The values reported by LAG statistics correspond with the LAG configuration and the counters with the sum of individual interfaces' counters.
+
+#### Test fail criteria
+ * The ping between the workstations fails.
+ * The values reported by LAG statistics do not correspond with the LAG configuration and/or the counters with the sum of individual interfaces' counters.
+
+
+## Static LAG statistics when aggregation members change
+### Objective
+To verify LAG statistics reflect the sum of individual members statistics when they change.
+### Requirements
+The requirements for this test case are:
+
+ - 2 Switches running OpenSwitch
+ - 2 Workstations with IP addresses on the same range and capable of using iperf
+ - **FT file**: `ops-lacpd/ops-tests/feature/test_ft_lag_statistics_change_members.py`
+
+### Setup
+
+#### Topology diagram
+```ditaa
+           +-----------------+
+           |                 |
+           |      Host 1     |
+           |                 |
+           +-----------------+
+                    |
+                    |
+    +-------------------------------+
+    |                               |
+    |                               |
+    |            Switch 1           |
+    |                               |
+    +-------------------------------+
+         |         |        |
+         |         |        |
+         |         |        |
+    +-------------------------------+
+    |                               |
+    |                               |
+    |            Switch 2           |
+    |                               |
+    +-------------------------------+
+                    |
+                    |
+           +-----------------+
+           |                 |
+           |     Host 2      |
+           |                 |
+           +-----------------+
+```
+#### Test setup
+### Description
+
+Tests that a configured static Link Aggregation statistics change when its members are removed or added to match the current set of interfaces in the aggregation.
+
+To test LAG statistics do the following:
+- Configure an access VLAN on the switches host interfaces and one of the links interconnecting the switches
+- Validate connectivity using ping
+- On each host, initiate an iperf UDP server and then transmit UDP traffic with iperf between each other for 10 seconds
+- Repeat first three steps using a different VLAN, a different link between switches, changing the IP addresses of the hosts and transmitting traffic for 15 seconds
+- Repeat the previous step with yet another VLAN, different link between switches, hosts' IP address and transmitting traffic for 20 seconds
+- Form a static LAG on one of the switches with no members and verify the statistics align with the LAG configuration and all counters are 0
+- Repeat as before for every possible combination of ports while checking that the counters are the sum of the statistics from individual interfaces
+
+
+### Test result criteria
+#### Test pass criteria
+ * The ping between the workstations succeeds always.
+ * The values reported by LAG statistics correspond with the LAG configuration and the counters with the sum of individual interfaces' counters.
+
+#### Test fail criteria
+ * The ping between the workstations fails.
+ * The values reported by LAG statistics do not correspond with the LAG configuration and/or the counters with the sum of individual interfaces' counters.
+
+
+## Dynamic LAG statistics when aggregation members change
+### Objective
+To verify dynamic LAG statistics reflect the sum of individual members statistics when they change.
+### Requirements
+The requirements for this test case are:
+
+ - 2 Switches running OpenSwitch
+ - 2 Workstations with IP addresses on the same range and capable of using iperf
+ - **FT file**: `ops-lacpd/ops-tests/feature/test_ft_lacp_statistics_change_members.py`
+
+### Setup
+
+#### Topology diagram
+```ditaa
+           +-----------------+
+           |                 |
+           |      Host 1     |
+           |                 |
+           +-----------------+
+                    |
+                    |
+    +-------------------------------+
+    |                               |
+    |                               |
+    |            Switch 1           |
+    |                               |
+    +-------------------------------+
+         |         |        |
+         |         |        |
+         |         |        |
+    +-------------------------------+
+    |                               |
+    |                               |
+    |            Switch 2           |
+    |                               |
+    +-------------------------------+
+                    |
+                    |
+           +-----------------+
+           |                 |
+           |     Host 2      |
+           |                 |
+           +-----------------+
+```
+#### Test setup
+### Description
+
+Tests that a configured static Link Aggregation statistics change when its members are removed or added to match the current set of interfaces in the aggregation.
+
+To test LAG statistics do the following:
+- Configure an access VLAN on the switches host interfaces and one of the links interconnecting the switches
+- Validate connectivity using ping
+- On each host, initiate an iperf UDP server and then transmit UDP traffic with iperf between each other for 10 seconds
+- Repeat first three steps using a different VLAN, a different link between switches, changing the IP addresses of the hosts and transmitting traffic for 15 seconds
+- Repeat the previous step with yet another VLAN, different link between switches, hosts' IP address and transmitting traffic for 20 seconds
+- Form a dynamic LAG on one of the switches with no members and verify the statistics align with the LAG configuration and all counters are 0
+- Repeat as before for every possible combination of ports while checking that the counters are the sum of the statistics from individual interfaces
+
+
+### Test result criteria
+#### Test pass criteria
+ * The ping between the workstations succeeds always.
+ * The values reported by LAG statistics correspond with the LAG configuration and the counters with the sum of individual interfaces' counters.
+
+#### Test fail criteria
+ * The ping between the workstations fails.
+ * The values reported by LAG statistics do not correspond with the LAG configuration and/or the counters with the sum of individual interfaces' counters.
+
+
+## LAG statistics cleanup on aggregation recreation
+### Objective
+To verify LAG statistics reflect the sum of current individual members statistics when deleted and recreated.
+### Requirements
+The requirements for this test case are:
+
+ - 2 Switches running OpenSwitch
+ - 2 Workstations with IP addresses on the same range and capable of using iperf
+ - **FT file**: `ops-lacpd/ops-tests/feature/test_ft_lag_statistics_recreate_lag_interface.py`
+
+### Setup
+
+#### Topology diagram
+```ditaa
+           +-----------------+
+           |                 |
+           |      Host 1     |
+           |                 |
+           +-----------------+
+                    |
+                    |
+    +-------------------------------+
+    |                               |
+    |                               |
+    |            Switch 1           |
+    |                               |
+    +-------------------------------+
+         |         |        |
+         |         |        |
+         |         |        |
+    +-------------------------------+
+    |                               |
+    |                               |
+    |            Switch 2           |
+    |                               |
+    +-------------------------------+
+                    |
+                    |
+           +-----------------+
+           |                 |
+           |     Host 2      |
+           |                 |
+           +-----------------+
+```
+#### Test setup
+### Description
+
+Tests that a recreating a static Link Aggregation will have its statistics cleaned and replaced with the sum of the current number of member interfaces.
+
+To test LAG statistics cleanup do the following:
+- Configure an access VLAN on the switches host interfaces and one of the links interconnecting the switches
+- Validate connectivity using ping
+- On each host, initiate an iperf UDP server and then transmit UDP traffic with iperf between each other for 10 seconds
+- Repeat first three steps using a different VLAN, a different link between switches, changing the IP addresses of the hosts and transmitting traffic for 15 seconds
+- Repeat the previous step with yet another VLAN, different link between switches, hosts' IP address and transmitting traffic for 20 seconds
+- Form a static LAG on one of the switches with one interface and verify the statistics align with the LAG configuration and all counters are equal to that of the member
+- Delete and recreate the LAG and verify all counters are now in 0, then add a different combination of members and check the statistics counters match the sum of members' values
+- Repeat the last step with all possible combination of three interfaces
+
+
+### Test result criteria
+#### Test pass criteria
+ * The ping between the workstations succeeds always.
+ * The values reported by LAG statistics correspond with the LAG configuration and the counters with the sum of individual interfaces' counters.
+
+#### Test fail criteria
+ * The ping between the workstations fails.
+ * The values reported by LAG statistics do not correspond with the LAG configuration and/or the counters with the sum of individual interfaces' counters.

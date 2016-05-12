@@ -25,7 +25,8 @@ import json
 import httplib
 import urllib
 
-from webui.utils.utils import *
+from opsvsiutils.restutils.utils import execute_request, get_switch_ip, \
+    get_json, rest_sanity_check, login
 import copy
 
 NUM_OF_SWITCHES = 2
@@ -77,6 +78,11 @@ CREATION_SLEEP_SECS = 50
 DELETION_SLEEP_SECS = 30
 
 
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.SWITCH_IP)
+
+
 class myTopo(Topo):
 
     def build(self, hsts=0, sws=2, **_opts):
@@ -121,6 +127,7 @@ class Test_CreateLag(OpsVsiTest):
         self.PATH_INT = self.PATH + "/interfaces"
         self.PATH_VRF_DEFAULT = self.PATH + "/vrfs/vrf_default"
         self.PATH_BRIDGE_NORMAL = self.PATH + "/bridges/bridge_normal"
+        self.cookie_header = None
 
     def create_topo_no_lag(self):
         # set up port 1, 2 and 3 on switch 1
@@ -182,9 +189,10 @@ class Test_CreateLag(OpsVsiTest):
         port_data["configuration"]["interfaces"] = ints
         info("\n########## Switch " + switch + ": Create LAG " +
              lagId + " ##########\n")
-        status_code, response_data = execute_request(self.PATH_PORTS, "POST",
-                                                     json.dumps(port_data),
-                                                     switch)
+        status_code, response_data = execute_request(
+            self.PATH_PORTS, "POST", json.dumps(port_data), switch, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.CREATED, "Error creating a Port.Status" \
             + " code: %s Response data: %s " % (status_code, response_data)
         info("### Port Created. Status code is 201 CREATED  ###\n")
@@ -194,8 +202,10 @@ class Test_CreateLag(OpsVsiTest):
         self.PORT_PATH = self.PATH_PORTS + "/lag" + lagId
         info("\n########## Switch " + switch + ": Delete LAG " +
              lagId + " ##########\n")
-        status_code, response_data = execute_request(self.PORT_PATH, "DELETE",
-                                                     None, switch)
+        status_code, response_data = execute_request(
+            self.PORT_PATH, "DELETE", None, switch, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT,\
             "Error deleting a Port.Status" \
             + " code: %s Response data: %s " % (status_code, response_data)
@@ -215,7 +225,9 @@ class Test_CreateLag(OpsVsiTest):
             "PATCH",
             json.dumps([int_data]),
             switch,
-            False)
+            False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error patching an "\
             "Interface. Status code: %s Response data: %s "\
             % (status_code, response_data)
@@ -230,7 +242,9 @@ class Test_CreateLag(OpsVsiTest):
             "PATCH",
             json.dumps([port_data]),
             switch,
-            False)
+            False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error patching an "\
             "Interface. Status code: %s Response data: %s "\
             % (status_code, response_data)
@@ -252,8 +266,10 @@ class Test_CreateLag(OpsVsiTest):
         self.PORT_PATH = self.PATH_PORTS + interface
         info("\n########## Switch " + switch + ": Delete Port " +
              interface + " ##########\n")
-        status_code, response_data = execute_request(self.PORT_PATH, "DELETE",
-                                                     None, switch)
+        status_code, response_data = execute_request(
+            self.PORT_PATH, "DELETE", None, switch, False,
+            xtra_header=self.cookie_header)
+
         info("### Port Deleted. " + httplib.NO_CONTENT + ".  ###\n")
 
     def create_port(self, switch, interface):
@@ -266,9 +282,10 @@ class Test_CreateLag(OpsVsiTest):
         port_data["configuration"]["interfaces"] = ints
         info("\n########## Switch " + switch + ": Create LAG " +
              lagId + " ##########\n")
-        status_code, response_data = execute_request(self.PATH_PORTS, "POST",
-                                                     json.dumps(port_data),
-                                                     switch)
+        status_code, response_data = execute_request(
+            self.PATH_PORTS, "POST", json.dumps(port_data), switch, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.CREATED, "Error creating a Port.Status" \
             + " code: %s Response data: %s " % (status_code, response_data)
         info("### Port Created. Status code is 201 CREATED  ###\n")
@@ -294,7 +311,8 @@ class Test_CreateLag(OpsVsiTest):
         status_code, response_data = execute_request(
             self.PATH_VRF_DEFAULT, "PATCH",
             json.dumps(patch),
-            switch, False)
+            switch, False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error update  Ports" \
             + " code: %s Response data: %s " % (status_code, response_data)
         info("### VRF Port " + switch + " Status 204 NO CONTENT  ###\n")
@@ -320,7 +338,8 @@ class Test_CreateLag(OpsVsiTest):
         status_code, response_data = execute_request(
             self.PATH_BRIDGE_NORMAL, "PATCH",
             json.dumps(patch),
-            switch, False)
+            switch, False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error update  Ports" \
             + " code: %s Response data: %s " % (status_code, response_data)
         info("### Bridge Port " + switch + " Status 204 NO CONTENT  ###\n")
@@ -337,7 +356,9 @@ class Test_CreateLag(OpsVsiTest):
             "PATCH",
             json.dumps([int_data]),
             switch,
-            False)
+            False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error patching an "\
             "Interface. Status code: %s Response data: %s "\
             % (status_code, response_data)
@@ -353,7 +374,10 @@ class Test_CreateLag(OpsVsiTest):
             status_code, response_data = execute_request(
                 self.PORT_PATH, "GET",
                 None,
-                switch)
+                switch,
+                False,
+                xtra_header=self.cookie_header)
+
             assert status_code == httplib.OK,\
                 "Failed to query LAG " + lagName
             json_data = get_json(response_data)
@@ -372,7 +396,10 @@ class Test_CreateLag(OpsVsiTest):
             status_code, response_data = execute_request(
                 self.PORT_PATH, "GET",
                 None,
-                switch)
+                switch,
+                False,
+                xtra_header=self.cookie_header)
+
             assert status_code == 404,\
                 "Switch: " + switch + " - LAG " + lagName + " must not exist."
             info("### Switch " + switch + " lag deletion is ok ###\n")
@@ -385,9 +412,9 @@ class Test_CreateLag(OpsVsiTest):
             ["/rest/v1/system/interfaces/" + port]
         info("\n########## Switch " + switch + ": Create Port " +
              port + " ##########\n")
-        status_code, response_data = execute_request(self.PATH_PORTS, "POST",
-                                                     json.dumps(port_data),
-                                                     switch)
+        status_code, response_data = execute_request(
+            self.PATH_PORTS, "POST", json.dumps(port_data), switch, False,
+            xtra_header=self.cookie_header)
         assert status_code == httplib.CREATED, "Error creating a Port.Status" \
             + " code: %s Response data: %s " % (status_code, response_data)
         info("### Port Created. Status code is 201 CREATED  ###\n")
@@ -395,19 +422,18 @@ class Test_CreateLag(OpsVsiTest):
     def port_int_admin(self, switch, port):
         self.PORT_PATH = self.PATH_PORTS + "/" + port
         self.INT_PATH = self.PATH_INT + "/" + port
-        status_code, response_data = execute_request(self.PORT_PATH, "PATCH",
-                                                     json.dumps(PATCH_LAG_PRT),
-                                                     switch,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.PORT_PATH, "PATCH", json.dumps(PATCH_LAG_PRT), switch,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error patching a Port "\
             "Status code: %s Response data: %s " % (status_code, response_data)
         info("### Port Patched. Status code is 204 NO CONTENT  ###\n")
 
-        status_code, response_data = execute_request(self.INT_PATH,
-                                                     "PATCH",
-                                                     json.dumps(ADM_PATCH_INT),
-                                                     switch,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.INT_PATH, "PATCH", json.dumps(ADM_PATCH_INT), switch,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error patching an "\
             "Interface. Status code: %s Response data: %s "\
             % (status_code, response_data)
@@ -417,7 +443,10 @@ class Test_CreateLag(OpsVsiTest):
         status_code, response_data = execute_request(
             self.PATH_VRF_DEFAULT, "GET",
             None,
-            switch)
+            switch,
+            False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK,\
             "Failed to query " + self.PATH_VRF_DEFAULT
         json_data = get_json(response_data)
@@ -431,7 +460,10 @@ class Test_CreateLag(OpsVsiTest):
         status_code, response_data = execute_request(
             self.PATH_BRIDGE_NORMAL, "GET",
             None,
-            switch)
+            switch,
+            False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK,\
             "Failed to query " + self.PATH_VRF_DEFAULT
         json_data = get_json(response_data)
@@ -440,6 +472,7 @@ class Test_CreateLag(OpsVsiTest):
             return ports_info
         else:
             return []
+
 
 @pytest.mark.skipif(True, reason="Skipping due to Taiga ID : 768")
 class Test_WebUIREST:
@@ -466,14 +499,14 @@ class Test_WebUIREST:
     def __del__(self):
         del self.test_var
 
-    def test_run_create_l2_lag(self):
+    def test_run_create_l2_lag(self, netop_login):
         self.test_var.test_create_l2_lag()
 
-    def test_run_change_l2_to_l3_lag(self):
+    def test_run_change_l2_to_l3_lag(self, netop_login):
         self.test_var.test_change_l2_to_l3_lag()
 
-    def test_run_change_l3_to_l2_lag(self):
+    def test_run_change_l3_to_l2_lag(self, netop_login):
         self.test_var.test_change_l3_to_l2_lag()
 
-    def test_run_delete_lag(self):
+    def test_run_delete_lag(self, netop_login):
         self.test_var.test_delete_lag()

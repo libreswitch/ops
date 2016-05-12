@@ -25,6 +25,8 @@
 	- [Display LACP aggregates](#display-lacp-aggregates)
 	- [Display LACP interface configuration](#display-lacp-interface-configuration)
 	- [LAG show running-config](#lag-show-running-config)
+- [LAG diagnostic dump commands](#lag-diagnostic-dump-commands)
+	- [LAG diag-dump basic](#lag-diag-dump-basic)
 
 ## LACP configuration commands
 ### Global context commands
@@ -554,4 +556,143 @@ interface lag 1
     lacp mode active
     ip address 10.1.1.1/24
     ipv6 address 2001:db8:a0b:12f0::1/64
+```
+
+## LAG diagnostic dump commands
+### LAG diag-dump basic
+#### Syntax
+
+```
+    diag-dump lacp basic [file]
+```
+
+#### Description
+This command displays diagnostic information about the system LAGs. If a file is
+specified, it captures the information to it.
+The information includes the configured, eligible and participant interface
+members of all the LAGs in the system. It also includes the amount of PDUs and
+marker PDUs sent and received by each interface configured as member of one
+dynamic LAG, and the LACP state machine state for each dyanmic LAG in the system.
+It also includes the configuration files for the Linux bonding driver for each
+LAG in the system.
+
+#### Authority
+All users
+
+#### Parameters
+| Parameter | Status  | Syntax |   Description  |
+|-----------|---------|--------|----------------|
+| **file**  | Optional | String | File to capture the command output.|
+
+#### Examples
+```
+switch# diag-dump lacp basic
+=========================================================================
+[Start] Feature lacp Time : Wed Apr  6 01:54:44 2016
+
+=========================================================================
+-------------------------------------------------------------------------
+[Start] Daemon ops-lacpd
+-------------------------------------------------------------------------
+System Ports:
+================ Ports ================
+Port lag2:
+    lacp                 : active
+    lag_member_speed     : 1000
+    configured_members   : 5 4
+    eligible_members     : 5 4
+    participant_members  : 5 4
+    interface_count      : 2
+Port 1:
+    lacp                 : off
+    lag_member_speed     : 1000
+    configured_members   : 1
+    eligible_members     : 1
+    participant_members  :
+    interface_count      : 0
+Port bridge_normal:
+    lacp                 : off
+    lag_member_speed     : 0
+    configured_members   : bridge_normal
+    eligible_members     :
+    participant_members  :
+    interface_count      : 0
+
+LAG interfaces:
+Port lag2:
+    configured_members   : 5 4
+    eligible_members     : 5 4
+    participant_members  : 5 4
+
+LACP PDUs counters:
+LAG lag2:
+ Configured interfaces:
+  Interface: 5
+    lacp_pdus_sent: 10
+    marker_response_pdus_sent: 0
+    lacp_pdus_received: 7
+    marker_pdus_received: 0
+  Interface: 4
+    lacp_pdus_sent: 10
+    marker_response_pdus_sent: 0
+    lacp_pdus_received: 8
+    marker_pdus_received: 0
+
+LACP state:
+LAG lag2:
+ Configured interfaces:
+  Interface: 5
+    actor_oper_port_state
+       lacp_activity:1 time_out:0 aggregation:1 sync:1 collecting:1 distributing:1 defaulted:0 expired:0
+    partner_oper_port_state
+       lacp_activity:1 time_out:0 aggregation:1 sync:1 collecting:1 distributing:1 defaulted:0 expired:0
+    lacp_control
+       begin:0 actor_churn:0 partner_churn:0 ready_n:1 selected:1 port_moved:0 ntt:0 port_enabled:1
+  Interface: 4
+    actor_oper_port_state
+       lacp_activity:1 time_out:0 aggregation:1 sync:1 collecting:1 distributing:1 defaulted:0 expired:0
+    partner_oper_port_state
+       lacp_activity:1 time_out:0 aggregation:1 sync:1 collecting:1 distributing:1 defaulted:0 expired:0
+    lacp_control
+       begin:0 actor_churn:0 partner_churn:0 ready_n:1 selected:1 port_moved:0 ntt:0 port_enabled:1
+
+-------------------------------------------------------------------------
+[End] Daemon ops-lacpd
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+[Start] Daemon ops-portd
+-------------------------------------------------------------------------
+Configuration file for lag2:
+Ethernet Channel Bonding Driver: v3.7.1 (April 27, 2011)
+
+Bonding Mode: load balancing (xor)
+Transmit Hash Policy: layer2 (0)
+MII Status: up
+MII Polling Interval (ms): 0
+Up Delay (ms): 0
+Down Delay (ms): 0
+
+Slave Interface: 5
+MII Status: up
+Speed: 10000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: 70:72:cf:3a:b6:b6
+Slave queue ID: 0
+
+Slave Interface: 4
+MII Status: up
+Speed: 10000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: 70:72:cf:3a:b6:b6
+Slave queue ID: 0
+
+-------------------------------------------------------------------------
+[End] Daemon ops-portd
+-------------------------------------------------------------------------
+=========================================================================
+[End] Feature lacp
+=========================================================================
+Diagnostic dump captured for feature lacp
 ```

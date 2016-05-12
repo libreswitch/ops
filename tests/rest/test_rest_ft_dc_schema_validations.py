@@ -1,4 +1,4 @@
-# (C) Copyright 2015 Hewlett Packard Enterprise Development LP
+# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -13,38 +13,20 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 #
+
+import pytest
+
+from opsvsi.docker import *
+from opsvsi.opsvsitest import *
+from opsvsiutils.restutils.utils import execute_request, get_switch_ip, \
+    get_json, rest_sanity_check, login
 import json
-from opstestfw.switch.CLI import *
-from opstestfw import *
+import httplib
 
-# The test case verifies that the schema validations are able to
-# detect invalid data in the PUT request for declarative configuration.
-#
-# The following topology is used:
-#
-# +----------------+         +----------------+
-# |                |         |                |
-# |                |         |                |
-# |      Host      +---------+     Switch     |
-# |                |         |                |
-# |                |         |                |
-# +----------------+         +----------------+
+NUM_OF_SWITCHES = 1
+NUM_HOSTS_PER_SWITCH = 0
 
-topoDict = {"topoExecution": 3000,
-            "topoDevices": "dut01 wrkston01",
-            "topoLinks": "lnk01:dut01:wrkston01",
-            "topoFilters": "dut01:system-category:switch,\
-                            wrkston01:system-category:workstation,\
-                            wrkston01:docker-image:host/freeradius-ubuntu",
-            "topoLinkFilter": "lnk01:dut01:interface:eth0"}
-switchMgmtAddr = "10.10.10.2"
-restClientAddr = "10.10.10.3"
-broadcast = "10.10.10.255"
-netmask = "255.255.255.0"
-subnetMaskBits = 24
-put_url = "/rest/v1/system/full-configuration?type=running"
-
-put_data = {
+PUT_DATA = {
     "Interface": {
         "49": {
             "name": "49",
@@ -53,9 +35,9 @@ put_data = {
     },
     "Port": {
         "p1": {
-            "admin": "up",
+            "admin": ["up"],
             "name": "p1",
-            "vlan_mode": "trunk",
+            "vlan_mode": ["trunk"],
             "trunks": [1]
         }
     },
@@ -84,193 +66,128 @@ put_data = {
 }
 
 
-def switch_reboot(dut01):
-    # Reboot switch
-    info('###  Reboot switch  ###\n')
-    dut01.Reboot()
-    rebootRetStruct = returnStruct(returnCode=0)
-    return rebootRetStruct
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.SWITCH_IP)
 
 
-def config_rest_environment(dut01, wrkston01):
-    retStruct = InterfaceIpConfig(deviceObj=dut01,
-                                  interface="mgmt",
-                                  addr=switchMgmtAddr,
-                                  mask=subnetMaskBits,
-                                  config=True)
-
-    assert retStruct.returnCode() == 0, 'Failed to configure IP on switchport'
-    info('### Successfully configured ip on switch port ###\n')
-
-    info('### Configuring workstations ###\n')
-    retStruct = wrkston01.NetworkConfig(
-                                ipAddr=restClientAddr,
-                                netMask=netmask,
-                                broadcast=broadcast,
-                                interface=wrkston01.linkPortMapping['lnk01'],
-                                config=True)
-
-    assert retStruct.returnCode() == 0, 'Failed to configure IP on workstation'
-    info('### Successfully configured IP on the workstation ###\n')
-
-    cmdOut = wrkston01.cmd("ifconfig " + wrkston01.linkPortMapping['lnk01'])
-    info('### Ifconfig info for the workstation: ###\n' + cmdOut)
-
-    retStruct = GetLinuxInterfaceIp(deviceObj=wrkston01)
-    assert retStruct.returnCode() == 0, 'Failed to get interface ip on switch'
-    info("### Successful in getting linux interface "
-         "ip on the workstation ###\n")
-
-    retStruct = returnStruct(returnCode=0)
-    return retStruct
+class myTopo(Topo):
+    def build(self, hsts=0, sws=1, **_opts):
+        self.hsts = hsts
+        self.sws = sws
+        switch = self.addSwitch("s1")
 
 
-def deviceCleanup(dut01, wrkston01):
-    retStruct = wrkston01.NetworkConfig(
-                                ipAddr=restClientAddr,
-                                netMask=netmask,
-                                broadcast=broadcast,
-                                interface=wrkston01.linkPortMapping['lnk01'],
-                                config=False)
+class QueryDcSchemaValidations(OpsVsiTest):
+    def setupNet(self):
+        host_opts = self.getHostOpts()
+        switch_opts = self.getSwitchOpts()
+        ecmp_topo = myTopo(hsts=NUM_HOSTS_PER_SWITCH, sw=NUM_OF_SWITCHES,
+                           hopts=host_opts, sopts=switch_opts)
+        self.net = Mininet(ecmp_topo, switch=VsiOpenSwitch, host=Host,
+                           link=OpsVsiLink, controller=None, build=True)
+        self.SWITCH_IP = get_switch_ip(self.net.switches[0])
+        self.put_url = "/rest/v1/system/full-configuration?type=running"
 
-    assert retStruct.returnCode() == 0, 'Failed to clean on the workstation'
-    info('### Successfully unconfigured ip on the workstation ###\n')
+    def test_dc_valid_data(self):
+        info("### Testing DC schema validations using VALID data ###\n")
 
-    cmdOut = wrkston01.cmd("ifconfig " + wrkston01.linkPortMapping['lnk01'])
-    info('### Ifconfig info for the workstation: ###\n' + cmdOut)
+        status_code, response_data = execute_request(
+            self.put_url, "PUT", json.dumps(PUT_DATA),
+            self.SWITCH_IP, False, xtra_header=self.cookie_header)
 
-    retStruct = InterfaceIpConfig(deviceObj=dut01,
-                                  interface="mgmt",
-                                  addr=switchMgmtAddr,
-                                  mask=subnetMaskBits,
-                                  config=False)
+        assert status_code == httplib.OK, ("Wrong status code %s " %
+                                           status_code)
 
-    assert retStruct.returnCode() == 0, 'Failed to clean on dut01 port'
-    info('### Unconfigured IP address on dut01 port ###\n')
+        status_code, response_data = execute_request(
+            self.put_url, "GET", None,
+            self.SWITCH_IP, False, xtra_header=self.cookie_header)
+        assert status_code == httplib.OK, ("Wrong status code %s " %
+                                                status_code)
 
-    retStruct = returnStruct(returnCode=0)
-    return retStruct
+        d = get_json(response_data)
+        info(d['Interface']['49'])
+        assert d['Interface']['49'] == PUT_DATA['Interface']['49'], \
+            'Failed in checking the GET METHOD JSON response validation for \
+            Interface 49'
+        assert d['Port']['p1'] == PUT_DATA['Port']['p1'], \
+            'Failed in checking the GET METHOD JSON response validation for \
+            Port p1'
+        assert d['System']['aaa'] == PUT_DATA['System']['aaa'], \
+            'Failed in checking the GET METHOD JSON response validation for \
+            System aaa'
 
+        info("### Successfully executed PUT for url=%s ###\n" % self.put_url)
+        info("### Received successful HTTP status code ###\n")
 
-def restTestDcValidData(wrkston01):
-    info("### Testing DC schema validations using VALID data ###\n")
-    retStruct = wrkston01.RestCmd(switch_ip=switchMgmtAddr,
-                                  url=put_url,
-                                  method="PUT",
-                                  data=put_data)
+    def test_dc_invalid_data(self):
+        info("### Testing DC schema validations using INVALID data ###\n")
+        erroneous_fields = []
 
-    assert retStruct.returnCode() == 0, "Failed to PUT for url=%s" % post_url
-    info("### Successfully executed PUT for url=%s ###\n" % put_url)
+        info("### Removing mandatory field hostname from System ###\n")
+        field = "hostname"
+        del PUT_DATA["System"][field]
+        erroneous_fields.append(field)
 
-    assert retStruct.data['http_retcode'].find('200') != -1, \
-           'PUT request failed.\n' + retStruct.data['response_body']
-    info("### Received successful HTTP status code ###\n")
+        info("### Setting an invalid port reference for bridge_normal ###\n")
+        field = "ports"
+        PUT_DATA["System"]["bridges"]["bridge_normal"][field] = ["p2"]
+        erroneous_fields.append(field)
 
-    retStruct = returnStruct(returnCode=0)
-    return retStruct
+        info("### Changing the type of Interface name to an incorrect \
+             type ###\n")
+        field = "name"
+        PUT_DATA["Interface"]["49"][field] = 1
+        erroneous_fields.append(field)
 
+        info("### Setting an out of range value for Port trunks ###\n")
+        field = "trunks"
+        PUT_DATA["Port"]["p1"][field] = [0]
+        erroneous_fields.append(field)
 
-def restTestDcInvalidData(wrkston01):
-    info("### Testing DC schema validations using INVALID data ###\n")
-    erroneous_fields = []
+        status_code, response_data = execute_request(
+            self.put_url, "PUT", json.dumps(PUT_DATA),
+            self.SWITCH_IP, False, xtra_header=self.cookie_header)
+        assert status_code == httplib.BAD_REQUEST, ("Wrong status code %s " %
+                                                    status_code)
 
-    info("### Removing mandatory field hostname from System ###\n")
-    field = "hostname"
-    del put_data["System"][field]
-    erroneous_fields.append(field)
+        info("### Successfully executed PUT for url=%s ###\n" % self.put_url)
+        info("### Received expected non-successful HTTP status code ###\n")
+        info("### Verifying there was an error for each tampered field ###\n")
 
-    info("### Setting an invalid port reference for bridge_normal ###\n")
-    field = "ports"
-    put_data["System"]["bridges"]["bridge_normal"][field] = ["p2"]
-    erroneous_fields.append(field)
+        d = get_json(response_data)
 
-    info("### Changing the type of Interface name to an incorrect type ###\n")
-    field = "name"
-    put_data["Interface"]["49"][field] = 1
-    erroneous_fields.append(field)
+        assert len(d['error']) >= len(erroneous_fields), 'The number of \
+                errors in the response does not match\n'
 
-    info("### Setting an out of range value for Port trunks ###\n")
-    field = "trunks"
-    put_data["Port"]["p1"][field] = [0]
-    erroneous_fields.append(field)
+        info("### Received the expected number of errors ###\n")
 
-    retStruct = wrkston01.RestCmd(switch_ip=switchMgmtAddr,
-                                  url=put_url,
-                                  method="PUT",
-                                  data=put_data)
+@pytest.mark.skipif(True, reason="new DC module does not have this feature.")
+class Test_dc_schema_validations:
+    def setup(self):
+        pass
 
-    assert retStruct.returnCode() == 0, "Failed to PUT for url=%s" % put_url
-    info("### Successfully executed PUT for url=%s ###\n" % put_url)
+    def teardown(self):
+        pass
 
-    assert retStruct.data['http_retcode'].find('400') != -1, \
-           'Expecting an error response.\n' + retStruct.data['response_body']
-    info("### Received expected non-successful HTTP status code ###\n")
-
-    info("### Verifying there was an error for each tampered field ###\n")
-    response_body = json.loads(retStruct.data["response_body"].strip())
-
-    assert len(response_body["error"]) >= len(erroneous_fields), \
-           'The number of errors in the response does not match\n'
-    info("### Received the expected number of errors ###\n")
-
-    retStruct = returnStruct(returnCode=0)
-    return retStruct
-
-
-class Test_ft_framework_rest:
     def setup_class(cls):
-        # Create Topology object and connect to devices
-        Test_ft_framework_rest.testObj = testEnviron(topoDict=topoDict)
-        Test_ft_framework_rest.topoObj = \
-            Test_ft_framework_rest.testObj.topoObjGet()
-        wrkston01Obj = Test_ft_framework_rest.topoObj.deviceObjGet(
-            device="wrkston01")
-        wrkston01Obj.CreateRestEnviron()
+        Test_dc_schema_validations.test_var = QueryDcSchemaValidations()
+        rest_sanity_check(cls.test_var.SWITCH_IP)
 
     def teardown_class(cls):
-        # Terminate all nodes
-        Test_ft_framework_rest.topoObj.terminate_nodes()
+        Test_dc_schema_validations.test_var.net.stop()
 
-    def test_reboot_switch(self):
-        info('########################################################\n')
-        info('############       Reboot the switch          ##########\n')
-        info('########################################################\n')
-        dut01Obj = self.topoObj.deviceObjGet(device="dut01")
-        retStruct = switch_reboot(dut01Obj)
-        assert retStruct.returnCode() == 0, 'Failed to reboot Switch'
-        info('### Successful in Switch Reboot piece ###\n')
+    def setup_method(self, method):
+        pass
 
-    def test_config_rest_environment(self):
-        info('#######################################################\n')
-        info('######        Configure REST environment           ####\n')
-        info('#######################################################\n')
-        dut01Obj = self.topoObj.deviceObjGet(device="dut01")
-        wrkston01Obj = self.topoObj.deviceObjGet(device="wrkston01")
-        retStruct = config_rest_environment(dut01Obj, wrkston01Obj)
-        assert retStruct.returnCode() == 0, 'Failed to config REST environment'
-        info('### Successful in config REST environment test ###\n')
+    def teardown_method(self, method):
+        pass
 
-    @pytest.mark.skipif(True, reason="new DC module does not have this feature.")
-    def test_restTestDcSchemaValidations(self):
-        info('##################################################\n')
-        info('######   Testing REST DC Schema Validations   ####\n')
-        info('##################################################\n')
-        wrkston01Obj = self.topoObj.deviceObjGet(device="wrkston01")
+    def __def__(self):
+        del self.test_var
 
-        retStruct = restTestDcValidData(wrkston01Obj)
-        assert retStruct.returnCode() == 0, 'Failed to test DC valid data'
+    def test_valid_data(self, netop_login):
+        self.test_var.test_dc_valid_data()
 
-        retStruct = restTestDcInvalidData(wrkston01Obj)
-        assert retStruct.returnCode() == 0, 'Failed to test DC invalid data'
-
-        info('### Successful in testing DC Schema Validations ###\n')
-
-    def test_clean_up_devices(self):
-        info('#######################################################\n')
-        info('######    Device Cleanup - rolling back config     ####\n')
-        info('#######################################################\n')
-        dut01Obj = self.topoObj.deviceObjGet(device="dut01")
-        wrkston01Obj = self.topoObj.deviceObjGet(device="wrkston01")
-        retStruct = deviceCleanup(dut01Obj, wrkston01Obj)
-        assert retStruct.returnCode() == 0, 'Failed to cleanup device'
-        info('### Successfully Cleaned up devices ###\n')
+    def test_invalid_data(self, netop_login):
+        self.test_var.test_dc_invalid_data()

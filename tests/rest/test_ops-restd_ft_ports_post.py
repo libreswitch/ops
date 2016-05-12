@@ -22,9 +22,12 @@ import json
 import httplib
 import subprocess
 
-from opsvsiutils.restutils.utils import *
+from opsvsiutils.restutils.utils import execute_request, login, \
+    get_switch_ip, rest_sanity_check, get_container_id, PORT_DATA, \
+    execute_port_operations
 from copy import deepcopy
-from opsvsiutils.restutils.swagger_test_utility import *
+from opsvsiutils.restutils.swagger_test_utility import \
+    swagger_model_verification
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -35,6 +38,11 @@ class myTopo(Topo):
         self.hsts = hsts
         self.sws = sws
         self.switch = self.addSwitch("s1")
+
+
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.SWITCH_IP)
 
 
 class CreatePortTest (OpsVsiTest):
@@ -49,14 +57,15 @@ class CreatePortTest (OpsVsiTest):
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
         self.PATH = "/rest/v1/system/ports"
         self.PORT_PATH = self.PATH + "/Port1"
+        self.cookie_header = None
 
     def create_port_with_depth(self):
         info("\n########## Test to Validate Create "
              "Port with depth ##########\n")
-        status_code, response_data = execute_request(self.PATH + "?depth=1",
-                                                     "POST",
-                                                     json.dumps(PORT_DATA),
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH + "?depth=1", "POST", json.dumps(PORT_DATA),
+            self.SWITCH_IP, xtra_header=self.cookie_header)
+
         assert status_code == httplib.BAD_REQUEST, \
             "Unexpected status code. Received: %s Response data: %s " % \
             (status_code, response_data)
@@ -67,17 +76,20 @@ class CreatePortTest (OpsVsiTest):
 
     def create_port(self):
         info("\n########## Test to Validate Create Port ##########\n")
-        status_code, response_data = execute_request(self.PATH, "POST",
-                                                     json.dumps(PORT_DATA),
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "POST", json.dumps(PORT_DATA), self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.CREATED, \
             "Error creating a Port. Status code: %s Response data: %s " % \
             (status_code, response_data)
         info("### Port Created. Status code is 201 CREATED  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.PORT_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PORT_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query added Port"
         json_data = {}
         try:
@@ -93,9 +105,10 @@ class CreatePortTest (OpsVsiTest):
 
     def create_same_port(self):
         info("\n########## Test create same port ##########\n")
-        status_code, response_data = execute_request(self.PORT_PATH, "POST",
-                                                     json.dumps(PORT_DATA),
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PORT_PATH, "POST", json.dumps(PORT_DATA), self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.BAD_REQUEST, \
             "Validation failed, is not sending Bad Request error. " + \
             "Status code: %s" % status_code
@@ -114,10 +127,10 @@ class CreatePortTest (OpsVsiTest):
                 ("tag", "675", httplib.BAD_REQUEST),
                 ("tag", 675, httplib.CREATED),
                 ("trunks", "654, 675", httplib.BAD_REQUEST),
-                ("trunks", [654, 675], httplib.CREATED)
-        ]
+                ("trunks", [654, 675], httplib.CREATED)]
         results = execute_port_operations(data, "PortTypeTest", "POST",
-                                          self.PATH, self.SWITCH_IP)
+                                          self.PATH, self.SWITCH_IP,
+                                          self.cookie_header)
 
         assert results, "Unable to execute requests in verify_attribute_type"
 
@@ -147,10 +160,10 @@ class CreatePortTest (OpsVsiTest):
                 ("tag", 675, httplib.CREATED),
                 ("interfaces", interfaces_out_of_range, httplib.BAD_REQUEST),
                 ("interfaces", ["/rest/v1/system/interfaces/1"],
-                 httplib.CREATED)
-        ]
+                 httplib.CREATED)]
         results = execute_port_operations(data, "PortRangesTest", "POST",
-                                          self.PATH, self.SWITCH_IP)
+                                          self.PATH, self.SWITCH_IP,
+                                          self.cookie_header)
 
         assert results, "Unable to execute requests in verify_attribute_range"
 
@@ -169,12 +182,12 @@ class CreatePortTest (OpsVsiTest):
 
         info("\nAttempting to create port with invalid value in attributes\n")
 
-        data = [
-                ("vlan_mode", "invalid_value", httplib.BAD_REQUEST),
-                ("vlan_mode", "access", httplib.CREATED)
-        ]
+        data = [("vlan_mode", "invalid_value", httplib.BAD_REQUEST),
+                ("vlan_mode", "access", httplib.CREATED)]
+
         results = execute_port_operations(data, "PortValidValueTest", "POST",
-                                          self.PATH, self.SWITCH_IP)
+                                          self.PATH, self.SWITCH_IP,
+                                          self.cookie_header)
 
         assert results, "Unable to execute requests in verify_attribute_value"
 
@@ -201,9 +214,9 @@ class CreatePortTest (OpsVsiTest):
 
         del request_data['configuration']['name']
 
-        status_code, response_data = execute_request(self.PATH, "POST",
-                                                     json.dumps(request_data),
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "POST", json.dumps(request_data), self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.BAD_REQUEST, \
             "%s code issued instead of BAD_REQUEST for Port with missing " + \
@@ -218,9 +231,9 @@ class CreatePortTest (OpsVsiTest):
 
         request_data['configuration']['name'] = 'PortAllAttributes'
 
-        status_code, response_data = execute_request(self.PATH, "POST",
-                                                     json.dumps(request_data),
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "POST", json.dumps(request_data), self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.CREATED, \
             "Got %s code instead of CREATED for Port with all attributes" % \
@@ -236,12 +249,12 @@ class CreatePortTest (OpsVsiTest):
 
         info("\nAttempting to create a port with an unknown attribute\n")
 
-        data = [
-                ("unknown_attribute", "unknown_value", httplib.BAD_REQUEST),
-                ("vlan_mode", "access", httplib.CREATED)
-        ]
+        data = [("unknown_attribute", "unknown_value", httplib.BAD_REQUEST),
+                ("vlan_mode", "access", httplib.CREATED)]
+
         results = execute_port_operations(data, "PortUnknownAttributeTest",
-                                          "POST", self.PATH, self.SWITCH_IP)
+                                          "POST", self.PATH, self.SWITCH_IP,
+                                          self.cookie_header)
 
         assert results, "Unable to execute request in verify_unknown_attribute"
 
@@ -269,9 +282,9 @@ class CreatePortTest (OpsVsiTest):
         json_string = json.dumps(request_data)
         json_string += ","
 
-        status_code, response_data = execute_request(self.PATH, "POST",
-                                                     json_string,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "POST", json_string, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.BAD_REQUEST, \
             "%s code issued instead of BAD_REQUEST for Port with " + \
@@ -285,9 +298,9 @@ class CreatePortTest (OpsVsiTest):
         request_data['configuration']['name'] = 'PortCorrectJSON'
         json_string = json.dumps(request_data)
 
-        status_code, response_data = execute_request(self.PATH, "POST",
-                                                     json_string,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "POST", json_string, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.CREATED, \
             "%s code issued instead of CREATED for Port with correct JSON " + \
@@ -320,7 +333,7 @@ class Test_CreatePort:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.create_port_with_depth()
         self.test_var.create_port()
         self.test_var.create_same_port()

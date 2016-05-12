@@ -1,4 +1,4 @@
-# (C) Copyright 2015 Hewlett Packard Enterprise Development LP
+# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -27,7 +27,6 @@
 #
 ##########################################################################
 
-import pytest
 from opstestfw import *
 from opstestfw.switch.CLI import *
 from opstestfw.host import *
@@ -36,26 +35,6 @@ from opstestfw.host import *
 topoDict = {"topoExecution": 120,
             "topoDevices": "dut01",
             "topoFilters": "dut01:system-category:switch"}
-
-
-def deviceCleanup(dut01Obj):
-    returnCode = 0
-
-    LogOutput('info', "############################################")
-    LogOutput('info', "CLEANUP: Reboot the switch")
-    LogOutput('info', "############################################")
-    rebootRetStruct = dut01Obj.Reboot()
-    rebootRetStruct = returnStruct(returnCode=0)
-
-    if rebootRetStruct.returnCode() != 0:
-        LogOutput('error', "Switch Reboot failed")
-        returnCode = 1
-    else:
-        LogOutput('info', "Passed Switch Reboot piece")
-
-    # Global cleanup return structure
-    cleanupRetStruct = returnStruct(returnCode=returnCode)
-    return cleanupRetStruct
 
 
 def verifyInterfaceLag(dut01Obj, interface, lagId):
@@ -99,7 +78,6 @@ class Test_lagStaticInterfacesOnOtherLag:
 
     def teardown_class(cls):
         # Terminate all nodes
-        deviceCleanup(dut01Obj)
         Test_lagStaticInterfacesOnOtherLag.topoObj.terminate_nodes()
 
     def test_configure_LAG_1(self):

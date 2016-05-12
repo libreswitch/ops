@@ -20,7 +20,8 @@ import pytest
 
 from opsvsi.docker import *
 from opsvsi.opsvsitest import *
-from opsvsiutils.restutils.utils import *
+from opsvsiutils.restutils.utils import execute_request, login, \
+    get_switch_ip, get_json, rest_sanity_check
 
 import json
 import httplib
@@ -39,6 +40,11 @@ class myTopo(Topo):
         switch = self.addSwitch("s1")
 
 
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.SWITCH_IP)
+
+
 class LogsTest (OpsVsiTest):
     def setupNet(self):
         self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
@@ -51,13 +57,15 @@ class LogsTest (OpsVsiTest):
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
         self.PATH = "/rest/v1/logs"
         self.LOGS_PATH = self.PATH
+        self.cookie_header = None
 
     def logs_with_no_filters(self):
         info("\n########## Test to Validate logs with no filters" +
              " ##########\n")
 
-        status_code, response_data = execute_request(self.LOGS_PATH, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.LOGS_PATH, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -99,5 +107,5 @@ class Test_Logs:
     def __del__(self):
         del self.test_var
 
-    def test_logs_with_no_filters(self):
+    def test_logs_with_no_filters(self, netop_login):
         self.test_var.logs_with_no_filters()

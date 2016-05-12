@@ -1086,7 +1086,6 @@ def udp_bcast_forwarder_reboot(**kwargs):
 
     return True
 
-
 class Test_udp_bcast_forwarder_configuration:
 
     def setup_class(cls):

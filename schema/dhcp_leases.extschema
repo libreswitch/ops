@@ -18,8 +18,8 @@
           "type": {
               "key": {
                 "type": "string",
-                "minLength":17,
-                "maxLength":17
+                "minLength": 17,
+                "maxLength": 59
               }
             }
         },

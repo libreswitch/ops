@@ -18,7 +18,6 @@
 from opsvsi.docker import *
 from opsvsi.opsvsitest import *
 from opsvsiutils.systemutil import *
-import time
 
 
 class slowRoutingTests(OpsVsiTest):
@@ -62,6 +61,8 @@ class slowRoutingTests(OpsVsiTest):
         # TODO: Using "no shutdown" needs sleep of 10 seconds.
         # Uncomment below line and remove ovs-vsctl command
         # once issue is resolved
+
+        # time.sleep(10)
 
         # Bring interface 1 up
         s1.ovscmd("/usr/bin/ovs-vsctl set interface 1 user_config:admin=up")
@@ -113,8 +114,6 @@ class slowRoutingTests(OpsVsiTest):
         assert status, "Ping Failed"
         info("Ping Success\n")
 
-        #Adding this sleep makes test pass with -O2 compile flag of netdev-sim
-        time.sleep(10)
         # Ping from host 2 to switch
         info("IPv6 Ping s1 from h2\n")
         output = h2.cmd("ping6 2002::1 -c2")

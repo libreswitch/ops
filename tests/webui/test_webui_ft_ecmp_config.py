@@ -22,8 +22,8 @@ from opsvsi.opsvsitest import *
 import json
 import httplib
 
-from webui.utils.utils import *
-
+from opsvsiutils.restutils.utils import login, execute_request, \
+    rest_sanity_check, get_switch_ip, get_json
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 
@@ -31,6 +31,11 @@ TRUE = "true"
 FALSE = "false"
 
 ECMP_PATCH = [{"op": "add", "path": "/ecmp_config", "value": {"key": "val"}}]
+
+
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.SWITCH_IP)
 
 
 class myTopo(Topo):
@@ -58,13 +63,15 @@ class Test_EcmpConfig(OpsVsiTest):
         self.PATH = "/rest/v1/system"
         self.PATH_PORTS = self.PATH + "/ports"
         self.PATH_INT = self.PATH + "/interfaces"
+        self.cookie_header = None
         info("\n########## Test to Validate initial ecmp config ##########\n")
 
     def test_initial_config(self):
         # Verify data
-        status_code, response_data = execute_request(self.PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query ecmp config "
         json_data = get_json(response_data)
         assert "ecmp" not in json_data["configuration"].keys(),\
@@ -78,19 +85,20 @@ class Test_EcmpConfig(OpsVsiTest):
             ECMP_PATCH[0]["value"].pop(ECMP_PATCH[0]["value"].keys()[0])
         ECMP_PATCH[0]["value"]["enabled"] = TRUE
 
-        status_code, response_data = execute_request(self.PATH, "PATCH",
-                                                     json.dumps(ECMP_PATCH),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.PATH, "PATCH", json.dumps(ECMP_PATCH), self.SWITCH_IP,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error patching a ecmp " \
             "enable Status code: %s Response data: %s " % (status_code,
                                                            response_data)
         info("### Enable ECMP Patched. Status code is 204 NO CONTENT  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query ecmp config"
         json_data = get_json(response_data)
         assert json_data["configuration"]["ecmp_config"]["enabled"] == TRUE,\
@@ -104,19 +112,20 @@ class Test_EcmpConfig(OpsVsiTest):
             ECMP_PATCH[0]["value"].pop(ECMP_PATCH[0]["value"].keys()[0])
         ECMP_PATCH[0]["value"]["enabled"] = FALSE
 
-        status_code, response_data = execute_request(self.PATH, "PATCH",
-                                                     json.dumps(ECMP_PATCH),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.PATH, "PATCH", json.dumps(ECMP_PATCH), self.SWITCH_IP,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, \
             "Error patching a ecmp disable Status code: %s Response data: %s "\
             % (status_code, response_data)
         info("### Disable ECMP Patched. Status code is 204 NO CONTENT  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query ecmp config"
         json_data = get_json(response_data)
         assert json_data["configuration"]["ecmp_config"]["enabled"] == FALSE,\
@@ -131,10 +140,10 @@ class Test_EcmpConfig(OpsVsiTest):
             ECMP_PATCH[0]["value"].pop(ECMP_PATCH[0]["value"].keys()[0])
         ECMP_PATCH[0]["value"]["hash_dstip_enabled"] = TRUE
 
-        status_code, response_data = execute_request(self.PATH, "PATCH",
-                                                     json.dumps(ECMP_PATCH),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.PATH, "PATCH", json.dumps(ECMP_PATCH), self.SWITCH_IP,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, \
             "Error patching ecmp dest ip enable Status code: " \
             "%s Response data: %s " % (status_code, response_data)
@@ -142,9 +151,10 @@ class Test_EcmpConfig(OpsVsiTest):
              "Status code is 204 NO CONTENT  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query ecmp config"
         json_data = get_json(response_data)
         assert json_data["configuration"]["ecmp_config"]["hash_dstip_enabled"]\
@@ -159,10 +169,10 @@ class Test_EcmpConfig(OpsVsiTest):
             ECMP_PATCH[0]["value"].pop(ECMP_PATCH[0]["value"].keys()[0])
         ECMP_PATCH[0]["value"]["hash_dstip_enabled"] = FALSE
 
-        status_code, response_data = execute_request(self.PATH, "PATCH",
-                                                     json.dumps(ECMP_PATCH),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.PATH, "PATCH", json.dumps(ECMP_PATCH), self.SWITCH_IP,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, \
             "Error patching ecmp dest ip disable Status code:" \
             "%s Response data: %s " % (status_code, response_data)
@@ -170,9 +180,10 @@ class Test_EcmpConfig(OpsVsiTest):
              "Status code is 204 NO CONTENT  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query ecmp config"
         json_data = get_json(response_data)
         assert json_data["configuration"]["ecmp_config"]["hash_dstip_enabled"]\
@@ -187,10 +198,10 @@ class Test_EcmpConfig(OpsVsiTest):
             ECMP_PATCH[0]["value"].pop(ECMP_PATCH[0]["value"].keys()[0])
         ECMP_PATCH[0]["value"]["hash_srcip_enabled"] = TRUE
 
-        status_code, response_data = execute_request(self.PATH, "PATCH",
-                                                     json.dumps(ECMP_PATCH),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.PATH, "PATCH", json.dumps(ECMP_PATCH), self.SWITCH_IP,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, \
             "Error patching ecmp source ip enable Status code: "\
             "%s Response data: %s " % (status_code, response_data)
@@ -198,9 +209,10 @@ class Test_EcmpConfig(OpsVsiTest):
              "204 NO CONTENT  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query ecmp config"
         json_data = get_json(response_data)
         assert json_data["configuration"]["ecmp_config"]["hash_srcip_enabled"]\
@@ -215,10 +227,10 @@ class Test_EcmpConfig(OpsVsiTest):
             ECMP_PATCH[0]["value"].pop(ECMP_PATCH[0]["value"].keys()[0])
         ECMP_PATCH[0]["value"]["hash_srcip_enabled"] = FALSE
 
-        status_code, response_data = execute_request(self.PATH, "PATCH",
-                                                     json.dumps(ECMP_PATCH),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.PATH, "PATCH", json.dumps(ECMP_PATCH), self.SWITCH_IP,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, \
             "Error patching ecmp source ip disable Status code: %s Response "\
             "data: %s " % (status_code, response_data)
@@ -226,9 +238,10 @@ class Test_EcmpConfig(OpsVsiTest):
              "NO CONTENT  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query ecmp config"
         json_data = get_json(response_data)
         assert json_data["configuration"]["ecmp_config"]["hash_srcip_enabled"]\
@@ -243,10 +256,10 @@ class Test_EcmpConfig(OpsVsiTest):
             ECMP_PATCH[0]["value"].pop(ECMP_PATCH[0]["value"].keys()[0])
         ECMP_PATCH[0]["value"]["hash_dstport_enabled"] = TRUE
 
-        status_code, response_data = execute_request(self.PATH, "PATCH",
-                                                     json.dumps(ECMP_PATCH),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.PATH, "PATCH", json.dumps(ECMP_PATCH), self.SWITCH_IP,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error patching ecmp dest "\
             "port enable Status code: %s Response data: %s " \
             % (status_code, response_data)
@@ -254,9 +267,10 @@ class Test_EcmpConfig(OpsVsiTest):
              "NO CONTENT  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query ecmp config"
         json_data = get_json(response_data)
         assert \
@@ -272,10 +286,9 @@ class Test_EcmpConfig(OpsVsiTest):
             ECMP_PATCH[0]["value"].pop(ECMP_PATCH[0]["value"].keys()[0])
         ECMP_PATCH[0]["value"]["hash_dstport_enabled"] = FALSE
 
-        status_code, response_data = execute_request(self.PATH, "PATCH",
-                                                     json.dumps(ECMP_PATCH),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.PATH, "PATCH", json.dumps(ECMP_PATCH), self.SWITCH_IP,
+            False, xtra_header=self.cookie_header)
         assert status_code == httplib.NO_CONTENT, "Error patching ecmp dest "\
             "ecmp dest port enable Status code: %s Response data: %s " \
             % (status_code, response_data)
@@ -283,9 +296,10 @@ class Test_EcmpConfig(OpsVsiTest):
              "NO CONTENT  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query ecmp config"
         json_data = get_json(response_data)
         assert \
@@ -301,10 +315,10 @@ class Test_EcmpConfig(OpsVsiTest):
             ECMP_PATCH[0]["value"].pop(ECMP_PATCH[0]["value"].keys()[0])
         ECMP_PATCH[0]["value"]["hash_srcport_enabled"] = TRUE
 
-        status_code, response_data = execute_request(self.PATH, "PATCH",
-                                                     json.dumps(ECMP_PATCH),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.PATH, "PATCH", json.dumps(ECMP_PATCH), self.SWITCH_IP,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error patching ecmp src "\
             "ecmp source port enable Status code: %s Response data: %s " \
             % (status_code, response_data)
@@ -312,9 +326,10 @@ class Test_EcmpConfig(OpsVsiTest):
              "NO CONTENT\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query ecmp config"
         json_data = get_json(response_data)
         assert \
@@ -330,10 +345,10 @@ class Test_EcmpConfig(OpsVsiTest):
             ECMP_PATCH[0]["value"].pop(ECMP_PATCH[0]["value"].keys()[0])
         ECMP_PATCH[0]["value"]["hash_srcport_enabled"] = FALSE
 
-        status_code, response_data = execute_request(self.PATH, "PATCH",
-                                                     json.dumps(ECMP_PATCH),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.PATH, "PATCH", json.dumps(ECMP_PATCH), self.SWITCH_IP,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error patching ecmp src "\
             "ecmp source port disable Status code: %s Response data: %s " \
             % (status_code, response_data)
@@ -341,9 +356,10 @@ class Test_EcmpConfig(OpsVsiTest):
              "NO CONTENT\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query ecmp config"
         json_data = get_json(response_data)
         assert \
@@ -359,10 +375,10 @@ class Test_EcmpConfig(OpsVsiTest):
             ECMP_PATCH[0]["value"].pop(ECMP_PATCH[0]["value"].keys()[0])
         ECMP_PATCH[0]["value"]["resilient_hash_enabled"] = TRUE
 
-        status_code, response_data = execute_request(self.PATH, "PATCH",
-                                                     json.dumps(ECMP_PATCH),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.PATH, "PATCH", json.dumps(ECMP_PATCH), self.SWITCH_IP,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, "Error patching ecmp "\
             "resilient hash enable Status code: %s Response data: %s " \
             % (status_code, response_data)
@@ -370,9 +386,10 @@ class Test_EcmpConfig(OpsVsiTest):
              "NO CONTENT  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query ecmp config"
         json_data = get_json(response_data)
         assert json_data[
@@ -386,10 +403,10 @@ class Test_EcmpConfig(OpsVsiTest):
             ECMP_PATCH[0]["value"].pop(ECMP_PATCH[0]["value"].keys()[0])
         ECMP_PATCH[0]["value"]["resilient_hash_enabled"] = FALSE
 
-        status_code, response_data = execute_request(self.PATH, "PATCH",
-                                                     json.dumps(ECMP_PATCH),
-                                                     self.SWITCH_IP,
-                                                     False)
+        status_code, response_data = execute_request(
+            self.PATH, "PATCH", json.dumps(ECMP_PATCH), self.SWITCH_IP,
+            False, xtra_header=self.cookie_header)
+
         assert status_code == httplib.NO_CONTENT, \
             "Error patching ecmp resilient hash disable Status code: \
             %s Response data: %s " % (status_code, response_data)
@@ -397,9 +414,10 @@ class Test_EcmpConfig(OpsVsiTest):
              "NO CONTENT  ###\n")
 
         # Verify data
-        status_code, response_data = execute_request(self.PATH, "GET",
-                                                     None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH, "GET", None, self.SWITCH_IP, False,
+            xtra_header=self.cookie_header)
+
         assert status_code == httplib.OK, "Failed to query ecmp config"
         json_data = get_json(response_data)
         assert json_data[
@@ -431,43 +449,43 @@ class Test_WebUI_ECMP:
     def __del__(self):
         del self.test_var
 
-    def test_run_initial_config(self):
+    def test_run_initial_config(self, netop_login):
         self.test_var.test_initial_config()
 
-    def test_run_iecmp_enable(self):
+    def test_run_iecmp_enable(self, netop_login):
         self.test_var.test_ecmp_enable()
 
-    def test_run_ecmp_dstip_enable(self):
+    def test_run_ecmp_dstip_enable(self, netop_login):
         self.test_var.test_ecmp_dstip_enable()
 
-    def test_run_ecmp_srcip_enable(self):
+    def test_run_ecmp_srcip_enable(self, netop_login):
         self.test_var.test_ecmp_srcip_enable()
 
-    def test_run_ecmp_dstport_enable(self):
+    def test_run_ecmp_dstport_enable(self, netop_login):
         self.test_var.test_ecmp_dstport_enable()
 
-    def test_run_ecmp_srcport_enable(self):
+    def test_run_ecmp_srcport_enable(self, netop_login):
         self.test_var.test_ecmp_srcport_enable()
 
-    def test_run_ecmp_reshash_enable(self):
+    def test_run_ecmp_reshash_enable(self, netop_login):
         self.test_var.test_ecmp_reshash_enable()
 
     # perform disable operations now
 
-    def test_run_ecmp_dstip_disable(self):
+    def test_run_ecmp_dstip_disable(self, netop_login):
         self.test_var.test_ecmp_dstip_disable()
 
-    def test_run_ecmp_srcip_disable(self):
+    def test_run_ecmp_srcip_disable(self, netop_login):
         self.test_var.test_ecmp_srcip_disable()
 
-    def test_run_ecmp_dstport_disable(self):
+    def test_run_ecmp_dstport_disable(self, netop_login):
         self.test_var.test_ecmp_dstport_disable()
 
-    def test_run_ecmp_srcport_disable(self):
+    def test_run_ecmp_srcport_disable(self, netop_login):
         self.test_var.test_ecmp_srcport_disable()
 
-    def test_run_ecmp_reshash_disable(self):
+    def test_run_ecmp_reshash_disable(self, netop_login):
         self.test_var.test_ecmp_reshash_disable()
 
-    def test_run_ecmp_disable(self):
+    def test_run_ecmp_disable(self, netop_login):
         self.test_var.test_ecmp_disable()

@@ -25,7 +25,8 @@ import json
 import httplib
 import urllib
 
-from opsvsiutils.restutils.utils import *
+from opsvsiutils.restutils.utils import execute_request, login, \
+    get_switch_ip, rest_sanity_check, create_test_ports
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -39,31 +40,31 @@ class myTopo(Topo):
         switch = self.addSwitch("s1")
 
 
+@pytest.fixture
+def netop_login(request):
+    request.cls.test_var.cookie_header = login(request.cls.test_var.SWITCH_IP)
+
+
 class QueryPortPaginationTest(OpsVsiTest):
     def setupNet(self):
-        self.net = Mininet(
-                    topo=myTopo(
-                        hsts=NUM_HOSTS_PER_SWITCH,
-                        sws=NUM_OF_SWITCHES,
-                        hopts=self.getHostOpts(),
-                        sopts=self.getSwitchOpts()
-                    ),
-                    switch=VsiOpenSwitch,
-                    host=None,
-                    link=None,
-                    controller=None,
-                    build=True
-        )
+        self.net = Mininet(topo=myTopo(hsts=NUM_HOSTS_PER_SWITCH,
+                                       sws=NUM_OF_SWITCHES,
+                                       hopts=self.getHostOpts(),
+                                       sopts=self.getSwitchOpts()),
+                           switch=VsiOpenSwitch, host=None, link=None,
+                           controller=None, build=True)
 
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
         self.PATH = "/rest/v1/system/ports"
+        self.cookie_header = None
 
     def test_pagination_empty_offset(self, path):
         info("### Attempting to fetch first 5 ports in the list with" +
              " no offset set ###\n")
 
-        status_code, response_data = execute_request(path + ";limit=5", "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            path + ";limit=5", "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -89,9 +90,9 @@ class QueryPortPaginationTest(OpsVsiTest):
         info("### Attempting to fetch last 10 ports in the list with" +
              " no limit set ###\n")
 
-        status_code, response_data = execute_request(path + ";offset=91",
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            path + ";offset=91", "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -118,8 +119,8 @@ class QueryPortPaginationTest(OpsVsiTest):
     def test_pagination_no_offset_limit(self, path):
         info("### Attempting to fetch ports with no offset or limit set ###\n")
 
-        status_code, response_data = execute_request(path, "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            path, "GET", None, self.SWITCH_IP, xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -142,10 +143,9 @@ class QueryPortPaginationTest(OpsVsiTest):
     def test_pagination_negative_offset(self, path):
         info("### Attempting to fetch ports with negative offset ###\n")
 
-        status_code, response_data = execute_request(path +
-                                                     ";offset=-1;limit=10",
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            path + ";offset=-1;limit=10", "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.BAD_REQUEST, \
             "Wrong status code %s " % status_code
@@ -154,10 +154,9 @@ class QueryPortPaginationTest(OpsVsiTest):
     def test_pagination_negative_limit(self, path):
         info("### Attempting to fetch ports with negative limit ###\n")
 
-        status_code, response_data = execute_request(path +
-                                                     ";offset=5;limit=-1",
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            path + ";offset=5;limit=-1", "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.BAD_REQUEST, \
             "Wrong status code %s " % status_code
@@ -167,9 +166,9 @@ class QueryPortPaginationTest(OpsVsiTest):
         info("### Attempting to fetch ports with offset larger than" +
              " data size ###\n")
 
-        status_code, response_data = execute_request(path +
-                                                     ";offset=200", "GET",
-                                                     None, self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            path + ";offset=200", "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.BAD_REQUEST, \
             "Wrong status code %s " % status_code
@@ -179,10 +178,9 @@ class QueryPortPaginationTest(OpsVsiTest):
         info("### Attempting to fetch remainder 10 ports in the list using " +
              "large limit ###\n")
 
-        status_code, response_data = execute_request(path +
-                                                     ";offset=91;limit=20",
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            path + ";offset=91;limit=20", "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -211,11 +209,9 @@ class QueryPortPaginationTest(OpsVsiTest):
         info("### Attempting to fetch single port with offset and limit " +
              "present ###\n")
 
-        status_code, response_data = execute_request(self.PATH +
-                                                     "/bridge_normal?depth=1" +
-                                                     ";offset=0;limit=10",
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH + "/bridge_normal?depth=1" + ";offset=0;limit=10",
+            "GET", None, self.SWITCH_IP, xtra_header=self.cookie_header)
 
         assert status_code == httplib.BAD_REQUEST, \
             "Wrong status code %s " % status_code
@@ -225,11 +221,9 @@ class QueryPortPaginationTest(OpsVsiTest):
         info("### Attempting to fetch single port with offset " +
              "present ###\n")
 
-        status_code, response_data = execute_request(self.PATH +
-                                                     "/bridge_normal?depth=1" +
-                                                     ";offset=5",
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH + "/bridge_normal?depth=1" + ";offset=5",
+            "GET", None, self.SWITCH_IP, xtra_header=self.cookie_header)
 
         assert status_code == httplib.BAD_REQUEST, \
             "Wrong status code %s " % status_code
@@ -239,11 +233,9 @@ class QueryPortPaginationTest(OpsVsiTest):
         info("### Attempting to fetch single port with offset " +
              "present ###\n")
 
-        status_code, response_data = execute_request(self.PATH +
-                                                     "/bridge_normal?depth=1" +
-                                                     ";limit=5",
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            self.PATH + "/bridge_normal?depth=1" + ";limit=5",
+            "GET", None, self.SWITCH_IP, xtra_header=self.cookie_header)
 
         assert status_code == httplib.BAD_REQUEST, \
             "Wrong status code %s " % status_code
@@ -302,10 +294,9 @@ class QueryPortPaginationTest(OpsVsiTest):
 
         info("### Attempting to fetch first 10 ports in the list ###\n")
 
-        status_code, response_data = execute_request(path +
-                                                     ";offset=0;limit=10",
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            path + ";offset=0;limit=10", "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -337,10 +328,9 @@ class QueryPortPaginationTest(OpsVsiTest):
 
         info("### Attempting to fetch last 10 ports in the list ###\n")
 
-        status_code, response_data = execute_request(path +
-                                                     ";offset=91;limit=10",
-                                                     "GET", None,
-                                                     self.SWITCH_IP)
+        status_code, response_data = execute_request(
+            path + ";offset=91;limit=10", "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
 
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
         info("### Status code is OK ###\n")
@@ -396,6 +386,6 @@ class Test_QueryPortPagination:
     def __del__(self):
         del self.test_var
 
-    def test_run(self):
+    def test_run(self, netop_login):
         self.test_var.test_pagination_indexes()
         self.test_var.test_query_ports_paginated()
