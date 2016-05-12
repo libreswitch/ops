@@ -304,11 +304,11 @@ For **qos trust dscp**, the network device uses the **DSCP Map** to determine wh
 ## Configuring queue profiles
 The queue profile determines the assignment of local-priority to queues. A queue-profile must be configured on every port at all times.
 
-OpenSwitch automatically provisions each network device with an initial queue profile named **default**.  Use the command **show queue-profile default** to view the product default queue profile.  Do not use **show running-configuration** as it will only display changes from the initial values.
+OpenSwitch automatically provisions each network device with an initial queue profile named **default**.  Use the command **show qos queue-profile default** to view the product default queue profile.  Do not use **show running-configuration** as it will only display changes from the initial values.
 
-The default queue-profile assigns each local-priority to the queue of the same number.  This should work most all situations.  A new queue profile can be created anytime by entering the command **queue-profile NAME**.  Use **map QUEUENUM local-priority PRI** commands to assign local-priorities to queues.
+The default queue-profile assigns each local-priority to the queue of the same number.  This should work most all situations.  A new queue profile can be created anytime by entering the command **qos queue-profile NAME**.  Use **map queue QUEUENUM local-priority PRI** commands to assign local-priorities to queues.
 
-Finally, use the **apply qos queue-profile NAME** command to configure all ports to use the new profile.
+Finally, use the **apply qos queue-profile NAME schedule-profile NAME** command to configure all ports to use the new profile.
 
 ## Configuring schedule profiles
 The schedule profile determines the order of queues selected to transmit a packet. A schedule profile must be configured on every port at all times.
@@ -351,14 +351,15 @@ Create a queue profile that maps local-priority 5 to queue 7.
 ```ditaa
     #configure terminal
     (config)# qos queue-profile ef_priority
-    (config-queue)# map 7 local-priority 5 name Voice_Priority_Queue
-    (config-queue)# map 6 local-priority 7
-    (config-queue)# map 5 local-priority 6
-    (config-queue)# map 4 local-priority 4
-    (config-queue)# map 3 local-priority 3
-    (config-queue)# map 2 local-priority 2
-    (config-queue)# map 1 local-priority 1
-    (config-queue)# map 0 local-priority 0
+    (config-queue)# name queue 7 Voice_Priority_Queue
+    (config-queue)# map queue 7 local-priority 5
+    (config-queue)# map queue 6 local-priority 7
+    (config-queue)# map queue 5 local-priority 6
+    (config-queue)# map queue 4 local-priority 4
+    (config-queue)# map queue 3 local-priority 3
+    (config-queue)# map queue 2 local-priority 2
+    (config-queue)# map queue 1 local-priority 1
+    (config-queue)# map queue 0 local-priority 0
 ```
 **Step 3: Create an SP plus DWRR schedule profile**
 Create a schedule profile that services queue 7 using strict priority (SP) and the remaining queues using DWRR).  This example will give all DWRR queues equal weight.  The actual weight values will be different in your network.
@@ -366,14 +367,14 @@ Create a schedule profile that services queue 7 using strict priority (SP) and t
 ```ditaa
     #configure terminal
     (config)# qos schedule-profile sp_dwrr
-    (config-schedule)# strict 7
-    (config-schedule)# dwrr 6 weight 1
-    (config-schedule)# dwrr 5 weight 1
-    (config-schedule)# dwrr 4 weight 1
-    (config-schedule)# dwrr 3 weight 1
-    (config-schedule)# dwrr 2 weight 1
-    (config-schedule)# dwrr 1 weight 1
-    (config-schedule)# dwrr 0 weight 1
+    (config-schedule)# strict queue 7
+    (config-schedule)# dwrr queue 6 weight 1
+    (config-schedule)# dwrr queue 5 weight 1
+    (config-schedule)# dwrr queue 4 weight 1
+    (config-schedule)# dwrr queue 3 weight 1
+    (config-schedule)# dwrr queue 2 weight 1
+    (config-schedule)# dwrr queue 1 weight 1
+    (config-schedule)# dwrr queue 0 weight 1
 ```
 **Step 4: Apply the policies to all ports**
 Apply the queue and schedule profiles to all ports from the configuration context.
