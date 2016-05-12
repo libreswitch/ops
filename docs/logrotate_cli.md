@@ -10,7 +10,7 @@
 	- [show logrotate](#show-logrotate)
 
 # Configuration commands #
-###  logrotate period ###
+### logrotate period ###
 #### Syntax ####
 ```
     logrotate period ( hourly | weekly | monthly )
