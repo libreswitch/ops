@@ -35,6 +35,34 @@ topoDict = {"topoExecution": 1000,
             "topoFilters": "dut01:system-category:switch,\
             dut02:system-category:switch"}
 
+def lldp_debug_dump(device1, device2):
+    # Dump Device1
+    LogOutput('info', "Device1 DUMP:")
+    device1.setDefaultContext(context="linux")
+    devCmd = "ovs-vsctl list interface "\
+        + str(device1.linkPortMapping['lnk01'])
+    neighbor_output = device1.cmd(devCmd)
+    opstestfw.LogOutput('info', "ovs-vsctl list interface output:\n"
+                        + str(neighbor_output))
+    devCmd = "ip netns exec swns ifconfig "\
+        + str(device1.linkPortMapping['lnk01'])
+    ifconfig_output = device1.cmd(devCmd)
+    opstestfw.LogOutput('info', devCmd + " output\n"
+                        + str(ifconfig_output))
+
+    # Dump Device2
+    LogOutput('info', "Device2 DUMP")
+    device2.setDefaultContext(context="linux")
+    devCmd = "ovs-vsctl list interface "\
+        + str(device2.linkPortMapping['lnk01'])
+    neighbor_output = device2.cmd(devCmd)
+    opstestfw.LogOutput('info', "ovs-vsctl list interface output:\n"
+                        + str(neighbor_output))
+    devCmd = "ip netns exec swns ifconfig "\
+        + str(device2.linkPortMapping['lnk01'])
+    ifconfig_output = device2.cmd(devCmd)
+    opstestfw.LogOutput('info', devCmd + " output\n"
+                        + str(ifconfig_output))
 
 def lldp_neighbor_info(**kwargs):
     device1 = kwargs.get('device1', None)
@@ -44,38 +72,34 @@ def lldp_neighbor_info(**kwargs):
     device2.commandErrorCheck = 0
     LogOutput('info', "\n\n\nConfig lldp on SW1 and SW2")
 
-    LogOutput('info', "\nEnabling lldp feature on SW1")
-    devIntRetStruct = LldpConfig(deviceObj=device1, enable=True)
-    retCode = devIntRetStruct.returnCode()
-    assert retCode == 0, "\nFailed to enable lldp feature"
-
-    LogOutput('info', "\nEnabling lldp feature on SW2")
-    devIntRetstruct = LldpConfig(deviceObj=device2, enable=True)
-    assert retCode == 0, "\nFailed to enable lldp feature"
-
-    #Entering interface SW1
+    ######## Configuration Start ##########
+    # Enabling interface 1 SW1
+    LogOutput('info', "Enabling interface on SW1")
     retStruct = InterfaceEnable(deviceObj=device1, enable=True,
                                 interface=device1.linkPortMapping['lnk01'])
     retCode = retStruct.returnCode()
-    assert retCode == 0, "\nFailed to enable interface"
+    assert retCode == 0, "Unable to enabling interface on SW1"
 
-    #Configuring no routing on interface
-    #Entering VTYSH terminal
     retStruct = device1.VtyshShell(enter=True)
     retCode = retStruct.returnCode()
     assert retCode == 0, "Failed to enter vtysh prompt"
 
-    # Entering confi terminal SW1
+    # Entering config terminal SW1
     retStruct = device1.ConfigVtyShell(enter=True)
     retCode = retStruct.returnCode()
     assert retCode == 0, "Failed to enter config terminal"
 
-    #Entering interface
+    LogOutput('info', "\n\n\nConfig SW1 LLDP timer to 5 sec")
+    devIntRetStruct = device1.DeviceInteract(command="lldp timer 5\r")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode == 0, "Failed to set SW1 LLDP timer 5 seconds"
+
+    # Entering interface
     LogOutput('info', "Switch 1 interface is :"
               + str(device1.linkPortMapping['lnk01']))
-    devIntRetStruct = device1.DeviceInteract(command="interface "
-                                             + str(device1.linkPortMapping
-                                                   ['lnk01']))
+    devIntRetStruct =\
+        device1.DeviceInteract(command="interface "
+                               + str(device1.linkPortMapping['lnk01']))
     retCode = devIntRetStruct.get('returnCode')
     assert retCode == 0, "Failed to enter interface"
 
@@ -83,30 +107,27 @@ def lldp_neighbor_info(**kwargs):
     retCode = devIntRetStruct.get('returnCode')
     assert retCode == 0, "Failed to disable routing"
 
-    #Exiting interface
     devIntRetStruct = device1.DeviceInteract(command="exit")
     retCode = devIntRetStruct.get('returnCode')
     assert retCode == 0, "Failed to exit interface"
 
-    # Exiting Config terminal
     retStruct = device1.ConfigVtyShell(enter=False)
     retCode = retStruct.returnCode()
     assert retCode == 0, "Failed to come out of config terminal"
 
-    # Exiting VTYSH terminal
     retStruct = device1.VtyshShell(enter=False)
     retCode = retStruct.returnCode()
     assert retCode == 0, "Failed to exit vtysh prompt"
-    # End configure no routing switch 1 port over lnk01
+    # End section to disable routing on the port
 
-    # Entering interface SW2
+    # Enabling interface 1 SW2
+    LogOutput('info', "Enabling interface on SW2")
     retStruct = InterfaceEnable(deviceObj=device2, enable=True,
                                 interface=device2.linkPortMapping['lnk01'])
     retCode = retStruct.returnCode()
-    assert retCode == 0, "Failed to enable interface"
+    assert retCode == 0, "Unable to enable interface on SW2"
 
-    # Configuring no routing on interface
-    # Entering VTYSH terminal
+    # Section to disable routing on port
     retStruct = device2.VtyshShell(enter=True)
     retCode = retStruct.returnCode()
     assert retCode == 0, "Failed to enter vtysh prompt"
@@ -116,12 +137,17 @@ def lldp_neighbor_info(**kwargs):
     retCode = retStruct.returnCode()
     assert retCode == 0, "Failed to enter config terminal"
 
-    # Entering interface
-    LogOutput('info', "Switch 2 interface is :"
+    LogOutput('info', "\n\n\nConfig SW2 LLDP to 5 sec")
+    devIntRetStruct = device2.DeviceInteract(command="lldp timer 5")
+    retCode = devIntRetStruct.get('returnCode')
+    assert retCode == 0, "Failed to set LLDP timer 5 seconds"
+
+    # Entering interface 2
+    LogOutput('info', "Switch 2 interface is : "
               + str(device2.linkPortMapping['lnk01']))
-    devIntRetStruct = device2.DeviceInteract(command="interface "
-                                             + str(device2.linkPortMapping
-                                                   ['lnk01']))
+    devIntRetStruct =\
+        device2.DeviceInteract(command="interface "
+                               + str(device2.linkPortMapping['lnk01']))
     retCode = devIntRetStruct.get('returnCode')
     assert retCode == 0, "Failed to enter interface"
 
@@ -129,21 +155,27 @@ def lldp_neighbor_info(**kwargs):
     retCode = devIntRetStruct.get('returnCode')
     assert retCode == 0, "Failed to disable routing"
 
-    # Exiting interface
     devIntRetStruct = device2.DeviceInteract(command="exit")
     retCode = devIntRetStruct.get('returnCode')
     assert retCode == 0, "Failed to exit interface"
 
-    # Exiting Config terminal
     retStruct = device2.ConfigVtyShell(enter=False)
     retCode = retStruct.returnCode()
     assert retCode == 0, "Failed to come out of config terminal"
 
-    # Exiting VTYSH terminal
-    retStruct = device2.VtyshShell(enter=False)
+    # Configuring lldp on SW1
+    LogOutput('info', "\n\n\nConfig lldp on SW1")
+    retStruct = LldpConfig(deviceObj=device1, enable=True)
     retCode = retStruct.returnCode()
-    assert retCode == 0, "Failed to exit vtysh prompt"
-    # End configure no routing on switch 2 port over lnk01
+    assert retCode == 0, "Unable to configure LLDP on SW1"
+
+    # Configuring lldp on SW2
+    LogOutput('info', "\n\n\nConfig lldp on SW2")
+    retStruct = LldpConfig(deviceObj=device2, enable=True)
+    retCode = retStruct.returnCode()
+    assert retCode == 0, "Configure lldp on SW2"
+
+    ##### END ############
 
     # Case#1
     # Enter Configure IPv4 mgmt pattern SW1
@@ -172,32 +204,39 @@ def lldp_neighbor_info(**kwargs):
     retStruct = device1.VtyshShell(enter=False)
     retCode = retStruct.returnCode()
     assert retCode == 0, "Failed to exit vtysh prompt"
-    # Enter Configure IPv4 mgmt pattern SW1
-
-    # Waiting for LLDP message exchange
-    time.sleep(15)
 
     # Parsing neighbour info for SW2
     device2.setDefaultContext(context="linux")
 
-    LogOutput('info', "\nShowing Lldp neighbourship on SW2")
-    retStruct = ShowLldpNeighborInfo(deviceObj=device2,
+    # Waiting for LLDP message exchange
+    Sleep(seconds=5, message="\nWaiting")
+
+    # Verify neighbour info on SW2
+    for retry in range(1, 5):
+        # Parsing neighbour info for SW2
+        LogOutput('info', "\nShowing LLDP neighbour on SW2")
+        Sleep(seconds=5, message="Delay")
+        retStruct = ShowLldpNeighborInfo(deviceObj=device2,
                                      port=device2.linkPortMapping['lnk01'])
-    retCode = retStruct.returnCode()
-    assert retCode == 0, "Failed to show neighbour info"
+        retCode = retStruct.returnCode()
+        assert retCode == 0, "Failed to show neighbour info"
 
-    LogOutput('info', "CLI_Switch2 Output\n" + str(retStruct.buffer()))
-    LogOutput('info', "CLI_Switch2 Return Structure")
-    retStruct.printValueString()
+        LogOutput('info', "CLI_Switch2 Output:\n" + str(retStruct.buffer()))
+        LogOutput('info', "CLI_Switch2 Return Structure")
+        retStruct.printValueString()
 
-    lnk01PrtStats = retStruct.valueGet(key='portStats')
-    mgmt_pattern = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
+        lnk01PrtStats = retStruct.valueGet(key='portStats')
+        mgmt_pattern = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
                        ['Neighbor_Management_address']).rstrip()
-    assert mgmt_pattern == MGMT_PATTERN_IP4, \
-        "Case Failed, mgmt pattern present for SW1"
 
-    if (mgmt_pattern == MGMT_PATTERN_IP4):
-        LogOutput('info', "Neighbor Management Address : " + mgmt_pattern)
+        if (mgmt_pattern == MGMT_PATTERN_IP4):
+            LogOutput('info', "Neighbour Management Address : " + mgmt_pattern)
+            break
+
+    if mgmt_pattern != MGMT_PATTERN_IP4:
+        lldp_debug_dump(device1, device2)
+        assert mgmt_pattern == MGMT_PATTERN_IP4, \
+            "Case Failed, Management pattern present for SW1"
 
     device2.setDefaultContext(context="vtyShell")
 
@@ -229,31 +268,43 @@ def lldp_neighbor_info(**kwargs):
     retStruct = device1.VtyshShell(enter=False)
     retCode = retStruct.returnCode()
     assert retCode == 0, "Failed to exit vtysh prompt"
-    # Enter Configure IPv6 mgmt pattern SW1
-
-    # Waiting for LLDP message exchange
-    time.sleep(15)
 
     # Parsing neighbour info for SW2
     device2.setDefaultContext(context="linux")
-    LogOutput('info', "\nShowing Lldp neighbourship on SW2")
-    retStruct = ShowLldpNeighborInfo(deviceObj=device2,
+
+    # Waiting for LLDP message exchange
+    Sleep(seconds=5, message="\nWaiting")
+
+    # Verify neighbour info on SW2
+    for retry in range(1, 5):
+        # Parsing neighbour info for SW2
+        LogOutput('info', "\nShowing LLDP neighbour on SW2")
+        Sleep(seconds=5, message="Delay")
+        retStruct = ShowLldpNeighborInfo(deviceObj=device2,
                                      port=device2.linkPortMapping['lnk01'])
-    retCode = retStruct.returnCode()
-    assert retCode == 0, "Failed to show neighbour info"
+        retCode = retStruct.returnCode()
+        assert retCode == 0, "Failed to show neighbour info"
 
-    LogOutput('info', "CLI_Switch2 Output\n" + str(retStruct.buffer()))
-    LogOutput('info', "CLI_Switch2 Return Structure")
-    retStruct.printValueString()
+        LogOutput('info', "CLI_Switch2 Output:\n" + str(retStruct.buffer()))
+        LogOutput('info', "CLI_Switch2 Return Structure")
+        retStruct.printValueString()
 
-    lnk01PrtStats = retStruct.valueGet(key='portStats')
-    mgmt_pattern = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
+        lnk01PrtStats = retStruct.valueGet(key='portStats')
+        mgmt_pattern = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
                        ['Neighbor_Management_address']).rstrip()
-    assert mgmt_pattern == MGMT_PATTERN_IP6, \
-        "Case Failed, IPv6 mgmt pattern present for SW1"
+
+        if (mgmt_pattern == MGMT_PATTERN_IP6):
+            LogOutput('info', "Neighbour Management Address : " + mgmt_pattern)
+            break
+
+    if mgmt_pattern != MGMT_PATTERN_IP6:
+        lldp_debug_dump(device1, device2)
+        assert mgmt_pattern == MGMT_PATTERN_IP6, \
+            "Case Failed, IPv6 mgmt pattern present for SW1"
 
     if (mgmt_pattern == MGMT_PATTERN_IP6):
-        LogOutput('info', "Neighbor Management Address : " + mgmt_pattern)
+        LogOutput('info', "Neighbour Management Address : " + mgmt_pattern)
+
     device2.setDefaultContext(context="vtyShell")
 
     # Case#3
@@ -302,32 +353,42 @@ def lldp_neighbor_info(**kwargs):
     retStruct = MgmtInterfaceConfig(deviceObj=device1, config=False)
     retCode = retStruct.returnCode()
     assert retCode == 0, "Failed to come out of mgmt intf"
-    # Enter Configure IPv4 mgmt pattern SW1
 
     # Waiting for LLDP message exchange
-    time.sleep(15)
-    retStruct = ShowLldpNeighborInfo(deviceObj=device2,
+    Sleep(seconds=5, message="\nWaiting")
+
+    # Verify neighbour info on SW2
+    for retry in range(1, 5):
+        # Parsing neighbour info for SW2
+        LogOutput('info', "\nShowing LLDP neighbour on SW2")
+        Sleep(seconds=5, message="Delay")
+        retStruct = ShowLldpNeighborInfo(deviceObj=device2,
                                      port=device2.linkPortMapping['lnk01'])
-    retCode = retStruct.returnCode()
-    assert retCode == 0, "Failed to show neighbour info"
+        retCode = retStruct.returnCode()
+        assert retCode == 0, "Failed to show neighbour info"
 
-    LogOutput('info', "CLI_Switch2 Output\n" + str(retStruct.buffer()))
-    LogOutput('info', "CLI_Switch2 Return Structure")
-    retStruct.printValueString()
+        LogOutput('info', "CLI_Switch2 Output:\n" + str(retStruct.buffer()))
+        LogOutput('info', "CLI_Switch2 Return Structure")
+        retStruct.printValueString()
 
-    lnk01PrtStats = retStruct.valueGet(key='portStats')
-    mgmt_pattern = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
+        lnk01PrtStats = retStruct.valueGet(key='portStats')
+        mgmt_pattern = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
                        ['Neighbor_Management_address']).rstrip()
+
+        if (MGMT_PATTERN_IP6 in mgmt_pattern and MGMT_PATTERN_IP4 in mgmt_pattern):
+            LogOutput('info', "Neighbour Management Address : " + mgmt_pattern)
+            break
+
     assert (MGMT_PATTERN_IP6 in mgmt_pattern and
             MGMT_PATTERN_IP4 in mgmt_pattern), \
         "Case Failed, IPv6 mgmt pattern present for SW1"
 
     if (MGMT_PATTERN_IP6 in mgmt_pattern and MGMT_PATTERN_IP4 in mgmt_pattern):
-        LogOutput('info', "Neighbor Management Address : " + mgmt_pattern)
+        LogOutput('info', "Neighbour Management Address : " + mgmt_pattern)
     # Exit Configure static ip on mgmt intf in SW1
 
     # Case#4
-    # Enter LLDP Clear Neighbor info in SW2
+    # Enter LLDP Clear Neighbour info in SW2
     device1.setDefaultContext(context="vtyShell")
 
     LogOutput('info', "\nDisabling lldp feature on SW1")
@@ -346,7 +407,7 @@ def lldp_neighbor_info(**kwargs):
     retCode = retStruct.returnCode()
     assert retCode == 0, "Failed to enter config terminal"
 
-    LogOutput('info', "\nLLDp clear neighbor info in SW2")
+    LogOutput('info', "\nLLDp clear neighbour info in SW2")
     devIntRetStruct = device2.DeviceInteract(command="lldp clear neighbors")
     retCode = devIntRetStruct.get('returnCode')
     assert retCode == 0, "Failed to execute lldp clear neighbors"
@@ -362,26 +423,38 @@ def lldp_neighbor_info(**kwargs):
     assert retCode == 0, "Failed to exit vtysh prompt"
 
     # Waiting for LLDP message exchange
-    time.sleep(10)
-    retStruct = ShowLldpNeighborInfo(deviceObj=device2,
+    Sleep(seconds=5, message="\nWaiting")
+
+    # Verify neighbour info on SW2
+    for retry in range(1, 5):
+        # Parsing neighbour info for SW2
+        LogOutput('info', "\nShowing LLDP neighbour on SW2")
+        Sleep(seconds=5, message="Delay")
+        retStruct = ShowLldpNeighborInfo(deviceObj=device2,
                                      port=device2.linkPortMapping['lnk01'])
-    retCode = retStruct.returnCode()
-    assert retCode == 0, "Failed to show neighbour info"
-    # Exit LLDP Clear Neighbor info in SW2
+        retCode = retStruct.returnCode()
+        assert retCode == 0, "Failed to show neighbour info"
 
-    LogOutput('info', "CLI_Switch2 Output\n" + str(retStruct.buffer()))
-    LogOutput('info', "CLI_Switch2 Return Structure")
-    retStruct.printValueString()
+        LogOutput('info', "CLI_Switch2 Output:\n" + str(retStruct.buffer()))
+        LogOutput('info', "CLI_Switch2 Return Structure")
+        retStruct.printValueString()
 
-    lnk01PrtStats = retStruct.valueGet(key='portStats')
+        lnk01PrtStats = retStruct.valueGet(key='portStats')
 
-    neighbor_entries = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
+        neighbor_entries = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
                            ['Neighbor_Entries']).rstrip()
+
+        neighbor_deleted = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
+                           ['Neighbor_Entries_Deleted']).rstrip()
+
+        if (int(neighbor_entries) == 0 and int(neighbor_deleted) >= 1):
+            LogOutput('info', "Neighbor_Entries Cleared")
+            break
+
     assert int(neighbor_entries) == 0, "Failed to delete neighbour info"
 
-    neighbor_deleted = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
-                           ['Neighbor_Entries_Deleted']).rstrip()
     assert int(neighbor_deleted) >= 1, "Failed to delete neighbour info"
+
 
     # Case#5
     # Enter LLDP Clear counter in SW2
@@ -419,30 +492,39 @@ def lldp_neighbor_info(**kwargs):
     assert retCode == 0, "Failed to exit vtysh prompt"
 
     # Waiting for LLDP message exchange
-    time.sleep(10)
-    retStruct = ShowLldpNeighborInfo(deviceObj=device2,
+    Sleep(seconds=5, message="\nWaiting")
+
+    # Verify neighbour info on SW2
+    for retry in range(1, 5):
+        # Parsing neighbour info for SW2
+        LogOutput('info', "\nShowing LLDP neighbour on SW2")
+        Sleep(seconds=5, message="Delay")
+        retStruct = ShowLldpNeighborInfo(deviceObj=device2,
                                      port=device2.linkPortMapping['lnk01'])
-    retCode = retStruct.returnCode()
-    assert retCode == 0, "Failed to show neighbour info"
-    # Exit LLDP Clear Neighbor info in SW2
+        retCode = retStruct.returnCode()
+        assert retCode == 0, "Failed to show neighbour info"
 
-    LogOutput('info', "CLI_Switch2 Output\n" + str(retStruct.buffer()))
-    LogOutput('info', "CLI_Switch2 Return Structure")
-    retStruct.printValueString()
+        LogOutput('info', "CLI_Switch2 Output:\n" + str(retStruct.buffer()))
+        LogOutput('info', "CLI_Switch2 Return Structure")
+        retStruct.printValueString()
 
-    lnk01PrtStats = retStruct.valueGet(key='portStats')
+        lnk01PrtStats = retStruct.valueGet(key='portStats')
 
-    neighbor_entries = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
+        neighbor_entries = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
                            ['Neighbor_Entries']).rstrip()
+
+        neighbor_deleted = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
+                           ['Neighbor_Entries_Deleted']).rstrip()
+
+        if (int(neighbor_entries) == 0 and int(neighbor_deleted) >= 1):
+            LogOutput('info', "Neighbor_Entries Cleared")
+            break
+
     assert int(neighbor_entries) == 0, "Failed to clear counters"
 
-    neighbor_deleted = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
-                           ['Neighbor_Entries_Deleted']).rstrip()
     assert int(neighbor_deleted) == 0, "Failed to clear counters"
 
-
 @pytest.mark.timeout(1000)
-@pytest.mark.skipif(True, reason="Skipping due to Taiga ID : 787")
 class Test_lldp_configuration:
     def setup_class(cls):
         # Test object will parse command line and formulate the env

@@ -24,12 +24,10 @@ from opstestfw import Sleep
 # Topology definition
 topoDict = {"topoExecution": 1000,
             "topoTarget": "dut01 dut02",
-            "topoDevices": "dut01 dut02 wrkston01",
-            "topoLinks": "lnk01:dut01:dut02,lnk02:dut02:wrkston01",
+            "topoDevices": "dut01 dut02",
+            "topoLinks": "lnk01:dut01:dut02",
             "topoFilters": "dut01:system-category:switch,dut02:system-\
-                 category:switch,wrkston01:system-category:workstation, \
-                 wrkston01:\docker-image:host/freeradius-ubuntu"}
-
+                 category:switch"}
 
 def lldp_tlv(**kwargs):
     device1 = kwargs.get('device1', None)
@@ -211,7 +209,7 @@ def lldp_tlv(**kwargs):
                         ['Neighbor_portID']).rstrip())
         neiPortId = str(lnk01PrtStats[device1.linkPortMapping['lnk01']]
                         ['Neighbor_portID']).rstrip()
-        if neiPortId.isdigit() is True:
+        if (neiPortId == device2.linkPortMapping['lnk01']):
             break
         else:
             # Dump out the ovs-vsctl interface information
@@ -232,8 +230,8 @@ def lldp_tlv(**kwargs):
     # end loop
     # Set my default context to linux temporarily
     device1.setDefaultContext(context="vtyShell")
-    assert int((lnk01PrtStats[device1.linkPortMapping['lnk01']]
-                ['Neighbor_portID']).rstrip()) == 1, \
+    assert ((lnk01PrtStats[device1.linkPortMapping['lnk01']]
+                ['Neighbor_portID']).rstrip()) == (device2.linkPortMapping['lnk01']), \
         "Case Failed, No Neighbor present for SW1"
     assert ("null" not in lnk01PrtStats[device1.linkPortMapping['lnk01']]
             ['Neighbor_chassisName']), \
@@ -278,7 +276,7 @@ def lldp_tlv(**kwargs):
                         ['Neighbor_portID']).rstrip())
         neiPortId = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
                         ['Neighbor_portID']).rstrip()
-        if neiPortId.isdigit() is True:
+        if (neiPortId == device1.linkPortMapping['lnk01']):
             break
         else:
             # Dump out the ovs-vsctl interface information
@@ -298,8 +296,8 @@ def lldp_tlv(**kwargs):
             Sleep(seconds=10, message="Delay")
     device2.setDefaultContext(context="vtyShell")
 
-    assert int((lnk01PrtStats[device2.linkPortMapping['lnk01']]
-                ['Neighbor_portID']).rstrip()) == 1, \
+    assert ((lnk01PrtStats[device2.linkPortMapping['lnk01']]
+                ['Neighbor_portID']).rstrip()) == device1.linkPortMapping['lnk01'], \
         "Case Failed, No Neighbor present for SW1"
     assert ("null" not in lnk01PrtStats[device2.linkPortMapping['lnk01']]
             ['Neighbor_chassisName']), \
