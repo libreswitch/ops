@@ -85,7 +85,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
@@ -117,10 +117,12 @@ class PatchSystemTest(OpsVsiTest):
         info("### Configuration data validated %s ###\n" % post_patch_data)
 
         # Test Teardown
+        headers = {"If-Match": post_patch_etag}
+        headers.update(self.cookie_header)
         patch = [{"op": "remove", "path": "/dns_servers"}]
         status_code, response_data = execute_request(
             self.path, "PATCH", json.dumps(patch), self.switch_ip,
-            xtra_header=self.cookie_header)
+            xtra_header=headers)
 
         assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
             % status_code
@@ -143,7 +145,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
@@ -175,10 +177,12 @@ class PatchSystemTest(OpsVsiTest):
         info("### Configuration data validated %s ###\n" % post_patch_data)
 
         # Test Teardown
+        headers = {"If-Match": post_patch_etag}
+        headers.update(self.cookie_header)
         patch = [{"op": "remove", "path": "/dns_servers"}]
         status_code, response_data = execute_request(
             self.path, "PATCH", json.dumps(patch), self.switch_ip,
-            xtra_header=self.cookie_header)
+            xtra_header=headers)
 
         assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
             % status_code
@@ -200,7 +204,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
@@ -232,10 +236,12 @@ class PatchSystemTest(OpsVsiTest):
         info("### Configuration data validated %s ###\n" % post_patch_data)
 
         # Test Teardown
+        headers = {"If-Match": post_patch_etag}
+        headers.update(self.cookie_header)
         patch = [{"op": "remove", "path": "/dns_servers"}]
         status_code, response_data = execute_request(
             self.path, "PATCH", json.dumps(patch), self.switch_ip,
-            xtra_header=self.cookie_header)
+            xtra_header=headers)
 
         assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
             % status_code
@@ -247,14 +253,6 @@ class PatchSystemTest(OpsVsiTest):
         test_title = "using \"op\": \"add\" an Object Member"
         info(TEST_START % test_title)
         # 1 - Query Resource
-        data = {"baz": "qux"}
-        patch = [{"op": "add", "path": "/other_config", "value": {}},
-                 {"op": "add", "path": "/other_config/foo", "value": "bar"}]
-        status_code, response_data = execute_request(
-            self.path, "PATCH", json.dumps(patch), self.switch_ip,
-            xtra_header=self.cookie_header)
-
-        patch2 = [{"op": "add", "path": "/other_config/baz", "value": "qux"}]
         response, response_data = execute_request(
             self.path, "GET", None, self.switch_ip, True,
             xtra_header=self.cookie_header)
@@ -263,10 +261,36 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
+        # 1.1- Modify the Data
+        headers = {"If-Match": etag}
+        headers.update(self.cookie_header)
+
+        data = {"baz": "qux"}
+        patch = [{"op": "add", "path": "/other_config", "value": {}},
+                 {"op": "add", "path": "/other_config/foo", "value": "bar"}]
+        status_code, response_data = execute_request(
+            self.path, "PATCH", json.dumps(patch), self.switch_ip,
+            xtra_header=headers)
+
+        assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
+            % status_code
+        info("### System Modified. Status code 204 NO CONTENT  ###\n")
+
+        # 1.2 Query the resource again
+        response, response_data = execute_request(
+            self.path, "GET", None, self.switch_ip, True,
+            xtra_header=self.cookie_header)
+
+        etag = response.getheader("Etag")
+        status_code = response.status
+        assert status_code == httplib.OK, "Wrong status code %s " % status_code
+
+        self.check_malformed_json(response_data)
 
         # Test
-        # 2 - Modify data
+        # 2 - Modify data: Add a new object member
+        patch2 = [{"op": "add", "path": "/other_config/baz", "value": "qux"}]
         headers = {"If-Match": etag}
         headers.update(self.cookie_header)
         status_code, response_data = execute_request(self.path, "PATCH",
@@ -295,11 +319,13 @@ class PatchSystemTest(OpsVsiTest):
         info("### Configuration data validated %s ###\n" % post_patch_data)
 
         # Test Teardown
+        headers = {"If-Match": post_patch_etag}
+        headers.update(self.cookie_header)
         patch = [{"op": "remove", "path": "/other_config/foo"},
                  {"op": "remove", "path": "/other_config/baz"}]
         status_code, response_data = execute_request(
             self.path, "PATCH", json.dumps(patch), self.switch_ip,
-            xtra_header=self.cookie_header)
+            xtra_header=headers)
 
         assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
             % status_code
@@ -322,7 +348,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
@@ -362,7 +388,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
@@ -394,10 +420,12 @@ class PatchSystemTest(OpsVsiTest):
         info("### Configuration data validated %s ###\n" % post_patch_data)
 
         # Test Teardown
+        headers = {"If-Match": post_patch_etag}
+        headers.update(self.cookie_header)
         patch = [{"op": "remove", "path": "/other_config/enable-statistics"}]
         status_code, response_data = execute_request(
             self.path, "PATCH", json.dumps(patch), self.switch_ip,
-            xtra_header=self.cookie_header)
+            xtra_header=headers)
 
         assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
             % status_code
@@ -423,7 +451,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
@@ -460,12 +488,14 @@ class PatchSystemTest(OpsVsiTest):
         info("### Configuration data validated %s ###\n" % post_patch_data)
 
         # Test Teardown
+        headers = {"If-Match": post_patch_etag}
+        headers.update(self.cookie_header)
         patch = [{"op": "remove", "path": "/other_config/foo"},
                  {"op": "remove", "path": "/other_config/enable-statistics"},
                  {"op": "remove", "path": "/dns_servers"}]
         status_code, response_data = execute_request(
             self.path, "PATCH", json.dumps(patch), self.switch_ip,
-            xtra_header=self.cookie_header)
+            xtra_header=headers)
 
         assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
             % status_code
@@ -487,7 +517,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
@@ -568,7 +598,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
@@ -589,9 +619,11 @@ class PatchSystemTest(OpsVsiTest):
         info("### System Modified. Status code 204 NO CONTENT  ###\n")
 
         # 2.1 - Test data
+        headers = {"If-Match": etag}
+        headers.update(self.cookie_header)
         status_code, response_data = execute_request(
             self.path, "PATCH", json.dumps(patch_test), self.switch_ip, False,
-            xtra_header=self.cookie_header)
+            xtra_header=headers)
 
         assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
             % status_code
@@ -612,10 +644,12 @@ class PatchSystemTest(OpsVsiTest):
         info("### Configuration data validated %s ###\n" % post_patch_data)
 
         # Test Teardown
+        headers = {"If-Match": post_patch_etag}
+        headers.update(self.cookie_header)
         patch = [{"op": "remove", "path": "/dns_servers"}]
         status_code, response_data = execute_request(
             self.path, "PATCH", json.dumps(patch), self.switch_ip,
-            xtra_header=self.cookie_header)
+            xtra_header=headers)
 
         assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
             % status_code
@@ -639,7 +673,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
@@ -660,9 +694,11 @@ class PatchSystemTest(OpsVsiTest):
         info("### System Modified. Status code 204 NO CONTENT  ###\n")
 
         # 2.1 - Test data
+        headers = {"If-Match": etag}
+        headers.update(self.cookie_header)
         status_code, response_data = execute_request(
             self.path, "PATCH", json.dumps(patch_test), self.switch_ip, False,
-            xtra_header=self.cookie_header)
+            xtra_header=headers)
 
         assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
             % status_code
@@ -687,11 +723,13 @@ class PatchSystemTest(OpsVsiTest):
         info("### Configuration data validated %s ###\n" % post_patch_data)
 
         # Test Teardown
+        headers = {"If-Match": post_patch_etag}
+        headers.update(self.cookie_header)
         patch = [{"op": "remove", "path": "/other_config/foo"},
                  {"op": "remove", "path": "/other_config/copy_of_foo"}]
         status_code, response_data = execute_request(
             self.path, "PATCH", json.dumps(patch), self.switch_ip,
-            xtra_header=self.cookie_header)
+            xtra_header=headers)
 
         assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
             % status_code
@@ -712,7 +750,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
@@ -759,7 +797,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
@@ -810,10 +848,12 @@ class PatchSystemTest(OpsVsiTest):
         info("### Configuration data validated %s ###\n" % post_patch_data)
 
         # Test Teardown
+        headers = {"If-Match": post_patch_etag}
+        headers.update(self.cookie_header)
         patch = [{"op": "remove", "path": "/other_config/dns_servers"}]
         status_code, response_data = execute_request(
             self.path, "PATCH", json.dumps(patch), self.switch_ip,
-            xtra_header=self.cookie_header)
+            xtra_header=headers)
 
         assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
             % status_code
@@ -834,7 +874,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
@@ -857,7 +897,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        post_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         assert etag == post_patch_etag, "Etag should be the same"
         info(TEST_END % test_title)
@@ -880,7 +920,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
@@ -926,10 +966,12 @@ class PatchSystemTest(OpsVsiTest):
         info("### Configuration data validated %s ###\n" % post_patch_data)
 
         # Test Teardown
+        headers = {"If-Match": post_patch_etag}
+        headers.update(self.cookie_header)
         patch = [{"op": "remove", "path": "/other_config/abc"}]
         status_code, response_data = execute_request(
             self.path, "PATCH", json.dumps(patch), self.switch_ip,
-            xtra_header=self.cookie_header)
+            xtra_header=headers)
 
         assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
             % status_code
@@ -954,7 +996,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
@@ -1004,10 +1046,12 @@ class PatchSystemTest(OpsVsiTest):
         info("### Configuration data validated %s ###\n" % post_patch_data)
 
         # Test Teardown
+        headers = {"If-Match": post_patch_etag}
+        headers.update(self.cookie_header)
         patch = [{"op": "remove", "path": "/other_config/test"}]
         status_code, response_data = execute_request(
             self.path, "PATCH", json.dumps(patch), self.switch_ip,
-            xtra_header=self.cookie_header)
+            xtra_header=headers)
 
         assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
             % status_code
@@ -1033,7 +1077,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
@@ -1079,10 +1123,12 @@ class PatchSystemTest(OpsVsiTest):
         info("### Configuration data validated %s ###\n" % post_patch_data)
 
         # Test Teardown
+        headers = {"If-Match": post_patch_etag}
+        headers.update(self.cookie_header)
         patch = [{"op": "remove", "path": "/other_config/test"}]
         status_code, response_data = execute_request(
             self.path, "PATCH", json.dumps(patch), self.switch_ip,
-            xtra_header=self.cookie_header)
+            xtra_header=headers)
 
         assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
             % status_code
@@ -1105,7 +1151,7 @@ class PatchSystemTest(OpsVsiTest):
         status_code = response.status
         assert status_code == httplib.OK, "Wrong status code %s " % status_code
 
-        pre_patch_data = self.check_malformed_json(response_data)
+        self.check_malformed_json(response_data)
 
         # Test
         # 2 - Modify data
