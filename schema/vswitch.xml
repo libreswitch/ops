@@ -7743,4 +7743,26 @@
       </p>
     </column>
   </table>
+
+  <table name="Notification_Subscriber" title="Notification subscriber information">
+    <group title="Configuration">
+      <column name="name">
+        Name of the notification subscriber.
+      </column>
+      <column name="type">
+        Notification transport type. For WebSockets the type is "ws".
+      </column>
+      <column name="notification_subscriptions" keyname="name">
+        List of notification subscriptions by name for this subscriber.
+      </column>
+    </group>
+  </table>
+
+  <table name="Notification_Subscription" title="Notification subscription information">
+    <group title="Configuration">
+      <column name="resource">
+        URI of the resource being subscribed to for notifications.
+      </column>
+    </group>
+  </table>
 </database>
