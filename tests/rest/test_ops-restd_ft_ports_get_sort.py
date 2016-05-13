@@ -76,11 +76,37 @@ class QuerySortPortTest (OpsVsiTest):
     **********************************************************************
     """
 
-    def execute_sort_by_request(self, attributes, desc=False):
+    def execute_sort_by_request(self, attributes, expected_code, desc=False,
+                                limit=None, offset=None, depth=1,
+                                filters=None):
         """
         Common function to send a sort request
+        :param attributes
+        :param expected_code
+        :param desc
+        :param limit:
+        :param offset:
+        :param depth:
+        :param filters
         """
-        path = self.PATH + "?depth=1;sort="
+        path = self.PATH + "?"
+        if depth is not None:
+            path += "depth=" + str(depth) + ";"
+        if limit is not None:
+            path += "limit=" + str(limit) + ";"
+        if offset is not None:
+            path += "offset=" + str(offset) + ";"
+
+        if filters is not None:
+            if isinstance(filters, dict):
+                for key in filters.viewkeys():
+                    path += key + "=" + filters[key]
+                path += ";"
+            else:
+                path += filters[key] + ";"
+
+        path += "sort="
+
         if desc:
             path += "-"
         if isinstance(attributes, list):
@@ -95,8 +121,9 @@ class QuerySortPortTest (OpsVsiTest):
         status_code, response_data = execute_request(
             path, "GET", None, self.SWITCH_IP, xtra_header=self.cookie_header)
 
-        assert status_code == httplib.OK, "Wrong status code %s " % status_code
-        info("### Status code is OK ###\n")
+        assert status_code == expected_code, "Wrong status code %s " % \
+                                             status_code
+        info("### Status code is %s ###\n" % status_code)
         assert response_data is not "", \
             "Response data received: %s\n" % response_data
         json_data = {}
@@ -106,7 +133,8 @@ class QuerySortPortTest (OpsVsiTest):
             assert False, "Malformed JSON"
 
         # In order to no affect the tests the bridge_normal is removed
-        self.remove_bridge_from_data(json_data)
+        if expected_code == httplib.OK:
+            self.remove_bridge_from_data(json_data)
         return json_data
 
     def remove_bridge_from_data(self, json_data):
@@ -114,7 +142,7 @@ class QuerySortPortTest (OpsVsiTest):
         Function used to remove the bridge_normal from test data
         """
         index = None
-        for i in range(0, NUM_FAKE_PORTS + 1):
+        for i in range(0, len(json_data)):
             if json_data[i]["configuration"]["name"] == "bridge_normal":
                 index = i
                 break
@@ -163,7 +191,7 @@ class QuerySortPortTest (OpsVsiTest):
 
         for col in column_list:
             for data in json_data:
-                if col not in data:
+                if col not in data['configuration']:
                     flag = False
                 break
         return flag
@@ -180,7 +208,7 @@ class QuerySortPortTest (OpsVsiTest):
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
                              reverse=desc)
 
-        json_data = self.execute_sort_by_request("name", desc)
+        json_data = self.execute_sort_by_request("name", httplib.OK, desc)
         assert len(json_data) is (
             NUM_FAKE_PORTS), "Retrieved more expected ports!"
 
@@ -207,7 +235,8 @@ class QuerySortPortTest (OpsVsiTest):
 
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
                              reverse=desc)
-        json_data = self.execute_sort_by_request("interfaces", desc)
+        json_data = self.execute_sort_by_request("interfaces", httplib.OK,
+                                                 desc)
         assert len(json_data) is (NUM_FAKE_PORTS), \
             "Retrieved more expected ports!"
 
@@ -235,7 +264,7 @@ class QuerySortPortTest (OpsVsiTest):
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
                              reverse=desc)
 
-        json_data = self.execute_sort_by_request("trunks", desc)
+        json_data = self.execute_sort_by_request("trunks", httplib.OK, desc)
         assert len(json_data) is (NUM_FAKE_PORTS), \
             "Retrieved more expected ports!"
 
@@ -246,7 +275,8 @@ class QuerySortPortTest (OpsVsiTest):
     def test_port_sort_by_ip4_address(self, desc=False):
         info("\n########## Test to sort port by ip4 address ##########\n")
 
-        json_data = self.execute_sort_by_request("ip4_address", desc)
+        json_data = self.execute_sort_by_request("ip4_address", httplib.OK,
+                                                 desc)
 
         assert len(json_data) is (
             NUM_FAKE_PORTS), "Retrieved more expected ports!"
@@ -271,7 +301,8 @@ class QuerySortPortTest (OpsVsiTest):
         info("\n########## Test to sort port by ip4_address_secondary "
              "##########\n")
 
-        json_data = self.execute_sort_by_request("ip4_address_secondary", desc)
+        json_data = self.execute_sort_by_request("ip4_address_secondary",
+                                                 httplib.OK, desc)
 
         assert len(json_data) is (
             NUM_FAKE_PORTS), "Retrieved more expected ports!"
@@ -308,7 +339,7 @@ class QuerySortPortTest (OpsVsiTest):
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
                              reverse=desc)
 
-        json_data = self.execute_sort_by_request("lacp", desc)
+        json_data = self.execute_sort_by_request("lacp", httplib.OK, desc)
 
         assert len(json_data) is (NUM_FAKE_PORTS), \
             "Retrieved more expected ports!"
@@ -333,7 +364,7 @@ class QuerySortPortTest (OpsVsiTest):
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
                              reverse=desc)
 
-        json_data = self.execute_sort_by_request("bond_mode", desc)
+        json_data = self.execute_sort_by_request("bond_mode", httplib.OK, desc)
 
         assert len(json_data) is (NUM_FAKE_PORTS), \
             "Retrieved more expected ports!"
@@ -359,7 +390,7 @@ class QuerySortPortTest (OpsVsiTest):
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
                              reverse=desc)
 
-        json_data = self.execute_sort_by_request("tag", desc)
+        json_data = self.execute_sort_by_request("tag", httplib.OK, desc)
 
         assert len(json_data) is (NUM_FAKE_PORTS), \
             "Retrieved more expected ports!"
@@ -384,7 +415,7 @@ class QuerySortPortTest (OpsVsiTest):
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
                              reverse=desc)
 
-        json_data = self.execute_sort_by_request("vlan_mode", desc)
+        json_data = self.execute_sort_by_request("vlan_mode", httplib.OK, desc)
 
         assert len(json_data) is (NUM_FAKE_PORTS), \
             "Retrieved more expected ports!"
@@ -411,7 +442,7 @@ class QuerySortPortTest (OpsVsiTest):
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
                              reverse=desc)
 
-        json_data = self.execute_sort_by_request("mac", desc)
+        json_data = self.execute_sort_by_request("mac", httplib.OK, desc)
 
         assert len(json_data) is (NUM_FAKE_PORTS), \
             "Retrieved more expected ports!"
@@ -437,7 +468,8 @@ class QuerySortPortTest (OpsVsiTest):
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
                              reverse=desc)
 
-        json_data = self.execute_sort_by_request("bond_active_slave", desc)
+        json_data = self.execute_sort_by_request("bond_active_slave",
+                                                 httplib.OK, desc)
 
         assert len(json_data) is (NUM_FAKE_PORTS), \
             "Retrieved more expected ports!"
@@ -463,7 +495,8 @@ class QuerySortPortTest (OpsVsiTest):
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
                              reverse=desc)
 
-        json_data = self.execute_sort_by_request("ip6_address", desc)
+        json_data = self.execute_sort_by_request("ip6_address", httplib.OK,
+                                                 desc)
 
         assert len(json_data) is (NUM_FAKE_PORTS), \
             "Retrieved more expected ports!"
@@ -490,7 +523,8 @@ class QuerySortPortTest (OpsVsiTest):
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
                              reverse=desc)
 
-        json_data = self.execute_sort_by_request("ip6_address_secondary", desc)
+        json_data = self.execute_sort_by_request("ip6_address_secondary",
+                                                 httplib.OK, desc)
 
         assert len(json_data) is (NUM_FAKE_PORTS), \
             "Retrieved more expected ports!"
@@ -517,7 +551,7 @@ class QuerySortPortTest (OpsVsiTest):
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
                              reverse=desc)
 
-        json_data = self.execute_sort_by_request("admin", desc)
+        json_data = self.execute_sort_by_request("admin", httplib.OK, desc)
 
         assert len(json_data) is (NUM_FAKE_PORTS), \
             "Retrieved more expected ports!"
@@ -549,7 +583,7 @@ class QuerySortPortTest (OpsVsiTest):
         expected_values = sorted(expected_values, key=compare_function,
                                  reverse=desc)
 
-        json_data = self.execute_sort_by_request(columns, desc)
+        json_data = self.execute_sort_by_request(columns, httplib.OK, desc)
 
         assert len(json_data) is (
             NUM_FAKE_PORTS), "Retrieved more expected ports!"
@@ -567,6 +601,159 @@ class QuerySortPortTest (OpsVsiTest):
                     % (expected_name, returned_name)
 
         info("\n########## End Test to sort port by (admin,name) ##########\n")
+
+    def test_port_sort_by_invalid_column(self, desc=False):
+        test_title = "Test to sort port by invalid column"
+        info("\n########## " + test_title + " ##########\n")
+        json_data = self.execute_sort_by_request("invalid_column",
+                                                 httplib.BAD_REQUEST, desc)
+        info("Request response: %s\n" % json_data)
+        info("########## End " + test_title + " ##########\n")
+
+    def test_port_sort_without_depth_parameter(self, desc=False):
+        test_title = "Test to sort port without depth parameter"
+        info("\n########## " + test_title + " ##########\n")
+        json_data = self.execute_sort_by_request("name", httplib.BAD_REQUEST,
+                                                 desc, depth=None)
+        info("Request response: %s\n" % json_data)
+        info("########## End " + test_title + " ##########\n")
+
+    def test_port_sort_with_invalid_pagination_parameter(self, desc=False):
+        test_title = "Test to sort port with invalid pagination parameter"
+        info("\n########## " + test_title + " ##########\n")
+        json_data = self.execute_sort_by_request("name", httplib.BAD_REQUEST,
+                                                 desc, offset="one")
+        info("Request response: %s\n" % json_data)
+        info("########## End " + test_title + " ##########\n")
+
+    def test_port_sort_with_offset_equals_zero(self, desc=False):
+        test_title = "Test to sort port with offset equals zero"
+        info("\n########## " + test_title + " ##########\n")
+        json_data = self.execute_sort_by_request("name", httplib.OK, desc,
+                                                 offset=0)
+        assert len(json_data) == NUM_FAKE_PORTS,\
+            "Retrieved a different amount of ports than expected!"
+        info("########## End " + test_title + " ##########\n")
+
+    def test_port_sort_with_limit_equals_zero(self, desc=False):
+        test_title = "Test to sort port with limit equals zero"
+        info("\n########## " + test_title + " ##########\n")
+        json_data = self.execute_sort_by_request("name", httplib.BAD_REQUEST,
+                                                 desc, limit=0)
+        info("Request response: %s\n" % json_data)
+        info("########## End " + test_title + " ##########\n")
+
+    def test_port_sort_shows_last_result(self, desc=False):
+        test_title = "Test to sort port shows last result"
+        info("\n########## " + test_title + " ##########\n")
+        filtered_ports = ""
+        for i in range(1, NUM_FAKE_PORTS + 1):
+            filtered_ports += "Port-%s," % i
+        filtered_ports = filtered_ports.rstrip(",")
+        json_data = \
+            self.execute_sort_by_request("name", httplib.OK, desc,
+                                         limit=2,
+                                         offset=NUM_FAKE_PORTS - 1,
+                                         filters={
+                                             "name": filtered_ports})
+        assert len(json_data) == 1, \
+            "Retrieved a different amount of ports than expected!"
+        info("########## End " + test_title + " ##########\n")
+
+    def test_port_sort_with_negative_limit(self, desc=False):
+        test_title = "Test to sort port with negative limit"
+        info("\n########## " + test_title + " ##########\n")
+        json_data = self.execute_sort_by_request("name", httplib.BAD_REQUEST,
+                                                 desc, limit=-1)
+        info("Request response: %s\n" % json_data)
+        info("########## End " + test_title + " ##########\n")
+
+    def test_port_sort_with_limit_equals_all_elements_in_db(self, desc=False):
+        """
+        Test all available ports with the limit parameter equal to the same
+        amount of filtered ports requested
+        """
+        test_title = "Test to sort port with limit == all elements in db"
+        info("\n########## " + test_title + " ##########\n")
+        filtered_ports = ""
+        for i in range(1, NUM_FAKE_PORTS + 1):
+            filtered_ports += "Port-%s," % i
+        filtered_ports = filtered_ports.rstrip(",")
+        json_data = \
+            self.execute_sort_by_request("name", httplib.OK, desc,
+                                         filters={
+                                             "name": filtered_ports})
+        assert len(json_data) == NUM_FAKE_PORTS, \
+            "Retrieved a different amount of ports than expected!"
+        info("########## End " + test_title + " ##########\n")
+
+    def test_port_sort_with_limit_higher_all_elements_in_db(self, desc=False):
+        """
+        Test all available ports with the limit parameter higher to the amount
+        of filtered ports requested
+        """
+        test_title = "Test to sort port with limit > all elements in db"
+        info("\n########## " + test_title + " ##########\n")
+        filtered_ports = ""
+        for i in range(1, NUM_FAKE_PORTS + 1):
+            filtered_ports += "Port-%s," % i
+        filtered_ports = filtered_ports.rstrip(",")
+        json_data = \
+            self.execute_sort_by_request("name", httplib.OK, desc,
+                                         filters={
+                                             "name": filtered_ports})
+        assert len(json_data) == NUM_FAKE_PORTS, \
+            "Retrieved a different amount of ports than expected!"
+        info("########## End " + test_title + " ##########\n")
+
+    def test_port_sort_with_all_available_keys(self, desc=False):
+        """
+        Test ports resource by sorting with all the available keys
+        """
+        test_title = "Test to sort port with all available keys"
+        info("\n########## " + test_title + " ##########\n")
+
+        expected_values = []
+        admin_values = ["up", "down"]
+        random.seed()
+        for i in range(1, NUM_FAKE_PORTS + 1):
+            port = "Port-%s" % i
+            admin_value = admin_values[(i - 1) % len(admin_values)]
+            update_test_field(
+                self.SWITCH_IP, self.PATH + "/" + port, "admin", admin_value,
+                self.cookie_header)
+            status_code, response_data = execute_request(
+                self.PATH + "/" + port, "GET", None, self.SWITCH_IP,
+                xtra_header=self.cookie_header)
+            assert status_code == httplib.OK, "Wrong status code %s " % \
+                                              status_code
+            json_data = json.loads(response_data)
+            expected_dict = json_data['configuration']
+            expected_values.append(expected_dict)
+
+        columns = []
+        for key in expected_values[0].viewkeys():
+            columns.append(key)
+
+        compare_function = lambda item: tuple(self.sort_value_to_lower(item[k])
+                                              for k in columns)
+        expected_values = sorted(expected_values, key=compare_function,
+                                 reverse=desc)
+
+        json_data = self.execute_sort_by_request(columns, httplib.OK, desc)
+
+        assert len(json_data) is (
+            NUM_FAKE_PORTS), "Retrieved more expected ports!"
+
+        if self.non_null_col(json_data, columns):
+            for i in range(0, len(json_data)):
+                for column in columns:
+                    assert json_data[i]["configuration"][column] == \
+                           expected_values[i][column], \
+                           "Wrong order. Expected: %s Returned: %s" \
+                           % (expected_values[i][column],
+                              json_data[i]["configuration"][column])
+        info("########## End " + test_title + " ##########\n")
 
     def setup_switch_ports(self, total):
         for i in range(0, total):

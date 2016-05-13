@@ -82,11 +82,104 @@ class QueryFilterPortTest (OpsVsiTest):
                                                      httplib.OK,
                                                      "")
 
-            assert len(request_response) is 1, "Retrieved more expected ports!"
+            assert len(request_response) == 1, "Retrieved a different " \
+                                               "amount of ports than expected!"
             assert request_response[0]["configuration"][test_field] is not \
                 test_port, "Retrieved different port!"
 
         info("########## End Test Filter name ##########\n")
+
+    def test_port_filter_by_name_with_invalid_criteria(self):
+        test_title = "Test Filter name  with invalid criteria"
+        info("\n########## " + test_title + " ##########\n")
+        test_field = "name"
+        test_port = "invalid_criteria"
+        path = "%s?selector=configuration&depth=1;%s=%s" % (self.path,
+                                                            test_field,
+                                                            test_port)
+        request_response = self.validate_request(self.switch_ip,
+                                                 path,
+                                                 None,
+                                                 "GET",
+                                                 httplib.OK,
+                                                 "")
+        assert len(request_response) == 0, "Expected No Results"
+        info("########## End " + test_title + " ##########\n")
+
+    def test_port_with_invalid_filter_and_invalid_criteria(self):
+        test_title = "Test invalid filter name  with invalid criteria"
+        info("\n########## " + test_title + " ##########\n")
+        test_field = "invalid_filter"
+        test_port = "invalid_criteria"
+        path = "%s?selector=configuration&depth=1;%s=%s" % (self.path,
+                                                            test_field,
+                                                            test_port)
+        request_response = self.validate_request(self.switch_ip,
+                                                 path,
+                                                 None,
+                                                 "GET",
+                                                 httplib.BAD_REQUEST,
+                                                 "")
+        info("Request response: %s\n" % request_response)
+        info("########## End " + test_title + " ##########\n")
+
+    def test_port_with_valid_filters_and_valid_criteria(self):
+        test_title = "Test valid filters name, mac and valid criteria"
+        info("\n########## " + test_title + " ##########\n")
+        test_fields = ["name", "mac"]
+        test_criteria = ["Port-1", "01:23:45:67:89:01"]
+        path = "%s?selector=configuration&depth=1;%s=%s;%s=%s" % \
+               (self.path, test_fields[0], test_criteria[0],
+                test_fields[1], test_criteria[1])
+        request_response = self.validate_request(self.switch_ip,
+                                                 path,
+                                                 None,
+                                                 "GET",
+                                                 httplib.OK,
+                                                 "")
+        for i in range(len(test_fields)):
+            assert request_response[0]["configuration"][test_fields[i]] == \
+                test_criteria[i], "Retrieved wrong port!"
+        assert len(request_response) == 1, \
+            "Retrieved more ports than expected!"
+        info("########## End " + test_title + " ##########\n")
+
+    def test_port_filter_without_depth_parameter(self):
+        test_title = "Test Filter name without depth parameter"
+        info("\n########## " + test_title + " ##########\n")
+        test_field = "name"
+        test_port = "Port-1"
+        path = "%s?selector=configuration;%s=%s" % (self.path,
+                                                    test_field,
+                                                    test_port)
+        request_response = self.validate_request(self.switch_ip,
+                                                 path,
+                                                 None,
+                                                 "GET",
+                                                 httplib.BAD_REQUEST,
+                                                 "")
+        info("Request response: %s\n" % request_response)
+        info("########## End " + test_title + " ##########\n")
+
+    def test_port_with_complex_filter_mac(self):
+        test_title = "Test complex filter mac and valid criteria"
+        info("\n########## " + test_title + " ##########\n")
+        test_field = "mac"
+        test_mac = ""
+        for i in range(1, NUM_FAKE_PORTS + 1):
+            test_mac += "01:23:45:67:89:%02x," % i
+        path = "%s?selector=configuration&depth=1;%s=%s" % (self.path,
+                                                            test_field,
+                                                            test_mac)
+        request_response = self.validate_request(self.switch_ip,
+                                                 path,
+                                                 None,
+                                                 "GET",
+                                                 httplib.OK,
+                                                 "")
+        assert len(request_response) == NUM_FAKE_PORTS, \
+            "Retrieved a different amount of ports than expected!"
+        info("########## End " + test_title + " ##########\n")
 
     def test_port_filter_by_interfaces(self):
         test_ports = ["Port-1", "Port-2", "Port-3"]
@@ -792,7 +885,7 @@ class QueryFilterPortTest (OpsVsiTest):
         status_code, response_data = execute_request(path, op, data, switch_ip,
                                                      xtra_header=cookie_header)
 
-        assert status_code is expected_code, \
+        assert status_code == expected_code, \
             "Wrong status code %s " % status_code
         # info("### Status code is OK ###\n")
 

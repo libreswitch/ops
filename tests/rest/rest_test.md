@@ -18,6 +18,7 @@ REST API Test Cases
 - [REST API put method for ports](#rest-api-put-method-for-ports)
 - [REST API delete method for ports](#rest-api-delete-method-for-ports)
 - [REST API get method with recursion for interfaces](#rest-api-get-method-with-recursion-for-interfaces)
+- [REST API get method with filtering for ports](#rest-api-get-method-with-filtering-for-ports)
 - [REST API get method with pagination for ports](#rest-api-get-method-with-pagination-for-ports)
 - [REST API get method and sort by field for ports](#rest-api-get-method-and-sort-by-field-for-ports)
 - [REST API get method and sort by field combination for ports](#rest-api-get-method-and-sort-by-field-combination-for-ports)
@@ -1833,6 +1834,220 @@ This test fails when:
 
 - Querying an interface with the specified name and depth parameter equals zero returns anything other than `400 BAD REQUEST` HTTP response
 
+## REST API get method with filtering for ports
+
+### Objective
+The test case verifies:
+
+1. Query all ports filtering by name.
+2. Query all ports filtering by name with invalid criteria.
+3. Query all ports filtering by multiple valid filters with valid criteria.
+4. Query all ports filtering by name but without the depth parameter.
+5. Query all ports filtering with complex filter mac.
+6. Query all ports filtering by interfaces.
+7. Query all ports filtering by trunks.
+8. Query all ports filtering by primary ip4 address.
+9. Query all ports filtering by secondary ip4 address.
+10. Query all ports filtering by lacp.
+11. Query all ports filtering by bond mode.
+12. Query all ports filtering by bond active slave.
+13. Query all ports filtering by tag.
+14. Query all ports filtering by vlan mode.
+15. Query all ports filtering by mac.
+16. Query all ports filtering by ipv6 address.
+17. Query all ports filtering by ipv6 secondary address.
+18. Query all ports filtering by admin.
+
+
+### Requirements
+
+- Period after exist
+- Depth is set to 1 in all queries
+
+### Setup
+
+#### Topology diagram
+```ditaa
++----------------+         +----------------+
+|                |         |                |
+|                |         |                |
+|    Local Host  +---------+    Switch 1    |
+|                |         |                |
+|                |         |                |
++----------------+         +----------------+
+```
+
+#### Test setup
+
+**Switch 1** has 10 ports (plus the default port named bridge_normal) with the name in the format PortN where N is a number between 1 and 10, each port has the following configuration data:
+
+```
+{
+    "configuration": {
+        "name": "Port-<1-10>",
+        "interfaces": ["/rest/v1/system/interfaces/1"],
+        "trunks": [413],
+        "ip4_address_secondary": ["192.168.1.1"],
+        "lacp": "active",
+        "bond_mode": "l2-src-dst-hash",
+        "tag": 654,
+        "vlan_mode": "trunk",
+        "ip6_address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+        "external_ids": {"extid1key": "extid1value"},
+        "bond_options": {},
+        "mac": "01:23:45:67:89:ab",
+        "other_config": {"cfg-1key": "cfg1val"},
+        "bond_active_slave": "null",
+        "ip6_address_secondary": ["01:23:45:67:89:ab"],
+        "vlan_options": {},
+        "ip4_address": "192.168.0.1",
+        "admin": "up"
+    },
+    "referenced_by": [{"uri": "/rest/v1/system/bridges/bridge_normal"}]
+}
+
+```
+
+### Description
+
+1. Query all ports filtering by name.
+    a. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;name=Port-<1-10>"
+    b. Verify if the HTTP response is `200 OK`.
+    c. Confirm that the returned port list has exactly 1 element.
+    d. Ensure the port in the list is 'Port-<1-10>'.
+
+2. Query all ports filtering by name with invalid criteria.
+    a. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;name=invalid_criteria"
+    b. Verify if the HTTP response is `200 OK`.
+    c. Confirm that the returned port list has exactly 0 elements.
+
+3. Query all ports with invalid filter and invalid criteria.
+    a. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;invalid_filter=invalid_criteria"
+    b. Verify if the HTTP response is `400 BAD REQUEST`.
+
+4. Query all ports filtering by name but without the depth parameter.
+    a. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?name=Port-1"
+    b. Verify if the HTTP response is `400 BAD REQUEST`.
+
+5. Query all ports filtering by complex filter mac.
+    a. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?selector=configuration;depth=1;mac=01:23:45:67:89:<01-10>
+    b. Verify if the HTTP response is `200 OK`.
+    c. Confirm that the returned port list has exactly 10 elements.
+
+6. Query all ports filtering by interfaces.
+    a. Update Port-<1-3> by replacing the current interfaces value with `/rest/v1/system/interfaces/3`
+    b. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;interfaces=/rest/v1/system/interfaces/3"
+    c. Verify if the HTTP response is `200 OK`.
+    d. Confirm that the returned port list has exactly 3 elements.
+    e. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;interfaces=/rest/v1/system/interfaces/1"
+    f. Verify if the HTTP response is `200 OK`.
+    g. Confirm that the returned port list has exactly 7 elements.
+
+7. Query all ports filtering by trunks.
+    a. Update Port-1, Port-3 and Port-5 by replacing the current trunks value with `414`
+    b. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;trunks=414"
+    c. Verify if the HTTP response is `200 OK`.
+    d. Confirm that the returned port list has exactly 3 elements.
+    e. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;trunks=413"
+    f. Verify if the HTTP response is `200 OK`.
+    g. Confirm that the returned port list has exactly 7 elements.
+
+8. Query all ports filtering by primary ipv4 address.
+    a. Execute a GET request for each port over `/rest/v1/system/ports` with the following parameters : "?depth=1;ip4_address=192.168.0.<1-10>"
+    b. Verify if the HTTP response is `200 OK`.
+    c. Confirm that the returned port list has exactly 1 element.
+
+9. Query all ports filtering by secondary ipv4 address.
+    a. Execute a GET request for each port over `/rest/v1/system/ports` with the following parameters : "?depth=1;ip4_address_secondary=192.168.0.<1-10>"
+    b. Verify if the HTTP response is `200 OK`.
+    c. Confirm that the returned port list has exactly 1 element.
+
+10. Query all ports filtering by lacp.
+    a. Update Port-1 and Port-2 by replacing the current lacp value with `passive, off` respectively.
+    b. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;lacp=passive;lacp=off"
+    c. Verify if the HTTP response is `200 OK`.
+    d. Confirm that the returned port list has exactly 2 elements.
+    e. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;lacp=active"
+    f. Verify if the HTTP response is `200 OK`.
+    g. Confirm that the returned port list has exactly 8 elements.
+
+11. Query all ports filtering by bond mode.
+    a. Update Port-1, Port-2 and Port-3 by replacing the bond_mode value with `l3-src-dst-hash`
+    b. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;bond_mode=l3-src-dst-hash"
+    c. Verify if the HTTP response is `200 OK`.
+    d. Confirm that the returned port list has exactly 3 elements.
+    e. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;bond_mode=l2-src-dst-hash"
+    f. Verify if the HTTP response is `200 OK`.
+    g. Confirm that the returned port list has exactly 7 elements.
+
+12. Query all ports filtering by bond active slave.
+    a. Update Port-<1-5> by replacing the bond_active_slave value with `00:98:76:54:32:10`
+    b. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;bond_active_slave=00:98:76:54:32:10"
+    c. Verify if the HTTP response is `200 OK`.
+    d. Confirm that the returned port list has exactly 5 elements.
+    e. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;bond_active_slave=null"
+    f. Verify if the HTTP response is `200 OK`.
+    g. Confirm that the returned port list has exactly 5 elements.
+
+13. Query all ports filtering by tag.
+    a. Update Port-<1-5> by replacing the tag value with `123`
+    b. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;tag=123"
+    c. Verify if the HTTP response is `200 OK`.
+    d. Confirm that the returned port list has exactly 5 elements.
+    e. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;tag=654"
+    f. Verify if the HTTP response is `200 OK`.
+    g. Confirm that the returned port list has exactly 5 elements.
+
+14. Query all ports filtering by vlan mode.
+    a. Update Port-<1-3> by replacing the vlan_mode value with `["access", "native-tagged", "native-untagged"]`
+    b. Execute a GET request for each vlan mode in the list over `/rest/v1/system/ports` with the following parameters: "?depth=1;vlan_mode=<mode>"
+    c. Verify if the HTTP response is `200 OK`.
+    d. Confirm that the returned port list has exactly 1 elements.
+    e. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;vlan_mode=trunk"
+    f. Verify if the HTTP response is `200 OK`.
+    g. Confirm that the returned port list has exactly 7 elements.
+
+15. Query all ports filtering by mac.
+    a. Execute a GET request for each mac over `/rest/v1/system/ports` with the following parameters: "?depth=1;mac=01:23:45:67:89:<01-10>"
+    b. Verify if the HTTP response is `200 OK`.
+    c. Confirm that the returned port list has exactly 1 element.
+
+16. Query all ports filtering by ipv6 address.
+    a. Execute a GET request for each ip6_address over `/rest/v1/system/ports` with the following parameters: "?depth=1;ip6_address=2001:0db8:85a3:0000:0000:8a2e:0370:00<01-10>"
+    b. Verify if the HTTP response is `200 OK`.
+    c. Confirm that the returned port list has exactly 1 element.
+
+17. Query all ports filtering by ipv6 address secondary.
+    a. Execute a GET request for each ip6_address_secondary over `/rest/v1/system/ports` with the following parameters: "?depth=1;ip6_address=2001:0db8:85a3:0000:0000:8a2e:0371:00<01-10>"
+    b. Verify if the HTTP response is `200 OK`.
+    c. Confirm that the returned port list has exactly 1 element.
+
+18. Query all ports filtering by admin.
+    a. Update Port-<1-5> by replacing the admin value with `down`
+    b. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;admin=down"
+    c. Verify if the HTTP response is `200 OK`.
+    d. Confirm that the returned port list has exactly 5 elements.
+    e. Execute a GET request over `/rest/v1/system/ports` with the following parameters: "?depth=1;admin=up"
+    f. Verify if the HTTP response is `200 OK`.
+    g. Confirm that the returned port list has exactly 5 elements.
+
+### Test result criteria
+#### Test pass criteria
+
+This test passes by meeting the following criteria:
+
+- Querying a port list with the specified correct parameters in each step:
+    - A `200 OK` HTTP response.
+    - The correct number of ports is returned.
+
+#### Test fail criteria
+
+This test fails when:
+
+- Querying a port list with the specified correct parameters in each step:
+    - A `200 OK` HTTP response is not received.
+    - An incorrect number of ports is returned.
+
 ## REST API get method with pagination for ports
 
 ### Objective
@@ -2068,17 +2283,105 @@ admin
 
 Sort by allowed sort field (ascending mode).
 
-For each allowed sort field exececute the following steps:
+For each allowed sort field execute the following steps:
 
-1. Execute a GET request on `/rest/v1/system/ports?depth=1;sort=<field_name>` and verify that response is `200 OK`.
+1. Execute a GET request on `/rest/v1/system/ports?depth=1;sort=<field_name>`
+and verify that response is `200 OK`.
 2. Verify if the result is being ordered by the provided field name.
 
 Sort by allowed sort field (descending mode).
 
-For each allowed sort field exececute the following steps:
+For each allowed sort field execute the following steps:
 
-1. Execute a GET request on `/rest/v1/system/ports?depth=1;sort=-<field_name>` and verify that response is `200 OK`.
+1. Execute a GET request on `/rest/v1/system/ports?depth=1;sort=-<field_name>`
+and verify that response is `200 OK`.
 2. Verify if the result is being ordered by the provided field name.
+
+Sort by using invalid column (ascending and descending mode).
+
+1. Execute a GET request on `/rest/v1/system/ports?depth=1;sort=invalid_column`
+and verify that response is `400 BAD REQUEST`.
+
+Sort without using depth parameter (ascending and descending mode).
+
+For each allowed sort field execute the following steps:
+
+1. Execute a GET request on `/rest/v1/system/ports?sort=<field_name>`
+and verify that response is `400 BAD REQUEST`.
+
+Sort by allowed sort field and offset equal to zero (ascending and descending mode).
+
+For each allowed sort field execute the following steps:
+
+1. Execute a GET request on `/rest/v1/system/ports?depth=1;offset=0;sort=-<field_name>`
+and verify that response is `200 OK`.
+2. Verify if returned all the results.
+
+Sort by allowed sort field and offset with invalid criteria (ascending and descending mode).
+
+For each allowed sort field execute the following steps:
+
+1. Execute a GET request on `/rest/v1/system/ports?depth=1;offset=one;sort=<field_name>`
+and verify that response is `400 BAD REQUEST`.
+
+Sort by allowed sort field and limit equal to ten (ascending mode).
+
+For each allowed sort field execute the following steps:
+
+1. Execute a GET request on `/rest/v1/system/ports?depth=1;name=Port-1,Port-2,
+Port-3,Port-4,Port-5,Port-6,Port-7,Port-8,Port-9,Port-10;limit=10;sort=name`
+and verify that response is `200 OK`.
+2. Verify if returned 10 ports in the results.
+
+Sort by allowed sort field and limit equal to ten (descending mode).
+
+For each allowed sort field execute the following steps:
+
+1. Execute a GET request on `/rest/v1/system/ports?depth=1;name=Port-1,Port-2,
+Port-3,Port-4,Port-5,Port-6,Port-7,Port-8,Port-9,Port-10;limit=10;sort=-name`
+and verify that response is `200 OK`.
+2. Verify if returned 10 ports in the results.
+
+Sort by allowed sort field and limit higher to ten (ascending mode).
+
+For each allowed sort field execute the following steps:
+
+1. Execute a GET request on `/rest/v1/system/ports?depth=1;name=Port-1,Port-2,
+Port-3,Port-4,Port-5,Port-6,Port-7,Port-8,Port-9,Port-10;limit=11;sort=name`
+and verify that response is `200 OK`.
+2. Verify if returned 10 ports in the results.
+
+Sort by allowed sort field and limit higher to ten (descending mode).
+
+For each allowed sort field execute the following steps:
+
+1. Execute a GET request on `/rest/v1/system/ports?depth=1;name=-Port-1,Port-2,
+Port-3,Port-4,Port-5,Port-6,Port-7,Port-8,Port-9,Port-10;limit=11;sort=<field_name>`
+and verify that response is `200 OK`.
+2. Verify if returned 10 ports in the results.
+
+Sort by allowed sort field and limit equal to zero (ascending and descending mode).
+
+For each allowed sort field execute the following steps:
+
+1. Execute a GET request on `/rest/v1/system/ports?depth=1;limit=0;sort=<field_name>`
+and verify that response is `400 BAD REQUEST`.
+
+Sort by allowed sort field with offset equal to 9 and limit to two (ascending a descending mode).
+
+For each allowed sort field execute the following steps:
+
+1. Execute a GET request on `/rest/v1/system/ports?depth=1;name=-Port-1,Port-2,
+Port-3,Port-4,Port-5,Port-6,Port-7,Port-8,Port-9,Port-10;offset=9;limit=2;
+sort=<field_name>` and verify that response is `200 OK`.
+2. Verify if returned only one port in the result.
+
+Sort by allowed sort field and limit equal to negative value (ascending and descending mode).
+
+For each allowed sort field execute the following steps:
+
+1. Execute a GET request on `/rest/v1/system/ports?depth=1;limit=-1;sort=<field_name>`
+and verify that response is `400 BAD REQUEST`.
 
 ### Test result criteria
 
@@ -2087,7 +2390,7 @@ For each allowed sort field exececute the following steps:
 This test passes by meeting the following criteria:
 
 - The HTTP response is `200 OK`.
-- The response has 10 ports.
+- The response has all the expected amount of ports.
 - The ports are sorted ascending/descending by the field name.
 
 #### Test fail criteria
@@ -2095,7 +2398,7 @@ This test passes by meeting the following criteria:
 This test fails when:
 
 - The HTTP response is not equal to `200 OK`.
-- The response doesn't have 10 ports.
+- The response doesn't have expected amount of ports.
 - The port aren't sorted ascending/descending by the field name.
 
 
@@ -2174,10 +2477,20 @@ Sort by admin and name (Ascending mode)
 1. Execute a GET request on `/rest/v1/system/ports?depth=1;sort=admin,name` and verify that response is `200 OK`.
 2. Verify if the result is being ordered by the provided fields. First by admin and the by name.
 
+Sort by all available keys (Ascending mode)
+
+1. Execute a GET request on `/rest/v1/system/ports?depth=1;sort=<all available keys>` and verify that response is `200 OK`.
+2. Verify if the result is being ordered by all the provided fields.
+
 Sort by admin and name (Descending mode)
 
 1. Execute a GET request on `/rest/v1/system/ports?depth=1;sort=-admin,name` and verify that response is `200 OK`.
 2. Verify if the result is being ordered by the provided fields. First by admin and the by name.
+
+Sort by all available keys (Descending mode)
+
+1. Execute a GET request on `/rest/v1/system/ports?depth=1;sort=-<all available keys>` and verify that response is `200 OK`.
+2. Verify if the result is being ordered by all the provided fields.
 
 ### Test result criteria
 
@@ -2189,7 +2502,7 @@ This test passes by meeting the following criteria:
 - The response has 10 ports.
 - The result is sorted ascending/descending by the combination of fields.
 
-Expected result when sort mode is ascending:
+Expected result when sort mode is ascending and provided fields are "admin,name":
 
 ```
 admin = down, name = Port10
@@ -2204,7 +2517,7 @@ admin = up, name = Port7
 admin = up, name = Port9
 ```
 
-Expected result when sort mode is descending:
+Expected result when sort mode is descending and provided fields are "-admin,name":
 
 ```
 admin = up, name = Port9
