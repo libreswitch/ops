@@ -39,8 +39,9 @@ The switch synchronizes its time with a NTP server using the NTP protocol over a
 ## Limitations
 - Only the NTP Client functionality alone is supported.
 - A maximum of eight servers can be configured from which to synchronize.
-- Currently only IPV4 is supported.
+- Currently IPv4/IPv6 address is supported. However, multicast, broadcast or loopback addresses are not supported.
 - Currently only default VRF is supported.
+- REF-ID for the NTPv6 server is compressed from the IPv6 to the IPv4 address.
 
 ## Defaults
 - NTP is enabled by default and cannot be disabled.
@@ -60,16 +61,16 @@ NTP is enabled by default and cannot be disabled.
 ### Adding a server
 Add a NTP server with the following command:
 ```
-switch(config)# ntp server <FQDN/IPV4 address> [key _key-id_] [version _version-no_] [prefer]
+switch(config)# ntp server <FQDN/IPv4/IPv6 address> [key _key-id_] [version _version-no_] [prefer]
 ```
 - The server name can be a maximum of 57 characters long.
-- The IPv4 address, if included, needs to be of a valid format.
+- The IPv4/IPv6 address, if included, needs to be of a valid format.
 - Default version is 3. (Only versions 3 or 4 are acceptable values.)
 
 ### Deleting a server
 Delete a previously added NTP server using the following command:
 ```
-switch(config)# no ntp server <FQDN/IPV4 address>
+switch(config)# no ntp server <FQDN/IPv4/IPv6 address>
 ```
 
 ### Enabling NTP authentication
@@ -135,13 +136,13 @@ Reference time: Wed Jan 27 2016 19:01:48.647
 The `show ntp associations` command displays the configured servers. The server to which the switch has synced is marked with a `*` in the beginning.
 ```
 switch# show ntp associations
-----------------------------------------------------------------------------------------------------------------------
-  ID             NAME           REMOTE  VER  KEYID           REF-ID  ST  T  LAST  POLL  REACH    DELAY  OFFSET  JITTER
-----------------------------------------------------------------------------------------------------------------------
-*  1      10.93.55.11      10.93.55.11    4      -     16.77.112.61   4  U   728  1024    377    1.779   2.512   3.537
-   2    17.253.38.253    17.253.38.253    4      -           .INIT.  16  -     -  1024      0    0.000   0.000   0.000
-   3    198.55.111.50    198.55.111.50    4      -           .INIT.  16  -     -  1024      0    0.000   0.000   0.000
-----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------
+  ID                                     NAME           REMOTE  VER  KEYID           REF-ID  ST  T  LAST  POLL  REACH    DELAY  OFFSET  JITTER
+----------------------------------------------------------------------------------------------------------------------------------------------
+*  1                              10.93.55.11      10.93.55.11    3      -     16.77.112.60   4  U    21    64      1   14.754  62.274   0.001
+   2                     2013::42:acff:fe11:5  2013::42:acff:f    3      -           .INIT.  16  U     -    64      0    0.000   0.000   0.000
+   3         2601:8:8a80:38:ca60:ff:fe33:c1a4  2601:8:8a80:38:    3      -    252.81.37.247   5  U     3    64      3    0.211   0.062   0.031
+----------------------------------------------------------------------------------------------------------------------------------------------
 ```
 Note that under the "NAME" column, only the first 15 characters of the server name are displayed.
 
@@ -226,11 +227,12 @@ When the switch successfully synchronizes to a server, the corresponding status 
 
 The REF-ID field in the output for `show ntp associations` carries suggestive values.
 For the list of supported values, see
-http://doc.ntp.org/4.2.6p5/refclock.html
+[http://doc.ntp.org/4.2.6p5/refclock.html](http://doc.ntp.org/4.2.6p5/refclock.html).
 
 For general NTP debugging information, see
-http://doc.ntp.org/4.2.6p5/debug.html
+[http://doc.ntp.org/4.2.6p5/debug.html](http://doc.ntp.org/4.2.6p5/debug.html).
 
+For infomation about the RFC for NTPv6 REF-ID format, click [here](https://tools.ietf.org/html/draft-boudreault-ipv7-ntp-refid-00).
 
 ## CLI
 
