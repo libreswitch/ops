@@ -105,11 +105,11 @@ class IfMatchVlanTest(OpsVsiTest):
 
         # Add If-Match: '"*"' to the request
         config_data = {'configuration': put_data}
-        headers = {'"If-Match"': '"*"'}
+        headers = {"If-Match": '"*"'}
         headers.update(self.cookie_header)
         status_code, response_data = execute_request(
             cond_path, "PUT", json.dumps(config_data), self.switch_ip,
-            False, headers)
+            xtra_header=headers)
 
         assert status_code == httplib.OK, "Error modifying a VLAN using "\
             "if-match option. Status code: %s Response data: %s "\
