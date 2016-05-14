@@ -332,6 +332,66 @@ class PatchSystemTest(OpsVsiTest):
 
         info(TEST_END % test_title)
 
+    def test_patch_add_an_empty_optional_member(self):
+        # Test Setup
+        test_title = "using \"op\": \"add\" empty optional member"
+        info(TEST_START % test_title)
+        # 1 - Query Resource
+        response, response_data = execute_request(
+            self.path, "GET", None, self.switch_ip, True,
+            xtra_header=self.cookie_header)
+
+        etag = response.getheader("Etag")
+        status_code = response.status
+        assert status_code == httplib.OK, "Wrong status code %s " % status_code
+
+        self.check_malformed_json(response_data)
+
+        # Test
+        # 2 - Modify data: Add a new object member
+        data = {"maxsize": "20"}
+        patch2 = [{"op": "add", "path": "/logrotate_config/maxsize",
+                   "value": "20"}]
+        headers = {"If-Match": etag}
+        headers.update(self.cookie_header)
+        status_code, response_data = execute_request(self.path, "PATCH",
+                                                     json.dumps(patch2),
+                                                     self.switch_ip, False,
+                                                     headers)
+        assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
+            % status_code
+        info("### System Modified. Status code 204 NO CONTENT  ###\n")
+
+        # 3 - Verify Modified data
+        response, response_data = execute_request(
+            self.path, "GET", None, self.switch_ip, True,
+            xtra_header=self.cookie_header)
+
+        status_code = response.status
+        assert status_code == httplib.OK, "Wrong status code %s " % status_code
+
+        post_patch_data = self.check_malformed_json(response_data)
+        post_patch_data = post_patch_data['configuration']['logrotate_config']
+
+        assert data["maxsize"] == post_patch_data["maxsize"], \
+            "Configuration data is not equal that posted data"
+        post_patch_etag = response.getheader("Etag")
+        assert etag != post_patch_etag, "Etag should not be the same"
+        info("### Configuration data validated %s ###\n" % post_patch_data)
+
+        # Test Teardown
+        headers = {"If-Match": post_patch_etag}
+        headers.update(self.cookie_header)
+        patch = [{"op": "remove", "path": "/logrotate_config/maxsize"}]
+        status_code, response_data = execute_request(
+            self.path, "PATCH", json.dumps(patch), self.switch_ip,
+            xtra_header=headers)
+
+        assert status_code == httplib.NO_CONTENT, "Wrong status code %s " \
+            % status_code
+
+        info(TEST_END % test_title)
+
     def test_patch_add_value_with_malformed_patch(self):
         # Test Setup
         test_title = "using \"op\": \"add\" field value with malformed patch"
@@ -1193,57 +1253,56 @@ class Test_PatchSystem:
     def __del__(self):
         del self.test_var
 
-    def test_run_call_test_patch_add_new_value(self, netop_login):
+    def test_call_patch_add_new_value(self, netop_login):
         self.test_var.test_patch_add_new_value()
 
-    def test_run_call_test_patch_add_replace_existing_field(self, netop_login):
+    def test_call_patch_add_replace_existing_field(self, netop_login):
         self.test_var.test_patch_add_replace_existing_field()
 
-    def test_run_call_test_patch_add_an_array_element(self, netop_login):
+    def test_call_patch_add_an_array_element(self, netop_login):
         self.test_var.test_patch_add_an_array_element()
 
-    def test_run_call_test_patch_add_an_object_member(self, netop_login):
+    def test_call_patch_add_an_object_member(self, netop_login):
         self.test_var.test_patch_add_an_object_member()
 
-    def test_run_call_test_patch_add_value_with_malformed_patch(self,
-                                                                netop_login):
+    def test_call_patch_add_an_empty_optional_member(self, netop_login):
+        self.test_var.test_patch_add_an_empty_optional_member()
+
+    def test_call_patch_add_value_with_malformed_patch(self, netop_login):
         self.test_var.test_patch_add_value_with_malformed_patch()
 
-    def test_run_call_test_patch_add_new_value_for_boolean_field(self,
-                                                                 netop_login):
+    def test_call_patch_add_new_value_for_boolean_field(self, netop_login):
         self.test_var.test_patch_add_new_value_for_boolean_field()
 
-    def test_run_call_test_patch_add_multiple_fields(self, netop_login):
+    def test_call_patch_add_multiple_fields(self, netop_login):
         self.test_var.test_patch_add_multiple_fields()
 
-    def test_run_call_test_patch_test_operation_nonexistent_value(self,
-                                                                  netop_login):
+    def test_call_patch_test_operation_nonexistent_value(self, netop_login):
         self.test_var.test_patch_test_operation_nonexistent_value()
 
-    def test_run_call_test_patch_test_operation_for_existent_value(self,
-                                                                   netop_login):
+    def test_call_patch_test_operation_for_existent_value(self, netop_login):
         self.test_var.test_patch_test_operation_for_existent_value()
 
-    def test_run_call_test_patch_copy_existing_value(self, netop_login):
+    def test_call_patch_copy_existing_value(self, netop_login):
         self.test_var.test_patch_copy_existing_value()
 
-    def test_run_call_test_patch_copy_nonexistent_value(self, netop_login):
+    def test_call_patch_copy_nonexistent_value(self, netop_login):
         self.test_var.test_patch_copy_nonexistent_value()
 
-    def test_run_call_test_patch_move_existent_value(self, netop_login):
+    def test_call_patch_move_existent_value(self, netop_login):
         self.test_var.test_patch_move_existent_value()
 
-    def test_run_call_test_patch_move_nonexistent_value(self, netop_login):
+    def test_call_patch_move_nonexistent_value(self, netop_login):
         self.test_var.test_patch_move_nonexistent_value()
 
-    def test_run_call_test_patch_move_value_to_invalid_path(self, netop_login):
+    def test_call_patch_move_value_to_invalid_path(self, netop_login):
         self.test_var.test_patch_move_value_to_invalid_path()
 
-    def test_run_call_test_patch_replace_existent_value(self, netop_login):
+    def test_call_patch_replace_existent_value(self, netop_login):
         self.test_var.test_patch_replace_existent_value()
 
-    def test_run_call_test_patch_replace_nonexistent_value(self, netop_login):
+    def test_call_patch_replace_nonexistent_value(self, netop_login):
         self.test_var.test_patch_replace_nonexistent_value()
 
-    def test_run_call_test_patch_remove_existent_value(self, netop_login):
+    def test_call_patch_remove_existent_value(self, netop_login):
         self.test_var.test_patch_remove_existent_value()
