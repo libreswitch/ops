@@ -2348,6 +2348,7 @@ The test case verifies queries for:
 - Add operation to replace a existing field
 - Add operation to set a field with an array type value
 - Add operation to aggregate an object member
+- Add operation to aggregate an empty optional member
 - Add operation to set a field value with a malformed patch
 - Add operation to set a field with a boolean type value
 - Add operation to set multiple fields
@@ -2414,13 +2415,23 @@ The test case validates add, copy, remove, replace, copy and move and test opera
 4. Verify if a patch is applied using the add operation for a new object member.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
+        [{"op": "add", "path": "/logrotate_config/maxsize", "value": "20"}]
+    ```
+    b. Verify if the HTTP response is `204 NO CONTENT`.
+    c. Confirm that system resource has the new object `logrotate_config` and `maxsize`
+    value added.
+    d. Confirm that the ETag is changed.
+
+5. Verify if a patch is applied using the add operation for an empty optional member.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
         [{"op": "add", "path": "/other_config/foo", "value": "bar"}]
     ```
     b. Verify if the HTTP response is `204 NO CONTENT`.
     c. Confirm that system resource has the new object and value added.
     d. Confirm that the ETag is changed.
 
-5. Verify if a patch is applied using the add operation with a malformed patch.
+6. Verify if a patch is applied using the add operation with a malformed patch.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"path": "/dns_servers", "value": ["1.1.1.1"]}]
@@ -2428,7 +2439,7 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     b. Verify if the HTTP response is `400 BAD REQUEST`.
     c. Confirm that the ETag remains the same.
 
-6. Verify if a patch is applied using the add operation for a boolean element.
+7. Verify if a patch is applied using the add operation for a boolean element.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"op": "add", "path": "/other_config/enable-statistics", "value": "true"}]
@@ -2437,7 +2448,7 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     c. Confirm that system resource has the new values added.
     d. Confirm that the ETag is changed.
 
-7. Verify if a patch is applied using the add operation for multiple fields.
+8. Verify if a patch is applied using the add operation for multiple fields.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"op": "add", "path": "/other_config/enable-statistics", "value": "true"},
@@ -2448,7 +2459,7 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     c. Confirm that system resource has the new values added.
     d. Confirm that the ETag is changed.
 
-8. Verify if a patch is applied using the Test operation for a nonexistent value.
+9. Verify if a patch is applied using the Test operation for a nonexistent value.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"op": "test", "path": "/other_config/foo", "value": "bar"}]
@@ -2456,7 +2467,7 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     b. Verify if the HTTP response is `400 BAD REQUEST`.
     c. Confirm that the ETag remains the same.
 
-9. Verify if a patch is applied using the Test operation with a malformed path value.
+10. Verify if a patch is applied using the Test operation with a malformed path value.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration` by using the values in the list with the patch below: `['a/b', '/ab', 'ab/', 'a//b', 'a///b', 'a\\/b']`
     ```
         [{'path': '/other_config', 'value': {}, 'op': 'add'},
@@ -2466,7 +2477,7 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     b. Verify if the HTTP response is `400 BAD REQUEST`.
     c. Confirm that the ETag remains the same.
 
-10. Verify if a patch is applied using the Test operation for an existent value.
+11. Verify if a patch is applied using the Test operation for an existent value.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"op": "add", "path": "/dns_servers", "value": "1.1.1.1"},
@@ -2475,7 +2486,7 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     b. Verify if the HTTP response is `204 NO CONTENT`.
     c. Confirm that the ETag is changed.
 
-11. Verify if a patch is applied using the Copy operation with an existent value.
+12. Verify if a patch is applied using the Copy operation with an existent value.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"op": "copy", "from": "/other_config/foo",
@@ -2485,7 +2496,7 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     c. Confirm that system resource has the copied value.
     d. Confirm that the ETag is changed.
 
-12. Verify if a patch is applied using the Copy operation with a nonexistent value.
+13. Verify if a patch is applied using the Copy operation with a nonexistent value.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"op": "copy", "from": "/other_config/foo",
@@ -2494,7 +2505,7 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     b. Verify if the HTTP response is `400 BAD REQUEST`.
     c. Confirm that the ETag remains the same.
 
-13. Verify if a patch is applied using the Move operation with an existent value.
+14. Verify if a patch is applied using the Move operation with an existent value.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"op": "move", "from": "/dns_servers/0",
@@ -2504,7 +2515,7 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     c. Confirm that system resource has the moved value.
     d. Confirm that the ETag is changed.
 
-14. Verify if a patch is applied using the Move operation with a nonexistent value.
+15. Verify if a patch is applied using the Move operation with a nonexistent value.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"op": "move", "from": "/other_config/servers",
@@ -2512,7 +2523,7 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     ```
     b. Verify if the HTTP response is `400 BAD REQUEST`.
 
-15. Verify if a patch is applied using the Move operation with an invalid path.
+16. Verify if a patch is applied using the Move operation with an invalid path.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"op": "move", "from": "/other_config/abc",
@@ -2521,7 +2532,7 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     b. Verify if the HTTP response is `400 BAD REQUEST`.
     c. Confirm that the ETag remains the same.
 
-16. Verify if a patch is applied using the Replace operation with an existent value.
+17. Verify if a patch is applied using the Replace operation with an existent value.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"op": "replace", "path": "/other_config/test", "value": "bar"}]
@@ -2530,7 +2541,7 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     c. Confirm that system resource has the replaced value.
     d. Confirm that the ETag is changed.
 
-17. Verify if a patch is applied using the Replace operation with a nonexistent value.
+18. Verify if a patch is applied using the Replace operation with a nonexistent value.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"op": "replace", "path": "/other_config/non_existent_field",
@@ -2539,7 +2550,7 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     b. Verify if the HTTP response is `400 BAD REQUEST`.
     c. Confirm that the ETag remains the same.
 
-18. Verify if a patch is applied using the Remove operation with an existent value.
+19. Verify if a patch is applied using the Remove operation with an existent value.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"op": "remove", "path": "/other_config/test"}]
