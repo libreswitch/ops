@@ -21,6 +21,7 @@ from opstestfw import testEnviron
 from opstestfw import LogOutput
 from opstestfw import Sleep
 
+
 # Topology definition
 topoDict = {"topoExecution": 1000,
             "topoTarget": "dut01 dut02",
@@ -211,7 +212,7 @@ def lldp_tlv(**kwargs):
                         ['Neighbor_portID']).rstrip())
         neiPortId = str(lnk01PrtStats[device1.linkPortMapping['lnk01']]
                         ['Neighbor_portID']).rstrip()
-        if neiPortId.isdigit() is True:
+        if neiPortId.isdigit() is True or re.match(r'\d{1,2}-\d{1}',neiPortId):
             break
         else:
             # Dump out the ovs-vsctl interface information
@@ -231,9 +232,10 @@ def lldp_tlv(**kwargs):
             Sleep(seconds=10, message="Delay")
     # end loop
     # Set my default context to linux temporarily
+
     device1.setDefaultContext(context="vtyShell")
-    assert int((lnk01PrtStats[device1.linkPortMapping['lnk01']]
-                ['Neighbor_portID']).rstrip()) == 1, \
+    assert str((lnk01PrtStats[device1.linkPortMapping['lnk01']]
+                ['Neighbor_portID']).rstrip()) == device2.linkPortMapping['lnk01'], \
         "Case Failed, No Neighbor present for SW1"
     assert ("null" not in lnk01PrtStats[device1.linkPortMapping['lnk01']]
             ['Neighbor_chassisName']), \
@@ -278,7 +280,7 @@ def lldp_tlv(**kwargs):
                         ['Neighbor_portID']).rstrip())
         neiPortId = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]
                         ['Neighbor_portID']).rstrip()
-        if neiPortId.isdigit() is True:
+        if neiPortId.isdigit() is True or re.match(r'\d{1,2}-\d{1}',neiPortId):
             break
         else:
             # Dump out the ovs-vsctl interface information
@@ -298,8 +300,8 @@ def lldp_tlv(**kwargs):
             Sleep(seconds=10, message="Delay")
     device2.setDefaultContext(context="vtyShell")
 
-    assert int((lnk01PrtStats[device2.linkPortMapping['lnk01']]
-                ['Neighbor_portID']).rstrip()) == 1, \
+    assert str((lnk01PrtStats[device2.linkPortMapping['lnk01']]
+                ['Neighbor_portID']).rstrip()) == device1.linkPortMapping['lnk01'], \
         "Case Failed, No Neighbor present for SW1"
     assert ("null" not in lnk01PrtStats[device2.linkPortMapping['lnk01']]
             ['Neighbor_chassisName']), \
