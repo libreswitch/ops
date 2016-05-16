@@ -211,7 +211,7 @@ def lldp_wait_hold(**kwargs):
         lnk01PrtStats = retStruct.valueGet(key='portStats')
         LogOutput('info', "\nExpected Neighbor Port ID: "+str(lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())
         neiPortId = str(lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip()
-        if neiPortId.isdigit() is True:
+        if neiPortId.isdigit() is True or re.match(r'\d{1,2}-\d{1}',neiPortId):
             break
         else:
             # Dump out the ovs-vsctl interface information
@@ -230,7 +230,7 @@ def lldp_wait_hold(**kwargs):
                                 + str(ifconfig_output))
             Sleep(seconds=10, message="Delay")
     device1.setDefaultContext(context="vtyShell")
-    assert int((lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip()) == int(device2.linkPortMapping['lnk01']), "Case Failed, No Neighbor present for SW1"
+    assert str((lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip()) == str(device2.linkPortMapping['lnk01']), "Case Failed, No Neighbor present for SW1"
     if (lnk01PrtStats[device1.linkPortMapping['lnk01']]['Neighbor_portID']):
         LogOutput('info', "\nCase Passed, Neighborship established by SW1")
         LogOutput('info', "\nPort of SW1 neighbor is :"
@@ -256,7 +256,7 @@ def lldp_wait_hold(**kwargs):
         LogOutput('info', "\nExpected Neighbor Port ID: "
                   + str(lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip())
         neiPortId = str(lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip()
-        if neiPortId.isdigit() is True:
+        if neiPortId.isdigit() is True or re.match(r'\d{1,2}-\d{1}',neiPortId):
             break
         else:
             # Dump out the ovs-vsctl interface information
@@ -275,7 +275,7 @@ def lldp_wait_hold(**kwargs):
                                 + str(ifconfig_output))
             Sleep(seconds=10, message="Delay")
     device2.setDefaultContext(context="vtyShell")
-    assert int((lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip()) == int(device1.linkPortMapping['lnk01']), "Case Failed, No Neighbor present for SW2"
+    assert str((lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']).rstrip()) == str(device1.linkPortMapping['lnk01']), "Case Failed, No Neighbor present for SW2"
     if (lnk01PrtStats[device2.linkPortMapping['lnk01']]['Neighbor_portID']):
         LogOutput('info', "\nCase Passed, Neighborship established by SW2")
         LogOutput('info', "\nPort of SW2 neighbor is :"
