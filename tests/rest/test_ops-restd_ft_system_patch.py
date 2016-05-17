@@ -130,6 +130,50 @@ class PatchSystemTest(OpsVsiTest):
 
         info(TEST_END % test_title)
 
+    def test_patch_add_new_value_with_invalid_etag(self):
+        # Test Setup
+        test_title = "using \"op\": \"add\" with a new value and invalid etag"
+        info(TEST_START % test_title)
+        data = ["1.1.1.1"]
+        patch = [{"op": "add", "path": "/dns_servers", "value": data}]
+        # 1 - Query Resource
+        response, response_data = execute_request(
+            self.path, "GET", None, self.switch_ip, True,
+            xtra_header=self.cookie_header)
+
+        before_patch_etag = response.getheader("Etag")
+        status_code = response.status
+        assert status_code == httplib.OK, "Wrong status code %s " % status_code
+
+        self.check_malformed_json(response_data)
+
+        # Test
+        # 2 - Modify data
+        headers = {"If-Match": "abcdefghijklmnopqrstuvwxyz12345678901234"}
+        headers.update(self.cookie_header)
+        status_code, response_data = execute_request(self.path, "PATCH",
+                                                     json.dumps(patch),
+                                                     self.switch_ip, False,
+                                                     headers)
+        assert status_code == httplib.PRECONDITION_FAILED, \
+            "Wrong status code %s " % status_code
+        info("### System data remains the same. "
+             "Status code 412 PRECONDITION FAILED  ###\n")
+
+        response, response_data = execute_request(
+            self.path, "GET", None, self.switch_ip, True,
+            xtra_header=self.cookie_header)
+
+        after_patch_etag = response.getheader("Etag")
+        status_code = response.status
+        assert status_code == httplib.OK, "Wrong status code %s " % status_code
+
+        info("Before patch etag: %s\n" % before_patch_etag)
+        info("After  patch etag: %s\n" % after_patch_etag)
+        assert before_patch_etag == after_patch_etag, "The etag should be " \
+                                                      "the same"
+        info(TEST_END % test_title)
+
     def test_patch_add_replace_existing_field(self):
         # Test Setup
         test_title = "using \"op\": \"add\" replace existing field"
@@ -1348,3 +1392,7 @@ class Test_PatchSystem:
 
     def test_call_patch_remove_existent_value(self, netop_login):
         self.test_var.test_patch_remove_existent_value()
+
+    def test_run_call_test_patch_add_new_value_with_invalid_etag(self,
+                                                                 netop_login):
+        self.test_var.test_patch_add_new_value_with_invalid_etag()

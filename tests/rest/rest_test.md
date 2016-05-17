@@ -2345,6 +2345,7 @@ This test fails when:
 The test case verifies queries for:
 
 - Add operation to set a field with a new value
+- Add operation to set a field with a new value and invalid ETag
 - Add operation to replace a existing field
 - Add operation to set a field with an array type value
 - Add operation to aggregate an object member
@@ -2392,7 +2393,16 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     c. Confirm that system resource has the new value added.
     d. Confirm that the ETag is changed.
 
-2. Verify if a patch is applied using the add operation to replace an existing field.
+2. Verify if a patch is applied using the add operation for a new value using an invalid ETag.
+    a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
+    ```
+        headers = {"If-Match": "abcdefghijklmnopqrstuvwxyz12345678901234"}
+        patch = [{"op": "add", "path": "/dns_servers", "value": ["1.1.1.1"]}]
+    ```
+    b. Verify if the HTTP response is `412 PRECONDITION FAILED`.
+    c. Confirm that the ETag remains the same.
+
+3. Verify if a patch is applied using the add operation to replace an existing field.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"op": "add", "path": "/dns_servers", "value": ["1.1.1.1"]},
@@ -2402,7 +2412,7 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     c. Confirm that system resource has the replace value added.
     d. Confirm that the ETag is changed.
 
-3. Verify if a patch is applied using the add operation for an array element.
+4. Verify if a patch is applied using the add operation for an array element.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"op": "add", "path": "/dns_servers", "value": ["1.1.1.1"]},
@@ -2412,7 +2422,7 @@ The test case validates add, copy, remove, replace, copy and move and test opera
     c. Confirm that system resource has the new values added.
     d. Confirm that the ETag is changed.
 
-4. Verify if a patch is applied using the add operation for a new object member.
+5. Verify if a patch is applied using the add operation for a new object member.
     a. Execute the PATCH request over `/rest/v1/system?selector=configuration`.
     ```
         [{"op": "add", "path": "/logrotate_config/maxsize", "value": "20"}]
