@@ -190,27 +190,10 @@ class ModifyPortTest (OpsVsiTest):
             self.PORT_PATH, "PUT", json.dumps({'configuration':put_data}),
             self.SWITCH_IP, xtra_header=self.cookie_header)
 
-        assert status_code == httplib.OK, "Error modifying a Port. Status \
+        assert status_code == httplib.BAD_REQUEST, "Error modifying a Port. Status \
             code: %s Response data: %s " % (status_code, response_data)
-        info("### Port Modified. Status code 200 OK  ###\n")
+        info("### Port NOT Modified. Status code 400 Bad_Request  ###\n")
 
-        # 3 - Verify Port name is not modified
-        status_code, response_data = execute_request(
-            self.PORT_PATH, "GET", None, self.SWITCH_IP,
-            xtra_header=self.cookie_header)
-
-        assert status_code == httplib.OK, "Port %s doesn't exists" \
-            % self.PORT_PATH
-        post_put_get_data = {}
-        try:
-            post_put_get_data = json.loads(response_data)
-        except:
-            assert False, "Malformed JSON"
-
-        post_put_data = post_put_get_data["configuration"]
-
-        assert expected_value == post_put_data["name"], \
-            "Port name was modified"
         info("### Configuration data validated %s ###\n" % response_data)
 
         info("\n########## End Test to Validate: Port name modification not \
