@@ -25,7 +25,7 @@ import httplib
 import urllib
 
 from opsvsiutils.restutils.utils import get_switch_ip, rest_sanity_check, \
-    execute_request
+    execute_request, get_server_crt, remove_server_crt
 from opsvsiutils.restutils.utils import LOGIN_URI, DEFAULT_USER, \
     DEFAULT_PASSWORD
 
@@ -190,10 +190,12 @@ class Test_login:
 
     def setup_class(cls):
         cls.test_var = LoginTest()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.SWITCH_IP)
 
     def teardown_class(cls):
         cls.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass

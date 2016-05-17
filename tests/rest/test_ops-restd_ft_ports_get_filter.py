@@ -29,7 +29,8 @@ import types
 
 from opsvsiutils.restutils.fakes import create_fake_port
 from opsvsiutils.restutils.utils import execute_request, login, \
-    get_switch_ip, rest_sanity_check, update_test_field
+    get_switch_ip, rest_sanity_check, update_test_field, \
+    get_server_crt, remove_server_crt
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -831,11 +832,13 @@ class Test_QueryFilterPort:
 
     def setup_class(cls):
         Test_QueryFilterPort.test_var = QueryFilterPortTest()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
         Test_QueryFilterPort.test_var.setup_switch_ports(NUM_FAKE_PORTS)
 
     def teardown_class(cls):
         Test_QueryFilterPort.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass

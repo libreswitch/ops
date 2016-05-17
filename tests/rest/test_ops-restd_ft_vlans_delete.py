@@ -27,7 +27,8 @@ import urllib
 
 from opsvsiutils.restutils.fakes import create_fake_vlan
 from opsvsiutils.restutils.utils import execute_request, login, \
-    rest_sanity_check, get_switch_ip
+    rest_sanity_check, get_switch_ip, get_server_crt, \
+    remove_server_crt
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -105,10 +106,12 @@ class TestDeleteNonExistentVlan:
 
     def setup_class(cls):
         TestDeleteNonExistentVlan.test_var = DeleteNonExistentVlan()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestDeleteNonExistentVlan.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass
@@ -197,6 +200,7 @@ class TestDeleteExistentVlan:
 
     def setup_class(cls):
         TestDeleteExistentVlan.test_var = DeleteExistentVlan()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestDeleteExistentVlan.test_var.vlan_path,
                          TestDeleteExistentVlan.test_var.switch_ip,
@@ -205,6 +209,7 @@ class TestDeleteExistentVlan:
 
     def teardown_class(cls):
         TestDeleteExistentVlan.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass

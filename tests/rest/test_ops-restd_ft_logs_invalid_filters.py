@@ -26,7 +26,8 @@ import httplib
 import urllib
 import subprocess
 from opsvsiutils.restutils.utils import execute_request, login, \
-    get_switch_ip, get_json, rest_sanity_check
+    get_switch_ip, get_json, rest_sanity_check, get_server_crt, \
+    remove_server_crt
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -144,10 +145,12 @@ class Test_LogsInvalidFilters:
 
     def setup_class(cls):
         Test_LogsInvalidFilters.test_var = LogsInvalidFiltersTest()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.SWITCH_IP)
 
     def teardown_class(cls):
         Test_LogsInvalidFilters.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass

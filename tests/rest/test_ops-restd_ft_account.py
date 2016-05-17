@@ -23,7 +23,8 @@ import json
 import httplib
 
 from opsvsiutils.restutils.utils import get_switch_ip, execute_request, \
-    rest_sanity_check, get_json, login
+    rest_sanity_check, get_json, login, get_server_crt, \
+    remove_server_crt
 from opsvsiutils.restutils.utils import ACCOUNT_URI, DEFAULT_PASSWORD
 
 
@@ -232,10 +233,12 @@ class Test_Account:
 
     def setup_class(cls):
         cls.test_var = AccountTest()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.SWITCH_IP)
 
     def teardown_class(cls):
         cls.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass

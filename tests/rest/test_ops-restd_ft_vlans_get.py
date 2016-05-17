@@ -28,7 +28,7 @@ import subprocess
 from opsvsiutils.restutils.fakes import create_fake_vlan
 from opsvsiutils.restutils.utils import execute_request, login, \
     get_switch_ip, rest_sanity_check, get_container_id, \
-    compare_dict
+    compare_dict, get_server_crt, remove_server_crt
 from opsvsiutils.restutils.swagger_test_utility import \
     swagger_model_verification
 
@@ -108,10 +108,12 @@ class TestGetDefaultBridgeNormal:
 
     def setup_class(cls):
         TestGetDefaultBridgeNormal.test_var = QueryDefaultBridgeNormal()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestGetDefaultBridgeNormal.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass
@@ -182,6 +184,7 @@ class TestGetVlansAssociated:
 
     def setup_class(cls):
         TestGetVlansAssociated.test_var = QueryVlansAssociated()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
         create_fake_vlan(TestGetVlansAssociated.test_var.vlan_path,
                          TestGetVlansAssociated.test_var.switch_ip,
@@ -190,6 +193,7 @@ class TestGetVlansAssociated:
 
     def teardown_class(cls):
         TestGetVlansAssociated.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass
@@ -269,6 +273,7 @@ class TestGetVlanByName:
 
     def setup_class(cls):
         TestGetVlanByName.test_var = QueryVlanByName()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
         cls.fake_data = create_fake_vlan(TestGetVlanByName.test_var.vlan_path,
                                          TestGetVlanByName.test_var.switch_ip,
@@ -279,6 +284,7 @@ class TestGetVlanByName:
 
     def teardown_class(cls):
         TestGetVlanByName.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass
@@ -351,10 +357,12 @@ class TestGetNonExistentVlan:
 
     def setup_class(cls):
         TestGetNonExistentVlan.test_var = QueryNonExistentVlanByName()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
 
     def teardown_class(cls):
         TestGetNonExistentVlan.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass

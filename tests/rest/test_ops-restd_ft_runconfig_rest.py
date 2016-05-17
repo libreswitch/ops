@@ -27,7 +27,8 @@ from opsvsi.docker import *
 from opsvsi.opsvsitest import *
 from opsvsiutils.systemutil import *
 from opsvsiutils.restutils.utils import execute_request, login, \
-    rest_sanity_check, get_switch_ip
+    rest_sanity_check, get_switch_ip, get_server_crt, \
+    remove_server_crt
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -103,9 +104,11 @@ class Test_config:
 
     def setup_class(cls):
         Test_config.test_var = configTest()
+        get_server_crt(cls.test_var.net.switches[0])
 
     def teardown_class(cls):
         Test_config.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass

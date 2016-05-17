@@ -29,7 +29,8 @@ import types
 
 from opsvsiutils.restutils.fakes import create_fake_vlan
 from opsvsiutils.restutils.utils import execute_request, \
-    login, get_switch_ip, rest_sanity_check, update_test_field
+    login, get_switch_ip, rest_sanity_check, update_test_field, \
+    get_server_crt, remove_server_crt
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
@@ -133,6 +134,7 @@ class TestGetFilterVlanByName:
 
     def setup_class(cls):
         TestGetFilterVlanByName.test_var = FilterVlanTestByName()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
         for i in range(2, NUM_FAKE_VLANS + 2):
             create_fake_vlan(TestGetFilterVlanByName.test_var.path,
@@ -142,6 +144,7 @@ class TestGetFilterVlanByName:
 
     def teardown_class(cls):
         TestGetFilterVlanByName.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass
@@ -208,6 +211,7 @@ class TestGetFilterVlanById:
 
     def setup_class(cls):
         TestGetFilterVlanById.test_var = FilterVlanById()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
         for i in range(2, NUM_FAKE_VLANS + 2):
             create_fake_vlan(TestGetFilterVlanById.test_var.path,
@@ -217,6 +221,7 @@ class TestGetFilterVlanById:
 
     def teardown_class(cls):
         TestGetFilterVlanById.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass
@@ -322,6 +327,7 @@ class TestGetFilterVlanByDescription:
 
     def setup_class(cls):
         TestGetFilterVlanByDescription.test_var = FilterVlanByDescription()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
         for i in range(2, NUM_FAKE_VLANS + 2):
             create_fake_vlan(TestGetFilterVlanByDescription.test_var.path,
@@ -331,6 +337,7 @@ class TestGetFilterVlanByDescription:
 
     def teardown_class(cls):
         TestGetFilterVlanByDescription.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass
@@ -441,6 +448,7 @@ class TestGetFilterVlanByAdmin:
 
     def setup_class(cls):
         TestGetFilterVlanByAdmin.test_var = FilterVlanByAdmin()
+        get_server_crt(cls.test_var.net.switches[0])
         rest_sanity_check(cls.test_var.switch_ip)
         for i in range(2, NUM_FAKE_VLANS + 2):
             create_fake_vlan(TestGetFilterVlanByAdmin.test_var.path,
@@ -450,6 +458,7 @@ class TestGetFilterVlanByAdmin:
 
     def teardown_class(cls):
         TestGetFilterVlanByAdmin.test_var.net.stop()
+        remove_server_crt()
 
     def setup_method(self, method):
         pass
