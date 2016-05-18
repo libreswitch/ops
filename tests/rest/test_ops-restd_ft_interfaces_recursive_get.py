@@ -33,6 +33,7 @@ from opsvsiutils.restutils.utils import execute_request, login, \
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
+DEPTH_MAX_VALUE = 10
 
 
 class myTopo(Topo):
@@ -165,6 +166,38 @@ class QueryInterfaceDepthTest(OpsVsiTest):
         info("########## End Test to Validate recursive GET Interface 50-1 "
              "depth=2 request ##########\n")
 
+    def test_recursive_get_with_depth_max_value(self):
+        specific_interface_path = self.PATH + "/50-1?depth=%d" \
+                                              % DEPTH_MAX_VALUE
+        depth_interface_path = self.PATH + "?depth=%d;name=50-1" \
+                                           % DEPTH_MAX_VALUE
+        status_code, expected_data = execute_request(
+            specific_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
+        status_code, response_data = execute_request(
+            depth_interface_path, "GET", None, self.SWITCH_IP,
+            xtra_header=self.cookie_header)
+
+        json_expected_data = self.get_json(expected_data)
+        json_data = self.get_json(response_data)[0]
+
+        info("\n########## Test to Validate recursive GET Interface 50-1 "
+             "depth=10 request ##########\n")
+
+        assert status_code == httplib.OK, "Wrong status code %s " % status_code
+        info("### Status code is OK ###\n")
+
+        assert self.validate_keys_complete_object(json_data)
+        info("### Validated first level of depth ###\n")
+
+        json_expected_data = json_expected_data["configuration"]
+        json_data = json_data["configuration"]
+
+        assert self.validate_keys_inner_object(json_data, json_expected_data)
+        info("########## End Test to Validate recursive GET Interface 50-1 "
+             "depth=10 request ##########\n")
+
     def test_recursive_get_validate_negative_depth_value(self):
         depth_interface_path = self.PATH + "?depth=-1"
         status_code, response_data = execute_request(
@@ -182,22 +215,39 @@ class QueryInterfaceDepthTest(OpsVsiTest):
         info("########## End Test to Validate recursive GET Interface 50-1 "
              "depth=<negative value> request ##########\n")
 
+    def test_recursive_get_validate_depth_higher_max_value(self):
+        test_title = "Test to Validate recursive GET Interfaces with " \
+                     "depth > DEPTH_MAX_VALUE"
+        depth_values = [100, 1000]
+        info("\n########## " + test_title + " ##########\n")
+        for i in range(0, len(depth_values)):
+            depth_interface_path = self.PATH + "?depth=%d" % depth_values[i]
+            status_code, response_data = execute_request(
+                depth_interface_path, "GET", None, self.SWITCH_IP,
+                xtra_header=self.cookie_header)
+            assert status_code == httplib.BAD_REQUEST, \
+                "Wrong status code %s " % status_code
+            info("### Status code is BAD_REQUEST for URI: %s ###\n" %
+                 depth_interface_path)
+            info("Response Message: %s\n" % response_data)
+        info("########## End " + test_title + " ##########\n")
+
     def test_recursive_get_validate_string_depth_value(self):
-        depth_interface_path = self.PATH + "?depth=a"
-        status_code, response_data = execute_request(
-            depth_interface_path, "GET", None, self.SWITCH_IP,
-            xtra_header=self.cookie_header)
-
-        info("\n########## Test to Validate recursive GET Interface 50-1 "
-             "depth=<string> request ##########\n")
-
-        assert status_code == httplib.BAD_REQUEST, \
-            "Wrong status code %s " % status_code
-        info("### Status code is BAD_REQUEST for URI: %s ###\n" %
-             depth_interface_path)
-
-        info("########## End Test to Validate recursive GET Interface 50-1 "
-             "depth=<string> request ##########\n")
+        test_title = "Test to Validate recursive GET Interfaces with " \
+                     "depth=<string>"
+        depth_values = ["a", "one", "*"]
+        info("\n########## " + test_title + " ##########\n")
+        for i in range(0, len(depth_values)):
+            depth_interface_path = self.PATH + "?depth=%s" % depth_values[i]
+            status_code, response_data = execute_request(
+                depth_interface_path, "GET", None, self.SWITCH_IP,
+                xtra_header=self.cookie_header)
+            assert status_code == httplib.BAD_REQUEST, \
+                "Wrong status code %s " % status_code
+            info("### Status code is BAD_REQUEST for URI: %s ###\n" %
+                 depth_interface_path)
+            info("Response Message: %s\n" % response_data)
+        info("########## End " + test_title + " ##########\n")
 
     def test_recursive_get_validate_with_depth_zero(self):
         expected_data = self.PATH + "/50"

@@ -17,7 +17,7 @@ REST API Test Cases
 - [REST API post method for ports](#rest-api-post-method-for-ports)
 - [REST API put method for ports](#rest-api-put-method-for-ports)
 - [REST API delete method for ports](#rest-api-delete-method-for-ports)
-- [REST API get method with recursion support for interfaces](#rest-api-get-method-with-recursion-for-interfaces)
+- [REST API get method with recursion for interfaces](#rest-api-get-method-with-recursion-for-interfaces)
 - [REST API get method with pagination for ports](#rest-api-get-method-with-pagination-for-ports)
 - [REST API get method and sort by field for ports](#rest-api-get-method-and-sort-by-field-for-ports)
 - [REST API get method and sort by field combination for ports](#rest-api-get-method-and-sort-by-field-combination-for-ports)
@@ -1666,6 +1666,7 @@ The test case verifies queries for:
 - All interfaces with no depth parameter
 - A specific interface with depth equals one
 - A specific interface with depth equals two
+- A specific interface with depth equals to the max depth value (10)
 - A specific interface with negative depth value
 - A specific interface with string depth value
 - An interface with specific URI with depth equals one
@@ -1743,48 +1744,57 @@ Depth valid values are integer numbers between 0 and 10 inclusive.
     d. Validate the second level depth returned interface object has Configuration, Statistics and Status keys present.
     e. Ensure that second level of depth inner data has the URIs `/rest/v1/system/interfaces/50-<1-4>` in the response data.
 
-5. Verify if response has a `400 BAD REQUEST` HTTP response status code by using a negative depth value.
+5. Verify if returns an interface by using depth equals to the max depth value.
+    a. Execute a GET request over `/rest/v1/system/interfaces?depth=10;name=50-1` and specific URI `/rest/v1/system/interfaces/50-1?depth=10`
+    b. Verify if the HTTP response for both requests is `200 OK`.
+    c. Validate the response data to ensure the integrity.
+
+6. Verify if response has a `400 BAD REQUEST` HTTP response status code by using a depth value major than the max depth value.
+    a. Execute the GET request over `/rest/v1/system/interfaces?depth=<100, 1000>`
+    b. Verify if the HTTP response is `400 BAD REQUEST`.
+
+7. Verify if response has a `400 BAD REQUEST` HTTP response status code by using a negative depth value.
     a. Execute the GET request over `/rest/v1/system/interfaces?depth=-1`
     b. Verify if the HTTP response is `400 BAD REQUEST`.
 
-6. Verify if response has a `400 BAD REQUEST` HTTP response status code by using a string depth value.
-    a. Execute the GET request over `/rest/v1/system/interfaces?depth=a`
+8. Verify if response has a `400 BAD REQUEST` HTTP response status code by using a string depth value.
+    a. Execute the GET request over `/rest/v1/system/interfaces?depth=<a, one, *>`
     b. Verify if the HTTP response is `400 BAD REQUEST`.
 
-7. Verify if returns an interface with specific URI and data in first level of depth.
+9. Verify if returns an interface with specific URI and data in first level of depth.
     a. Execute the GET request over `/rest/v1/system/interfaces/50-1?depth=1`
     b. Verify if the HTTP response is `200 OK`.
     c. Validate the first level depth returned interface object has Configuration, Statistics and Status keys present.
     d. Ensure that inner data has the URI `/rest/v1/system/interfaces/50` in the response data.
 
-8. Verify if returns an interface with specific URI and data in second level of depth.
+10. Verify if returns an interface with specific URI and data in second level of depth.
     a. Execute the GET request over `/rest/v1/system/interfaces/50-1?depth=2`
     b. Verify if the HTTP response is `200 OK`.
     c. Validate the first level depth returned interface object has Configuration, Statistics and Status keys present.
     d. Validate the second level depth returned interface object has Configuration, Statistics and Status keys present.
     e. Ensure that second level of depth inner data has the URIs `/rest/v1/system/interfaces/50-<1-4>` in the response data.
 
-9. Verify if returns a `400 BAD REQUEST` HTTP response status code by using a negative depth value with an specific URI.
+11. Verify if returns a `400 BAD REQUEST` HTTP response status code by using a negative depth value with an specific URI.
     a. Execute the GET request over `/rest/v1/system/interfaces/50-1?depth=-1`
     b. Verify if the HTTP response is `400 BAD REQUEST`.
 
-10. Verify if returns a `400 BAD REQUEST` HTTP response status code by using a string depth value with an specific URI.
+12. Verify if returns a `400 BAD REQUEST` HTTP response status code by using a string depth value with an specific URI.
     a. Execute the GET request over `/rest/v1/system/interfaces/50-1?depth=a`
     b. Verify if the HTTP response is `400 BAD REQUEST`.
 
-11. Verify if returns an interface with specific URI by using depth equals zero.
+13. Verify if returns an interface with specific URI by using depth equals zero.
     a. Execute the GET request over `/rest/v1/system/interfaces/50-1?depth=0`
     b. Verify if the HTTP response is `200 OK`.
     c. Validate the first level depth returned interface object has Configuration, Statistics and Status keys present.
     d. Ensure that inner data has the URI `/rest/v1/system/interfaces/50` in the response data.
 
-12. Verify if returns an interface with specific URI by not using depth parameter.
+14. Verify if returns an interface with specific URI by not using depth parameter.
     a. Execute the GET request over `/rest/v1/system/interfaces/50-1`
     b. Verify if the HTTP response is `200 OK`.
     c. Validate the first level depth returned interface object has Configuration, Statistics and Status keys present.
     d. Ensure that inner data has the URI `/rest/v1/system/interfaces/50` in the response data.
 
-13. Verify if returns an interface with specific URI by using a depth value equal to 11 (value out of range).
+15. Verify if returns an interface with specific URI by using a depth value equal to 11 (value out of range).
     a. Execute the GET request over `/rest/v1/system/interfaces/50-1?depth=11`
     b. Verify if the HTTP response is `400 BAD REQUEST`.
 
