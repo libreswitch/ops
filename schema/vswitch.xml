@@ -4035,15 +4035,19 @@
         </ul>
       </column>
 
-      <column name="tag">
+      <column name="vlan_tag">
         <p>
-          For an access port, the port's implicitly tagged VLAN.  For a
-          native-tagged or native-untagged port, the port's native VLAN.  Must
-          be empty if this is a trunk port.
+          For an access port, specifies the untagged 802.1Q vlan. If empty,
+          untagged packets are dropped. For a native tagged or native untagged
+          port, specifies the "native VLAN". Must be empty for a trunk port.
+        </p>
+        <p>
+          For an L3 port, the value is empty. For an interface VLAN
+          the value will be the VLAN on which it is created.
         </p>
       </column>
 
-      <column name="trunks">
+      <column name="vlan_trunks">
         <p>
           For a trunk, native-tagged, or native-untagged port, the 802.1Q VLAN
           or VLANs that this port trunks; if it is empty, then the port trunks
@@ -4052,10 +4056,11 @@
         </p>
         <p>
           A native-tagged or native-untagged port always trunks its native
-          VLAN, regardless of whether <ref table="Port" column="trunks"/> includes that
+          VLAN, regardless of whether <ref column="vlan_trunks"/> includes that
           VLAN.
         </p>
       </column>
+
       <column name="vlan_tunnel_keys" keyname="vlan">
         <p>
           Specifies translation from a vlan to the
@@ -8305,8 +8310,8 @@
       is associated.
     </column>
 
-    <column name="vlan">
-      VLAN associated with MAC address.
+    <column name="mac_vlan">
+      Specifies the VLAN <ref table="VLAN"/> associated with MAC address.
     </column>
 
     <column name="from">

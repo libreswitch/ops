@@ -28,9 +28,12 @@ from opsvsiutils.restutils.utils import execute_request, login, \
 from copy import deepcopy
 from opsvsiutils.restutils.swagger_test_utility import \
     swagger_model_verification
+from opsvsiutils.restutils.fakes import create_fake_vlan
 
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
+DEFAULT_BRIDGE = "bridge_normal"
+bridge_path = "/rest/v1/system/bridges"
 
 
 class myTopo(Topo):
@@ -76,6 +79,19 @@ class CreatePortTest (OpsVsiTest):
 
     def create_port(self):
         info("\n########## Test to Validate Create Port ##########\n")
+
+        vlan_id = 413
+        vlan_name = "VLAN413"
+        vlan_path = "%s/%s/vlans" % (bridge_path, DEFAULT_BRIDGE)
+
+        create_fake_vlan(vlan_path, self.SWITCH_IP, vlan_name, vlan_id)
+
+        vlan_id = 654
+        vlan_name = "VLAN654"
+        vlan_path = "%s/%s/vlans" % (bridge_path, DEFAULT_BRIDGE)
+
+        create_fake_vlan(vlan_path, self.SWITCH_IP, vlan_name, vlan_id)
+
         status_code, response_data = execute_request(
             self.PATH, "POST", json.dumps(PORT_DATA), self.SWITCH_IP,
             xtra_header=self.cookie_header)
@@ -122,12 +138,18 @@ class CreatePortTest (OpsVsiTest):
 
         info("\nAttempting to create port with incorrect type in attributes\n")
 
+        bridge_path = "/rest/v1/system/bridges"
+        vlan_id = 675
+        vlan_name = "VLAN675"
+        vlan_path = "%s/%s/vlans" % (bridge_path, DEFAULT_BRIDGE)
+
+        create_fake_vlan(vlan_path, self.SWITCH_IP, vlan_name, vlan_id)
         data = [("ip4_address", 192, httplib.BAD_REQUEST),
                 ("ip4_address", "192.168.0.1/24", httplib.CREATED),
-                ("tag", "675", httplib.BAD_REQUEST),
-                ("tag", 675, httplib.CREATED),
-                ("trunks", "654, 675", httplib.BAD_REQUEST),
-                ("trunks", [654, 675], httplib.CREATED)]
+                ("vlan_tag", ["/rest/v1/system/bridges/bridge_normal/vlans/VLAN345"], httplib.BAD_REQUEST),
+                ("vlan_tag", ["/rest/v1/system/bridges/bridge_normal/vlans/VLAN675"], httplib.CREATED),
+                ("vlan_trunks", ["/rest/v1/system/bridges/bridge_normal/vlans/VLAN345", "/rest/v1/system/bridges/bridge_normal/vlans/VLAN346"], httplib.BAD_REQUEST),
+                ("vlan_trunks", ["/rest/v1/system/bridges/bridge_normal/vlans/VLAN654", "/rest/v1/system/bridges/bridge_normal/vlans/VLAN675"], httplib.CREATED)]
         results = execute_port_operations(data, "PortTypeTest", "POST",
                                           self.PATH, self.SWITCH_IP,
                                           self.cookie_header)
@@ -156,8 +178,8 @@ class CreatePortTest (OpsVsiTest):
 
         data = [("ip4_address", "175.167.134.123/248", httplib.BAD_REQUEST),
                 ("ip4_address", "175.167.134.123/24", httplib.CREATED),
-                ("tag", 4095, httplib.BAD_REQUEST),
-                ("tag", 675, httplib.CREATED),
+                ("vlan_tag", ["/rest/v1/system/bridges/bridge_normal/vlans/VLAN4095"], httplib.BAD_REQUEST),
+                ("vlan_tag", ["/rest/v1/system/bridges/bridge_normal/vlans/VLAN675"], httplib.CREATED),
                 ("interfaces", interfaces_out_of_range, httplib.BAD_REQUEST),
                 ("interfaces", ["/rest/v1/system/interfaces/1"],
                  httplib.CREATED)]
