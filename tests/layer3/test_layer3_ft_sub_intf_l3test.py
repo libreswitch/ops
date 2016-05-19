@@ -80,7 +80,7 @@ def sub_interface(**kwargs):
     if retStructObj.returnCode() != 0:
         LogOutput('error', "Failed to configure IP on workstation")
         assert(False)
-
+    sleep(2)
     retStruct = wrkstn1.Ping(ipAddr = "20.0.0.1", packetCount=10)
     retCode = retStruct.returnCode()
     assert retCode == 0, "failed to ping switch"
@@ -94,7 +94,7 @@ def sub_interface(**kwargs):
     LogOutput('info', "Packets Sent:\t" + str(packets_sent))
     LogOutput('info', "Packets Recv:\t" + str(packets_received))
     LogOutput('info', "Packet Loss %:\t" + str(packet_loss))
-    assert packets_received == packets_sent, "failed to ping switch"
+    assert packets_received >= 5, "failed to ping switch"
     LogOutput('info', "Negative l3 reachability test \
                        with admin state down.")
     retStruct = InterfaceEnable(deviceObj = device1, enable=False,
@@ -152,7 +152,7 @@ def sub_interface(**kwargs):
     LogOutput('info', "Packets Sent:\t" + str(packets_sent))
     LogOutput('info', "Packets Recv:\t" + str(packets_received))
     LogOutput('info', "Packet Loss %:\t" + str(packet_loss))
-    assert packets_sent == packets_received, "failed to ping switch"
+    assert packets_received >= 5, "failed to ping switch"
 
     # changing the vlan id in sub interface and
     # checking whether ping is success
