@@ -3371,6 +3371,11 @@
       default the port is up.
     </column>
 
+    <column name="kernel_interface_ready">
+      Indicates whether kernel interface is provisioned for the port.
+      Default is false.
+    </column>
+
     <group title="Hardware Port Configuration">
       <p>
         The following fields are not meant to be configured by the user,
@@ -3808,6 +3813,9 @@
       </column>
       <column name="status" key="error">
         Human readable error description.
+      </column>
+      <column name="status" key="kernel_interface_error">
+        Human readable kernel interface provisioning error description.
       </column>
       <column name="status" key="bond_hw_handle">
         Unique identifier of the LAG from the data path's perspective.
@@ -4359,6 +4367,12 @@
         </p>
       </column>
 
+      <column name="kernel_interface_ready">
+        <p>
+          Indicates whether kernel interface is provisioned.  Default is false.
+	</p>
+      </column>
+
       <column name="link_resets">
         <p>
           The number of times OpenSwitch has observed the
@@ -4720,6 +4734,10 @@
 
       <column name="status" key="firmware_version">
         The version string of the network adapter's firmware, if available.
+      </column>
+
+      <column name="status" key="kernel_interface_error">
+        Human readable kernel interface provisioning error description.
       </column>
 
     <group title="LLDP status info">
