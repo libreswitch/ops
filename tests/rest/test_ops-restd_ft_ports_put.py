@@ -375,6 +375,7 @@ class ModifyPortTest (OpsVsiTest):
         info("\n########## End test to verify malformed JSON ##########\n")
 
 
+@pytest.mark.skipif(True, reason="Temporarily skipping it till the Immutable PUT change merges TG-296")
 class Test_ModifyPort:
     def setup(self):
         pass
