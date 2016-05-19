@@ -23,6 +23,7 @@ from opstestfw.switch import *
 
 # Topology definition
 topoDict = {"topoExecution": 1000,
+            "topoType": "physical",
             "topoTarget": "dut01 ",
             "topoDevices": "dut01 wrkston01 ",
             "topoLinks": "lnk01:dut01:wrkston01",
