@@ -8183,11 +8183,13 @@
       "indexes": [
         [
           "receiver_address",
-          "receiver_udp_port"
+          "receiver_udp_port",
+          "type",
+          "version"
         ]
       ],
 
-      "maxRows" : 10,
+      "maxRows" : 30,
       "isRoot" : true
     },
     "IPsec_Manual_SA": {
