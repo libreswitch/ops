@@ -330,6 +330,7 @@ class bgpTest(OpsVsiTest):
                       % (network, next_hop, switch.name)
 
 
+@pytest.mark.timeout(600)
 class Test_bgpd_filterlist:
     def setup(self):
         pass

@@ -428,6 +428,7 @@ def configure(**kwargs):
     assert result is True, "Failed to configur neighbor on SW2"
 
 
+@pytest.mark.timeout(600)
 class Test_bgp_redistribute_configuration:
     def setup_class(cls):
         Test_bgp_redistribute_configuration.testObj = \

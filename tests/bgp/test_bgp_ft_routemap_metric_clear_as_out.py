@@ -502,6 +502,7 @@ def configure(**kwargs):
     result = configure_neighbor(switch3,AS_NUM3,IP_ADDR2_2,AS_NUM2)
     assert result is True, "Failed to configure neighbor on SW3"
 
+@pytest.mark.timeout(600)
 class Test_bgp_metric_clear_as_configuration:
     def setup_class(cls):
         Test_bgp_metric_clear_as_configuration.testObj = \

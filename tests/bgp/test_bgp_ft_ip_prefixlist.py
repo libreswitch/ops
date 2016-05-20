@@ -632,7 +632,7 @@ def configure(**kwargs):
     if retCode != 0:
         assert "Failed to configure an IPv6 address on interface 1 of SW3"
 
-@pytest.mark.skipif(True, reason="skipped test case due to random gate job failures.")
+@pytest.mark.timeout(600)
 class Test_bgp_ip_prefix_list_configuration:
     def setup_class(cls):
         Test_bgp_ip_prefix_list_configuration.testObj = \

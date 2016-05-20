@@ -454,6 +454,7 @@ def verify_routemap_match_aspath(**kwargs):
 
     info("### 'match as-path' running succesfully ###\n")
 
+@pytest.mark.timeout(600)
 class Test_bgp_redistribute_configuration:
     def setup_class(cls):
         Test_bgp_redistribute_configuration.testObj = \

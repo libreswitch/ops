@@ -397,6 +397,7 @@ class bgpTest(OpsVsiTest):
         info("### ip community-list  configs were successfully removed ###\n")
 
 
+@pytest.mark.timeout(600)
 class Test_bgpd_routemap:
     def setup(self):
         pass
