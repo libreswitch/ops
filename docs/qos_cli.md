@@ -35,17 +35,17 @@
 ## Definition of terms
 | Term | Description |
 |:-----------|:---------------------------------------|
-| **Class** | For networking, a set of packets sharing some common characteristic (e.g all IPv4 packets) |
-| **Codepoint**| Used in two different ways -- either as the name of a packet header field or as the name of the values carried within a packet header field: *Example 1: Priority Code Point (PCP) is the name of a field in the [IEEE 802.1Q](http://www.ieee802.org/1/pages/802.1Q.html) VLAN tag. Example 2: Differentiated Services codepoint (DSCP) is the name of values carried within the DS field of the header field.*
-| **Color** | A meta-data label associated with each packet within the switch with three values: "green", "yellow", or "red". It is used by the switch when packets encounter congestion for resource (queue) to distinguish which packets should be dropped It is used by the switch when packets encounter congestion for resource (queue) to distinguish which packets should be dropped. |
+| **Class** | For networking, a set of packets sharing some common characteristic (for example, all IPv4 packets). |
+| **Codepoint**| Used in two different ways -- either as the name of a packet header field, or as the name of the values carried within a packet header field. *Example 1: Priority Code Point (PCP) is the name of a field in the [IEEE 802.1Q](http://www.ieee802.org/1/pages/802.1Q.html) VLAN tag. Example 2: Differentiated Services codepoint (DSCP) is the name of values carried within the DS field of the header field.*
+| **Color** | A metadata label associated with each packet within the switch with three values: green, yellow, or red. It is used by the switch when packets encounter congestion for a resource (queue) to distinguish which packets should be dropped. |
 | **Class of Service (CoS)** | A 3-bit value used to mark packets with one of eight classes (levels of priority). It is carried within the Priority Code Point (PCP) field of the [IEEE 802.1Q](http://www.ieee802.org/1/pages/802.1Q.html) VLAN tag. |
 | **Differentiated Services codepoint (DSCP)** | A 6-bit value used to mark packets for different per-hop behavior as originally defined by [IETF RFC 2474](https://tools.ietf.org/html/rfc2474). It is carried within the Differentiated Services (DS) field of the IPv4 or IPv6 header. |
-| **Local-priority** | A meta-data label associated with a packet within a network switch. It is used by the switch to distinguish packets for different treatment (e.g. queue assignment, etc). |
-| **Meta-data** | Information labels associated with each packet in the switch separate from the packet headers and data. These labels are used by the switch in its handling of the packet. Examples are: arrival port, egress port, VLAN membership, local priority, color, etc. |
+| **Local-priority** | A metadata label associated with a packet within a network switch. It is used by the switch to distinguish packets for different treatment (for example, queue assignment). |
+| **Metadata** | Information labels associated with each packet in the switch that are separate from the packet headers and data. These labels are used by the switch in its handling of the packet. For example, arrival port, egress port, VLAN membership, local priority, and color. |
 | **Priority Code Point (PCP)** | The name of a 3-bit field in the [IEEE 802.1Q](http://www.ieee802.org/1/pages/802.1Q.html) VLAN tag. It carries the CoS value to mark a packet with one of 8 classes (priority levels). |
 | **Quality of Service (QoS)** | General term used when describing or measuring performance. For networking, it means how different classes of packets are treated across the network or device. For more information, see [https://en.wikipedia.org/wiki/Quality_of_service](https://en.wikipedia.org/wiki/Quality_of_service). |
 | **Traffic class (TC)** | General term for a set of packets sharing some common characteristic. It used to be the name of an 8-bit field in the IPv6 header originally defined by [IETF RFC 2460](https://tools.ietf.org/html/rfc2460#section-7). This field name was changed to Differentiated Services by [IETF RFC 2474](https://tools.ietf.org/html/rfc2474). |
-| **Type of Service (ToS)** | General term when there are different levels of treatment (e.g. fare class).  It used to be the name of an 8-bit field in the IPv4 header originally defined by [IETF RFC 791](https://tools.ietf.org/html/rfc791). This field name was changed to Differentiated Services by [IETF RFC 2474](https://tools.ietf.org/html/rfc2474)|
+| **Type of Service (ToS)** | General term when there are different levels of treatment (for example, fare class).  It used to be the name of an 8-bit field in the IPv4 header originally defined by [IETF RFC 791](https://tools.ietf.org/html/rfc791). This field name was changed to Differentiated Services by [IETF RFC 2474](https://tools.ietf.org/html/rfc2474)|
 
 
 ## QoS global configuration commands
@@ -59,21 +59,21 @@ These commands are entered in the global configuration context.
 `apply qos queue-profile <NAME> schedule-profile {<NAME> | strict}`
 
 #### Description
-The **apply qos** command in the global configuration context will configure the given queue profile and schedule profile at the global level.  Global profiles are configured on all Ethernet interfaces and LAGs that have not applied their own profiles.
+The `apply qos` command in the global configuration context configures the given queue profile and schedule profile at the global level. Global profiles are configured on all Ethernet interfaces and LAGs that have not applied their own profiles.
 
 **This may cause the interface(s) or LAG(s) to shut down briefly during the reconfiguration.**
 
-For a queue profile to be complete and ready to be applied, all local priorities must be mapped to some queue.
+For a queue profile to be complete and ready to be applied, all local priorities must be mapped to a queue.
 
-For the schedule profile to be complete and ready to be applied, it must have configuration for each queue defined by the queue profile. All queues must use the same algorithm except for the highest numbered queue, which may be 'strict'.
+For the schedule profile to be complete and ready to be applied, it must have a configuration for each queue defined by the queue profile. All queues must use the same algorithm except for the highest numbered queue, which may be "strict".
 
-There is a special, pre-defined schedule-profile named 'strict'.  It is always present and unalterable.  This 'strict' profile will service all queues of an associated queue profile using the strict priority algorithm.
+There is a special, pre-defined schedule-profile named "strict". It is always present and unalterable. The strict profile services all queues of an associated queue profile using the strict priority algorithm.
 
-The queue profile and the schedule profile must both specify the same number of queues.
+Both the queue profile and the schedule profile must specify the same number of queues.
 
 An applied profile cannot be updated or deleted until such time that it is no longer applied.
 
-The **no apply qos** command is disallowed in the global configuration context.  It is required to always have a global and schedule profile applied.  To cease the use of a profile, apply a different profile.
+The `no apply qos` command is disallowed in the global configuration context.  It is required to always have a global and schedule profile applied.  To cease the use of a profile, apply a different profile.
 
 #### Authority
 All configuration users.
@@ -93,6 +93,40 @@ switch(config)# apply qos queue-profile default schedule-profile strict
 #### Troubleshooting
 See the [Common troubleshooting](#common-troubleshooting) section for error messages that may appear as the output of various commands.
 
+If a profile fails to be applied to the hardware, then the desired configuration may differ from the actual configuration (known as "status"). In this case, the desired configuration and the actual configuration (status) would both be displayed by the `show interface` command. In the following example, the desired schedule profile is strict, but the actual schedule profile in hardware is default:
+```
+switch# configure terminal
+switch(config)# apply qos queue-profile default schedule-profile strict
+switch(config-if)# do show interface 1
+
+Interface 1 is down (Administratively down)
+ Admin state is down
+ State information: admin_down
+ Hardware: Ethernet, MAC Address: 70:72:cf:e7:cc:67
+ MTU 1500
+ Full-duplex
+ qos trust none
+ qos queue-profile default
+ qos schedule-profile strict, status is default
+ Speed 0 Mb/s
+ Auto-Negotiation is turned on
+ Input flow-control is off, output flow-control is off
+ RX
+            0 input packets              0 bytes
+            0 input error                0 dropped
+            0 CRC/FCS
+       L3:
+            ucast: 0 packets, 0 bytes
+            mcast: 0 packets, 0 bytes
+ TX
+            0 output packets             0 bytes
+            0 input error                0 dropped
+            0 collision
+       L3:
+            ucast: 0 packets, 0 bytes
+            mcast: 0 packets, 0 bytes
+```
+
 | Error Message | Description |
 |:-----------|:---------------------------------------|
 | *The queue profile has local priority NUM assigned more than once.* | This error message occurs when an apply command is attempted for a queue profile for which the given local priority has been assigned to more than one queue. The solution is to remove the local priority from one of the queues in the queue profile.
@@ -110,9 +144,9 @@ See the [Common troubleshooting](#common-troubleshooting) section for error mess
 #### Description
 The **cos-map** command associates local-priority, color, and optionally a descriptive name to each 802.1 VLAN priority code point (COS).
 
-This table is used when a port's QoS trust mode is set to 'cos' to mark packets initial local-priority and color (see [qos trust](#qos-trust)).
+This table is used when a port's QoS trust mode is set to "cos" to mark packets initial local-priority and color (see [qos trust](#qos-trust)).
 
-The default color is "green".  The default name is an empty string.
+The default color is "green". The default name is an empty string.
 
 The **no cos-map** command will restore the assignments for a priority code point back to its factory default.
 
@@ -122,10 +156,10 @@ All configuration users.
 #### Parameters
 | Parameter | Description |
 |:-----------|:---------------------------------------|
-| *COS* |  802.1 VLAN Priority Code Point from 0 to 7
-| *NUM* |  Switch-specific local priority value
-| *COLOR* | One of the following tokens: 'green', 'yellow', or 'red'
-| *DESCRIPTION* | Contains up to 64 characters for customer documentation. The allowed characters are alphanumeric, underscore ('_'), hyphen ('-'), and dot ('.').
+| *COS* |  802.1 VLAN Priority Code Point from 0 to 7. |
+| *NUM* |  Switch-specific local priority value. |
+| *COLOR* | One of the following tokens: green, yellow, or red. |
+| *DESCRIPTION* | Contains up to 64 characters for customer documentation. The allowed characters are alphanumeric, underscore ( _ ), hyphen ( - ), and dot ( . ). |
 
 #### Examples
 ```
@@ -140,13 +174,13 @@ switch(config)# qos cos-map 1 local-priority 2 color green name EntryName
 `no qos dscp-map <0-63>`
 
 #### Description
-The **dscp-map** command associates local-priority, color, and optionally a descriptive name to each IP differentiated services code point (DSCP).  This command can optionally remark the incoming 802.1 VLAN CoS PCP.
+The `dscp-map` command associates local-priority, color, and optionally a descriptive name to each IP differentiated services code point (DSCP).  This command can optionally remark the incoming 802.1 VLAN CoS PCP.
 
 This table is used when a port's  QoS trust mode is set to 'dscp' to assign the packets initial local-priority and color.
 
-The default color is 'green'.  The default name is an empty string.
+The default color is green.  The default name is an empty string.
 
-The 'no' form of the command will restore the assignments for a code point back to its factory default.
+The "no" form of the command restores the assignments for a code point back to its factory default.
 
 #### Authority
 All configuration users.
@@ -154,10 +188,10 @@ All configuration users.
 #### Parameters
 | Parameter | Description |
 |:-----------|:---------------------------------------|
-| *DSCP* | IP Differentiated Services Code Point from 0 to 63
-| *NUM* |  ASIC-specific local priority value from 0 to 7
-| *COLOR* | One of the following tokens: 'green', 'yellow', or 'red'
-| *DESCRIPTION* | Contains up to 64 characters for customer documentation. The allowed characters are alphanumeric, underscore ('_'), hyphen ('-'), and dot ('.').
+| *DSCP* | IP Differentiated Services Code Point from 0 to 63. |
+| *NUM* |  ASIC-specific local priority value from 0 to 7. |
+| *COLOR* | One of the following tokens: green, yellow, or red. |
+| *DESCRIPTION* | Contains up to 64 characters for customer documentation. The allowed characters are alphanumeric, underscore ( _ ), hyphen ( - ), and dot ( . ). |
 
 #### Examples
 ```
@@ -172,17 +206,17 @@ switch(config)# qos dscp-map 1 local-priority 2 color green name EntryName
 `no qos queue-profile <NAME>`
 
 #### Description
-The queue-profile command is used to enter the queue-profile configuration context to create, or edit, a named queue profile.
+The `queue-profile` command is used to enter the queue-profile configuration context to create or edit a named queue profile.
 
-The no form of the command will delete the named queue profile, if it is not currently applied.
+The "no" form of the command deletes the named queue profile, if it is not currently applied.
 
 ##### Default profile
 
-There is a special, pre-defined profile named 'default'.  At installation a factory supplied default queue-profile is automatically applied. The 'default' profile is editable as long as it is not applied.
+There is a special, pre-defined profile named "default". At installation, a factory supplied default queue-profile is automatically applied. The default profile is editable as long as it is not applied.
 
-**show qos queue-profile default** will display current contents of the profile.
+The `show qos queue-profile default` command displays current contents of the profile.
 
-The profile named 'default' cannot be deleted. **no queue-profile default** will reset it back to the factory supplied profile.
+The profile named "default" cannot be deleted. The `no queue-profile default` command resets the default profile back to the factory supplied profile.
 
 #### Authority
 All configuration users.
@@ -190,7 +224,7 @@ All configuration users.
 #### Parameters
 | Parameter | Description |
 |:-----------|:---------------------------------------|
-| *NAME* | Contains up to 64 characters for customer documentation. The allowed characters are alphanumeric, underscore ('_'), hyphen ('-'), and dot ('.').
+| *NAME* | Contains up to 64 characters for customer documentation. The allowed characters are alphanumeric, underscore ( _ ), hyphen ( - ), and dot ( . ).
 
 #### Examples
 ```
@@ -203,7 +237,7 @@ See the [Common troubleshooting](#common-troubleshooting) section for error mess
 
 | Error Message | Description |
 |:-----------|:---------------------------------------|
-| *The profile name cannot be 'strict'.* | This error occurs when the profile name parameter is the reserved profile name 'strict'. The solution is to select another profile name that is not 'strict'.
+| *The profile name cannot be 'strict'.* | This error occurs when the profile name parameter is the reserved profile name "strict". The solution is to select another profile name that is not "strict".
 | *An applied profile cannot be amended or deleted.* | This error occurs when an applied profile is attempted to be modified or deleted. The solution is to modify a different profile, or to apply a different profile so that the given profile can be modified.
 | *A hardware default profile cannot be amended or deleted.* | This error occurs when the hardware default profile is attempted to be modified or deleted. The solution is to modify a different profile, since the hardware default profile cannot be modified.
 
@@ -214,17 +248,17 @@ See the [Common troubleshooting](#common-troubleshooting) section for error mess
 `no qos schedule-profile <NAME>`
 
 #### Description
-The schedule-profile command is used to enter the schedule-profile configuration context to create, or edit, a named schedule profile.
+The `schedule-profile` command is used to enter the schedule-profile configuration context to create or edit a named schedule profile.
 
-The no form of the command will delete the named schedule profile, if it is not currently applied.
+The "no" form of the command deletes the named schedule profile, if it is not currently applied.
 
 ##### Default schedule profile
 
-There is a special, pre-defined profile named 'default'.  At installation a factory supplied default schedule-profile is automatically applied. The 'default' profile is editable as long as it is not applied.
+There is a special, pre-defined profile named "default". At installation, a factory supplied default schedule-profile is automatically applied. The default profile is editable as long as it is not applied.
 
-**show qos schedule-profile default** will display current contents of the profile.
+The `show qos schedule-profile default` command displays current contents of the profile.
 
-The profile named 'default' cannot be deleted. **no schedule-profile default** will reset it back to the factory supplied profile.
+The profile named "default" cannot be deleted. The `no schedule-profile default` command resets the default profile back to the factory supplied profile.
 
 #### Authority
 All configuration users.
@@ -232,7 +266,7 @@ All configuration users.
 #### Parameters
 | Parameter | Description |
 |:-----------|:---------------------------------------|
-| *NAME* | Contains up to 64 characters for customer documentation. The allowed characters are alphanumeric, underscore ('_'), hyphen ('-'), and dot ('.').
+| *NAME* | Contains up to 64 characters for customer documentation. The allowed characters are alphanumeric, underscore ( _ ), hyphen ( - ), and dot ( . ).
 
 #### Examples
 ```
@@ -245,7 +279,7 @@ See the [Common troubleshooting](#common-troubleshooting) section for error mess
 
 | Error Message | Description |
 |:-----------|:---------------------------------------|
-| *The profile name cannot be 'strict'.* | This error occurs when the profile name parameter is the reserved profile name 'strict'. The solution is to select another profile name that is not 'strict'.
+| *The profile name cannot be 'strict'.* | This error occurs when the profile name parameter is the reserved profile name "strict". The solution is to select another profile name that is not "strict".
 | *An applied profile cannot be amended or deleted.* | This error occurs when an applied profile is attempted to be modified or deleted. The solution is to modify a different profile, or to apply a different profile so that the given profile can be modified.
 | *A hardware default profile cannot be amended or deleted.* | This error occurs when the hardware default profile is attempted to be modified or deleted. The solution is to modify a different profile, since the hardware default profile cannot be modified.
 
@@ -256,9 +290,9 @@ See the [Common troubleshooting](#common-troubleshooting) section for error mess
 `no qos trust`
 
 #### Description
-The Trust command configures one of three modes that be applied globally on all Ethernet interfaces and LAGs.  The modes determine which of any packet field values are used to assign the initial Local-priority and Color meta-data values to the packet from the CoS or DSCP Map tables.
+The `trust` command configures one of three modes that be applied globally on all Ethernet interfaces and LAGs.  The modes determine which of any packet field values are used to assign the initial Local-priority and Color metadata values to the packet from the CoS or DSCP Map tables.
 
-**no qos trust** will restore the trust mode back to the factory default.
+The `no qos trust` command restores the trust mode back to the factory default.
 
 #### Authority
 All configuration users.
@@ -267,8 +301,8 @@ All configuration users.
 | Parameter | Description |
 |:-----------|:---------------------------------------|
 | none | Ignores all packet headers. The packet is initially assigned local_priority of zero and color of green.
-| cos | For 802.1 VLAN tagged packets, use the priority code point field value of the outermost VLAN header as the index into the COS Map. If the packet is untagged, use the meta-data values at index zero of the COS Map.
-| dscp | For IP packets, use the DSCP value as the index into the DSCP Map. For non-IP packets with 802.1 VLAN tag(s), use the priority code point field value of the outermost tag header as the index into the CoS Map.  For untagged, non-IP packets, use the meta-data values at index zero of the CoS Map.
+| cos | For 802.1 VLAN tagged packets, use the priority code point field value of the outermost VLAN header as the index into the COS Map. If the packet is untagged, use the metadata values at index zero of the COS Map.
+| dscp | For IP packets, use the DSCP value as the index into the DSCP Map. For non-IP packets with 802.1 VLAN tag(s), use the priority code point field value of the outermost tag header as the index into the CoS Map.  For untagged, non-IP packets, use the metadata values at index zero of the CoS Map.
 
 #### Examples
 ```
@@ -288,20 +322,20 @@ These commands are entered in the interface configuration context.
 `(config-if)# no apply qos schedule-profile`
 
 #### Description
-The **apply qos** command in the Ethernet or LAG interface configuration context will configure the given schedule profile just for that interface.  It will override any schedule-profile applied in the global context.
+The `apply qos` command in the Ethernet or LAG interface configuration context configures the given schedule profile just for that interface. It overrides any schedule-profile applied in the global context.
 
 **This may cause the interface (or LAG) to shutdown briefly during the reconfiguration.**
 
-**NOTE:** The same name as the currently applied schedule-profile can be applied in the global context. This guarantees that the interface will always use this schedule-profile, even when the global context schedule-profile subsequently changes.
+**NOTE:** The same name as the currently applied schedule-profile can be applied in the global context. This guarantees that the interface always uses this schedule-profile, even when the global context schedule-profile subsequently changes.
 
-For the schedule profile to be complete and ready to be applied, it must have configuration for each queue defined by the queue profile.  All queues must use the same algorithm (such as DWRR, for example), except for the highest numbered queue, which may be 'strict'.
+For the schedule profile to be complete and ready to be applied, it must have a configuration for each queue defined by the queue profile. All queues must use the same algorithm (for examplem DWRR), except for the highest numbered queue, which may be "strict".
 
 An applied profile cannot be updated or deleted until it is no longer applied.
 
 ##### Strict schedule profile
-There is a special, pre-defined profile named 'strict'.  It is always present and unalterable.  The strict profile will service all queues of an associated queue profile using strict priority scheduling.
+There is a special, pre-defined profile named "strict". It is always present and unalterable. The strict profile services all queues of an associated queue profile using strict priority scheduling.
 
-The **no apply qos schedule-profile** command will clear a schedule profile override for a given interface and the interface will use the global schedule profile.  This is the only way to remove a schedule-profile override from the interface.
+The `no apply qos schedule-profile` command clears a schedule profile override for a given interface and the interface uses the global schedule profile. This is the only way to remove a schedule-profile override from the interface.
 
 #### Authority
 All configuration users.
@@ -309,8 +343,8 @@ All configuration users.
 #### Parameters
 | Parameter | Description |
 |:-----------|:---------------------------------------|
-| *NAME* | The name of the profile to apply
-| *strict* | Use the strict schedule profile
+| *NAME* | The name of the profile to apply. |
+| *strict* | Use the strict schedule profile. |
 
 #### Examples
 ```
@@ -321,6 +355,41 @@ switch(config-if)# apply qos schedule-profile strict
 
 #### Troubleshooting
 See the [Common troubleshooting](#common-troubleshooting) section for error messages that may appear as the output of various commands.
+
+If a profile fails to be applied to the hardware, then the desired configuration may differ from the actual configuration (known as "status"). In this case, the desired configuration and the actual configuration (status) would both be displayed by the `show interface` command. In the following example, the desired schedule profile is "strict", but the actual schedule profile in hardware is "default":
+```
+switch# configure terminal
+switch(config)# interface 1
+switch(config-if)# apply qos schedule-profile strict
+switch(config-if)# do show interface 1
+
+Interface 1 is down (Administratively down)
+ Admin state is down
+ State information: admin_down
+ Hardware: Ethernet, MAC Address: 70:72:cf:e7:cc:67
+ MTU 1500
+ Full-duplex
+ qos trust none
+ qos queue-profile default
+ qos schedule-profile strict, status is default
+ Speed 0 Mb/s
+ Auto-Negotiation is turned on
+ Input flow-control is off, output flow-control is off
+ RX
+            0 input packets              0 bytes
+            0 input error                0 dropped
+            0 CRC/FCS
+       L3:
+            ucast: 0 packets, 0 bytes
+            mcast: 0 packets, 0 bytes
+ TX
+            0 output packets             0 bytes
+            0 input error                0 dropped
+            0 collision
+       L3:
+            ucast: 0 packets, 0 bytes
+            mcast: 0 packets, 0 bytes
+```
 
 | Error Message | Description |
 |:-----------|:---------------------------------------|
@@ -336,20 +405,20 @@ See the [Common troubleshooting](#common-troubleshooting) section for error mess
 `(config-if)# $ no qos dscp`
 
 #### Description
-The **qos dscp** command in the Ethernet or LAG interface configuration context will configure a DSCP override just for that interface.  It is only allowed if the interface trust mode is **none**.
+The 'qos dscp' command in the Ethernet or LAG interface configuration context configures a DSCP override just for that interface. It is only allowed if the interface trust mode is "none".
 
-Note that if a DSCP override has been configured, and the trust mode is subsequently set to 'cos' or 'dscp', then the DSCP override will be ignored.
+**NOTE:** If a DSCP override has been configured, and the trust mode is subsequently set to "cos" or "dscp", then the DSCP override is ignored.
 
-The **no qos dscp** command will clear the DSCP override for the interface.
+The `no qos dscp` command clears the DSCP override for the interface.
 
 ##### For all arriving IPv4 or IPv6 packets:
-- Initial local-priority and color meta-data are assigned from the DSCP map entry indexed by the DSCP override value
-- Remark the packet's DSCP in IPv4 or IPv6 DS header field with the DSCP override value
+- Initial local-priority and color metadata are assigned from the DSCP map entry indexed by the DSCP override value.
+- Remark the packet's DSCP in IPv4 or IPv6 DS header field with the DSCP override value.
 
 ##### For all arriving non-IP packets:
-- Initial local-priority and color meta-data are assigned from the CoS Map entry index 0
-- The CoS of all arriving tagged non-IP packets are unchanged
-  - If the packet is subsequently transmitted with a 802.1Q VLAN tag, the PCP field will contain the unchanged CoS
+- Initial local-priority and color metadata are assigned from the CoS Map entry index 0.
+- The CoS of all arriving tagged non-IP packets are unchanged.
+  - If the packet is subsequently transmitted with a 802.1Q VLAN tag, the PCP field contains the unchanged CoS.
 
 #### Authority
 All configuration users.
@@ -357,7 +426,7 @@ All configuration users.
 #### Parameters
 | Parameter | Description |
 |:-----------|:---------------------------------------|
-| *<0-63>* | Index into the DSCP Map
+| *<0-63>* | Index into the DSCP Map. |
 
 #### Examples
 ```
@@ -373,7 +442,7 @@ See the [Common troubleshooting](#common-troubleshooting) section for error mess
 
 | Error Message | Description |
 |:-----------|:---------------------------------------|
-| *QoS DSCP override is only allowed if the port trust mode is 'none'.* | This error occurs when a dscp override command is attempted when the port trust mode is 'none'. The solution is to configure the port trust mode to 'none'.
+| *QoS DSCP override is only allowed if the port trust mode is 'none'.* | This error occurs when a DSCP override command is attempted when the port trust mode is "none". The solution is to configure the port trust mode to "none".
 
 ## interface qos trust
 
@@ -383,9 +452,9 @@ See the [Common troubleshooting](#common-troubleshooting) section for error mess
 `(config-if)# $ no qos trust`
 
 #### Description
-The **qos trust** command in the Ethernet or LAG interface configuration context will configure a trust mode override just for that interface.  It will override the trust mode applied in the global context.  The modes determine which of any packet field values are used to assign the initial Local-priority and Color meta-data values to the packet from the CoS or DSCP Map tables.
+The `qos trust` command in the Ethernet or LAG interface configuration context configures a trust mode override just for that interface. It overrides the trust mode applied in the global context.  The modes determine which of any packet field values are used to assign the initial Local-priority and Color metadata values to the packet from the CoS or DSCP Map tables.
 
-The **no qos trust** command will clear the trust mode override for a given interface and the interface will use the global schedule profile.  This is the only way to remove a trust mode override from the interface.
+The `no qos trust` command clears the trust mode override for a given interface and the interface will use the global schedule profile. This is the only way to remove a trust mode override from the interface.
 
 #### Authority
 All configuration users.
@@ -394,8 +463,8 @@ All configuration users.
 | Parameter | Description |
 |:-----------|:---------------------------------------|
 | none | Ignores all packet headers. The packet is initially assigned local_priority of zero and color of green.
-| cos | For 802.1 VLAN tagged packets, use the priority code point field value of the outermost VLAN header as the index into the COS Map. If the packet is untagged, use the meta-data values at index zero of the COS Map.
-| dscp | For IP packets, use the DSCP value as the index into the DSCP Map. For non-IP packets with 802.1 VLAN tag(s), use the priority code point field value of the outermost tag header as the index into the CoS Map.  For untagged, non-IP packets, use the meta-data values at index zero of the CoS Map.
+| cos | For 802.1 VLAN tagged packets, use the priority code point field value of the outermost VLAN header as the index into the COS Map. If the packet is untagged, use the metadata values at index zero of the COS Map.
+| dscp | For IP packets, use the DSCP value as the index into the DSCP Map. For non-IP packets with 802.1 VLAN tag(s), use the priority code point field value of the outermost tag header as the index into the CoS Map.  For untagged, non-IP packets, use the metadata values at index zero of the CoS Map.
 
 #### Examples
 ```
@@ -412,11 +481,11 @@ To enter the queue profile context, enter the [qos queue-profile](#qos-queue-pro
 
 ##### Queue numbering
 
-Queues are numbered consecutively starting from zero.  Queue zero is the lowest priority queue.  The larger the queue number, the higher priority the queue has in scheduling algorithms (see [QOS Schedule Profile Configuration Commands](#qos-schedule-profile-configuration-commands)).  The maximum allowed queue number may vary by  product.  For products supporting 8 queues, the largest queue number is 7. Please refer to the product specifications for the maximum.
+Queues are numbered consecutively starting from zero.  Queue zero is the lowest priority queue.  The larger the queue number, the higher priority the queue has in scheduling algorithms (see [QOS Schedule Profile Configuration Commands](#qos-schedule-profile-configuration-commands)).  The maximum allowed queue number may vary by product.  For products supporting eight queues, the largest queue number is seven. Please refer to the product specifications for the maximum.
 
 ##### Default profile
 
-There is a special, pre-defined profile named 'default'.  At installation a factory supplied default queue-profile is automatically applied. The 'default' profile is editable as long as it is not applied.
+There is a special, pre-defined profile named "default". At installation, a factory supplied default queue-profile is automatically applied. The default profile is editable as long as it is not applied.
 
 
 ## name
@@ -426,11 +495,11 @@ There is a special, pre-defined profile named 'default'.  At installation a fact
 `no name queue <0-7>`
 
 #### Description
-The **name** command assigns a descriptive string to a queue number in a queue profile.  It has no effect on the product configuration.
+The `name` command assigns a descriptive string to a queue number in a queue profile.  It has no effect on the product configuration.
 
-The descriptive string contains up to 64 characters for customer documentation. The allowed characters are alphanumeric, underscore ('_'), hyphen ('-'), and dot ('.').
+The descriptive string contains up to 64 characters for customer documentation. The allowed characters are alphanumeric, underscore ( _ ), hyphen ( - ), and dot ( . ).
 
-The **no name** command will delete the name of a queue number in a queue profile.
+The `no name` command deletes the name of a queue number in a queue profile.
 
 #### Authority
 All configuration users.
@@ -453,7 +522,7 @@ See the [Common troubleshooting](#common-troubleshooting) section for error mess
 
 | Error Message | Description |
 |:-----------|:---------------------------------------|
-| *Profile NAME does not have queue NUM configured.* | This error occurs when a 'no' command is attempted for a queue that has not yet been configured. The solution is to first configure the queue.
+| *Profile NAME does not have queue NUM configured.* | This error occurs when a "no" command is attempted for a queue that has not yet been configured. The solution is to first configure the queue.
 
 ## map
 
@@ -462,13 +531,13 @@ See the [Common troubleshooting](#common-troubleshooting) section for error mess
 `no map queue <0-7> [local-priority <0-7>]`
 
 #### Description
-The **map** command assigns a local priority to a queue number in a queue profile. Packets marked with that local-priority will use the queue.
+The `map` command assigns a local priority to a queue number in a queue profile. Packets marked with that local-priority use the queue.
 
-More than one local-priority can be assigned to use the same queue. A queue without any local-priorities assigned will not be used to store packets.
+More than one local-priority can be assigned to use the same queue. A queue without any local-priorities assigned is not used to store packets.
 
 For a queue profile to be suitable to be applied (see [apply qos](#apply-qos)), all local-priorities must be assigned to some queue in the profile.
 
-The **no map** command will remove the assignment of the local priority from the queue number. If no local priority is provided, then the assignment of all local priorities will be removed from the queue.
+The `no map` command removes the assignment of the local priority from the queue number. If no local priority is provided, then the assignment of all local priorities are removed from the queue.
 
 #### Authority
 All configuration users.
@@ -491,7 +560,7 @@ See the [Common troubleshooting](#common-troubleshooting) section for error mess
 
 | Error Message | Description |
 |:-----------|:---------------------------------------|
-| *Profile NAME does not have queue NUM configured.* | This error occurs when a 'no' command is attempted for a queue that has not yet been configured. The solution is to first configure the queue.
+| *Profile NAME does not have queue NUM configured.* | This error occurs when a "no" command is attempted for a queue that has not yet been configured. The solution is to first configure the queue. |
 
 ## QoS schedule profile configuration commands
 
@@ -501,22 +570,22 @@ To enter the schedule profile context, enter the [qos schedule-profile](#qos-sch
 
 ##### Queue numbering
 
-Queues in a schedule profile are numbered consecutively starting from zero.  Queue zero is the lowest priority queue.  The larger the queue number the higher priority the queue has in scheduling algorithms.  The maximum allowed queue number may vary by  product.  For products supporting 8 queues, the largest queue number is 7. Please refer to the product specifications for the maximum.
+Queues in a schedule profile are numbered consecutively starting from zero.  Queue zero is the lowest priority queue.  The larger the queue number the higher priority the queue has in scheduling algorithms.  The maximum allowed queue number may vary by product.  For products supporting eight queues, the largest queue number is seven. Please refer to the product specifications for the maximum.
 
 ##### Allowed forms
 
 There are two allowed forms for schedule profiles:
-1. All queues use the same scheduling algorithm (e.g. dwrr)
-2. The highest queue number uses Strict Priority and all remaining (lower) queues use the same algorithm (e.g. dwrr).
+1. All queues use the same scheduling algorithm (for example, dwrr).
+2. The highest queue number uses Strict Priority, and all remaining (lower) queues use the same algorithm (for example, dwrr).
 
 The second form supports priority scheduling behavior necessary for the [IEFT RFC 3246 Expedited Forwarding](https://tools.ietf.org/html/rfc3246) specification.
 
 ##### Default schedule profile
 
-There is a special, pre-defined profile named 'default'.  At installation a factory supplied default schedule-profile is automatically applied. The 'default' profile is editable as long as it is not applied.
+There is a special, pre-defined profile named "default". At installation, a factory supplied default schedule-profile is automatically applied. The default profile is editable as long as it is not applied.
 
 ##### Strict schedule profile
-There is a special, pre-defined profile named 'strict'.  It is always present and unalterable.  The strict profile will service all queues of an associated queue profile using the strict priority algorithm.
+There is a special, pre-defined profile named "strict". It is always present and unalterable. The strict profile services all queues of an associated queue profile using the strict priority algorithm.
 
 ## strict
 
@@ -525,9 +594,9 @@ There is a special, pre-defined profile named 'strict'.  It is always present an
 `no strict queue <0-7>`
 
 #### Description
-The **strict** command assigns the strict priority algorithm to a queue. Strict priority will service all packets waiting in a queue before any packets in lower priority queues are serviced.
+The `strict` command assigns the strict priority algorithm to a queue. Strict priority services all packets waiting in a queue before any packets in lower priority queues are serviced.
 
-The **no strict** command will only clear the algorithm for a queue when the algorithm already assigned is Strict Priority.
+The `no strict` command only clears the algorithm for a queue when the algorithm already assigned is Strict Priority.
 
 #### Authority
 All configuration users.
@@ -535,7 +604,7 @@ All configuration users.
 #### Parameters
 | Parameter | Description |
 |:-----------|:---------------------------------------|
-| *QUEUE* |  The queue number from 0 to 7
+| *QUEUE* |  The queue number from 0 to 7. |
 
 #### Examples
 ```
@@ -549,7 +618,7 @@ See the [Common troubleshooting](#common-troubleshooting) section for error mess
 
 | Error Message | Description |
 |:-----------|:---------------------------------------|
-| *Profile NAME does not have queue NUM configured.* | This error occurs when a 'no' command is attempted for a queue that has not yet been configured. The solution is to first configure the queue.
+| *Profile NAME does not have queue NUM configured.* | This error occurs when a "no" command is attempted for a queue that has not yet been configured. The solution is to first configure the queue. |
 
 ## dwrr
 
@@ -558,11 +627,11 @@ See the [Common troubleshooting](#common-troubleshooting) section for error mess
 `no dwrr queue <0-7>`
 
 #### Description
-The **dwrr** command assigns the deficit weighted round robin algorithm and its byte weight to a queue.
+The `dwrr` command assigns the deficit weighted round robin algorithm and its byte weight to a queue.
 
-(Deficit weight round robin will apportion available bandwidth among all non-empty queues in relation to their queue weights. A product will either support deficit weighted round robin or weighted round robin but not both. Please refer to the specifications for the product.
+Deficit weight round robin apportions available bandwidth among all non-empty queues in relation to their queue weights. A product will either support deficit weighted round robin or weighted round robin, but not both. See the specifications for the product.
 
-The **no dwrr** command will only clear the algorithm for a queue when the algorithm already assigned is deficit weighted round robin.
+The `no dwrr` command only clears the algorithm for a queue when the algorithm already assigned is deficit weighted round robin.
 
 #### Authority
 All configuration users.
@@ -571,7 +640,7 @@ All configuration users.
 | Parameter | Description |
 |:-----------|:---------------------------------------|
 | *QUEUE* |  The queue number from 0 to 7
-| *WEIGHT* |  The weight to use for the dwrr scheduling
+| *WEIGHT* |  The weight to use for the dwrr scheduling. |
 
 #### Examples
 ```
@@ -586,7 +655,7 @@ See the [Common troubleshooting](#common-troubleshooting) section for error mess
 
 | Error Message | Description |
 |:-----------|:---------------------------------------|
-| *Profile NAME does not have queue NUM configured.* | This error occurs when a 'no' command is attempted for a queue that has not yet been configured. The solution is to first configure the queue.
+| *Profile NAME does not have queue NUM configured.* | This error occurs when a "no" command is attempted for a queue that has not yet been configured. The solution is to first configure the queue. |
 
 ## Display commands
 The following commands show configuration and status information.
@@ -644,12 +713,12 @@ Interface 1 is down (Administratively down)
 `show interface <INTERFACE> queues`
 
 #### Description
-This command will display statistics from each queue for an interface:
+This command displays statistics from each queue for an interface:
 - Number of packets transmitted
 - Number of bytes transmitted
 - Number of packets that were not transmitted due to an error (for example: queue full)
 
-Queues are numbered consecutively starting from zero.  Queue zero is the lowest priority queue.  The larger the queue number the higher priority the queue has in scheduling algorithms.  The maximum allowed queue number may vary by  product.  For products supporting 8 queues, the largest queue number is 7. Please refer to the product specifications for the maximum.
+Queues are numbered consecutively starting from zero. Queue zero is the lowest priority queue. The larger the queue number the higher priority the queue has in scheduling algorithms. The maximum allowed queue number may vary by product. For products supporting eight queues, the largest queue number is seven. Please refer to the product specifications for the maximum.
 
 #### Authority
 All users.
@@ -690,7 +759,7 @@ This command displays the QoS cos-map.
 All configuration users.
 
 #### Parameters
-The optional 'default' parameter will display the factory default values.
+The optional "default" parameter displays the factory default values.
 
 #### Examples
 ```
@@ -719,7 +788,7 @@ This command displays the QoS dscp-map.
 All users.
 
 #### Parameters
-The optional 'default' parameter will display the factory default values.
+The optional "default" parameter displays the factory default values.
 
 #### Examples
 ```
@@ -798,11 +867,11 @@ code_point local_priority color   name
 `show qos queue-profile [{<NAME> | factory-default}]`
 
 #### Description
-When no parameter is provided, then a sorted list of defined profile names and their status will be shown.
+When no parameter is provided, then a sorted list of defined profile names and their status is shown.
 
-When a name is given, this command will display the details of the specified profile.  The name 'default' can be used to display the current details of that profile.
+When a name is given, this command displays the details of the specified profile. The name "default" can be used to display the current details of that profile.
 
-When the 'factory-default' parameter is used in place of a name, then the factory supplied profile will be displayed.
+When the "factory-default" parameter is used in place of a name, then the factory supplied profile is displayed.
 
 #### Authority
 All users.
@@ -810,8 +879,8 @@ All users.
 #### Parameters
 | Parameter | Description |
 |:-----------|:---------------------------------------|
-| *NAME* |  The name of the profile to show
-| *factory-default* |  Show the factory default profile
+| *NAME* |  The name of the profile to show. |
+| *factory-default* |  Show the factory default profile. |
 
 #### Examples
 ```
@@ -834,11 +903,11 @@ queue_num local_priorities name
 `show qos schedule-profile [{<NAME> | factory-default}]`
 
 #### Description
-When no parameter is provided, then a sorted list of defined profile names and their status will be shown.
+When no parameter is provided, then a sorted list of defined profile names and their status is shown.
 
-When a name is given, this command will display the details of the specified profile.  The name 'default' can be used to display the current details of that profile.
+When a name is given, this command displays the details of the specified profile. The name "default" can be used to display the current details of that profile.
 
-When 'factory-default' parameter is used in place of a name, then the factory supplied profile will be displayed.
+When "factory-default" parameter is used in place of a name, then the factory supplied profile is displayed.
 
 #### Authority
 All users.
@@ -846,8 +915,8 @@ All users.
 #### Parameters
 | Parameter | Description |
 |:-----------|:---------------------------------------|
-| *NAME* |  The name of the profile to show
-| *factory-default* |  Show the factory default profile
+| *NAME* |  The name of the profile to show. |
+| *factory-default* |  Show the factory default profile. |
 
 #### Examples
 ```
@@ -876,7 +945,7 @@ This command displays the global QoS trust setting.
 All users.
 
 #### Parameters
-The optional 'default' parameter will display the factory default value.
+The optional "default" parameter displays the factory default value.
 
 #### Examples
 ```
@@ -955,7 +1024,7 @@ The following error messages may appear as the output of various commands.
 | Error Message | Description |
 |:-----------|:---------------------------------------|
 | *This field can have a length up to 64 characters.* | This error message occurs when a parameter is provided whose length is greater than 64 characters. The solution is to select a name that has 64 or fewer characters.
-| *The allowed characters are alphanumeric, underscore ('_'), hyphen ('-'), and dot ('.').* | This error message occurs when a parameter is provided that contains illegal characters. The allowed characters are alphanumeric, underscore ('_'), hyphen ('-'), and dot ('.').
+| *The allowed characters are alphanumeric, underscore ( _ ), hyphen ( - ), and dot ( . ).* | This error message occurs when a parameter is provided that contains illegal characters. The allowed characters are alphanumeric, underscore ( _ ), hyphen ( - ), and dot ( . ).
 | *Unknown command* | This error message can occur if a required parameter is missing from the command, or if a given parameter is out of range. The solution is to ensure that all required parameters are specified for the command, and are within bounds.
 | *Command incomplete* | This error message can occur if a required parameter is missing from the command. The solution is to ensure that all required parameters are specified for the command.
 | *PROPERTY cannot be configured on a member of a LAG.* | This error message occurs if a command is attempted on an interface that is a member of a LAG. The solution is to execute the command on the LAG, or to remove the interface from the LAG.
