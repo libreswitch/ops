@@ -3225,7 +3225,7 @@
     "BGP_Route": {
       "columns": {
         "vrf": {
-          "category": "configuration",
+          "category": "status",
           "relationship": "m:1",
           "type": {
             "key": {
@@ -3318,7 +3318,7 @@
           "mutable": false
         },
         "bgp_nexthops": {
-          "category": "configuration",
+          "category": "status",
           "relationship": "1:m",
           "type": {
             "key": {
