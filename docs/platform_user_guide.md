@@ -41,7 +41,7 @@ Interface 1 is down
  Admin state is up
  State information: admin_down
  Hardware: Ethernet, MAC Address: 48:0f:cf:ad:33:cd
- MTU 9388
+ MTU 9192
  Full-duplex
  Speed 40000 Mb/s
  Auto-Negotiation is turned on
@@ -74,7 +74,7 @@ Interface 19 is down (Administratively down)
  Admin state is down
  State information: lanes_split
  Hardware: Ethernet, MAC Address: 48:0f:cf:ad:33:cd
- MTU 9388
+ MTU 9192
  Half-duplex
  Speed 0 Mb/s
  Auto-Negotiation is turned on
