@@ -1561,6 +1561,10 @@
       <column name="ports">
         Ports included in the VRF.
       </column>
+      <column name="active_router_id">
+        Router-ID (in IPv4 format) that is currently used in the system,
+        unless overridden by protocol specific one.
+      </column>
       <column name="bgp_routers" keyname="asn">
         BGP routers keyed by ASN value.
       </column>
