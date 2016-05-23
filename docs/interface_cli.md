@@ -459,7 +459,7 @@ Interface 1 is down (Administratively down)
 Admin state is down
 State information: admin_down
 Hardware: Ethernet, MAC Address: 70:72:cf:fd:e7:b4
-MTU 9388
+MTU 9192
 Half-duplex
 Speed 0 Mb/s
 Auto-Negotiation is turned on
@@ -477,7 +477,7 @@ Interface 10 is down (Administratively down)
 Admin state is down
 State information: admin_down
 Hardware: Ethernet, MAC Address: 70:72:cf:fd:e7:b4
-MTU 9388
+MTU 9192
 Half-duplex
 Speed 0 Mb/s
 Auto-Negotiation is turned on
