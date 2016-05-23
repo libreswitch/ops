@@ -5653,13 +5653,13 @@
            UDP port number of peer device. The default value is <code>7678</code>.
          </column>
          <column name="keepalive_src_ip">
-           IPv4 address of the device.
+           IPv4 address of the device. If not configured, keepalive functionality is disabled.
          </column>
          <column name="keepalive_peer_ip">
-           IPv4 address of the peer device.
+           IPv4 address of the peer device. If not configured, keepalive functionality is disabled.
          </column>
          <column name="keepalive_vrf">
-           VRF to be used for keepalive routing.
+           VRF to be used for keepalive routing. If not configured, keepalive functionality is disabled.
          </column>
        </group>
 
