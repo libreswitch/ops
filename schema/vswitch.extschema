@@ -895,6 +895,17 @@
             "max": 1
           }
         },
+       "active_router_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 0,
+            "max": 1
+          }
+       },
         "status": {
           "category": "status",
           "type": {
