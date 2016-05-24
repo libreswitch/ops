@@ -4359,6 +4359,16 @@
         </p>
       </column>
 
+      <column name="error_control">
+        <p>
+          The status of Ethernet error control (error detection and correction)
+          mode of the physical network link.
+          The error control can be implemented as forward error correction (FEC).
+          The FEC can be implemented using Fire codes (FC-FEC) or Reed-Solomon
+          codes (RS-FEC).
+        </p>
+      </column>
+
       <column name="bond_status">
         Key-value pairs that report the status of a bond.  This applies to both
         static or LACP bonds.
@@ -5396,6 +5406,11 @@
     <column name="user_config" key="mtu">
       The user-configured MTU of <ref table="Interface"/>.
     </column>
+    <column name="user_config" key="error_control">
+      The user-configured Ethernet error control (error detection and correction) mode
+      of <ref table="Interface"/>. The possible values are "none", "fc-fec" and "rs-fec".
+      Default is "none" if not specified.
+    </column>
     <column name="user_config" key="lane_split">
       The user-configured split mode of <ref table="Interface"/>.
       This is only applicable if an interface can be split into
@@ -5436,6 +5451,9 @@
     </column>
     <column name="hw_intf_config" key="mtu">
       Maximum transmission unit (MTU) of <ref table="Interface"/>.
+    </column>
+    <column name="hw_intf_config" key="error_control">
+      The possible values are "none", "fc-fec" and "rs-fec". Default is "none".
     </column>
     <column name="hw_intf_config" key="interface_type">
       Physical layer interface type of <ref table="Interface"/>.

@@ -4840,6 +4840,25 @@
           },
           "ephemeral": true
         },
+        "error_control": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set",
+                [
+                  "none",
+                  "fc-fec",
+                  "rs-fec"
+                ]
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true
+        },
         "error": {
           "category": "status",
           "type": {
