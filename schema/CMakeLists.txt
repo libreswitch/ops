@@ -40,3 +40,12 @@ foreach(fn ${ovsschema})
 	message(STATUS "Existing file: ${fn}")
 	process_ovsschema(${fn})
 endforeach(fn)
+
+# Process header files
+
+file(GLOB idl_headers
+	RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
+
+install(FILES ${idl_headers} DESTINATION include)
