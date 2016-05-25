@@ -23,7 +23,6 @@ from opstestfw.switch import *
 
 # Topology definition
 topoDict = {"topoExecution": 1000,
-            "topoType": "physical",
             "topoTarget": "dut01 ",
             "topoDevices": "dut01 wrkston01 wrkston02 wrkston03",
             "topoLinks": "lnk01:dut01:wrkston01,\
@@ -125,10 +124,12 @@ def l3_route(**kwargs):
     packet_loss = retStruct.valueGet(key = 'packet_loss')
     packets_sent = retStruct.valueGet(key = 'packets_transmitted')
     packets_received = retStruct.valueGet(key = 'packets_received')
+    packets_error = retStruct.valueGet(key = 'packets_errors')
     LogOutput('info', "Packets Sent:\t" + str(packets_sent))
     LogOutput('info', "Packets Recv:\t" + str(packets_received))
     LogOutput('info', "Packet Loss %:\t" + str(packet_loss))
-    assert packets_received == packets_sent, "failed to ping Host3"
+    LogOutput('info', "Packet Errors:\t" + str(packets_error))
+    assert packets_received > 1, "failed to ping Host3"
 
     # pinging from work statiosdd to switch 1
     retStruct = InterfaceIpConfig(deviceObj = device1,
@@ -165,16 +166,19 @@ def l3_route(**kwargs):
     packet_loss = retStruct.valueGet(key = 'packet_loss')
     packets_sent = retStruct.valueGet(key = 'packets_transmitted')
     packets_received = retStruct.valueGet(key = 'packets_received')
+    packets_error = retStruct.valueGet(key = 'packets_errors')
     LogOutput('info', "Packets Sent:\t" + str(packets_sent))
     LogOutput('info', "Packets Recv:\t" + str(packets_received))
     LogOutput('info', "Packet Loss %:\t" + str(packet_loss))
-    assert packets_received == packets_sent, "failed to ping switch"
+    LogOutput('info', "Packet Errors:\t" + str(packets_error))
+    assert packets_received > 1, "failed to ping switch"
 
     # changing Vlan and verifying ping
     retStruct = Dot1qEncapsulation(deviceObj = device1,
                     subInterface=device1.linkPortMapping['lnk01'] + ".10",
                                    dot1q=True, vlan=200, enable = True)
 
+    sleep(2)
     retStruct = wrkstn1.Ping(ipAddr = "192.168.1.1", packetCount=10)
     retCode = retStruct.returnCode()
     assert retCode != 0, "able to ping switch"
@@ -184,18 +188,21 @@ def l3_route(**kwargs):
     packet_loss = retStruct.valueGet(key = 'packet_loss')
     packets_sent = retStruct.valueGet(key = 'packets_transmitted')
     packets_received = retStruct.valueGet(key = 'packets_received')
+    packets_error = retStruct.valueGet(key = 'packets_errors')
     LogOutput('info', "Packets Sent:\t" + str(packets_sent))
     LogOutput('info', "Packets Recv:\t" + str(packets_received))
     LogOutput('info', "Packet Loss %:\t" + str(packet_loss))
+    LogOutput('info', "Packet Errors:\t" + str(packets_error))
     assert packets_received != packets_sent, "able to ping switch1"
     LogOutput('info', "Failed to ping switch\
                   Negative test case passed")
 
-    # after eemoving dot1 encapsulation trying to ping host-switch
+    # after removing dot1 encapsulation trying to ping host-switch
     retStruct = Dot1qEncapsulation(deviceObj = device1,
                     subInterface=device1.linkPortMapping['lnk01'] + ".10",
                                    dot1q = False, vlan = 200, enable = True)
 
+    sleep(2)
     retStruct = wrkstn1.Ping(ipAddr = "192.168.1.1", packetCount = 10)
     retCode = retStruct.returnCode()
     assert retCode != 0, "failed to ping switch"
@@ -206,9 +213,11 @@ def l3_route(**kwargs):
     packet_loss = retStruct.valueGet(key = 'packet_loss')
     packets_sent = retStruct.valueGet(key = 'packets_transmitted')
     packets_received = retStruct.valueGet(key = 'packets_received')
+    packets_error = retStruct.valueGet(key = 'packets_errors')
     LogOutput('info', "Packets Sent:\t" + str(packets_sent))
     LogOutput('info', "Packets Recv:\t" + str(packets_received))
     LogOutput('info', "Packet Loss %:\t" + str(packet_loss))
+    LogOutput('info', "Packet Errors:\t" + str(packets_error))
     assert packets_received == 0, "able to ping switch"
 
 class Test_subInt:
