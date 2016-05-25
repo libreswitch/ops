@@ -6935,7 +6935,7 @@
 
     <column name="from">
       This specifies whether this MAC address has been added by the
-      hw-vtep controller, dynamically learnt from the ASIC or statically configured.
+      hw-vtep controller or dynamically learnt from the ASIC.
     </column>
 
     <column name="port">
