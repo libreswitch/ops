@@ -6357,7 +6357,7 @@
     </group>
     <group title="Configuration">
       <column name="enabled">
-        Specifies whether counter is enabled.
+        Specifies whether counter is enabled. An empty value means counter is disabled.
       </column>
 
       <column name="trigger_threshold">
