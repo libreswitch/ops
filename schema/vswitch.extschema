@@ -9200,7 +9200,7 @@
         },
         "cur_aces": {
           "category": "status",
-          "relationship": "1:m",
+          "relationship": "reference",
           "type": {
             "key": {
               "type": "integer",
@@ -9234,7 +9234,7 @@
         },
         "in_progress_aces": {
           "category": "status",
-          "relationship": "1:m",
+          "relationship": "reference",
           "type": {
             "key": {
               "type": "integer",
