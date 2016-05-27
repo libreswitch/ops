@@ -60,9 +60,7 @@ topoDict = {"topoType" : "physical",
                           lnk02:dut01:wrkston02",
             "topoFilters": "dut01:system-category:switch,\
                             wrkston01:system-category:workstation,\
-                            wrkston02:system-category:workstation",
-            "topoLinkFilter": "lnk01:dut01:interface:1, \
-                               lnk02:dut01:interface:2"}
+                            wrkston02:system-category:workstation"}
 
 PING_BYTES = 128
 PING_CNT = 10
@@ -72,6 +70,7 @@ WS1_IP = NET_1 + ".1"
 WS2_IP = NET_1 + ".2"
 NET1_MASK = "255.255.255.0"
 NET1_BCAST = NET_1 + ".0"
+PACKET_LOSS = 15
 
 class Test_template:
 
@@ -158,7 +157,8 @@ class Test_template:
             assert 1 == 0, "Invalid response from get admin_state, resp = %s" % admin_state
 
     def verify_ping(self, src, dest, expected):
-        out = src.Ping(ipAddr=dest._ip, interval=.2, errorCheck=False)
+        out = src.Ping(ipAddr=dest._ip, interval=.2, errorCheck=False,
+            packetCount=30)
         if out.returnCode() != 0:
             if expected is False:
                 return
@@ -166,12 +166,15 @@ class Test_template:
 
         LogOutput("info", "%s" % out.data)
         success = False;
-        if out.data['packets_transmitted'] == out.data['packets_received']:
+        if out.data['packet_loss'] <= PACKET_LOSS:
             success = True;
 
         assert success == expected, "ping was %s, expected %s" % (success, expected)
 
     def cmd_set_1(self, obj):
+
+        interface_1 = self.s1.linkPortMapping['lnk01']
+        interface_2 = self.s1.linkPortMapping['lnk02']
         # Issue "configure terminal" command
         LogOutput("info", "sending configure terminal")
         rc = obj.cmd("configure terminal")
@@ -207,22 +210,24 @@ class Test_template:
         self.cmd_set_1(self.vtyconn)
 
         # Verify interface 1 is down
-        LogOutput('info', "Verify that intf 1 is down")
-        self.verify_intf_admin_state(self.vtyconn, "1", "down")
+        interface_1 = self.s1.linkPortMapping['lnk01']
+        interface_2 = self.s1.linkPortMapping['lnk02']
+        LogOutput('info', "Verify that intf %s is down" %interface_1)
+        self.verify_intf_admin_state(self.vtyconn, interface_1, "down")
 
         # Verify ping fails
         LogOutput('info', "Verify that ping from ws1 to ws2 fails")
         self.verify_ping(self.w1, self.w2, False)
 
         # Bring up interface 1
-        LogOutput('info', "Bring intf 1 up")
-        rc = self.vtyconn.cmd("interface 1")
+        LogOutput('info', "Bring intf %s up"%interface_1)
+        rc = self.vtyconn.cmd("interface %s" %interface_1)
         rc = self.vtyconn.cmd("no shutdown")
 
         # Verify interface 1 is up
         sleep(1)
-        LogOutput('info', "Verify that intf 1 is up")
-        self.verify_intf_admin_state(self.vtyconn, "1", "up")
+        LogOutput('info', "Verify that intf %s is up"%interface_1)
+        self.verify_intf_admin_state(self.vtyconn, interface_1, "up")
 
         # Verify ping works
         LogOutput('info', "Verify that ping from ws1 to ws2 works")
@@ -234,8 +239,8 @@ class Test_template:
 
         # Verify interface 1 is down
         sleep(1)
-        LogOutput('info', "Verify that intf 1 is down")
-        self.verify_intf_admin_state(self.vtyconn, "1", "down")
+        LogOutput('info', "Verify that intf %s is down"%interface_1)
+        self.verify_intf_admin_state(self.vtyconn, interface_1, "down")
 
         # Verify ping fails
         LogOutput('info', "Verify that ping from ws1 to ws2 fails")

@@ -17,7 +17,7 @@
 #
 # USER CONFIG
 #
-# Autonegotiation
+# autonegotiation
 #
 # dut01: vtysh cmd:     configure terminal
 # dut01: vtysh cmd:     vlan 10
@@ -118,9 +118,7 @@ topoDict = {"topoType" : "physical",
                           lnk02:dut01:wrkston02",
             "topoFilters": "dut01:system-category:switch,\
                             wrkston01:system-category:workstation,\
-                            wrkston02:system-category:workstation",
-            "topoLinkFilter": "lnk01:dut01:interface:1, \
-                               lnk02:dut01:interface:2"}
+                            wrkston02:system-category:workstation"}
 
 PING_BYTES = 128
 PING_CNT = 10
@@ -130,6 +128,7 @@ WS1_IP = NET_1 + ".1"
 WS2_IP = NET_1 + ".2"
 NET1_MASK = "255.255.255.0"
 NET1_BCAST = NET_1 + ".0"
+PACKET_LOSS = 15
 
 class Test_template:
 
@@ -241,19 +240,23 @@ class Test_template:
             assert 1 == 0, "Invalid response from get autoneg, resp = %s" % autoneg
 
     def verify_ping(self, src, dest, expected):
-        out = src.Ping(ipAddr=dest._ip, interval=.2, errorCheck=False)
+        out = src.Ping(ipAddr=dest._ip, interval=.2, errorCheck=False,
+            packetCount=30)
 
         if out is None:
             assert 1 == 0, "ping command failed, no output"
 
         LogOutput("info", "%s" % out.data)
         success = False;
-        if out.data['packets_transmitted'] == out.data['packets_received']:
+        if out.data['packet_loss'] <= PACKET_LOSS:
             success = True;
 
         assert success == expected, "ping was %s, expected %s" % (success, expected)
 
     def cmd_set_1(self, obj):
+
+        interface_1 = self.s1.linkPortMapping['lnk01']
+        interface_2 = self.s1.linkPortMapping['lnk02']
         # Issue "configure terminal" command
         LogOutput("info", "sending configure terminal")
         rc = obj.cmd("configure terminal")
@@ -263,16 +266,16 @@ class Test_template:
         rc = obj.cmd("no shutdown")
         LogOutput("info", "sending exit")
         rc = obj.cmd("exit")
-        LogOutput("info", "sending interface 2")
-        rc = obj.cmd("interface 2")
+        LogOutput("info", "sending interface %s" %interface_2)
+        rc = obj.cmd("interface %s" %interface_2)
         LogOutput("info", "sending no routing")
         rc = obj.cmd("no routing")
         LogOutput("info", "sending vlan access 10")
         rc = obj.cmd("vlan access 10")
         LogOutput("info", "sending no shutdown")
         rc = obj.cmd("no shutdown")
-        LogOutput("info", "sending interface 1")
-        rc = obj.cmd("interface 1")
+        LogOutput("info", "sending interface %s" % interface_1)
+        rc = obj.cmd("interface %s" % interface_1)
         LogOutput("info", "sending no routing")
         rc = obj.cmd("no routing")
         LogOutput("info", "sending vlan access 10")
@@ -284,18 +287,21 @@ class Test_template:
         LogOutput('info', "*****Testing autonegotiation*****")
         self.startup_sequence()
 
+        interface_1 = self.s1.linkPortMapping['lnk01']
+        interface_2 = self.s1.linkPortMapping['lnk02']
+
         # Configure interfaces 1 & 2 on vlan 10, with 1 down and 2 up.
         LogOutput('info', "Cfg intfs 1 & 2 on vlan 10, with 1 down and 2 up")
         self.cmd_set_1(self.vtyconn)
 
         # Bring up interface 1
-        LogOutput('info', "Bring intf 1 up")
+        LogOutput('info', "Bring intf %s up" %interface_1)
         rc = self.vtyconn.cmd("no shutdown")
 
         # Verify autoneg is on
         sleep(1)
         LogOutput('info', "Verify autoneg is on")
-        self.verify_intf_autoneg(self.vtyconn, "1", True)
+        self.verify_intf_autoneg(self.vtyconn, interface_1, True)
 
         # Verify ping works
         LogOutput('info', "Verify that ping from ws1 to ws2 works")
@@ -308,13 +314,14 @@ class Test_template:
         # Verify autoneg is off
         sleep(1)
         LogOutput('info', "Verify autoneg is off")
-        self.verify_intf_autoneg(self.vtyconn, "1", False)
+        self.verify_intf_autoneg(self.vtyconn, interface_1, False)
 
         # Verify interface 1 is down
-        LogOutput('info', "Verify that intf 1 is down")
-        self.verify_intf_admin_state(self.vtyconn, "1", "down")
-        LogOutput('info', "Verify that intf 1 error is autoneg_required")
-        self.verify_intf_error(self.vtyconn, "1", "autoneg_required")
+        LogOutput('info', "Verify that intf %s is down"%interface_1)
+        self.verify_intf_admin_state(self.vtyconn, interface_1, "down")
+        LogOutput('info',
+            "Verify that intf %s error is autoneg_required"%interface_1)
+        self.verify_intf_error(self.vtyconn, interface_1, "autoneg_required")
 
         # Verify ping fails
         LogOutput('info', "Verify that ping from ws1 to ws2 fails")
@@ -327,8 +334,8 @@ class Test_template:
         # Verify autoneg is on
         sleep(1)
         LogOutput('info', "Verify autoneg is on and admin_state is up")
-        self.verify_intf_autoneg(self.vtyconn, "1", True)
-        self.verify_intf_admin_state(self.vtyconn, "1", "up")
+        self.verify_intf_autoneg(self.vtyconn, interface_1, True)
+        self.verify_intf_admin_state(self.vtyconn, interface_1, "up")
 
         # Verify ping works
         LogOutput('info', "Verify that ping from ws1 to ws2 works")
@@ -340,8 +347,8 @@ class Test_template:
 
         # Verify autoneg is on
         LogOutput('info', "Verify autoneg is on and admin_state is up")
-        self.verify_intf_autoneg(self.vtyconn, "1", True)
-        self.verify_intf_admin_state(self.vtyconn, "1", "up")
+        self.verify_intf_autoneg(self.vtyconn, interface_1, True)
+        self.verify_intf_admin_state(self.vtyconn, interface_1, "up")
 
         # Verify ping works
         LogOutput('info', "Verify that ping from ws1 to ws2 works")

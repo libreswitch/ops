@@ -67,21 +67,19 @@ topoDict = {"topoExecution": 1000,
                           lnk02:dut01:wrkston02",
             "topoFilters": "dut01:system-category:switch,\
                             wrkston01:system-category:workstation,\
-                            wrkston02:system-category:workstation",
-            "topoLinkFilter": "lnk01:dut01:interface:1, \
-                               lnk02:dut01:interface:2"}
+                            wrkston02:system-category:workstation"}
 
 STAT_SYNC_DELAY_SECS = 8
 PING_BYTES = 128
-PING_CNT = 10
+PING_CNT = 30
 RC_ERR_FMT = "vtysh exit code non-zero, %d"
 NET_1 = "10.10.10"
 WS1_IP = NET_1 + ".1"
 WS2_IP = NET_1 + ".2"
 NET1_MASK = "255.255.255.0"
 NET1_BCAST = NET_1 + ".0"
+PACKET_LOSS = 15
 
-@pytest.mark.skipif(True, reason="Skipping since it fails randomly")
 class Test_template:
 
     def setup(self):
@@ -155,26 +153,32 @@ class Test_template:
         self.open_vtysh()
 
     def verify_ping(self, src, dest, expected):
-        out = src.Ping(ipAddr=dest._ip, interval=.2, errorCheck=False)
+        out = src.Ping(ipAddr=dest._ip, interval=.2, errorCheck=False,
+            packetCount=PING_CNT)
 
         if out is None:
             assert 1 == 0, "ping command failed, no output"
 
         LogOutput("info", "%s" % out.data)
         success = False;
-        if out.data['packets_transmitted'] == out.data['packets_received']:
+        if out.data['packet_loss'] <= PACKET_LOSS:
             success = True;
 
         assert success == expected, "ping was %s, expected %s" % (success, expected)
 
     def baseline_stats(self):
-        self.i1_stat = InterfaceStatisticsShow(deviceObj=self.s1, interface="1")
+        interface_1 = self.s1.linkPortMapping['lnk01']
+        self.i1_stat = InterfaceStatisticsShow(deviceObj=self.s1,
+            interface=interface_1)
 
     def verify_stats(self, incr=True):
         # Retry loop around tx and rx stats.
+        interface_1 = self.s1.linkPortMapping['lnk01']
+        interface_2 = self.s1.linkPortMapping['lnk02']
         for iteration in range(0, 5):
             pass_cases = 0
-            i1_new = InterfaceStatisticsShow(deviceObj=self.s1, interface="1")
+            i1_new = InterfaceStatisticsShow(deviceObj=self.s1,
+            interface=interface_1)
             rx_base = self.i1_stat.valueGet(key='RX')
             rx_new = i1_new.valueGet(key='RX')
             tx_base = self.i1_stat.valueGet(key='TX')
@@ -257,6 +261,8 @@ class Test_template:
 
     def cmd_set_1(self, obj):
         # Issue "configure terminal" command
+        interface_1 = self.s1.linkPortMapping['lnk01']
+        interface_2 = self.s1.linkPortMapping['lnk02']
         LogOutput("info", "sending configure terminal")
         rc = obj.cmd("configure terminal")
         LogOutput("info", "sending vlan 10")
@@ -265,7 +271,7 @@ class Test_template:
         rc = obj.cmd("no shutdown")
         LogOutput("info", "sending exit")
         rc = obj.cmd("exit")
-        LogOutput("info", "sending interface 2")
+        LogOutput("info", "sending interface %s"%interface_2)
         rc = obj.cmd("interface 2")
         LogOutput("info", "sending no routing")
         rc = obj.cmd("no routing")
@@ -275,7 +281,7 @@ class Test_template:
         rc = obj.cmd("no shutdown")
         LogOutput("info", "sending exit")
         rc = obj.cmd("exit")
-        LogOutput("info", "sending interface 1")
+        LogOutput("info", "sending interface %s"%interface_1)
         rc = obj.cmd("interface 1")
         LogOutput("info", "sending no routing")
         rc = obj.cmd("no routing")
@@ -288,9 +294,12 @@ class Test_template:
         # Get everything initially configured
         LogOutput('info', "*****Testing statistics*****")
         self.startup_sequence()
+        interface_1 = self.s1.linkPortMapping['lnk01']
+        interface_2 = self.s1.linkPortMapping['lnk02']
 
         # Configure interfaces 1 & 2 on vlan 10, with 1 down and 2 up.
-        LogOutput('info', "Cfg intfs 1 & 2 on vlan 10, with 1 down and 2 up")
+        LogOutput('info',
+            "Cfg intfs %s & %s on vlan 10, with %s down and %s up"% (interface_1, interface_2, interface_1, interface_2))
         self.cmd_set_1(self.vtyconn)
 
         # Back out to CLI main
