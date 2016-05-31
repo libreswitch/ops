@@ -68,10 +68,10 @@ Effective 2016-05-03
 	- one appointed voting representative from each Premier Member;
 	- one non-voting representative appointed by members from other classes of membership; and
 	- a non-voting Maintainer appointed by the TSC, if the TSC chooses to appoint a representative.
-b - Responsibilities: The Marketing Committee shall be responsible for designing, developing and executing marketing efforts on behalf of the Governing Board. The Marketing Committee is expected to coordinate closely with the Governing Board and with other communities to maximize the outreach and visibility of OSP throughout the industry.
+- b. Responsibilities: The Marketing Committee shall be responsible for designing, developing and executing marketing efforts on behalf of the Governing Board. The Marketing Committee is expected to coordinate closely with the Governing Board and with other communities to maximize the outreach and visibility of OSP throughout the industry.
 
-### **6. Voting.  ** It is the goal of OSP to operate as a consensus based community **.**
-
+### **6. Voting.**
+It is the goal of OSP to operate as a consensus based community
 - a. Election to the positions to the TSC Chair, and to membership on the TSC, and for any decision that the TSC decides is to be decided by a vote, shall be the Condorcet/Schulze method.
 - b. If any other decision requires a vote to move forward, the representatives of the Governing Board or Marketing Committee, as applicable, shall vote on a one vote per voting representative basis.
 - c. Quorum for Governing Board, Technical Steering Committee, and Marketing Committee meetings shall require two-thirds of the voting representatives. The Governing Board, Technical Steering Committee, or Marketing Committee may continue to meet if quorum is not met, but shall be prevented from making any decisions at the meeting.
@@ -79,7 +79,6 @@ b - Responsibilities: The Marketing Committee shall be responsible for designing
 - e. In the event of a tied vote with respect to an action that cannot be resolved by the Governing Board, the chair shall be entitled to refer the matter to the LF for assistance in reaching a decision. For all decisions in the TSC, Marketing Committee or other committee created by the Governing Board, if there is a tie vote, the matter shall be referred to the Governing Board.
 
 ### **7. Antitrust Guidelines**
-
 - a. All members shall abide by The Linux Foundation Antitrust Policy available at http://www.linuxfoundation.org/antitrust-policy.
 - b. All members shall encourage open participation from any organization able to meet the membership requirements, regardless of competitive interests. Put another way, the Governing Board shall not seek to exclude any member based on any criteria, requirements or reasons other than those that are reasonable and applied on a non-discriminatory basis to all members.
 
@@ -96,7 +95,8 @@ b - Responsibilities: The Marketing Committee shall be responsible for designing
 - b. A General & Administrative (G&A) fee will be applied by the Linux Foundation to funds raised to cover Finance, Accounting, and operations. The G&A fee shall equal 9% of OSP's first $1,000,000 of gross receipts and 6% of OSP's gross receipts over $1,000,000.
 - c. Under no circumstances shall The Linux Foundation be expected or required to undertake any action on behalf of OSP that is inconsistent with the tax exempt purpose of The Linux Foundation.
 
-### **11. General Rules and Operations.** The OSP project shall be conducted so as to:
+### **11. General Rules and Operations.**
+The OSP project shall be conducted so as to:
 - a. engage in the work of the project in a professional manner consistent with maintaining a cohesive community, while also maintaining the goodwill and esteem of The Linux Foundation in the open source software community;
 - b. respect the rights of all trademark owners, including any branding and usage guidelines;
 - c. engage The Linux Foundation for all OSP press and analyst relations activities;
