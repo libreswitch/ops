@@ -14,11 +14,13 @@
 			- [Condition](#condition)
 			- [Cause](#cause)
 			- [Remedy](#remedy)
-	- [CLI ##](#cli-)
-		- [L3 subinterface event logs](#l3-subinterface-event-logs)
-	- [Related features ##](#related-features-)
+        - [CLI ##](#cli-)
+                - [L3 subinterface event logs](#l3-subinterface-event-logs)
+        - [Related features ##](#related-features-)
+	- [L3 subinterface event logs](#l3-subinterface-event-logs)
+	- [L3 subinterface diagnostic dump](#l3-subinterface-diagnostic-dump)
+	- [Related features](#related-features)
 <!-- /TOC -->
-
 
 ## Overview
 L3 Subinterfaces are used to support router-on-a-stick configurations. Using router-on-a-stick configurations, you can separate traffic on a L3 physical interface based on VLAN and also apply policies on the subinterfaces.
@@ -68,7 +70,7 @@ The interface may be configured as an L2.
 Configure the interface as an L3 using the `routing` command.
 ## CLI ##
 Click [CLI-TBL](https://openswitch.net/cli_feature_name.html#cli_command_anchor) for the CLI commands related to the L3 subinterface feature.
-### L3 subinterface event logs
+## L3 subinterface event logs
 All the events related to subinterface configuration are logged in event log.
 
 Following are the logged events:
@@ -83,5 +85,8 @@ Following are the logged events:
 - Remove encapsulation dot 1Q vlan ID.
 - Delete subinterface.
 
-## Related features ##
+##L3 subinterface diagnostic dump
+Number of subinterfaces created can be dumped using diagnostic dump.
+
+## Related features
 When configuring the switch for an L3 subinterface feature, it might also be necessary to configure an interface. Browse to (http://www.openswitch.net/documents/user/layer3_interface_cli#routing) so that the parent interface is a L3 interface.
