@@ -1,4 +1,3 @@
-
 # Ansible User Guide
 
 ## Contents
@@ -14,6 +13,10 @@
 	- [Ansible galaxy](#ansible-galaxy)
 - [Communicating with Openswitch](#communicating-with-openswitch)
 	- [SSH communication with Openswitch](#ssh-communiation-with-openswitch)
+- [How to write Ansible role for OpenSwitch VLAN](#how-to-write-ansible-role-for-openswitch-vlan)
+	- [Create and initialize VLAN role](#create-and-initialize-vlan-role)
+	- [Create templates based on schema](#create-templates-based-on-schema)
+	- [Simple playbook to create VLAN](#simple-playbook-to-create-vlan)
 - [References](#references)
 
 ## Overview
@@ -33,42 +36,58 @@ It is recommended on the Ansible website to use 'pip', the Python package manage
 
 As per the flavor of the operating system, there are different ways to install Ansible.
 
-```
 Recommended by Ansible official documentation for linux:
-
+```
 $sudo pip install Ansible
-
+```
 on mac OS:
-
+```
 $brew install Ansible
-
+```
 on centos OS:
-
+```
 $yum install Ansible
-
+```
 Ansible can also be installed using apt-get provided all the package requirements are taken care of:
-
+```
 $sudo apt-get install Ansible
+```
+
+A working Ansible control machine Docker image is uploaded on the Docker hub and is used for running the tests.
+
+The command to pull the Ansible control machine is:
+```
+docker pull openswitch/ansiblecm
+```
+Then you can access the Ansible control machine:
+```
+docker run -it openswitch/ansiblecm /bin/bash
 ```
 
 For more information about installing Ansible on different operating systems refer to:
 
 http://docs.ansible.com/ansible/intro_installation.html#getting-ansible
 
-A working Ansible control machine docker image is uploaded on the docker hub and is used for running the tests.
-The command to pull the Ansible control machine is:
-```
-docker pull openswitch/ansiblecm
-```
-
 ### Setting up the basic configuration on a control machine
 
 #### Default configuration for Ansible
-Settings in Ansible can be adjusted through the Ansible.cfg file. If you use pip to install Ansible, the Ansible.cfg file is present by default in the /etc/Ansible/ directory. Changes can be made by creating the Ansible.cfg file either in the home directory or in the current directory.
+Settings in Ansible can be adjusted through the ansible.cfg file. If you use pip to install Ansible, the ansible.cfg file is present by default in the /etc/ansible/ directory. Changes can be made by creating the ansible.cfg file either in the home directory or in the current directory.
+
+Here is a sample ansible.cfg file:
+```
+[defaults]
+inventory=/etc/ansible/hosts
+# disable SSH key host checking
+host_key_checking = False
+# make ansible use scp for ssh connection
+# (default method is sftp)
+scp_if_ssh = True
+
+```
+
 For more information about the Ansible.cfg file, refer to:
 
 http://docs.ansible.com/ansible/intro_configuration.html
-
 
 #### Declaring an inventory/hosts file
 
@@ -185,7 +204,7 @@ https://docs.ansible.com/ansible/ops_template_module.html
 
 https://docs.ansible.com/ansible/ops_command_module.html
 
- - ops_config: Manage the OpenSwitch configuration using CLI
+- ops_config: Manage the OpenSwitch configuration using CLI
 
 https://docs.ansible.com/ansible/ops_config_module.html
 
@@ -212,6 +231,177 @@ $ make testenv_init
 $ make testenv_run component ops-ansible
 
 ```
+## How to write Ansible role for OpenSwitch VLAN
+
+This section provides information on how to create an Ansible role for OpenSwitch VLAN configuration and testing.
+
+### Create and initialize VLAN role
+First initialize the vlan role under the <b>/etc/ansible/roles</b> folder with the ansible-galaxy API:
+```
+ansible-galaxy init vlan
+```
+Create the default file for the vlan role as <b>defaults/main.yml</b>:
+```
+---
+# defaults/main.yml
+# default remote user on the switch
+remote_user: admin
+
+# default host variable, which is required by ops_*.py modules.
+ops_host: "{{ ansible_host }}"
+
+# Enable debugging on ops_*.py modules.
+ops_debug: false
+```
+Create the task file to configure vlan and debug configuration transaction as <b>tasks/main.yml</b>:
+```
+---
+- name: print JSON input for this play
+  debug: >
+    msg="{{ lookup('template', 'main.j2') }}"
+  when: ops_debug
+
+- name: configure the bgp role
+  become: yes
+  ops_template:
+    src: main.j2
+    host: "{{ ops_host }}"
+  register: ops_result
+
+- name: result from the switch
+  debug: var=ops_result
+  when: ops_debug
+```
+
+
+### Create templates based on schema
+Create <b>templates/main.j2</b> file based on schema:
+```
+{# OpenSwitch JSON main template file #}
+
+{
+  {%- include ['ops_system.j2'] -%}
+}
+
+```
+Refer to <b>schema/vswitch.ovsschema</b> in the ops repository. The main table for ops is named <i>System</i>, and it contains the column <i>bridges</i>.
+```
+...
+  "tables": {
+    "System": {
+      "columns": {
+        ...
+        "bridges": {
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Bridge"
+            },
+            "min": 0,
+            "max": "unlimited"
+          }
+        }
+  ...
+```
+Create a template (<b>templates/ops_system.j2</b>) to iterate through the <i>System</i> table:
+```
+{# OpenSwitch System table JSON template file #}
+
+"System": {
+  {# System.bridges column #}
+  {%- if ops_bridges is defined -%}
+    {%- include ['ops_system_bridges.j2'] -%}
+  {%- endif -%}
+}
+
+```
+**Note**: In the schema sample, <i>bridges</i> is referred to as <i>Bridges</i> table.
+```
+"refTable": "Bridge"
+```
+In the <i>Bridge</i> table, there is a <i>vlan</i> column that refers to the <i>VLAN</i> table.
+```
+"vlans": {
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VLAN"
+            },
+            "min": 0,
+            "max": 4094
+          }
+         },
+
+```
+Based on this, create a template (<b>templates/ops_system_bridges.j2</b>) to iterate through the <i>bridges</i> column:
+```
+{# OpenSwitch System.bridges column JSON template file #}
+
+"bridges": {
+  {%- for bridge in ops_bridges -%}
+    "{{- bridge.name -}}": {
+
+      {# System.bridges.vlans column #}
+      {%- if bridge.vlans is defined -%}
+        {%- include ['ops_system_vlans.j2'] -%},
+      {%- endif -%}
+
+      "name": "{{- bridge.name -}}"
+    } {%- if not loop.last -%} , {%- endif -%}
+  {%- endfor -%}
+}
+```
+Create the vlan template <b>templates/ops_system_vlans.j2</b>:
+```
+{# OpenSwitch System.bridges.vlans column JSON template file #}
+
+"vlans": {
+  {%- for vlan in bridge.vlans -%}
+    "{{- vlan.name -}}": {
+      {%- if vlan.admin is defined -%}
+        "admin": "{{- vlan.admin -}}"
+      {%- endif -%}
+    } {%- if not loop.last -%} , {%- endif -%}
+  {%- endfor -%}
+}
+```
+###Simple playbook to create VLAN
+Following is a simple playbook to create two vlans under the default bridge (<b>tests/create_vlan.yml</b>):
+
+```
+---
+- name: create two vlans through vlan role
+  hosts: ops
+  gather_facts: no
+  vars:
+    ansible_user: admin
+    ops_debug: yes
+    ops_cli_provider:
+      transport: cli
+      username: netop
+      password: netop
+      host: "{{ ansible_host }}"
+      port: "{{ ansible_port }}"
+    ops_rest_provider:
+      transport: rest
+      username: netop
+      password: netop
+      host: "{{ ansible_host }}"
+      port: "{{ ops_rest_port }}"
+      use_ssl: true
+      validate_certs: no
+
+  roles:
+    - role: vlan
+      ops_bridges:
+        - name: bridge_normal
+          vlans:
+            - name: "VLAN2"
+              admin: "up"
+            - name: "VLAN3"
+              admin: "down"
+```
+
 ## References
 - http://www.ansible.com
 - http://docs.ansible.com
