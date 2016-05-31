@@ -3328,6 +3328,146 @@
           },
           "mutable": false
         },
+        "weight": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 30
+            },
+            "min": 0,
+            "max": 13
+          }
+        },
+        "local_pref": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aggregator_as": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "protocol_internal": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "protocol_iBGP": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aspath": {
+          "category": "status",
+          "type": {
+            "key": "integer",
+            "value": "integer",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "origin": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 30
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "creation_time": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0
+            }
+          }
+        },
+        "aggregator": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 30
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aggregate": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "community": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "ecommunity": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+
         "bgp_nexthops": {
           "category": "status",
           "relationship": "1:m",
