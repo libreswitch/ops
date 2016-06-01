@@ -8,6 +8,7 @@
 -   Presented at [FOSDEM 2016](https://fosdem.org/2016/schedule/event/openswitch/). Video will be available [here](http://video.fosdem.org/2016/ua2114/).
 
 ## Press Releases
+-	[Press release, June 1, 2016](/documents/user/press-release-2016-06-01)
 -	[Press release, October 5, 2015](/documents/user/press-release-2015-10-05)
 
 ## OpenSwitch Blogosphere
