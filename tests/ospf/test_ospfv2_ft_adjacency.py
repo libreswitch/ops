@@ -1032,6 +1032,7 @@ class Test_ospf_configuration:
         LogOutput('info', "****** Passed ******")
 
 
+@pytest.mark.skipif(True, reason="Skipping due to Taiga ID : 769")
 class Test_ospf_configuration_l2switch:
 
     def setup_class(cls):
