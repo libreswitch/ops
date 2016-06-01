@@ -32,6 +32,7 @@
 
 from opstestfw import *
 from opstestfw.switch.CLI import *
+import pytest
 
 topoDict = {"topoExecution": 3000,
             "topoDevices": "dut01 dut02 wrkston01 wrkston02",
@@ -616,6 +617,7 @@ def pingBetweenWorkstations(deviceObj1, deviceObj2, ipAddr, success):
             return False
     return True
 
+pytest.mark.skipif(True, reason="Skipping due to instability TG-1183")
 class Test_ft_framework_basics:
 
     def setup_class(cls):

@@ -16,6 +16,7 @@
 from opstestfw import *
 from opstestfw.switch.CLI import *
 from opstestfw.host import *
+import pytest
 
 topoDict = {"topoExecution": 1500,
             "topoDevices": "dut01 dut02\
@@ -34,6 +35,7 @@ topoDict = {"topoExecution": 1500,
                             wrkston04:system-category:workstation"}
 
 
+pytest.mark.skipif(True, reason="Skipping due to instability. TG-1183")
 class Test_ft_LAG_Dynamic_tagged_vlans:
 
     listDut = None
