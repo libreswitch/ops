@@ -141,11 +141,11 @@ class dhcpIPV4DynamicPoolConfigCTTest(OpsVsiTest):
 
         h1.cmd("ifconfig -a")
         h1.cmd("ip addr del 10.0.0.1/8 dev h1-eth0")
-        h1.cmd("dhclient h1-eth0")
+        h1.cmd("dhclient h1-eth0 -timeout 30")
 
         h2.cmd("ifconfig -a")
         h2.cmd("ip addr del 10.0.0.2/8 dev h2-eth0")
-        h2.cmd("dhclient h2-eth0")
+        h2.cmd("dhclient h2-eth0 -timeout 30")
 
         info('\n### DHCP clients h1 and h2 configured ' \
              'for dynamic IPV4 pool ###\n')
@@ -232,7 +232,6 @@ class dhcpIPV4DynamicPoolConfigCTTest(OpsVsiTest):
              'Test Passed ###\n')
 
 
-@pytest.mark.skipif(True, reason="Test case is causing docker space issues")
 class Test_dhcp_tftp_commands:
 
     def setup(self):
