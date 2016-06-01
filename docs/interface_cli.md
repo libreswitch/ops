@@ -198,7 +198,7 @@ Choose one of the following parameters as the MTU:
 | Parameter | Status | Syntax | Description |
 |:-----------|:----------|:----------------:|:--------------------------|
 | **auto** | Required | Literal | MTU set to auto mode. |
-| *value* | Required | 576-16360 | MTU value between 576 and 16360 bytes.
+| *value* | Required | 576-9192 | MTU value between 576 and 9192 bytes.
 #### Examples
 ```
 ops-as5712# configure terminal

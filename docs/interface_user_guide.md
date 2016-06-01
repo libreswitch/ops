@@ -67,7 +67,7 @@ The MTU of a communications protocol refers to the size in bytes of the largest 
 ops-as5712(config)# mtu 2000
 ops-as5712(config)#
 ```
-Note: Maximum configurable MTU value for jumbo frame is 9192 which allows inbound jumbo packets up to 9216(9192+padding bits(Ether_hdr+CRC)) bytes.
+Note: Maximum configurable MTU value for jumbo frame is 9192 which allows inbound jumbo packets up to 9216(9192+padding bytes(6+6+4+4+2+2 i.e DA + SA + STAG + CTAG + LEN + FCS) byte, while tagged packets of MTU + 4 bytes are permitted.
 
  The `no mtu` commands reverts the mtu of the interface to default auto mode.
  The 'mtu auto' command sets MTU to system default.
@@ -146,7 +146,7 @@ ops-as5712# show interface
 Interface 45 is down (Administratively down)
  Admin state is down
  Hardware: Ethernet, MAC Address: 70:72:cf:fd:e7:b4
- MTU 9192
+ MTU 1500
  Half-duplex
  Speed 0 Mb/s
  Auto-Negotiation is turned on
@@ -164,7 +164,7 @@ Interface 45 is down (Administratively down)
 Interface 36 is down (Administratively down)
  Admin state is down
  Hardware: Ethernet, MAC Address: 70:72:cf:fd:e7:b4
- MTU 9192
+ MTU 1500
  Half-duplex
  Speed 0 Mb/s
  Auto-Negotiation is turned on
