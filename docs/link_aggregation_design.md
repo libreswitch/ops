@@ -241,6 +241,8 @@ are:
   then the value of `state` is forwarding, if it is false, then it should be
   blocked.
 * "down": All member interfaces are either admin or link "down".
+This column also defines a key called `bond_speed`, which reports the speed of
+the member interfaces of the LAG.
 
 #### _Interface_ table
 The lacpd process fills in status information in the _Interface_ table's rows

@@ -3841,6 +3841,13 @@
         * Down:  All member interfaces configured to be a member of a LAG are
           either administratively or operatively down
       </column>
+      <column name="bond_status" key="bond_speed"
+              type='{"type":"integer", "minInteger": 0}'>
+        Speed, in bits per second (bps), of interfaces operating in LAG. By operating,
+        it means the active interfaces of the LAG, if one member interface operates at
+        a different speed, that interface is not considered as eligible.
+        Valid values are integers greater or equal to 0.
+      </column>
     </group>
 
     <group title="Port Statistics">
