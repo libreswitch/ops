@@ -1030,4 +1030,13 @@ enum ospf_nbr_statistics_e {
 #define SYSTEM_COPP_STATISTICS_MAP_TOTAL_PKTS_DROPPED     "total_packets_dropped"
 #define SYSTEM_COPP_STATISTICS_MAP_TOTAL_BYTES_DROPPED    "total_bytes_dropped"
 
+/* Mirror table mirror_status column */
+#define MIRROR_STATUS_MAP_KEY_OPERATION_STATE           "operation_state"
+#define MIRROR_STATUS_MAP_STATE_ACTIVE                  "active"
+#define MIRROR_STATUS_MAP_STATE_SHUTDOWN                "shutdown"
+#define MIRROR_STATUS_MAP_ERROR_INTERNAL                "internal_error"
+#define MIRROR_STATUS_MAP_ERROR_EXTERNAL                "driver_error"
+#define MIRROR_STATUS_MAP_ERROR_UNKNOWN                 "unknown_error"
+
+
 #endif /* OPENSWITCH_IDL_HEADER */

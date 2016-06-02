@@ -7962,7 +7962,9 @@
       <column name="mirror_status">
         Key-value pair(s) that report mirror status in hardware.
       </column>
-      <column name="mirror_status" key="operation_state" type='{"type": "string"}'>
+      <column name="mirror_status" key="operation_state"
+              type='{"type":"string",
+                     "enum": ["set", ["active", "shutdown", "internal_error", "driver_error", "unknown_error"]]}'>
         Operational state of the mirror session in hardware.
         Only the value "active" means the hardware mirroring is running.
         Any other value, or if the key is missing, means the session
