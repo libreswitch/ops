@@ -146,6 +146,7 @@ ROUTE_MAX_WAIT_TIME = 300
 
 # Topology definition
 topoDict = {"topoExecution": 5000,
+            "topoType": "physical",
             "topoTarget": "dut01 dut02",
             "topoDevices": "dut01 dut02",
             "topoLinks": "lnk01:dut01:dut02",
