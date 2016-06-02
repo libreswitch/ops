@@ -146,6 +146,7 @@ ROUTE_MAX_WAIT_TIME = 300
 
 # Topology definition
 topoDict = {"topoExecution": 5000,
+            "topoType": "physical",
             "topoTarget": "dut01 dut02",
             "topoDevices": "dut01 dut02",
             "topoLinks": "lnk01:dut01:dut02",
@@ -491,6 +492,7 @@ def configure(**kwargs):
     retCode = retStruct.returnCode()
     if retCode != 0:
         assert "Failed to configure an IPv6 address on interface 1 of SW2"
+
 
 class Test_bgp_ipv6_prefix_list_configuration:
     def setup_class(cls):
