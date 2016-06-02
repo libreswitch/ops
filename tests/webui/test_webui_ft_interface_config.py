@@ -225,6 +225,7 @@ class Test_CreatePatch(OpsVsiTest):
         info("\n########## End Test Create And Patch Port Int ##########\n")
 
 
+@pytest.mark.skipif(True, reason="Test ported to modular framework")
 class Test_WebUIREST:
     def setup(self):
         pass

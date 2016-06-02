@@ -103,6 +103,7 @@ class Test_OverviewData(OpsVsiTest):
         info("\n########## System Data Validated ##########\n")
 
 
+@pytest.mark.skipif(True, reason="Test ported to modular framework")
 class Test_OverviewPage:
     def setup(self):
         pass
