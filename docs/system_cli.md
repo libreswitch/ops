@@ -9,6 +9,7 @@
   - [Setting an LED state](#setting-an-led-state)
   - [Unsetting an LED state](#unsetting-an-led-state)
 - [System Display Commands](#system-display-commands)
+  - [Showing version information](#showing-version-information)
   - [Showing package information](#showing-package-information)
   - [Showing system information](#showing-system-information)
   - [System fan information](#system-fan-information)
@@ -134,9 +135,48 @@ switch(config)#no led base-loc
 ```
 
 ## System display commands
+### Showing version information
+#### Syntax
+`show version`
+
+#### Description
+This command shows the current switch version information. The format of the `show version` output:
+```
+<name> <version> (Build: <platform>-ops-<X.Y.Z-string>-<branch-name>[-<build-time>][-<meta-string>]
+```
+
+| Field Name  | Explanation                                                                                                                          | Example                       |
+|-------------|--------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|
+| name        | Name of the project.                                                                                                                 | OpenSwitch                    |
+| version     | Version of the software.                                                                                                             | 0.4.0 or 0.3.0-rc0 etc.       |
+| platform    | Platform for which the image is built.                                                                                               | genericx86-64, AS5712, AS6712 |
+| ops         | Abbreviation for OpenSwitch.                                                                                                         |                               |
+| X.Y.Z-string| The release version tag.                                                                                                             | 0.4.0 or 0.3.0-rc0 etc.       |
+| branch-name | Branch where the image is built.                                                                                                     | master, feature, release      |
+| build-time  | For periodic builds, the build time-stamp in YYYYMMDDNN format. For developer builds, the build time-stamp in YYYYMMDDHHmmss format. | 2016042606, 20160419204046    |
+| meta-string | “dev” is appended to image names when a developer builds an image using “make”.                                                      |                               |
+
+#### Authority
+All users.
+
+#### Parameters
+No parameters.
+
+#### Examples
+```
+| Switch Image Build Type                                                 | Show version                                                                |
+|-------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| Developer build of OpenSwitch from the master branch for genericx86-64. | OpenSwitch 0.4.0 (Build: genericx86-64-ops-0.4.0-master-20160419204046-dev) |
+| Periodic build of OpenSwitch from the master branch for genericx86-64.  | OpenSwitch 0.4.0 (Build: genericx86-64-ops-0.4.0-master+2016042606          |
+| Developer build of OpenSwitch from the master branch for AS5712.        | OpenSwitch 0.4.0 (Build: as5712-ops-0.4.0-master-20160419204046-dev)        |
+| Periodic build of OpenSwitch from the master branch for AS5712.         | OpenSwitch 0.4.0 (Build: as5712-ops-0.4.0-master+2016042606)                |
+| Periodic build of OpenSwitch from the release branch for AS5712.        | OpenSwitch 0.3.0-rc0 (Build: as5712-ops-0.3.0-rc0-release+2016042606)                |
+```
+
+
 ### Showing package information
 #### Syntax
-`show version detail`
+`show version detail [ops]`
 
 #### Description
 This command lists every package present in the switch image under the PACKAGE column. The VERSION column displays the git hash value if the SOURCE URL is a git repository. If not, the VERSION column displays the version string of the package. SOURCE TYPE displays the type of source pointed to by SOURCE URL. SOURCE URL displays the download location for the source-code of the corresponding package in the SOURCE URI column. If version information and/or Source URL is not available during build-time, `show version detail` displays 'NA' (Not Available).
@@ -145,7 +185,11 @@ This command lists every package present in the switch image under the PACKAGE c
 All users.
 
 #### Parameters
-This command does not require a parameter.
+No parameters.
+
+| Parameter  | Status   | Syntax         | Description                           |
+|:-----------|:----------|:----------------:|:---------------------------------------|
+|  *ops*   | Optional | Literal | Displays git-hashes for OpenSwitch repos (ops-*) alone. |
 
 #### Examples
 ```
