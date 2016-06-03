@@ -2665,6 +2665,24 @@
         },
         "redistribute": {
           "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "set",
+                [
+                  "connected",
+                  "static",
+                  "ospf"
+                ]
+              ]
+            },
+            "min": 0,
+            "max": 3
+          }
+        },
+        "redistribute_route_map": {
+          "category": "configuration",
           "relationship": "reference",
           "type": {
             "key": {

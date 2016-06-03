@@ -2556,8 +2556,10 @@
       Default is 180 seconds.
       </column>
       <column name="redistribute">
-      Specifies which protocol routes should be redistributed into BGP.
-      The routes can be filtered by specifying the route-map.
+      Specifies which routes should be redistributed by BGP.
+      </column>
+      <column name="redistribute_route_map">
+      Specifies route-maps to be applied when redistributing routes.
       </column>
       <column name="always_compare_med">
       Compares MED (Multi-Exit Discriminitor) from different neighbors.
