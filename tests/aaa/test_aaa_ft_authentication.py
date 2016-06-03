@@ -220,7 +220,7 @@ class aaaFeatureTest(OpsVsiTest):
         out = ""
         out += s1.cmd("echo ")
         sshkey= "ssh-keygen -R " + switchIpAddress
-        sshkeygen = pexpect.spawn(sshkey)
+        sshkeygen = pexpect.run(sshkey)
         myssh = SSHCLIENT + " netop@" + switchIpAddress
         p = pexpect.spawn(myssh)
 
@@ -266,7 +266,7 @@ class aaaFeatureTest(OpsVsiTest):
         out = ""
         out += s1.cmd("echo ")
         sshkey= "ssh-keygen -R " + switchIpAddress
-        sshkeygen = pexpect.spawn(sshkey)
+        sshkeygen = pexpect.run(sshkey)
         myssh = SSHCLIENT + " netop@" + switchIpAddress
         p = pexpect.spawn(myssh)
 
@@ -317,7 +317,7 @@ class aaaFeatureTest(OpsVsiTest):
         out = ""
         out += s1.cmd("echo ")
         sshkey= "ssh-keygen -R " + switchIpAddress
-        sshkeygen = pexpect.spawn(sshkey)
+        sshkeygen = pexpect.run(sshkey)
         myssh = SSHCLIENT + " netop@" + switchIpAddress
         p = pexpect.spawn(myssh)
 
@@ -345,7 +345,6 @@ class aaaFeatureTest(OpsVsiTest):
             assert loginpass != 1, "Failed to validate radius authetication" \
                                    " when server is not reachable"
 
-@pytest.mark.skipif(True, reason="Failing intermittently in CIT")
 class Test_aaafeature:
     def setup(self):
         pass
