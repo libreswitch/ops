@@ -5,8 +5,6 @@ Interface Commands
 
 - [Interface configuration commands](#interface-configuration-commands)
 	- [Change to interface context](#change-to-interface-context)
-	- [Set interface description](#set-interface-description)
-	- [Remove interface description](#remove-interface-description)
 	- [Enable interface](#enable-interface)
 	- [Disable interface](#disable-interface)
 	- [Enable routing on an interface](#enable-routing-on-an-interface)
@@ -52,38 +50,6 @@ All users.
 ops-as5712# configure terminal
 ops-as5712(config)# interface 1
 ops-as5712(config-if)#
-```
-### Set interface description
-#### Syntax
-`description <description>`
-#### Description
-This command sets the description for an interface.
-#### Authority
-All users.
-#### Parameters
-| Parameter | Status | Syntax | Description |
-|:-----------|:----------|:----------------:|:--------------------------|
-| *description* | Required | - | String describing the interface. |
-#### Examples
-```
-ops-as5712# configure terminal
-ops-as5712(config)# interface 1
-ops-as5712(config-if)# description This is interface 1
-```
-### Remove interface description
-#### Syntax
-`no description`
-#### Description
-This command removes the description of an interface.
-#### Authority
-All users.
-#### Parameters
-No parameters.
-#### Examples
-```
-ops-as5712# configure terminal
-ops-as5712(config)# interface 1
-ops-as5712(config-if)# no description
 ```
 ### Enable interface
 #### Syntax
