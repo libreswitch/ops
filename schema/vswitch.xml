@@ -131,19 +131,6 @@
       <column name="ssl">
       </column>
 
-      <column name="ipsec_ike_policies">
-        This is a list of configured IPsec IKE policies. These are system configuration
-        settings with no interface or routing dependences.
-      </column>
-
-      <column name="ipsec_manual_sas">
-        This is a list of configured IPsec manual security associations (SA)
-      </column>
-
-      <column name="ipsec_manual_sps">
-        This is a list of configured IPsec manual security policies (SP)
-      </column>
-
       <column name="hostname">
       </column>
 
@@ -4137,29 +4124,17 @@
           deleted by administrator. Loopback interface IP address is used
           as router-id and source address by many protocols.</dd>
 
-          <dt><code>ipsec_gre</code></dt>
-          <dd>
-            An Ethernet over RFC 2890 Generic Routing Encapsulation over IPv4
-            IPsec tunnel.
-          </dd>
-
           <dt><code>vxlan</code></dt>
           <dd>This is a vitual interface of type vxlan (L2 overlay over L3
           network RFC 7348).</dd>
        </dl>
-      </column>
-
-      <column name="ipsec_ike_policy">
-       This is a reference to a configured IPsec IKE policy. It provides the
-       IPsec IKE protection for the associated tunnel.
-       Only valid for the <code>ipsec_gre_ike</code> type.
       </column>
     </group>
 
     <group title="Tunnel Options">
       <p>
         These options apply to interfaces with <ref column="type"/> of
-        <code>ipsec_gre</code> and <code>vxlan</code>.
+        <code>vxlan</code>.
       </p>
 
       <p>
@@ -4263,38 +4238,6 @@
         outer headers to allow path MTU discovery. Default is enabled; set
         to <code>false</code> to disable.
       </column>
-
-      <group title="Tunnel Options: ipsec_gre only">
-        <p>
-          Only <code>ipsec_gre</code> interfaces support these options.
-        </p>
-
-        <column name="options" key="peer_cert">
-          Required for certificate authentication.  A string containing the
-          peer's certificate in PEM format.  Additionally the host's
-          certificate must be specified with the <code>certificate</code>
-          option.
-        </column>
-
-        <column name="options" key="certificate">
-          Required for certificate authentication.  The name of a PEM file
-          containing a certificate that will be presented to the peer during
-          authentication.
-        </column>
-
-        <column name="options" key="private_key">
-          Optional for certificate authentication.  The name of a PEM file
-          containing the private key associated with <code>certificate</code>.
-          If <code>certificate</code> contains the private key, this option may
-          be omitted.
-        </column>
-
-        <column name="options" key="psk">
-          Required for pre-shared key authentication.  Specifies a pre-shared
-          key for authentication that must be identical on both sides of the
-          tunnel.
-        </column>
-      </group>
 
     </group>
 
@@ -4749,96 +4692,6 @@
         Description of LLDP port in alpha-numeric format.
       </column>
     </group>
-
-      <group title="IKE Status: ipsec_gre_ike only">
-        <p>
-          Only <code>ipsec_gre_ike</code> interface supports these status.
-        </p>
-
-        <column name="status" key="ipsec_ike_established_time"
-           type='{"type": "integer"}'>
-           Reports the epoch time when this connection is established.
-        </column>
-
-        <column name="status" key="ipsec_ike_initiator_spi"
-           type='{"type": "integer"}'>
-           Reports the IKE initiator SPI.
-        </column>
-
-        <column name="status" key="ipsec_ike_responder_spi"
-           type='{"type": "integer"}'>
-           Reports the IKE responder SPI.
-        </column>
-
-        <column name="status" key="ipsec_ike_reauth_time"
-           type='{"type": "integer"}'>
-           Reports the epoch time when this connection re-authenticates.
-        </column>
-
-        <column name="status" key="ipsec_ike_conn_state"
-           type='{"type": "string", "enum": ["set",
-                        ["config_error",
-                        "config_ok",
-                        "created",
-                        "connecting",
-                        "passive",
-                        "rekeying",
-                        "deleting",
-                        "destroying",
-                        "routed",
-                        "installing",
-                        "updating",
-                        "rekeyed",
-                        "retrying",
-                        "installed",
-                        "establish"]]}'>
-           Reports this connection state.
-        </column>
-
-        <column name="status" key="ipsec_sa_rekey_time"
-           type='{"type": "integer"}'>
-           Reports the epoch time when this SA re-keys.
-        </column>
-
-        <column name="status" key="ipsec_sa_expiration_time"
-           type='{"type": "integer"}'>
-           Reports the epoch time when this SA expires.
-        </column>
-
-        <column name="status" key="ipsec_bytes_in"
-           type='{"type": "integer"}'>
-           Reports input bytes processed.
-        </column>
-
-        <column name="status" key="ipsec_bytes_out"
-           type='{"type": "integer"}'>
-           Reports output bytes processed.
-        </column>
-
-        <column name="status" key="ipsec_packets_in"
-           type='{"type": "integer"}'>
-           Reports input packets processed.
-        </column>
-
-        <column name="status" key="ipsec_packets_out"
-           type='{"type": "integer"}'>
-           Reports output packets processed.
-        </column>
-
-        <column name="status" key="ipsec_sa_state">
-           Reports the this SA state.
-      </column>
-
-        <column name="status" key="ipsec_sa_spi_in"
-           type='{"type": "integer"}'>
-           Reports the Security Parameter Index used for SA inbound traffics.
-        </column>
-
-        <column name="status" key="ipsec_sa_spi_out"
-           type='{"type": "integer"}'>
-           Reports the Security Parameter Index used for SA outbound traffics.
-        </column>
-      </group>
 
     </group>
 
@@ -7568,217 +7421,6 @@
           The OSPFv2 LSA specific data.
         </column>
     </group>
-  </table>
-
-  <table name="IPsec_IKE_Policy">
-    <p>
-      Following is the description of the IPsec IKE configuration settings of <ref table="IPsec_IKE_Policy"/>.
-    </p>
-    <column name="name">
-      Specifies the IPsec policy name that includes rules to detect and transform specific IP flows.
-    </column>
-    <column name="protocol">
-      Specifies the traffic IPsec protocol: Authentication Header (AH) vs. Encapsulating Security Payload (ESP).
-      Defaults to <code>ESP</code>.
-    </column>
-    <column name="mode">
-      Specifies the traffic IPsec operation mode: tunnel vs. transport,
-      Defaults to <code>transport</code>.
-    </column>
-    <column name="integrity">
-      Specifies the configured hashes for the authenticity and integrity protection.
-      Defaults to <code>SHA1HMAC</code>.
-    </column>
-    <column name="encryption">
-      Specifies the supported encryptions for the message privacy.
-      Defaults to <code>AES128</code>.
-    </column>
-    <column name="ike_integrity">
-      Specifies the supported hashes for the IKE authenticity and integrity protection.
-      Defaults to <code>SHA1HMAC</code>.
-    </column>
-    <column name="ike_encryption">
-      Specifies the supported encryptions for the IKE privacy protection.
-      Defaults to <code>AES128</code>.
-    </column>
-    <column name="ike_group">
-      Specifies the supported key exchange groups.
-      Defaults to <code>DIFFIE2</code>.
-    </column>
-    <column name="peer_auth_by">
-      Specifies the selected peer authentication type: PSK or cert
-    </column>
-    <column name="psk">
-      Specifies the shared secret for a peer authentication.
-    </column>
-    <column name="psk_selectors">
-      Specifies remote IP addresses, Fully Qualified Domain Names,
-      user@FQDNs, %any or %any6 to be used with a configured PSK.
-      Defaults to <code>%any</code>.
-    </column>
-    <column name="keep_alive_seconds">
-      Specifies the configured keep-alive SA session in seconds.
-      Defaults to <code>10</code> seconds.
-    </column>
-  </table>
-
-  <table name="IPsec_Manual_SA">
-    <p>
-      Following is the description of the IPsec manual SA configuration settings of
-      <ref table="IPsec_Manual_SA"/>.
-    </p>
-    <column name="SPI">
-      Specifies the IPsec security parameter index associated to a SA.
-    </column>
-    <column name="request_id">
-      Specifies the request ID associated a manual SA to its corresponding SP.
-    </column>
-    <column name="src_ip">
-        Specifies the source IPv4/IPv6 address of an SA.
-    </column>
-    <column name="dest_ip">
-        Specifies the destination IPv4/IPv6 address of an SA.
-    </column>
-    <column name="protocol">
-      Specifies the traffic IPsec protocol: Authentication Header (AH) vs.
-      Encapsulating Security Payload (ESP).
-      Defaults to <code>ESP</code>.
-    </column>
-    <column name="mode">
-      Specifies the traffic IPsec operation mode: tunnel vs. transport,
-      Defaults to <code>transport</code>.
-    </column>
-    <column name="authentication">
-      Specifies the configured hashes for the authenticity and integrity protection.
-      Defaults to <code>SHA1HMAC</code>.
-    </column>
-    <column name="auth_key">
-        Specifies the key for authentication and hasing.
-    </column>
-    <column name="encryption">
-      Specifies the supported encryptions for the message privacy.
-      Defaults to <code>AES128</code>.
-    </column>
-    <column name="encr_key">
-        Specifies the encryption key if the protocol is ESP.
-    </column>
-    <column name="selector_src_prefix">
-      Specifies the selector source address with an /XXX net mask.
-    </column>
-    <column name="selector_dest_prefix">
-      Specifies the selector destination address with an /XXX net mask.
-    </column>
-
-    <group title="Common Columns">
-      The overall purpose of these columns is described under <code>Common
-      Columns</code> at the beginning of this document.
-
-      <column name="external_ids"/>
-      <column name="other_config"/>
-    </group>
-
-    <group title="Manual SA Status">
-      <column name="status" key="sa_conn_added"
-         type='{"type": "integer"}'>
-         Reports the epoch time when this SA was added.
-      </column>
-      <column name="status" key="sa_conn_used"
-         type='{"type": "integer"}'>
-         Reports the epoch time when this SA was last used.
-      </column>
-    </group>
-
-    <group title="Manual SA Statistics">
-      <column name="statistics" key="sa_bytes"
-         type='{"type": "integer"}'>
-         Reports the SA bytes processed.
-      </column>
-      <column name="statistics" key="sa_packets"
-         type='{"type": "integer"}'>
-         Reports the SA packets processed.
-      </column>
-    </group>
-
-  </table>
-
-  <table name="IPsec_Manual_SP">
-    <p>
-      Following is the description of the IPsec manual SP configuration settings of
-      <ref table="IPsec_Manual_SP"/>.
-    </p>
-    <column name="priority">
-      Specifies manual SP priority.
-      Defaults to <code>0</code>.
-    </column>
-    <column name="direction">
-      Specifies the manual SP direction.
-    </column>
-    <column name="action">
-      Specifies the manual SP action.
-      Defaults to <code>ipsec</code>.
-    </column>
-    <column name="ip_family">
-      Specifies the IP address family: IPv4 or IPv6.
-      Defaults to <code>ipv4</code>.
-    </column>
-    <column name="src_prefix">
-      Specifies the source IP address with a /XXX netmask.
-    </column>
-    <column name="dest_prefix">
-      Specifies the destination IP address with a /XXX netmask.
-    </column>
-    <column name="tmpl_request_id">
-      Specifies the template request ID for this manual SP operation.
-    </column>
-    <column name="tmpl_protocol">
-      Specifies the template protocol (AH or ESP) for this manual SP.
-      Defaults to <code>ESP</code>.
-    </column>
-    <column name="tmpl_mode">
-      Specifies the template mode (tunnel or transport) for this manual SP
-      Defaults to <code>transport</code>.
-    </column>
-    <column name="tmpl_ip_family">
-      Specifies the template IP address family: IPv4 or IPv6.
-      Defaults to <code>ipv4</code>.
-    </column>
-    <column name="tmpl_src_ip">
-      Specifies the template source IP address or host name.
-    </column>
-    <column name="tmpl_dest_ip">
-      Specifies the template destination IP address or host name.
-    </column>
-
-    <group title="Common Columns">
-      The overall purpose of these columns is described under <code>Common
-      Columns</code> at the beginning of this document.
-
-      <column name="external_ids"/>
-      <column name="other_config"/>
-    </group>
-
-    <group title="Manual SP Status">
-      <column name="status" key="sp_conn_added"
-         type='{"type": "integer"}'>
-         Reports the epoch time when this SP was added.
-      </column>
-      <column name="status" key="sp_conn_used"
-         type='{"type": "integer"}'>
-         Reports the epoch time when this SP was last used.
-      </column>
-    </group>
-
-    <group title="Manual SP Statistics">
-      <column name="statistics" key="sp_bytes"
-         type='{"type": "integer"}'>
-         Reports the SP bytes processed.
-      </column>
-      <column name="statistics" key="sp_packets"
-         type='{"type": "integer"}'>
-         Reports the SP packets processed.
-      </column>
-    </group>
-
   </table>
 
   <table name="Logical_Switch">
