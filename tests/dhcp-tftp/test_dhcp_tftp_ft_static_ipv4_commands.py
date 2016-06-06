@@ -260,6 +260,7 @@ class dhcpIPV4StaticPoolConfigCTTest(OpsVsiTest):
         info('\n### testdhcpClientStaticIPV4AddressConfig: Test Passed ###\n')
 
 
+@pytest.mark.skipif(True, reason="Test case is causing docker space issues")
 class Test_dhcp_tftp_commands:
 
     def setup(self):
