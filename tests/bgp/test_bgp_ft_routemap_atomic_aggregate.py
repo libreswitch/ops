@@ -190,7 +190,11 @@ def configure_route_map_atomic_aggregate(dut, routemap, as_num):
     cmd = "route-map "+routemap+" permit 20"
     cmd1 = "set atomic-aggregate"
     devIntReturn = dut.DeviceInteract(command=cmd)
+    retCode = devIntReturn.get('returnCode')
+    assert retCode == 0, "route-map command failed"
     devIntReturn = dut.DeviceInteract(command=cmd1)
+    retCode = devIntReturn.get('returnCode')
+    assert retCode == 0, "set atomic-aggregate command failed"
     return True
 
 def configure_route_map_set_aggregator(dut, routemap, as_num):
@@ -200,15 +204,20 @@ def configure_route_map_set_aggregator(dut, routemap, as_num):
     cmd = "route-map "+routemap+" permit 20"
     cmd1 = "set aggregator as " +as_num+" 8.0.0.1"
     devIntReturn = dut.DeviceInteract(command=cmd)
+    retCode = devIntReturn.get('returnCode')
+    assert retCode == 0, "route-map command failed"
     devIntReturn = dut.DeviceInteract(command=cmd1)
+    retCode = devIntReturn.get('returnCode')
+    assert retCode == 0, "set aggregator as command failed"
     return True
 
 def verify_bgp_routes(dut, network, next_hop):
-    dump = SwitchVtyshUtils.vtysh_cmd(dut, "show ip bgp")
-    routes = dump.split(VTYSH_CR)
-    for route in routes:
-        if network in route and next_hop in route:
-            return True
+    retStruct = dut.VtyshShell(enter=True)
+    retCode = retStruct.returnCode()
+    assert retCode == 0, "Failed to enter vtysh prompt"
+    dump =  dut.DeviceInteract(command="show ip bgp")
+    if network in dump['buffer'] and next_hop in dump['buffer']:
+        return True
     return False
 
 def wait_for_route(dut, network, next_hop, condition=True) :
@@ -261,18 +270,9 @@ def verify_routemap_set_atomic_aggregate(**kwargs):
     wait_for_route(switch2, "10.0.0.0", "0.0.0.0")
     wait_for_route(switch2, "11.0.0.0", "0.0.0.0")
     wait_for_route(switch2, "9.0.0.0", "8.0.0.1")
-
-    dump = SwitchVtyshUtils.vtysh_cmd(switch2, "sh ip bgp 9.0.0.0")
-    set_atomic_aggregate = False
-
-    lines = dump.split('\n')
-    for line in lines:
-        if 'atomic-aggregate' in line:
-            set_atomic_aggregate = True
-
-
-    assert (set_atomic_aggregate == True) , "Failed to configure 'set atomic-aggregate'"
-
+    switch2.VtyshShell(enter=True) 
+    out = switch2.DeviceInteract(command="sh ip bgp 9.0.0.0")
+    assert 'atomic-aggregate' in out['buffer'], "Failed to configure 'set atomic-aggregate'"
     LogOutput('info',"### 'set atomic-aggregate' running succesfully ###\n")
 
 
@@ -306,22 +306,12 @@ def verify_routemap_set_aggregator(**kwargs):
     result = configure_neighbor_rmap_out(switch1,  AS_NUM1, IP_ADDR2, AS_NUM2, "BGP_OUT")
     assert result is True, "Failed to configure neighbor route-map on SW2"
 
-
     wait_for_route(switch2, "10.0.0.0", "0.0.0.0")
     wait_for_route(switch2, "11.0.0.0", "0.0.0.0")
     wait_for_route(switch2, "9.0.0.0", "8.0.0.1")
-
-    dump = SwitchVtyshUtils.vtysh_cmd(switch2, "sh ip bgp 9.0.0.0")
-    set_aggregator = False
-
-    lines = dump.split('\n')
-    for line in lines:
-        if 'aggregated by 1 8.0.0.1' in line:
-            set_aggregator = True
-
-
-    assert (set_aggregator == True) , "Failed to configure 'set aggregator as'"
-
+    switch2.VtyshShell(enter=True)
+    out = switch2.DeviceInteract(command="sh ip bgp 9.0.0.0")
+    assert 'aggregated by 1 8.0.0.1' in out['buffer'], "Failed to configure 'set aggregator as'"
     LogOutput('info',"### 'set aggregator as' running succesfully ###\n")
 
 
@@ -411,6 +401,9 @@ def configure(**kwargs):
     result = configure_neighbor(switch2,AS_NUM2,IP_ADDR1,AS_NUM1)
     assert result is True, "Failed to configur neighbor on SW2"
 
+
+@pytest.mark.skipif(True, reason="Disabling because modular framework tests \
+                                  were enable")
 @pytest.mark.timeout(600)
 class Test_bgp_redistribute_configuration:
     def setup_class(cls):

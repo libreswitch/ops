@@ -351,7 +351,10 @@ def configure(**kwargs):
     assert result is True, "BGP neighbor configuration failed for SW3"
     exitContext(switch3)
 
+
 @pytest.mark.timeout(600)
+@pytest.mark.skipif(True, reason="Disabling because modular framework tests "
+"were enable")
 class Test_bgp_redistribute_configuration:
     def setup_class(cls):
         Test_bgp_redistribute_configuration.testObj = \

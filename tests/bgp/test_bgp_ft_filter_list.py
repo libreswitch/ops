@@ -331,6 +331,8 @@ class bgpTest(OpsVsiTest):
 
 
 @pytest.mark.timeout(600)
+@pytest.mark.skipif(True, reason="Disabling because modular framework tests "
+"were enable")
 class Test_bgpd_filterlist:
     def setup(self):
         pass

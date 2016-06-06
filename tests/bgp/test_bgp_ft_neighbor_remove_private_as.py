@@ -264,6 +264,8 @@ class bgpTest(OpsVsiTest):
         info("### Verified AS number is present ###\n")
 
 
+@pytest.mark.skipif(True, reason="Disabling because modular framework tests "
+"were enable")
 class Test_bgpd_neighbor_remove_private_as:
     def setup(self):
         pass

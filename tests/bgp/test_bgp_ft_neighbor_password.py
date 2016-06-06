@@ -203,6 +203,8 @@ class bgpTest(OpsVsiTest):
         self.verify_no_connection()
 
 
+@pytest.mark.skipif(True, reason="Disabling because modular framework tests "
+"were enable")
 class Test_bgpd_neighbor_password:
     def setup(self):
         pass

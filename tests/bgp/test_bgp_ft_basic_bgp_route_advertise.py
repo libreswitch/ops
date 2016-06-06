@@ -162,6 +162,8 @@ class bgpTest(OpsVsiTest):
                       (network, next_hop, switch.name)
 
 
+@pytest.mark.skipif(True, reason="Disabling because modular framework tests "
+"were enable")
 class Test_bgpd_basic_bgp_route_advertise:
     def setup(self):
         pass
