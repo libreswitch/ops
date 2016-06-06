@@ -1087,7 +1087,9 @@
                         "type": "uuid",
                         "refTable": "Port",
                         "refType" : "weak"
-                    }
+                    },
+                    "min": 0,
+                    "max": 1
                 }
             },
             "port_priority" : {
