@@ -104,7 +104,7 @@ ops-as5712(config)#
 ```
 
 5. Select LLDP TLV.
-The `lldp select-tlv` command configures the type, length, and value (TLV) to send and receive in LLDP packets. The `no lldp select-tlv` command removes the TLV configuration.
+The `lldp select-tlv` command configures the type, length, and value (TLV) to send in LLDP packets. The `no lldp select-tlv` command removes the TLV configuration.
 ```
 ops-as5712(config)# lldp select-tlv system-capabilities
 ops-as5712(config)#
