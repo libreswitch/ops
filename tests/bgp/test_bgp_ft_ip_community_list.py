@@ -395,6 +395,9 @@ class bgpTest(OpsVsiTest):
         info("### ip community-list  configs were successfully removed ###\n")
 
 
+@pytest.mark.timeout(600)
+@pytest.mark.skipif(True, reason="Disabling because modular framework tests "
+"were enable")
 class Test_bgpd_routemap:
     def setup(self):
         pass

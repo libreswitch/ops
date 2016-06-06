@@ -369,6 +369,9 @@ def configure(**kwargs):
     assert result is True, "Failed to configur neighbor on SW2"
 
 
+@pytest.mark.timeout(600)
+@pytest.mark.skipif(True, reason="Disabling because modular framework tests "
+"were enable")
 class Test_bgp_redistribute_configuration:
     def setup_class(cls):
         Test_bgp_redistribute_configuration.testObj = \

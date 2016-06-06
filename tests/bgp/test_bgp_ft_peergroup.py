@@ -224,6 +224,8 @@ class bgpTest(OpsVsiTest):
         info("### Peer-group unconfigured successfully ###\n")
 
 
+@pytest.mark.skipif(True, reason="Disabling because modular framework tests "
+"were enable")
 class Test_bgpd_peergroup:
     def setup(self):
         pass

@@ -178,6 +178,8 @@ class bgpTest(OpsVsiTest):
         SwitchVtyshUtils.vtysh_cfg_cmd(switch, cfg_array)
 
 
+@pytest.mark.skipif(True, reason="Disabling because modular framework tests "
+"were enable")
 class Test_bgpd_no_neighbor:
     def setup(self):
         pass

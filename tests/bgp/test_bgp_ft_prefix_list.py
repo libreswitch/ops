@@ -335,6 +335,9 @@ class bgpTest(OpsVsiTest):
                       % (network, next_hop, switch.name)
 
 
+@pytest.mark.timeout(600)
+@pytest.mark.skipif(True, reason="Disabling because modular framework tests "
+"were enable")
 class Test_bgpd_prefixlist:
     def setup(self):
         pass

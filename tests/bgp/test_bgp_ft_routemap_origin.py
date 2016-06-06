@@ -447,6 +447,9 @@ def verify_routemap_set_origin_2(**kwargs):
     LogOutput('info',"### set origin running succesfully ###\n")
 
 
+@pytest.mark.timeout(600)
+@pytest.mark.skipif(True, reason="Disabling because modular framework tests "
+"were enable")
 class Test_bgp_redistribute_configuration:
     def setup_class(cls):
         Test_bgp_redistribute_configuration.testObj = \
