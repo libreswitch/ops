@@ -20,6 +20,7 @@ import pytest
 
 from opsvsi.docker import *
 from opsvsi.opsvsitest import *
+from copy import deepcopy
 
 import json
 import httplib
@@ -83,10 +84,28 @@ class QueryInterfaceDepthTest(OpsVsiTest):
 
         return True
 
+    def remove_stats_and_status(self, data):
+        for key, value in deepcopy(data).iteritems():
+            if key == "status" or key == "statistics":
+                del data[key]
+            elif isinstance(value, dict):
+                self.remove_stats_and_status(data[key])
+            elif isinstance(value, list):
+                for index, item in enumerate(value):
+                    if isinstance(item, dict):
+                        self.remove_stats_and_status(data[key][index])
+
     def validate_keys_inner_object(self, json_data, json_expected_data):
         assert json_data["split_parent"] is not None, \
             "split_parent key is not present"
         info("### split_parent, split_children keys present ###\n")
+
+        # Strip statistics/status from both sets of data to compare
+        # configuration only, since status/statistics may vary, which is
+        # still valid.
+        self.remove_stats_and_status(json_data)
+        self.remove_stats_and_status(json_expected_data)
+
         assert json_data == json_expected_data, \
             "Configuration data is not equal that posted data"
         info("### Configuration data validated ###\n")
