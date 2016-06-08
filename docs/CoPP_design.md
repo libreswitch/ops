@@ -1,0 +1,2 @@
+# High-level design of control plane policing
+Control plane policing (CoPP) protects usage of the CPU by prioritizing and rate-limiting control plane traffic. The current implementation defines default packet classes with rate limits and queue values during plugin initialization. More detailed documentation of the design and defaults for OpeNsl-based platforms can be found in the component design of the opennsl plugin (/documents/dev/ops-switchd-opennsl-plugin/DESIGN).
