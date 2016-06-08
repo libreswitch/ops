@@ -23,7 +23,8 @@ import pytest
 from opsvsi.docker import *
 from opsvsi.opsvsitest import *
 
-SSHCLIENT = "/usr/bin/ssh"
+SSHCLIENT = "/usr/bin/ssh -q -o UserKnownHostsFile=/dev/null \
+             -o StrictHostKeyChecking=no"
 
 # Purpose of this test is to test switch authentication
 # with local credentials and RADIUS credentials.
@@ -219,8 +220,6 @@ class aaaFeatureTest(OpsVsiTest):
         print run
         out = ""
         out += s1.cmd("echo ")
-        sshkey= "ssh-keygen -R " + switchIpAddress
-        sshkeygen = pexpect.run(sshkey)
         myssh = SSHCLIENT + " netop@" + switchIpAddress
         p = pexpect.spawn(myssh)
 
@@ -265,8 +264,6 @@ class aaaFeatureTest(OpsVsiTest):
 
         out = ""
         out += s1.cmd("echo ")
-        sshkey= "ssh-keygen -R " + switchIpAddress
-        sshkeygen = pexpect.run(sshkey)
         myssh = SSHCLIENT + " netop@" + switchIpAddress
         p = pexpect.spawn(myssh)
 
@@ -316,8 +313,6 @@ class aaaFeatureTest(OpsVsiTest):
         print run
         out = ""
         out += s1.cmd("echo ")
-        sshkey= "ssh-keygen -R " + switchIpAddress
-        sshkeygen = pexpect.run(sshkey)
         myssh = SSHCLIENT + " netop@" + switchIpAddress
         p = pexpect.spawn(myssh)
 
