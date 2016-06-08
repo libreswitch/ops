@@ -276,18 +276,6 @@
        </column>
     </group>
 
-    <group title="Source Interface Selection Configurations">
-        <column name="other_config" key="tftp_source"
-                type='{"type": "string", "maxLength":256}'>
-          Provides source interface or IP address for tftp client. If not present, regular routing rules take place.
-        </column>
-
-        <column name="other_config" key="protocols_source"
-                type='{"type": "string", "maxLength":256}'>
-          Overrides source interface or IP address for all the protocols that support it. If not present, regular routing rules take place.
-        </column>
-      </group>
-
     <group title="UDP Broadcast Forwarder Configurations">
         <column name="other_config" key="udp_bcast_forwarder_enabled"
               type='{"type": "boolean"}'>
@@ -1569,6 +1557,47 @@
           the assumed value is false.
       </column>
    </group>
+
+   <group title="Source Interface Selection Configurations">
+      In case same key exists in "source_interface", "source_ip" columns,
+      later gets the priority.
+
+      <column name="source_interface" key="tftp">
+        Provides source interface for outgoing tftp packets. If not present,
+        the key "all" provides the source interface for outgoing tftp packets.
+        Otherwise regular routing rules take place.
+      </column>
+
+      <column name="source_interface" key="radius">
+        Provides source interface for outgoing radius server packets. If not
+        present, the key "all" provides the source interface for outgoing
+        tftp packets. Otherwise regular routing rules take place.
+      </column>
+
+      <column name="source_interface" key="all">
+        Provides the configuration for supported protocols for which
+        source interface is not configured.
+      </column>
+
+      <column name="source_ip" key="tftp">
+        Provides source ip for outgoing tftp packets. If not present,
+        the key "all" provides the source ip for outgoing tftp packets.
+        Otherwise regular routing rules take place.
+      </column>
+
+      <column name="source_ip" key="radius">
+        Provides source ip for outgoing radius packets. If not present,
+        the key "all" provides the source ip for outgoing tftp packets.
+        Otherwise regular routing rules take place.
+      </column>
+
+      <column name="source_ip" key="all">
+        Provides the configuration for supported protocols for which
+        source ip is not configured.
+      </column>
+
+   </group>
+
    <group title="Common Columns">
       The overall purpose of these columns is described under <code>Common
       Columns</code> at the beginning of this document.
