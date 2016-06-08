@@ -1651,6 +1651,9 @@
         The lower a priority value, the higher the priority.
         Default value is 32768.
       </column>
+      <column name="remaining_hops">
+        Once known, contains the hop count after which the MSTP BPDU of this instance are discarded.
+      </column>
       <column name="root_port">
         Specifies the root port name for a MSTP instance.
       </column>
@@ -1734,8 +1737,7 @@
         The path cost from the transmitting bridge to the CIST regional root.
       </column>
       <column name="remaining_hops">
-        The hop count after which this instance MSTP BPDU will be discarded.
-        Default value is 20
+        Once known, contains the hop count after which the MSTP BPDU of this instance are discarded.
       </column>
       <column name="oper_hello_time">
         The operating hello timer value for this instance.
