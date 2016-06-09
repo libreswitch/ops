@@ -5747,7 +5747,7 @@
            type='{"type": "integer", "minInteger": 1, "maxInteger": 30}'>
            Keepalive hello interval in seconds. The default value is <code>30</code>.
          </column>
-         <column name="keepalive_timers" key="timeout"
+         <column name="keepalive_timers" key="dead_interval"
            type='{"type": "integer", "minInteger": 2, "maxInteger": 120}'>
            Configures the amount of time to wait for keepalive packets from a peer in seconds.
            The default value is <code>90</code>.
@@ -5759,8 +5759,19 @@
            Specifies L3 port for keepalive <ref table="Port"/>.
          </column>
          <column name="keepalive_status" key="state"
-           type='{"type": "string", "enum": ["set", ["init", "disabled", "established", "failure"]]}'>
-           State of the protocol.
+           type='{"type": "string", "enum": ["set", ["initialized", "configured", "established", "failed", "stopped"]]}'>
+           State of the protocol. The default value is <code>initialized</code>.
+         </column>
+       </group>
+
+       <group title="keepalive peer status">
+         <column name="keepalive_peer_status" key="peer_system_id">
+           Peer system id detected by keepalive protocol.
+           It is used when ISL is not operational.
+         </column>
+         <column name="keepalive_peer_status" key="peer_device_priority">
+           Peer device priority detected by keepalive protocol.
+           It is used when ISL is not operational.
          </column>
        </group>
 
@@ -5770,6 +5781,13 @@
          </column>
          <column name="keepalive_statistics" key="rx">
            Number of packets received.
+         </column>
+         <column name="keepalive_statistics" key="dropped">
+           Number of dropped packets.
+         </column>
+         <column name="keepalive_statistics" key="dead_interval_timeout">
+           Number of times keepalive packet has not been received before
+           expiration of dead interval.
          </column>
        </group>
 
@@ -5794,26 +5812,43 @@
       <column name="lacp_partner_key">
         Peer interface's LACP partner key.
       </column>
-     </group>
-     <group title="partner link status">
-      <column name="lacp_partner_state">
-        LACP partner state.
+    </group>
+    <group title="actor information">
+      <column name="lacp_actor_system_id">
+        Peer interface's LACP actor system ID.
       </column>
-      <column name="admin_state">
-        The administrative state of the physical network link.
+      <column name="lacp_actor_port_id">
+        Peer interface's LACP actor port ID.
       </column>
-      <column name="link_state">
-        The observed state of the physical network link.  This is ordinarily
-        the link's carrier status.
+      <column name="lacp_actor_key">
+        Peer interface's LACP actor key.
       </column>
-      <column name="link_speed">
-        The negotiated speed of the physical network link in bits per second.
-        Valid values are positive integers greater than 0.
+      <column name="lacp_actor_state">
+        Peer interface's LACP actor state.
       </column>
-      <column name="duplex">
-        The duplex mode of the physical network link.
-      </column>
-     </group>
+    </group>
+    <column name="lacp_port_priority">
+      LACP port-priority.
+    </column>
+    <group title="partner link status">
+     <column name="lacp_partner_state">
+       LACP partner state.
+     </column>
+     <column name="admin_state">
+       The administrative state of the physical network link.
+     </column>
+     <column name="link_state">
+       The observed state of the physical network link. This is ordinarily
+       the link's carrier status.
+     </column>
+     <column name="link_speed">
+       The negotiated speed of the physical network link in bits per second.
+       Valid values are positive integers greater than 0.
+     </column>
+     <column name="duplex">
+       The duplex mode of the physical network link.
+     </column>
+    </group>
   </table>
 
   <table name="Fan" title="Fans on various subsystems">

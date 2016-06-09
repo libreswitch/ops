@@ -5247,18 +5247,6 @@
           },
           "ephemeral": true
         },
-        "keepalive_udp_port": {
-          "category": "configuration",
-           "type": {
-            "key": {
-              "type": "integer",
-              "minInteger": 1024,
-              "maxInteger": 65535
-            },
-            "min": 0,
-            "max": 1
-          }
-        },
         "keepalive_src_ip": {
           "category": "configuration",
           "type": {
@@ -5294,6 +5282,18 @@
             "max": 1
           }
         },
+        "keepalive_udp_port": {
+          "category": "configuration",
+           "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1024,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
         "keepalive_timers": {
           "category": "configuration",
           "type": {
@@ -5317,6 +5317,15 @@
           }
         },
         "keepalive_status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "keepalive_peer_status": {
           "category": "status",
           "type": {
             "key": "string",
@@ -5380,15 +5389,60 @@
           "category": "status",
           "type": {
             "key": {
-              "type": "string",
-              "enum": [
-                "set",
-                 [
-                  "up",
-                  "down"
-                 ]
-              ]
+              "type": "string"
             },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "lacp_actor_system_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "lacp_actor_port_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "lacp_actor_key": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "lacp_actor_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "lacp_port_priority" : {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+                "minInteger": 1,
+                "maxInteger": 65535
+              },
             "min": 0,
             "max": 1
           }
