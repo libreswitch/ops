@@ -240,7 +240,9 @@ First initialize the vlan role under the <b>/etc/ansible/roles</b> folder with t
 ```
 ansible-galaxy init vlan
 ```
-Create the default file for the vlan role as <b>defaults/main.yml</b>:
+The configuration of VLAN involves the VLAN ID, which is used by switches to determine to which port(s) or interface(s) broadcast packets are sent. Based on this, this VLAN role involves schema for both VLAN and Port.
+
+Create the default file for the VLAN role as <b>defaults/main.yml</b>:
 ```
 ---
 # defaults/main.yml
@@ -252,6 +254,14 @@ ops_host: "{{ ansible_host }}"
 
 # Enable debugging on ops_*.py modules.
 ops_debug: false
+
+# Port default variables.
+ops_port_tag: 1
+ops_port_vlan_mode: access
+ops_ports:
+  - name: 1
+  - name: 2
+  - name: 3
 ```
 Create the task file to configure vlan and debug configuration transaction as <b>tasks/main.yml</b>:
 ```
@@ -261,7 +271,7 @@ Create the task file to configure vlan and debug configuration transaction as <b
     msg="{{ lookup('template', 'main.j2') }}"
   when: ops_debug
 
-- name: configure the bgp role
+- name: configure the switch
   become: yes
   ops_template:
     src: main.j2
@@ -280,11 +290,15 @@ Create <b>templates/main.j2</b> file based on schema:
 {# OpenSwitch JSON main template file #}
 
 {
+  {%- if ops_ports is defined -%}
+    {%- include ['ops_port.j2'] -%},
+  {%- endif -%}
+
   {%- include ['ops_system.j2'] -%}
 }
 
 ```
-Refer to <b>schema/vswitch.ovsschema</b> in the ops repository. The main table for ops is named <i>System</i>, and it contains the column <i>bridges</i>.
+Refer to [schema/vswitch.extschema](http://git.openswitch.net/cgit/openswitch/ops/tree/schema/vswitch.extschema), the top-level table needed is the <i>System</i> table, that contains the <i>bridges</i> column and the <i>Port</i> table.
 ```
 ...
   "tables": {
@@ -302,65 +316,82 @@ Refer to <b>schema/vswitch.ovsschema</b> in the ops repository. The main table f
           }
         }
   ...
+  },
+  "Port": {
+      "columns": {
+  ...
 ```
-Create a template (<b>templates/ops_system.j2</b>) to iterate through the <i>System</i> table:
+Create the ops_system.j2 template (<b>templates/ops_system.j2</b>) to iterate through the <i>System</i> table:
 ```
 {# OpenSwitch System table JSON template file #}
 
 "System": {
+
   {# System.bridges column #}
   {%- if ops_bridges is defined -%}
-    {%- include ['ops_system_bridges.j2'] -%}
+    {%- include ['ops_system_bridges.j2'] -%},
   {%- endif -%}
 }
 
 ```
-**Note**: In the schema sample, <i>bridges</i> is referred to as <i>Bridges</i> table.
+**Note**: In the schema sample, <i>bridges</i> is referred/linked to <i>Bridges</i> table.
 ```
 "refTable": "Bridge"
 ```
-In the <i>Bridge</i> table, there is a <i>vlan</i> column that refers to the <i>VLAN</i> table.
-```
-"vlans": {
-          "type": {
-            "key": {
-              "type": "uuid",
-              "refTable": "VLAN"
-            },
-            "min": 0,
-            "max": 4094
-          }
-         },
-
-```
-Based on this, create a template (<b>templates/ops_system_bridges.j2</b>) to iterate through the <i>bridges</i> column:
+Refer to [schema/vswitch.extschema](http://git.openswitch.net/cgit/openswitch/ops/tree/schema/vswitch.extschema), in the <i>Bridge</i> table, there is a <i>vlan</i> column that refers to the <i>VLAN</i> table, and a <i>ports</i> column that refers to the <i>Port</i> table.
+Based on this, create the ops_system_bridges.j2 template (<b>templates/ops_system_bridges.j2</b>) to iterate through the <i>bridges</i> column:
 ```
 {# OpenSwitch System.bridges column JSON template file #}
 
 "bridges": {
-  {%- for bridge in ops_bridges -%}
-    "{{- bridge.name -}}": {
-
-      {# System.bridges.vlans column #}
-      {%- if bridge.vlans is defined -%}
-        {%- include ['ops_system_vlans.j2'] -%},
+  {%- for br in ops_bridges -%}
+    "{{- br.name -}}": {
+      {%- if br.ports is defined -%}
+        "ports": [ {%- for port in br.ports -%}
+          "{{- port -}}" {%- if not loop.last -%} , {%- endif -%}
+        {%- endfor -%} ],
       {%- endif -%}
-
-      "name": "{{- bridge.name -}}"
+      {%- if br.vlans is defined -%}
+        "vlans": {
+          {%- for vlan in br.vlans -%}
+            "{{- vlan.name -}}": {
+              {%- if vlan.admin is defined -%}
+                "admin": [ "{{- vlan.admin -}}" ],
+              {%- else -%}
+                "admin": [ "down" ],
+              {%- endif -%}
+              {%- if vlan.id is defined -%}
+                "id": {{- vlan.id -}},
+              {%- endif -%}
+              "name": "{{- vlan.name -}}"
+            } {%- if not loop.last -%} , {%- endif -%}
+          {%- endfor -%}
+        },
+      {%- endif -%}
+      "name": "{{- br.name -}}"
     } {%- if not loop.last -%} , {%- endif -%}
   {%- endfor -%}
 }
 ```
-Create the vlan template <b>templates/ops_system_vlans.j2</b>:
+Refer to <i>Ports</i> table of [schema/vswitch.extschema](http://git.openswitch.net/cgit/openswitch/ops/tree/schema/vswitch.extschema), to create the ops_port.j2 template(<b>templates/ops_system_bridges.j2</b>) :
 ```
-{# OpenSwitch System.bridges.vlans column JSON template file #}
+{# OpenSwitch Port table JSON template file #}
 
-"vlans": {
-  {%- for vlan in bridge.vlans -%}
-    "{{- vlan.name -}}": {
-      {%- if vlan.admin is defined -%}
-        "admin": "{{- vlan.admin -}}"
+"Port": {
+  {%- for port in ops_ports -%}
+    "{{- port.name -}}": {
+      {%- if port.interfaces is defined -%}
+        "interfaces": [ {%- for intf in port.interfaces -%}
+            "{{- intf -}}"
+          {%- if not loop.last -%} , {%- endif -%} {%- endfor -%} ],
+      {%- else -%}
+        "interfaces": [ "{{- port.name -}}" ],
       {%- endif -%}
+      {%- if port.ipv4_address is not defined -%}
+        "vlan_mode": "{{- port.vlan_mode|default(ops_port_vlan_mode) -}}",
+        "tag": {{- port.tag|default(ops_port_tag) -}},
+      {%- endif -%}
+      "name": "{{- port.name -}}"
     } {%- if not loop.last -%} , {%- endif -%}
   {%- endfor -%}
 }
@@ -395,12 +426,30 @@ Following is a simple playbook to create two vlans under the default bridge (<b>
     - role: vlan
       ops_bridges:
         - name: bridge_normal
+          ports: [1, 2, 3]
           vlans:
             - name: "VLAN2"
               admin: "up"
+              id: 2
             - name: "VLAN3"
               admin: "down"
+              id: 3
+      ops_ports:
+        - name: 1
+        - name: 2
+          tag: 2
+        - name: 3
+          tag: 3
 ```
+To fully explore the capabilities of Ansible, add multiple switch members to the <b>hosts</b> file and group them together. They are configured simultaneously when executing the playbook (for example, <b>tests/create_vlan.yml</b>). Following is a <b>hosts</b> file example:
+
+```
+[ops]
+ops1 ansible_host=192.168.1.10 ansible_port=22
+ops2 ansible_host=192.168.1.11 ansible_port=22
+```
+
+**Note:** Refer to [ops-ansible/roles](http://git.openswitch.net/cgit/openswitch/ops-ansible/tree/roles) for addtional Ansible role examples for OpenSwitch.
 
 ## References
 - http://www.ansible.com
