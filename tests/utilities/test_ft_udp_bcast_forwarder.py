@@ -85,7 +85,7 @@ def configure(**kwargs):
     LogOutput('info', "Configuring IPv4 address on link 1 client")
     retStruct = InterfaceIpConfig(deviceObj=client,
                                   interface=client.linkPortMapping['lnk01'],
-                                  addr="10.0.0.1", mask=8, config=True)
+                                  addr="10.0.0.1", mask=24, config=True)
     retCode = retStruct.returnCode()
     if retCode != 0:
         assert "Failed to configure an IPv4 address"
@@ -103,7 +103,7 @@ def configure(**kwargs):
     LogOutput('info', "Configuring IPv4 address on link 1 forwarder")
     retStruct = InterfaceIpConfig(deviceObj=forwarder,
                                   interface=forwarder.linkPortMapping['lnk01'],
-                                  addr="10.0.0.2", mask=8, config=True)
+                                  addr="10.0.0.2", mask=24, config=True)
     retCode = retStruct.returnCode()
     if retCode != 0:
         assert "Failed to configure an IPv4 address"
