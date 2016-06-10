@@ -347,6 +347,7 @@ class Test_MethodAccess:
     def test_runconfig_GET_method_access_test(self, netop_login):
         self.test_var.runconfig_GET_method_access_test(httplib.OK, OPS_NETOP)
 
+    @pytest.mark.skipif(True, reason="incorrect test case")
     def test_runconfig_PUT_method_access_test(self, netop_login):
         self.test_var.runconfig_PUT_method_access_test(httplib.OK, OPS_NETOP)
 
