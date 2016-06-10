@@ -778,6 +778,23 @@
           },
           "ephemeral": true
         },
+        "controller": {
+          "type": {"key": {"type": "uuid",
+                           "refTable": "Controller"},
+                   "min": 0, "max": "unlimited"}},
+        "protocols": {
+          "type": {"key": {"type": "string",
+            "enum": ["set", ["OpenFlow10",
+                             "OpenFlow11",
+                             "OpenFlow12",
+                             "OpenFlow13",
+                             "OpenFlow14",
+                             "OpenFlow15"]]},
+            "min": 0, "max": "unlimited"}},
+        "fail_mode": {
+          "type": {"key": {"type": "string",
+                           "enum": ["set", ["standalone", "secure"]]},
+                   "min": 0, "max": 1}},
         "status": {
           "category": "status",
           "type": {
@@ -805,7 +822,14 @@
             "min": 0,
             "max": "unlimited"
           }
-        }
+        },
+        "flow_tables": {
+          "type": {"key": {"type": "integer",
+                           "minInteger": 0,
+                           "maxInteger": 254},
+                   "value": {"type": "uuid",
+                             "refTable": "Flow_Table"},
+                   "min": 0, "max": "unlimited"}}
       },
       "indexes": [
         [
@@ -5347,6 +5371,8 @@
           },
           "ephemeral": true
         },
+        "ofport": {
+          "type": {"key": "integer", "min": 0, "max": 1}},
         "mtu": {
           "category": "status",
           "type": {
@@ -5487,6 +5513,22 @@
         ]
       ]
     },
+    "Flow_Table": {
+     "columns": {
+       "name": {
+         "type": {"key": "string", "min": 0, "max": 1}},
+       "flow_limit": {
+         "type": {"key": {"type": "integer", "minInteger": 0},
+                  "min": 0, "max": 1}},
+       "overflow_policy": {
+         "type": {"key": {"type": "string",
+                          "enum": ["set", ["refuse", "evict"]]},
+                  "min": 0, "max": 1}},
+       "groups": {
+         "type": {"key": "string", "min": 0, "max": "unlimited"}},
+       "external_ids": {
+         "type": {"key": "string", "value": "string",
+                  "min": 0, "max": "unlimited"}}}},
     "MCLAG": {
       "columns": {
         "isl_port": {
@@ -6206,6 +6248,56 @@
         ]
       ]
     },
+    "Controller": {
+     "columns": {
+       "target": {
+         "type": "string"},
+       "max_backoff": {
+         "type": {"key": {"type": "integer",
+                          "minInteger": 1000},
+                  "min": 0, "max": 1}},
+       "inactivity_probe": {
+         "type": {"key": "integer", "min": 0, "max": 1}},
+       "connection_mode": {
+         "type": {"key": {"type": "string",
+                  "enum": ["set", ["in-band", "out-of-band"]]},
+                  "min": 0, "max": 1}},
+       "local_ip": {
+         "type": {"key": {"type": "string"},
+                  "min": 0, "max": 1}},
+       "local_netmask": {
+         "type": {"key": {"type": "string"},
+                  "min": 0, "max": 1}},
+       "local_gateway": {
+         "type": {"key": {"type": "string"},
+                  "min": 0, "max": 1}},
+       "enable_async_messages": {
+         "type": {"key": {"type": "boolean"},
+                  "min": 0, "max": 1}},
+       "controller_rate_limit": {
+         "type": {"key": {"type": "integer",
+                          "minInteger": 100},
+                  "min": 0, "max": 1}},
+       "controller_burst_limit": {
+         "type": {"key": {"type": "integer",
+                          "minInteger": 25},
+                  "min": 0, "max": 1}},
+       "other_config": {
+         "type": {"key": "string", "value": "string", "min": 0, "max": "unlimited"}},
+       "external_ids": {
+         "type": {"key": "string", "value": "string",
+                  "min": 0, "max": "unlimited"}},
+       "is_connected": {
+         "type": "boolean",
+         "ephemeral": true},
+       "role": {
+         "type": {"key": {"type": "string",
+                          "enum": ["set", ["other", "master", "slave"]]},
+                  "min": 0, "max": 1},
+         "ephemeral": true},
+       "status": {
+         "type": {"key": "string", "value": "string", "min": 0, "max": "unlimited"},
+         "ephemeral": true}}},
     "Manager": {
       "columns": {
         "target": {

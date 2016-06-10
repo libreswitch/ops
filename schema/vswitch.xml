@@ -1452,6 +1452,112 @@
 
     </group>
 
+    <group title="OpenFlow Configuration">
+      <column name="controller">
+        <p>
+          OpenFlow controller set.  If unset, then no OpenFlow controllers
+          will be used.
+        </p>
+
+        <p>
+          If there are primary controllers, removing all of them clears the
+          flow table.  If there are no primary controllers, adding one also
+          clears the flow table.  Other changes to the set of controllers, such
+          as adding or removing a service controller, adding another primary
+          controller to supplement an existing primary controller, or removing
+          only one of two primary controllers, have no effect on the flow
+          table.
+        </p>
+      </column>
+
+      <column name="flow_tables">
+        Configuration for OpenFlow tables.  Each pair maps from an OpenFlow
+        table ID to configuration for that table.
+      </column>
+
+      <column name="fail_mode">
+        <p>When a controller is configured, it is, ordinarily, responsible
+        for setting up all flows on the switch.  Thus, if the connection to
+        the controller fails, no new network connections can be set up.
+        If the connection to the controller stays down long enough,
+        no packets can pass through the switch at all.  This setting
+        determines the switch's response to such a situation.  It may be set
+        to one of the following:
+        <dl>
+          <dt><code>standalone</code></dt>
+          <dd>If no message is received from the controller for three
+          times the inactivity probe interval
+          (see <ref column="inactivity_probe"/>), then OpenSwitch
+          will take over responsibility for setting up flows.  In
+          this mode, OpenSwitch causes the bridge to act like an
+          ordinary MAC-learning switch.  OpenSwitch will continue
+          to retry connecting to the controller in the background
+          and, when the connection succeeds, it will discontinue its
+          standalone behavior.</dd>
+          <dt><code>secure</code></dt>
+          <dd>OpenSwitch will not set up flows on its own when the
+          controller connection fails or when no controllers are
+          defined.  The bridge will continue to retry connecting to
+          any defined controllers forever.</dd>
+        </dl>
+        </p>
+        <p>
+          The default is <code>standalone</code> if the value is unset, but
+          future versions of OpenSwitch may change the default.
+        </p>
+        <p>
+          The <code>standalone</code> mode can create forwarding loops on a
+          bridge that has more than one uplink port unless STP is enabled.  To
+          avoid loops on such a bridge, configure <code>secure</code> mode or
+          enable STP (see <ref column="stp_enable"/>).
+        </p>
+        <p>When more than one controller is configured,
+        <ref column="fail_mode"/> is considered only when none of the
+        configured controllers can be contacted.</p>
+        <p>
+          Changing <ref column="fail_mode"/> when no primary controllers are
+          configured clears the flow table.
+        </p>
+      </column>
+
+      <column name="datapath_id">
+        Reports the OpenFlow datapath ID in use.  Exactly 16 hex digits.
+        (Setting this column has no useful effect.  Set <ref
+        column="other-config" key="datapath-id"/> instead.)
+      </column>
+
+      <column name="other_config" key="datapath-id">
+        Exactly 16 hex digits to set the OpenFlow datapath ID to a specific
+        value.  May not be all-zero.
+      </column>
+
+      <column name="other_config" key="dp-desc">
+        Human readable description of datapath.  It it a maximum 256
+        byte-long free-form string to describe the datapath for
+        debugging purposes, e.g. <code>switch3 in room 3120</code>.
+      </column>
+
+      <column name="other_config" key="disable-in-band"
+              type='{"type": "boolean"}'>
+        If set to <code>true</code>, disable in-band control on the bridge
+        regardless of controller and manager settings.
+      </column>
+
+      <column name="protocols">
+        <p>
+          List of OpenFlow protocols that may be used when negotiating
+          a connection with a controller.  OpenFlow 1.0, 1.1, 1.2, and
+          1.3 are enabled by default if this column is empty.
+        </p>
+
+        <p>
+          OpenFlow 1.4, 1.5, and 1.6 are not enabled by default because their
+          implementations are missing features.  In addition, the OpenFlow 1.6
+          specification is still under development and thus subject to change.
+        </p>
+      </column>
+    </group>
+
     <group title="MSTP Configurations">
       <p>
         MSTP global configurations for all MSTIs.
@@ -1487,8 +1593,6 @@
         Name of datapath provider.
       </column>
       <column name="datapath_version">
-      </column>
-      <column name="datapath_id">
       </column>
 
       <column name="other_config" key="hwaddr">
@@ -4548,6 +4652,139 @@
    </group>
   </table>
 
+  <table name="Flow_Table" title="OpenFlow table configuration">
+    <p>Configuration for a particular OpenFlow table.</p>
+
+    <column name="name">
+      The table's name.  Set this column to change the name that controllers
+      will receive when they request table statistics, e.g. <code>ovs-ofctl
+      dump-tables</code>.  The name does not affect switch behavior.
+    </column>
+
+    <group title="Eviction Policy">
+      <p>
+        OpenSwitch supports limiting the number of flows that may be
+        installed in a flow table, via the <ref column="flow_limit"/> column.
+        When adding a flow would exceed this limit, by default OpenSwitch
+        reports an error, but there are two ways to configure OpenSwitch to
+        instead delete (``evict'') a flow to make room for the new one:
+      </p>
+
+      <ul>
+        <li>
+          Set the <ref column="overflow_policy"/> column to <code>evict</code>.
+        </li>
+
+        <li>
+          Send an OpenFlow 1.4+ ``table mod request'' to enable eviction for
+          the flow table (e.g. <code>ovs-ofctl -O OpenFlow14 mod-table br0 0
+          evict</code> to enable eviction on flow table 0 of bridge
+          <code>br0</code>).
+        </li>
+      </ul>
+
+      <p>
+        When a flow must be evicted due to overflow, the flow to evict is
+        chosen through an approximation of the following algorithm.  This
+        algorithm is used regardless of how eviction was enabled:
+      </p>
+
+      <ol>
+        <li>
+          Divide the flows in the table into groups based on the values of the
+          fields or subfields specified in the <ref column="groups"/> column,
+          so that all of the flows in a given group have the same values for
+          those fields.  If a flow does not specify a given field, that field's
+          value is treated as 0.  If <ref column="groups"/> is empty, then all
+          of the flows in the flow table are treated as a single group.
+        </li>
+
+        <li>
+          Consider the flows in the largest group, that is, the group that
+          contains the greatest number of flows.  If two or more groups all
+          have the same largest number of flows, consider the flows in all of
+          those groups.
+        </li>
+
+        <li>
+          If the flows under consideration have different importance values,
+          eliminate from consideration any flows except those with the lowest
+          importance.  (``Importance,'' a 16-bit integer value attached to each
+          flow, was introduced in OpenFlow 1.4.  Flows inserted with older
+          versions of OpenFlow always have an importance of 0.)
+        </li>
+
+        <li>
+          Among the flows under consideration, choose the flow that expires
+          soonest for eviction.
+        </li>
+      </ol>
+
+      <p>
+        The eviction process only considers flows that have an idle timeout
+        or a hard timeout.  That is, eviction never deletes permanent flows.
+        (Permanent flows do count against <ref column="flow_limit"/>.)
+      </p>
+
+      <column name="flow_limit">
+        If set, limits the number of flows that may be added to the table.
+        OpenSwitch may limit the number of flows in a table for other
+        reasons, e.g. due to hardware limitations or for resource availability
+        or performance reasons.
+      </column>
+
+      <column name="overflow_policy">
+        <p>
+          Controls the switch's behavior when an OpenFlow flow table
+          modification request would add flows in excess of <ref
+          column="flow_limit"/>.  The supported values are:
+        </p>
+
+        <dl>
+          <dt><code>refuse</code></dt>
+          <dd>
+            Refuse to add the flow or flows.  This is also the default policy
+            when <ref column="overflow_policy"/> is unset.
+          </dd>
+
+          <dt><code>evict</code></dt>
+          <dd>
+            Delete a flow chosen according to the algorithm described above.
+          </dd>
+        </dl>
+      </column>
+
+      <column name="groups">
+        <p>
+          When <ref column="overflow_policy"/> is <code>evict</code>, this
+          controls how flows are chosen for eviction when the flow table would
+          otherwise exceed <ref column="flow_limit"/> flows.  Its value is a
+          set of NXM fields or sub-fields, each of which takes one of the forms
+          <code><var>field</var>[]</code> or
+          <code><var>field</var>[<var>start</var>..<var>end</var>]</code>,
+          e.g. <code>NXM_OF_IN_PORT[]</code>.  Please see
+          <code>nicira-ext.h</code> for a complete list of NXM field names.
+        </p>
+
+        <p>
+          OpenSwitch ignores any invalid or unknown field specifications.
+        </p>
+
+        <p>
+          When eviction is not enabled, via <ref column="overflow_policy"/> or
+          an OpenFlow 1.4+ ``table mod,'' this column has no effect.
+        </p>
+      </column>
+    </group>
+
+     <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="external_ids"/>
+    </group>
+  </table>
+
   <table name="Interface" title="One physical network device in a Port.">
     An interface within a <ref table="Port"/>.
 
@@ -4559,6 +4796,59 @@
         on a host.
       </column>
 
+      <group title="OpenFlow Port Number">
+        <p>
+          When a client adds a new interface, OpenSwitch chooses an OpenFlow
+          port number for the new port.  If the client that adds the port fills
+          in <ref column="ofport_request"/>, then OpenSwitch tries to use its
+          value as the OpenFlow port number.  Otherwise, or if the requested
+          port number is already in use or cannot be used for another reason,
+          OpenSwitch automatically assigns a free port number.  Regardless of
+          how the port number was obtained, OpenSwitch then reports in <ref
+          column="ofport"/> the port number actually assigned.
+        </p>
+
+        <p>
+          OpenSwitch limits the port numbers that it automatically assigns to
+          the range 1 through 32,767, inclusive.  Controllers therefore have
+          free use of ports 32,768 and up.
+        </p>
+
+        <column name="ofport">
+          <p>
+            OpenFlow port number for this interface.  OpenSwitch sets this
+            column's value, so other clients should treat it as read-only.
+          </p>
+          <p>
+            The OpenFlow ``local'' port (<code>OFPP_LOCAL</code>) is 65,534.
+            The other valid port numbers are in the range 1 to 65,279,
+            inclusive.  Value -1 indicates an error adding the interface.
+          </p>
+        </column>
+
+        <column name="ofport_request"
+                type='{"type": "integer", "minInteger": 1, "maxInteger": 65279}'>
+          <p>
+            Requested OpenFlow port number for this interface.
+          </p>
+
+          <p>
+            A client should ideally set this column's value in the same
+            database transaction that it uses to create the interface.  OpenSwitch 
+            will honor a later request for a
+            specific port number, although it might confuse some controllers:
+            OpenFlow does not have a way to announce a port number change, so
+            OpenSwitch represents it over OpenFlow as a port deletion
+            followed immediately by a port addition.
+          </p>
+
+          <p>
+            If <ref column="ofport_request"/> is set or changed to some other
+            port's automatically assigned port number, OpenSwitch chooses a
+            new port number for the latter port.
+          </p>
+        </column>
+      </group>
     </group>
 
     <group title="System-Specific Details">
@@ -8206,6 +8496,451 @@
       Columns</code> at the beginning of this document.
       <column name="other_config"/>
       <column name="external_ids"/>
+    </group>
+  </table>
+
+  <table name="Controller" title="OpenFlow controller configuration.">
+    <p>An OpenFlow controller.</p>
+
+    <p>
+      OpenSwitch supports two kinds of OpenFlow controllers:
+    </p>
+
+    <dl>
+      <dt>Primary controllers</dt>
+      <dd>
+        <p>
+          This is the kind of controller envisioned by the OpenFlow 1.0
+          specification.  Usually, a primary controller implements a network
+          policy by taking charge of the switch's flow table.
+        </p>
+
+        <p>
+          OpenSwitch initiates and maintains persistent connections to
+          primary controllers, retrying the connection each time it fails or
+          drops.  The <ref table="Bridge" column="fail_mode"/> column in the
+          <ref table="Bridge"/> table applies to primary controllers.
+        </p>
+
+        <p>
+          OpenSwitch permits a bridge to have any number of primary
+          controllers.  When multiple controllers are configured, OpenSwitch 
+          connects to all of them simultaneously.  Because
+          OpenFlow 1.0 does not specify how multiple controllers
+          coordinate in interacting with a single switch, more than
+          one primary controller should be specified only if the
+          controllers are themselves designed to coordinate with each
+          other.  (The Nicira-defined <code>NXT_ROLE</code> OpenFlow
+          vendor extension may be useful for this.)
+        </p>
+      </dd>
+      <dt>Service controllers</dt>
+      <dd>
+        <p>
+          These kinds of OpenFlow controller connections are intended for
+          occasional support and maintenance use, e.g. with
+          <code>ovs-ofctl</code>.  Usually a service controller connects only
+          briefly to inspect or modify some of a switch's state.
+        </p>
+
+        <p>
+          OpenSwitch listens for incoming connections from service
+          controllers.  The service controllers initiate and, if necessary,
+          maintain the connections from their end.  The <ref table="Bridge"
+          column="fail_mode"/> column in the <ref table="Bridge"/> table does
+          not apply to service controllers.
+        </p>
+
+        <p>
+          OpenSwitch supports configuring any number of service controllers.
+        </p>
+      </dd>
+    </dl>
+
+    <p>
+      The <ref column="target"/> determines the type of controller.
+    </p>
+
+    <group title="Core Features">
+      <column name="target">
+        <p>Connection method for controller.</p>
+        <p>
+          The following connection methods are currently supported for primary
+          controllers:
+        </p>
+        <dl>
+          <dt><code>ssl:<var>ip</var></code>[<code>:<var>port</var></code>]</dt>
+          <dd>
+            <p>The specified SSL <var>port</var> on the host at the
+            given <var>ip</var>, which must be expressed as an IP
+            address (not a DNS name).  The <ref table="System"
+            column="ssl"/> column in the <ref table="System"/>
+            table must point to a valid SSL configuration when this form
+            is used.</p>
+            <p>If <var>port</var> is not specified, it defaults to 6653.</p>
+            <p>SSL support is an optional feature that is not always built as
+            part of OpenSwitch.</p>
+          </dd>
+          <dt><code>tcp:<var>ip</var></code>[<code>:<var>port</var></code>]</dt>
+          <dd>
+            <p>
+              The specified TCP <var>port</var> on the host at the given
+              <var>ip</var>, which must be expressed as an IP address (not a
+              DNS name), where <var>ip</var> can be IPv4 or IPv6 address.  If
+              <var>ip</var> is an IPv6 address, wrap it in square brackets,
+              e.g. <code>tcp:[::1]:6653</code>.
+            </p>
+            <p>
+              If <var>port</var> is not specified, it defaults to 6653.
+            </p>
+          </dd>
+        </dl>
+        <p>
+          The following connection methods are currently supported for service
+          controllers:
+        </p>
+        <dl>
+          <dt><code>pssl:</code>[<var>port</var>][<code>:<var>ip</var></code>]</dt>
+          <dd>
+            <p>
+              Listens for SSL connections on the specified TCP <var>port</var>.
+              If <var>ip</var>, which must be expressed as an IP address (not a
+              DNS name), is specified, then connections are restricted to the
+              specified local IP address (either IPv4 or IPv6).  If
+              <var>ip</var> is an IPv6 address, wrap it in square brackets,
+              e.g. <code>pssl:6653:[::1]</code>.
+            </p>
+            <p>
+              If <var>port</var> is not specified, it defaults to
+              6653.  If <var>ip</var> is not specified then it listens only on
+              IPv4 (but not IPv6) addresses.  The
+              <ref table="System" column="ssl"/>
+              column in the <ref table="System"/> table must point to a
+              valid SSL configuration when this form is used.
+            </p>
+            <p>
+              If <var>port</var> is not specified, it currently to 6653.
+            </p>
+            <p>
+              SSL support is an optional feature that is not always built as
+              part of OpenSwitch.
+            </p>
+          </dd>
+          <dt><code>ptcp:</code>[<var>port</var>][<code>:<var>ip</var></code>]</dt>
+          <dd>
+            <p>
+              Listens for connections on the specified TCP <var>port</var>.  If
+              <var>ip</var>, which must be expressed as an IP address (not a
+              DNS name), is specified, then connections are restricted to the
+              specified local IP address (either IPv4 or IPv6).  If
+              <var>ip</var> is an IPv6 address, wrap it in square brackets,
+              e.g. <code>ptcp:6653:[::1]</code>. If <var>ip</var> is not
+              specified then it listens only on IPv4 addresses.
+            </p>
+            <p>
+              If <var>port</var> is not specified, it defaults to 6653.
+            </p>
+          </dd>
+        </dl>
+        <p>When multiple controllers are configured for a single bridge, the
+        <ref column="target"/> values must be unique.  Duplicate
+        <ref column="target"/> values yield unspecified results.</p>
+      </column>
+
+      <column name="connection_mode">
+        <p>If it is specified, this setting must be one of the following
+        strings that describes how OpenSwitch contacts this OpenFlow
+        controller over the network:</p>
+
+        <dl>
+          <dt><code>in-band</code></dt>
+          <dd>In this mode, this controller's OpenFlow traffic travels over the
+          bridge associated with the controller.  With this setting, OpenSwitch 
+          allows traffic to and from the controller regardless of the
+          contents of the OpenFlow flow table.  (Otherwise, OpenSwitch
+          would never be able to connect to the controller, because it did
+          not have a flow to enable it.)  This is the most common connection
+          mode because it is not necessary to maintain two independent
+          networks.</dd>
+          <dt><code>out-of-band</code></dt>
+          <dd>In this mode, OpenFlow traffic uses a control network separate
+          from the bridge associated with this controller, that is, the
+          bridge does not use any of its own network devices to communicate
+          with the controller.  The control network must be configured
+          separately, before or after <code>ops-switchd</code> is started.
+          </dd>
+        </dl>
+
+        <p>If not specified, the default is implementation-specific.</p>
+      </column>
+    </group>
+
+    <group title="Controller Failure Detection and Handling">
+      <column name="max_backoff">
+        Maximum number of milliseconds to wait between connection attempts.
+        Default is implementation-specific.
+      </column>
+
+      <column name="inactivity_probe">
+        Maximum number of milliseconds of idle time on connection to
+        controller before sending an inactivity probe message.  If OpenSwitch
+        does not communicate with the controller for the specified
+        number of seconds, it will send a probe.  If a response is not
+        received for the same additional amount of time, OpenSwitch
+        assumes the connection has been broken and attempts to reconnect.
+        Default is implementation-specific.  A value of 0 disables
+        inactivity probes.
+      </column>
+    </group>
+
+    <group title="Asynchronous Messages">
+      <p>
+        OpenFlow switches send certain messages to controllers spontanenously,
+        that is, not in response to any request from the controller.  These
+        messages are called ``asynchronous messages.''  These columns allow
+        asynchronous messages to be limited or disabled to ensure the best use
+        of network resources.
+      </p>
+
+      <column name="enable_async_messages">
+        The OpenFlow protocol enables asynchronous messages at time of
+        connection establishment, which means that a controller can receive
+        asynchronous messages, potentially many of them, even if it turns them
+        off immediately after connecting.  Set this column to
+        <code>false</code> to change OpenSwitch behavior to disable, by
+        default, all asynchronous messages.  The controller can use the
+        <code>NXT_SET_ASYNC_CONFIG</code> Nicira extension to OpenFlow to turn
+        on any messages that it does want to receive, if any.
+      </column>
+
+      <group title="Controller Rate Limiting">
+        <p>
+          A switch can forward packets to a controller over the OpenFlow
+          protocol.  Forwarding packets this way at too high a rate can
+          overwhelm a controller, frustrate use of the OpenFlow connection for
+          other purposes, increase the latency of flow setup, and use an
+          unreasonable amount of bandwidth.  Therefore, OpenSwitch supports
+          limiting the rate of packet forwarding to a controller.
+        </p>
+
+        <p>
+          There are two main reasons in OpenFlow for a packet to be sent to a
+          controller: either the packet ``misses'' in the flow table, that is,
+          there is no matching flow, or a flow table action says to send the
+          packet to the controller.  OpenSwitch limits the rate of each kind
+          of packet separately at the configured rate.  Therefore, the actual
+          rate that packets are sent to the controller can be up to twice the
+          configured rate, when packets are sent for both reasons.
+        </p>
+
+        <p>
+          This feature is specific to forwarding packets over an OpenFlow
+          connection.  It is not general-purpose QoS.  See the <ref
+          table="QoS"/> table for quality of service configuration.
+        </p>
+
+        <column name="controller_rate_limit">
+          <p>
+            The maximum rate at which the switch will forward packets to the
+            OpenFlow controller, in packets per second.  If no value is
+            specified, rate limiting is disabled.
+          </p>
+        </column>
+
+        <column name="controller_burst_limit">
+          <p>
+            When a high rate triggers rate-limiting, OpenSwitch queues
+            packets to the controller for each port and transmits them to the
+            controller at the configured rate.  This value limits the number of
+            queued packets.  Ports on a bridge share the packet queue fairly.
+          </p>
+
+          <p>
+            This value has no effect unless <ref
+            column="controller_rate_limit"/> is configured.  The current
+            default when this value is not specified is one-quarter of <ref
+            column="controller_rate_limit"/>, meaning that queuing can delay
+            forwarding a packet to the controller by up to 250 ms.
+          </p>
+        </column>
+
+        <group title="Controller Rate Limiting Statistics">
+          <p>
+            These values report the effects of rate limiting.  Their values are
+            relative to establishment of the most recent OpenFlow connection,
+            or since rate limiting was enabled, whichever happened more
+            recently.  Each consists of two values, one with <code>TYPE</code>
+            replaced by <code>miss</code> for rate limiting flow table misses,
+            and the other with <code>TYPE</code> replaced by
+            <code>action</code> for rate limiting packets sent by OpenFlow
+            actions.
+          </p>
+
+          <p>
+            These statistics are reported only when controller rate limiting is
+            enabled.
+          </p>
+
+          <column name="status" key="packet-in-TYPE-bypassed"
+                  type='{"type": "integer", "minInteger": 0}'>
+            Number of packets sent directly to the controller, without queuing,
+            because the rate did not exceed the configured maximum.
+          </column>
+
+          <column name="status" key="packet-in-TYPE-queued"
+                  type='{"type": "integer", "minInteger": 0}'>
+            Number of packets added to the queue to send later.
+          </column>
+
+          <column name="status" key="packet-in-TYPE-dropped"
+                  type='{"type": "integer", "minInteger": 0}'>
+            Number of packets added to the queue that were later dropped due to
+            overflow.  This value is less than or equal to <ref column="status"
+            key="packet-in-TYPE-queued"/>.
+          </column>
+
+          <column name="status" key="packet-in-TYPE-backlog"
+                  type='{"type": "integer", "minInteger": 0}'>
+            Number of packets currently queued.  The other statistics increase
+            monotonically, but this one fluctuates between 0 and the <ref
+            column="controller_burst_limit"/> as conditions change.
+          </column>
+        </group>
+      </group>
+    </group>
+
+    <group title="Additional In-Band Configuration">
+      <p>These values are considered only in in-band control mode (see
+      <ref column="connection_mode"/>).</p>
+
+      <p>When multiple controllers are configured on a single bridge, there
+      should be only one set of unique values in these columns.  If different
+      values are set for these columns in different controllers, the effect
+      is unspecified.</p>
+
+      <column name="local_ip">
+        The IP address to configure on the local port,
+        e.g. <code>192.168.0.123</code>.  If this value is unset, then
+        <ref column="local_netmask"/> and <ref column="local_gateway"/> are
+        ignored.
+      </column>
+
+      <column name="local_netmask">
+        The IP netmask to configure on the local port,
+        e.g. <code>255.255.255.0</code>.  If <ref column="local_ip"/> is set
+        but this value is unset, then the default is chosen based on whether
+        the IP address is class A, B, or C.
+      </column>
+
+      <column name="local_gateway">
+        The IP address of the gateway to configure on the local port, as a
+        string, e.g. <code>192.168.0.1</code>.  Leave this column unset if
+        this network has no gateway.
+      </column>
+    </group>
+
+    <group title="Controller Status">
+      <column name="is_connected">
+        <code>true</code> if currently connected to this controller,
+        <code>false</code> otherwise.
+      </column>
+
+      <column name="role"
+              type='{"type": "string", "enum": ["set", ["other", "master", "slave"]]}'>
+        <p>The level of authority this controller has on the associated
+        bridge. Possible values are:</p>
+        <dl>
+          <dt><code>other</code></dt>
+          <dd>Allows the controller access to all OpenFlow features.</dd>
+          <dt><code>master</code></dt>
+          <dd>Equivalent to <code>other</code>, except that there may be at
+          most one master controller at a time.  When a controller configures
+          itself as <code>master</code>, any existing master is demoted to
+          the <code>slave</code> role.</dd>
+          <dt><code>slave</code></dt>
+          <dd>Allows the controller read-only access to OpenFlow features.
+          Attempts to modify the flow table will be rejected with an
+          error.  Slave controllers do not receive OFPT_PACKET_IN or
+          OFPT_FLOW_REMOVED messages, but they do receive OFPT_PORT_STATUS
+          messages.</dd>
+        </dl>
+      </column>
+
+      <column name="status" key="last_error">
+        A human-readable description of the last error on the connection
+        to the controller; i.e. <code>strerror(errno)</code>.  This key
+        will exist only if an error has occurred.
+      </column>
+
+      <column name="status" key="state"
+              type='{"type": "string", "enum": ["set", ["VOID", "BACKOFF", "CONNECTING", "ACTIVE", "IDLE"]]}'>
+        <p>
+          The state of the connection to the controller:
+        </p>
+        <dl>
+          <dt><code>VOID</code></dt>
+          <dd>Connection is disabled.</dd>
+
+          <dt><code>BACKOFF</code></dt>
+          <dd>Attempting to reconnect at an increasing period.</dd>
+
+          <dt><code>CONNECTING</code></dt>
+          <dd>Attempting to connect.</dd>
+
+          <dt><code>ACTIVE</code></dt>
+          <dd>Connected, remote host responsive.</dd>
+
+          <dt><code>IDLE</code></dt>
+          <dd>Connection is idle.  Waiting for response to keep-alive.</dd>
+        </dl>
+        <p>
+          These values may change in the future.  They are provided only for
+          human consumption.
+        </p>
+      </column>
+
+      <column name="status" key="sec_since_connect"
+              type='{"type": "integer", "minInteger": 0}'>
+        The amount of time since this controller last successfully connected to
+        the switch (in seconds).  Value is empty if controller has never
+        successfully connected.
+      </column>
+
+      <column name="status" key="sec_since_disconnect"
+              type='{"type": "integer", "minInteger": 1}'>
+        The amount of time since this controller last disconnected from
+        the switch (in seconds). Value is empty if controller has never
+        disconnected.
+      </column>
+    </group>
+
+    <group title="Connection Parameters">
+      <p>
+        Additional configuration for a connection between the controller
+        and the OpenSwitch.
+      </p>
+
+      <column name="other_config" key="dscp"
+              type='{"type": "integer"}'>
+        The Differentiated Service Code Point (DSCP) is specified using 6 bits
+        in the Type of Service (TOS) field in the IP header. DSCP provides a
+        mechanism to classify the network traffic and provide Quality of
+        Service (QoS) on IP networks.
+
+        The DSCP value specified here is used when establishing the connection
+        between the controller and the OpenSwitch.  If no value is specified,
+        a default value of 48 is chosen.  Valid DSCP values must be in the
+        range 0 to 63.
+      </column>
+    </group>
+
+
+    <group title="Common Columns">
+      The overall purpose of these columns is described under <code>Common
+      Columns</code> at the beginning of this document.
+
+      <column name="external_ids"/>
+      <column name="other_config"/>
     </group>
   </table>
 
