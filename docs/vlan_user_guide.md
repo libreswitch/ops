@@ -3,6 +3,10 @@
 
 ## Contents
 - [Overview](#overview)
+	- [Access VLAN](#access-vlan)
+	- [Trunk VLAN](#trunk-vlan)
+	- [Native VLAN](#native-vlan)
+	- [Internal VLAN](#internal-vlan)
 - [Configuring a VLAN](#configuring-a-vlan)
 	- [Setting up the basic configuration](#setting-up-the-basic-configuration)
 	- [Verifying the configuration](#verifying-the-configuration)
@@ -14,9 +18,23 @@
 
 ## Overview
 This guide provides detail for managing and monitoring VLANs on the switch. All the VLAN configurations work in VLAN context. For a VLAN to have a physical existance, it has to be associated with one of the interfaces.
-All such configurations work in the interface context. VLAN mandates the associated interface to be non-routing interface. When the VLAN is created, by default it is not associated with any interface. To configure this feature, see [Setting up the basic configuration](#setting-up-the-basic-configuration).
+All such configurations work in the interface context. VLAN mandates the associated interface to be non-routing interface. When the VLAN is created, by default it is not associated with any interface. By default VLAN 1 exists. To configure this feature, see [Setting up the basic configuration](#setting-up-the-basic-configuration).
 
 The main use of VLANs is to provide network segmentation. VLANs also address issues, such as scalability, security and network management.
+
+###### Access VLAN
+An access VLAN specifies the mode of an interface. By default, VLAN 1 is the access VLAN. An access port carries packets on exactly one VLAN specified. Packets egressing on an access port have no 802.1Q header. Any packet with an 802.1Q header with a nonzero VLAN ID that ingresses on an access port is dropped, regardless of whether the VLAN ID in the header is the access port's VLAN ID.
+
+###### Trunk VLAN
+A trunk port carries packets on one or more VLANs specified. A packet that ingresses on a trunk port is in the VLAN specified in its 802.1Q header, or native VLAN if the packet has no 802.1Q header. A packet that egresses through a trunk port will have an 802.1Q header if it has a nonzero VLAN ID. Any packet that ingresses on a trunk port tagged with a VLAN that the port does not trunk is dropped.
+
+###### Native VLAN
+Untagged ingress packets are destined to the native VLAN. A native-untagged port resembles a native-tagged port, with the exception that a packet that egresses on a native-untagged port in the native VLAN will not have an 802.1Q header.The native VLAN packets are not tagged when sent out on the trunk links.
+A native-tagged port resembles a trunk port, with the exception that a packet without an 802.1Q header that ingresses on a native-tagged port is in the native VLAN. Native VLAN packets are tagged when egresses on native-tagged port.
+
+###### Internal VLAN
+A port is configured by default as routed port. When a port is created as routed port an internal VLAN is allocated automatically by system. User cannot configure the internal VLAN. This VLAN information is used internally by the system, This VLAN could be used for L3 interface, sflow, etc. The internal VLAN range is 1024-4096 in ascending order by default.
+
 
 ## Configuring a VLAN
 ### Setting up the basic configuration
@@ -102,17 +120,19 @@ switch(config-lag-if)#no vlan trunk allowed 1
 ```
 
 6. Add tagging on a native VLAN.
-The `vlan trunk allowed ID` command specifies the VLAN allowed in the trunk. Multiple VLANs can be allowed in a trunk.
+The `vlan trunk native tag` command enables tagging on native VLANs.
 ```
 switch# config terminal
 switch(config)# interface 21
 switch(config-if)#no routing
+switch(config-if)#vlan trunk native 1
 switch(config-if)#vlan trunk native tag
 ```
 ```
 switch# config terminal
 switch(config)# interface lag 21
 switch(config-lag-if)#no routing
+switch(config-lag-if)#vlan trunk native 1
 switch(config-lag-if)#vlan trunk native tag
 ```
 The `no vlan trunk native tag` command disables tagging on native VLANs.
