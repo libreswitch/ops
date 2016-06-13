@@ -1,51 +1,55 @@
 # Management Interface Commands
 
 ## Contents
+- [Configuration commands](#configuration-commands)
+	- [interface mgmt](#interface-mgmt)
+	- [ip static](#ip-static)
+	- [ip dhcp](#ip-dhcp)
+	- [default-gateway](#default-gateway)
+	- [nameserver](#nameserver)
+- [Display commands](#display-commands)
+	- [show interface mgmt](#show-interface-mgmt)
+	- [show running-config](#show-running-config)
+	- [show running-config interface mgmt](#show-running-config-interface-mgmt)
+- [Hostname commands](#hostname-commands)
+	- [hostname](#hostname)
+	- [show hostname](#show-hostname)
+- [Domain name commands](#domain-name-commands)
+	- [domain-name](#domain-name)
+	- [show domain-name](#show-domain-name)
 
-- [Management interface configuration commands](#management-interface-configuration-commands)
-	- [Management interface context command](#management-interface-context-command)
-	- [Static mode configuration](#static-mode-configuration)
-	- [DHCP mode configuration](#dhcp-mode-configuration)
-	- [Default gateway configuration](#default-gateway-configuration)
-	- [Nameserver configuration](#nameserver-configuration)
-- [Management interface show commands](#management-interface-show-commands)
-	- [show current configuration](#show-current-configuration)
-		- [Syntax](#syntax)
-		- [Description](#description)
-		- [Authority](#authority)
-		- [Parameters](#parameters)
-		- [Examples](#examples)
-	- [Show running configuration](#show-running-configuration)
-	- [Show running configuration (interface context)](#show-running-configuration-interface-context)
-- [Hostname configuration](#hostname-configuration)
-	- [Hostname configuration commands](#hostname-configuration-commands)
-	- [Hostname show commands](#hostname-show-commands)
-- [Domain name configuration](#domain-name-configuration)
-	- [Domain name configuration commands](#domain-name-configuration-commands)
-	- [Domain name display commands](#domain-name-display-commands)
 
-## Management interface configuration commands
-### Management interface context command
+## Configuration commands
+
+### interface mgmt
+
 #### Syntax
 ```
 interface mgmt
 ```
+
 #### Description
-Use this command to switch to the management interface configuration context from the config context. All the management interface commands are available in this context only.
+Switches to management interface configuration mode from configuration mode. All the management interface commands are available in this mode only.
+
+#### Command mode
+Configuration mode (config).
 
 #### Authority
-Admin user.
+Admin.
 
 #### Parameters
 None.
 
 #### Example
+
+###### Switching to management interface mode
 ```
-switch# configure terminal
 switch(config)# interface mgmt
 switch(config-if-mgmt)#
 ```
-### Static mode configuration
+
+
+### ip static
 
 #### Syntax
 ```
@@ -53,53 +57,75 @@ ip static <address>/<mask>
 ```
 
 #### Description
-Use this command to assign a static IP address to the management interface. You can assign both an IPv4 and IPv6 address at the same time.
+Assigns a static IP address to the management interface. You can assign both an IPv4 and IPv6 address at the same time.
+
+#### Command mode
+Management interface mode (config-if-mgmt).
 
 #### Authority
-Admin user.
+Admin.
 
 #### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------|:---------------------------------------|
-| *address* | Required | A.B.C.D or X:X::X:X | Static IP address in either IPv4 or IPv6 format. Reserved, multicast, broadcast, and loopback addresses are not allowed.|
-| *mask* | Required | M | Subnet mask associated with the static address in CIDR format. |
-
+| *address* | Required | String | Static IP address in either IPv4 format (A.B.C.D), or IPv6 format (X:X::X:X). Reserved, multicast, broadcast, and loopback addresses are not allowed.|
+| *mask* | Required | Integer | Subnet mask associated with the static address in CIDR format. |
 
 #### Examples
+
+###### Setting an IPv4 address on the management interface
 ```
 switch(config-if-mgmt)# ip static 192.168.1.10/16
+```
 
+###### Setting an IPv6 address on the management interface
+```
 switch(config-if-mgmt)# ip static 2001:db8:0:1::129/64
 ```
 
-### DHCP mode configuration
+
+### ip dhcp
 
 #### Syntax
 ```
 ip dhcp
 ```
+
 #### Description
-Use this command to enable the DHCP client on the management interface. When enabled, the management interface attempts to retrieve its configuration settings from a DHCP server. If successful, these settings overwrite any statically configured values.
+Enables the DHCP client on the management interface. When enabled, the management interface attempts to retrieve its configuration settings from a DHCP server. If successful, these settings overwrite any statically configured values.
+
+#### Command mode
+Management interface mode (config-if-mgmt).
 
 #### Authority
-Admin user.
+Admin.
 
 #### Parameters
 None.
 
-#### Examples
+#### Example
+
+###### Enabling DHCP on the management interface
 ```
 switch(config-if-mgmt)# ip dhcp
 ```
 
-### Default gateway configuration
+
+### default-gateway
 
 #### Syntax
 ```
-[no] default-gateway <gateway-address>
+default-gateway <gateway-address>
+no default-gateway <gateway-address>
 ```
+
 #### Description
-Use this command to define the default gateway when a static IP address is set on the managment interface. An IPv4 default gateway can be configured only if an IPv4 address is configured on the management interface. An IPv6 default gateway can be configured only if an IPv6 address is configured on the management interface. It is possible to configure both an IPv4 and IPv6 address.
+Defines the default gateway when a static IP address is set on the management interface. An IPv4 default gateway can be configured only if an IPv4 address is configured on the management interface. An IPv6 default gateway can be configured only if an IPv6 address is configured on the management interface. It is possible to configure both an IPv4 and IPv6 address.
+
+Use the `no` form of this command to remove a default gateway.
+
+#### Command mode
+Management interface mode (config-if-mgmt).
 
 #### Authority
 Admin user.
@@ -107,23 +133,45 @@ Admin user.
 #### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------|:---------------------------------------|
-| *gateway_address* | Required | A.B.C.D or X:X::X:X | Gateway IP address in either IPv4 or IPv6 format. Reserved IP, Multicast IP, Broadcast IP, and loopback addresses are not allowed.|
-| *no* | Optional | Literal | Removes the specified default gateway address.|
+| *gateway_address* | Required | String | Gateway IP address in either IPv4 format (A.B.C.D), or IPv6 format (X:X::X:X). Reserved IP, Multicast IP, Broadcast IP, and loopback addresses are not allowed.|
 
 #### Examples
+
+###### Setting the default gateway using IPv4
 ```
 switch(config-if-mgmt)# default-gateway 192.168.1.5
+```
+
+###### Setting the default gateway using IPv6
+```
 switch(config-if-mgmt)# default-gateway 2001:db8:0:1::128
+```
+
+###### Removing the default gateway using IPv4
+```
 switch(config-if-mgmt)# no default-gateway 192.168.1.5
+```
+
+###### Removing the default gateway using IPv6
+```
 switch(config-if-mgmt)# no default-gateway 2001:db8:0:1::128
 ```
-### Nameserver configuration
+
+
+### nameserver
+
 #### Syntax
 ```
-[no] nameserver <address-1> [<address-2>]
+nameserver <address-1> [<address-2>]
+no nameserver <address-1> [<address-2>]
 ```
 #### Description
-Use this command to configure the address of the primary and secondary DNS servers when the management interface is configured with a static IP address. It is possible to configure both IPv4 and IPv6 addresses. It is also possible to configure one DNS server with an IPv4 address and the other one with an IPv6 address. An IPv4 DNS server can be configured only if an IPv4 address is configured on the management interface. An IPv6 DNS server can be configured only if an IPv6 address is configured on the management interface.
+Configures the address of the primary and secondary DNS servers when the management interface is configured with a static IP address. It is possible to configure both IPv4 and IPv6 addresses. It is also possible to configure one DNS server with an IPv4 address and the other one with an IPv6 address. An IPv4 DNS server can be configured only if an IPv4 address is configured on the management interface. An IPv6 DNS server can be configured only if an IPv6 address is configured on the management interface.
+
+Use the `no` form of this command to remove a DNS server. You cannot remove the secondary DNS server without first removing the primary DNS server.
+
+#### Command mode
+Management interface mode (config-if-mgmt).
 
 #### Authority
 Admin user.
@@ -131,29 +179,58 @@ Admin user.
 #### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------|:---------------------------------------|
-| *address-1* | Required | A.B.C.D or X:X::X:X | IP address of the primary DNS server in either IPv4 or IPv6 format. Reserved IP, Multicast IP, Broadcast IP, and loopback addresses are not allowed.|
-| *address-2* | Required | A.B.C.D or X:X::X:X | IP address of the secondary DNS server in either IPv4 or IPv6 format. Reserved IP, Multicast IP, Broadcast IP, and loopback addresses are not allowed.|
-| *no* | Optional | Literal | Removes the specified DNS server. You cannot remove the secondary DNS server without first removing the primary DNS server.|
+| *address-1* | Required | String | IP address of the primary DNS server in either IPv4 format (A.B.C.D), or IPv6 format (X:X::X:X). Reserved, multicast, broadcast, and loopback addresses are not allowed.|
+| *address-2* | Required | String | IP address of the primary DNS server in either IPv4 format (A.B.C.D), or IPv6 format (X:X::X:X). Reserved, multicast, broadcast, and loopback addresses are not allowed.|
 
 #### Examples
+
+###### Setting the primary DNS server using IPv4
 ```
 switch(config-if-mgmt)# nameserver 192.168.1.1
+```
+
+###### Setting the primary and secondary DNS server using IPv4
+```
 switch(config-if-mgmt)# nameserver 192.168.1.2 192.168.1.3
+```
+
+###### Setting the primary DNS server using IPv6
+```
 switch(config-if-mgmt)# nameserver 2001:db8:0:1::100
+```
+
+###### Setting the primary and secondary DNS server using IPv6
+```
 switch(config-if-mgmt)# nameserver 2001:db8:0:2::100 2001:db8:0:3::150
+```
+
+###### Removing the primary and secondary DNS server using IPv4
+```
 switch(config-if-mgmt)# no nameserver 192.168.1.2 192.168.1.3
+```
+
+###### Removing the primary and secondary DNS server using IPv6
+```
 switch(config-if-mgmt)# no nameserver 2001:db8:0:2::100 2001:db8:0:3::150
 ```
-## Management interface show commands
 
-### show current configuration
+
+
+
+## Display commands
+
+### show interface mgmt
 
 #### Syntax
 ```
 show interface mgmt
 ```
+
 #### Description
-Use this command to display the current configuration of the management interface.
+Displays the current configuration of the management interface.
+
+#### Command mode
+Enable mode.
 
 #### Authority
 All users.
@@ -161,7 +238,7 @@ All users.
 #### Parameters
 None.
 
-#### Examples
+#### Example
 ```
 switch#show interface mgmt
   Address Mode                      : static
@@ -174,7 +251,8 @@ switch#show interface mgmt
   Secondary Nameserver              : 2001:db8:0:3::150
 ```
 
-### Show running configuration
+
+### show running-config
 
 #### Syntax
 ```
@@ -184,14 +262,16 @@ show running-config
 #### Description
 Use this command to display the current configuration of the switch.
 
+#### Command mode
+Enable mode.
+
 #### Authority
-Admin user.
+Admin.
 
 #### Parameters
 None.
 
-#### Examples
-The example shows the management interface information in the `show running-config` output.
+#### Example
 ```
 switch# show running-config
   Current configuration:
@@ -205,22 +285,28 @@ switch# show running-config
       default-gateway 2001:db8:0:1::128
       nameserver 2001:db8:0:2::100 2001:db8:0:3::150
 ```
-### Show running configuration (interface context)
+
+
+### show running-config interface mgmt
 
 #### Syntax
 ```
 show running-config interface mgmt
 ```
+
 #### Description
-Use this command to display the current configuration of the switch from the interface context.
+Displays the current configuration of the switch from interface mode.
+
+#### Command mode
+Enable mode.
 
 #### Authority
-Admin user.
+Admin.
 
 #### Parameters
 None.
 
-#### Examples
+#### Example
 
 ```
 switch# show running-config interface mgmt
@@ -234,41 +320,53 @@ interface mgmt
     nameserver 2001:db8:0:2::100 2001:db8:0:3::150
 ```
 
-## Hostname configuration
+## Hostname commands
 
-### Hostname configuration commands
+### hostname
 
 #### Syntax
 ```
 hostname <name>
 no hostname
 ```
+
 #### Description
-Use this command to configure the hostname assigned to the switch. The hostname is shown at the start of each CLI prompt. The default hostname is **switch**.
+Configures the hostname assigned to the switch. The hostname is shown as part of each CLI prompt. The default hostname is `switch`.
+
+Use the `no` form of this command to set the hostname to the default value.
+
+#### Command mode
+Enable mode.
 
 #### Authority
 Admin user.
 
-##### Parameters
+#### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------:|:---------------------------------------|
 | *name* | Required | String | Hostname starting with a letter and having a maximum length of 32 characters. |
-| *no* | Required | Literal | Resets the host name back to the default value **switch**. |
 
+#### Example
 
-#### Examples
+###### Setting and then removing the host name "new-name"
 ```
 switch(config)# hostname new-name
 new-name(config)# no hostname
 ```
-### Hostname show commands
+
+
+### show hostname
 
 #### Syntax
 ```
 show hostname
 ```
+
 #### Description
-Use this command to display the currently configured hostname.
+Displays the currently configured hostname.
+
+#### Command mode
+Enable mode.
 
 #### Authority
 All users.
@@ -276,50 +374,69 @@ All users.
 #### Parameters
 None.
 
-#### Examples
+#### Example
 ```
 switch# show hostname
 switch
 ```
 
-## Domain name configuration
-### Domain name configuration commands
+## Domain name commands
+
+### domain-name
+
 #### Syntax
 ```
 domain-name <name>
 no domain-name
 ```
+
 #### Description
-Use this command to set the domain name of the switch.
+Sets the domain name of the switch.
+
+Use the `no` form of this command to remove the domain name.
+
+#### Command mode
+Configuration mode (config).
 
 #### Authority
-Admin user.
+Admin.
 
-##### Parameters
+#### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------:|:---------------------------------------|
 | *name* | Required | String | Domain name starting with a letter and having a maximum length of 32 characters. |
-| *no* | Required | Literal | Removes the domain name. |
-
 
 #### Examples
-```
-switch(config)# hostname myswitch
-myswitch(config)# domain-name example.com
-myswitch(config)# do show domain-name
-example.com
-myswitch(config)# no domain-name
-myswitch(config)# do show domain-name
 
-myswitch(config)#
+###### Setting the domain name to "example.com"
 ```
-### Domain name display commands
+switch(config)# domain-name example.com
+switch(config)# do show domain-name
+example.com
+```
+
+###### Removing the domain
+```
+switch(config)# no domain-name
+switch(config)# do show domain-name
+
+switch(config)#
+```
+Note: The `do` options runs a command in the enable mode.
+
+
+### show domain-name
+
 #### Syntax
 ```
 show domain-name
 ```
+
 #### Description
-Use this command to display the domain name currently assigned to the swtich.
+Displays the domain name currently assigned to the switch.
+
+#### Command mode
+Enable mode.
 
 #### Authority
 All users.
@@ -327,7 +444,9 @@ All users.
 #### Parameters
 None.
 
-#### Examples
+#### Example
+
+###### Setting the domain to "example.com" and then displaying it
 ```
 switch(config)# domain-name example.com
 switch(config)# exit
