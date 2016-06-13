@@ -2,6 +2,8 @@
 
 ## Contents
 
+
+
 - [Overview](#overview)
 - [Mapping a feature to its daemons](#mapping-a-feature-to-its-daemons)
 	- [Configuration file](#configuration-file)
@@ -18,6 +20,7 @@
 	- [diag-dump for a feature (basic) on CLI session](#diag-dump-for-a-feature-basic-on-cli-session)
 	- [diag-dump for a feature (basic) to a file](#diag-dump-for-a-feature-basic-to-a-file)
 		- [CT script](#ct-script)
+- [Frequently asked question](#frequently-asked-question)
 - [References](#references)
 
 
@@ -37,17 +40,17 @@ The file has the following structure (defined using YAML):
     feature_name: "feature1"
     feature_desc: "Description1"
     daemon:
-      - "daemon1"
-      - "daemon2"
-      - "daemon3"
-
+      - [name: "daemon1", 'diag_dump': "y"]
+      - [name: "daemon2", 'diag_dump': "n"]
+      - [name: "daemon3", 'diag_dump': "y"]
   -
     feature_name: "feature2"
     feature_desc: "Description2"
     daemon:
-      - "daemon4"
-      - "daemon5"
-      - "daemon6"
+      - [name: "daemon4", 'diag_dump': "y"]
+      - [name: "daemon5", 'diag_dump': "y"]
+      - [name: "daemon6", 'diag_dump': "y"]
+
 ```
 
 
@@ -57,13 +60,13 @@ A sample file with two features defined would look like this:
     feature_name: "lldp"
     feature_desc: "Link Layer Discovery Protocol"
     daemon:
-      - "ops-lldpd"
+      - [name: "ops-lldpd", 'diag_dump': "y"]
 
   -
     feature_name: "lacp"
     feature_desc: "Link Aggregation Control Protocol"
     daemon:
-      - "ops-lacpd"
+      - [name: "ops-lacpd", 'diag_dump': "y"]
 
 ```
 
@@ -88,6 +91,7 @@ In summary, complete these steps:
     - Copy diagnostics information(text format) into the buffer.
     - Null-terminate the buffer.
 2. Initialize the basic diagnostic framework in the daemon init routine.
+3. Enable diag-dump attribute for daemon in feature mapping yaml file.
 
 **Note:** The diagnostic framework must free the buffer once it has been used.
 
@@ -125,6 +129,17 @@ static void lldpd_diag_dump_basic_cb(const char *feature , char **buf)
 }
 
 ```
+
+### Example of enabling diag-dump  attribute
+Enable diag-dump attribute in the file ops_featuremapping.yaml.
+```ditaa
+  -
+    feature_name: "lldp"
+    feature_desc: "Link Layer Discovery Protocol"
+    daemon:
+        - [name: "ops-lldpd", 'diag_dump': "y"]
+```
+
 ### Example for lldpd daemon
 
 ```ditaa
@@ -150,6 +165,9 @@ INIT_DIAG_DUMP_BASIC(lldpd_diag_dump_basic_cb);
  * Returns        : void
  */
 
+/* Determin buffer length for diag-dump and allocate required memory */
+#define  BUF_LEN  300
+
 static void lldpd_diag_dump_basic_cb(const char *feature , char **buf)
 {
     if (!buf)
@@ -166,6 +184,12 @@ static void lldpd_diag_dump_basic_cb(const char *feature , char **buf)
 }
 
 
+file: ops_featuremapping.yaml
+  -
+    feature_name: "lldp"
+    feature_desc: "Link Layer Discovery Protocol"
+    daemon:
+        - [name: "ops-lldpd", 'diag_dump': "y"]
 
 ```
 
@@ -258,6 +282,14 @@ The **diag-dump <feature> basic <filename>** command captures diagnostic informa
 #### CT script
 Run the following CT test to verify that the diag-dump command is properly working with the configuration changes:
 `make devenv_ct_test src/ops-supportability/test/diag_dump_test.py`
+
+## Frequently asked question
+1) How to handle requests for different features implemented by the same daemon ?
+   diag-dump api passes feature name in callback function argument as char* . Use this
+   argument to understand the requested feature and populate feature related information .
+
+2) What is size of diag-dump buffer ?
+   Developer will decide the diag-dump buffer length.
 
 ## References
 

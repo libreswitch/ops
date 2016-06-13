@@ -74,17 +74,16 @@ The configuration file has the following structure (defined using YAML):
     feature_name: "feature1"
     feature_desc: "Description1"
     daemon:
-      - "daemon1"
-      - "daemon2"
-      - "daemon3"
-
+      - [name: "daemon1", 'diag_dump': "y"]
+      - [name: "daemon2", 'diag_dump': "n"]
+      - [name: "daemon3", 'diag_dump': "y"]
   -
     feature_name: "feature2"
     feature_desc: "Description2"
     daemon:
-      - "daemon4"
-      - "daemon5"
-      - "daemon6"
+      - [name: "daemon4", 'diag_dump': "y"]
+      - [name: "daemon5", 'diag_dump': "y"]
+      - [name: "daemon6", 'diag_dump': "y"]
 ```
 
 
@@ -94,13 +93,13 @@ A sample configuration file with two features defined would look like this:
     feature_name: "lldp"
     feature_desc: "Link Layer Discovery Protocol"
     daemon:
-      - "ops-lldpd"
+      - [name: "ops-lldpd", 'diag_dump': "y"]
 
   -
     feature_name: "lacp"
     feature_desc: "Link Aggregation Control Protocol"
     daemon:
-      - "ops-lacpd"
+      - [name: "ops-lacpd", 'diag_dump': "y"]
 
 ```
 
@@ -197,6 +196,7 @@ INIT_DIAG_DUMP_BASIC(cb_func_name);
 #### Handler function definition
 
 ```ditaa
+#define  BUF_LEN  300
 static void cb_func_name(const char *feature , char **buf)
 {
     if (!buf)
@@ -238,6 +238,8 @@ INIT_DIAG_DUMP_BASIC(lldpd_diag_dump_basic_cb);
  * Returns        : void
  */
 
+/* Determin buffer length for diag-dump and allocate required memory */
+#define  BUF_LEN  300
 static void lldpd_diag_dump_basic_cb(const char *feature , char **buf)
 {
     if (!buf)
