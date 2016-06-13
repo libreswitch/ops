@@ -499,6 +499,7 @@ enum ovsrec_interface_forwarding_state_proto_e {
 #define PORT_BOND_STATUS_UP                             "up"
 #define PORT_BOND_STATUS_BLOCKED                        "blocked"
 #define PORT_BOND_STATUS_DOWN                           "down"
+#define PORT_BOND_STATUS_MAP_BOND_SPEED                 "bond_speed"
 
 #define PORT_CONFIG_ADMIN_DOWN                          "down"
 
