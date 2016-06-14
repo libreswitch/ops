@@ -7930,7 +7930,7 @@
         the cfg_version column when the ACL processing begins. This value is cleared
         when the ACL status is updated to 'applied' or 'rejected.'
       </column>
-      <column name="status"  key="status_string" type='{"type":"string"}'>
+      <column name="status"  key="status_string" type='{"type":"string", "enum": ["set", ["in_progress", "applied", "rejected", "canceled"]]}'>
         The status of the last version of 'cfg_aces' column, that has been
         processed by switchd.  Accepted values are: 'in_progress', 'applied', 'rejected',
         and 'canceled'.
@@ -7938,7 +7938,7 @@
       <column name="status" key="version" type='{"type":"integer"}'>
         The version of cfg_aces that corresponds to this status.
       </column>
-      <column name="status" key="state" type='{"type":"string"}'>
+      <column name="status" key="state" type='{"type":"string", "enum": ["set", ["in_progress", "applied", "rejected", "canceled"]]}'>
         Valid values are 'applied', 'in_progress', 'canceled', 'rejected'
       </column>
       <column name="status" key="code" type='{"type":"integer"}'>
