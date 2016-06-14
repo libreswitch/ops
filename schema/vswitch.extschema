@@ -6760,7 +6760,14 @@
          "category": "configuration",
          "type":{
            "key":{
-             "type":"string"
+             "type":"string",
+              "enum": [
+                "set",
+                [
+                  "IPv4",
+                  "IPv6"
+                ]
+              ]
            },
            "min": 0,
            "max": 1

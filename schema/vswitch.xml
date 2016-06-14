@@ -3846,7 +3846,7 @@
         When set, all traffic which ingresses this port will be blocked from being
         forwarded out of the specified ports.
       </column>
-      <column name="other_config" key="sflow-enabled" type='{"type": "boolean"}'>
+      <column name="other_config" key="sflow-enabled" type='{"type": "boolean"}' emptyValue="true">
         Determines whether sflow sampling is enabled on this port.
         Default is true.
       </column>
@@ -6417,7 +6417,7 @@
       vrf_default.
     </column>
 
-    <column name="sampling">
+    <column name="sampling" emptyValue="4096">
       Specifies the rate at which packets should be sampled and sent
       to the collector. If not specified, rate defaults to 4096, which means
       one out of 4096 packets, on average, will be sent to the collector.
@@ -6443,17 +6443,17 @@
       Sampling rate for the 100 Gigabit interfaces.
     </column>
 
-    <column name="polling">
+    <column name="polling" emptyValue="30">
       Specifies the interval at which counter statistics are send to the
       collector. If not specified, interval defaults to 30 seconds
     </column>
 
-    <column name="header">
+    <column name="header" emptyValue="128">
       Number of bytes of a sampled packet to send to the collector.
       If not specified, the default is 128 bytes.
     </column>
 
-    <column name="max_datagram">
+    <column name="max_datagram" emptyValue="1400">
       Maximum number of bytes that will be send in the sflow datagram.
       If not specified, the default is 1400 bytes.
     </column>
@@ -6464,7 +6464,7 @@
       derived from the first interface in alphabetical order.
     </column>
 
-    <column name="agent_addr_family">
+    <column name="agent_addr_family" emptyValue="IPv4">
       Address type of agent address reported. If agent interface has both
       IPv4 and IPv6 address configured, then this column selects which address
       will be used. Defaults to IPv4.
