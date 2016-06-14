@@ -6319,7 +6319,7 @@
       </p>
 
       <column name="other_config" key="dscp"
-                type='{"type": "integer"}'>
+                type='{"type": "integer", "maxInteger": 63, "minInteger": 0}' emptyValue="48">
         The Differentiated Service Code Point (DSCP) is specified using 6 bits
         in the Type of Service (TOS) field in the IP header. DSCP provides a
         mechanism to classify the network traffic and provide Quality of
