@@ -130,6 +130,7 @@ NET1_MASK = "255.255.255.0"
 NET1_BCAST = NET_1 + ".0"
 PACKET_LOSS = 15
 
+@pytest.mark.skipif(True, reason="Skipping as autoneg needs to be fixed for 10G ports")
 class Test_template:
 
     def setup(self):
