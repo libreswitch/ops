@@ -164,36 +164,39 @@ REST APIs used for logs provide an interface to query the systemd journal. The A
 ```
 
 ### Log API definitions
+The response for all the logs REST APIs is ordered by oldest to newest log entries. The response for all APIs is limited to 1000 entries when the `limit` paramter is not specified in the API. When the `limit` paramter is specified in the API, the number of log entries in the response shall not be more than the `limit` value.
+
 `GET https://10.10.0.1/rest/v1/logs`
-Returns the most recent 1000 log entries from the systemd journal in JSON. The response is displayed by the newest entries first. This number is not currently user configurable and is fixed at 1000. It can be made user configurable in the future, if needed.
+Returns at the most 1000 recent log entries from the systemd journal in JSON. The response is displayed by the oldest entries first. This number is not currently user configurable and is fixed at 1000. It can be made user configurable in the future, if needed.
 
 `GET https://10.10.0.1/rest/v1/logs?priority=<0-7>`
-Returns log output filtered by the given log priority level. Priority levels are similar to syslog levels 0-7. All logs with the given priority level or lower are returned.
+Returns at the most 1000 recent log entries filtered by the given log priority level. Only Priority levels are similar to syslog levels 0-7. All logs with the given priority level or lower are returned.
 
 `GET https://10.10.0.1/rest/v1/logs?since=yyyy-mm-dd hh:mm:ss&until=yyyy-mm-dd hh:mm:ss`
-Returns the output filtered by the given time window.
+Returns at the most 1000 recent log entries filtered by the given time window.
 Instead of a specific time, a user can also give relative words like "yesterday", "today", "now", "1 day ago", "1 hour ago", "1 minute ago". Words like "hour ago", "minute ago" and "day ago" must precede with a positive integer and can be in plural form too. For example, 2 hours ago or 1 hour ago. Words other than the ones mentioned above return an error.
 
 `GET https://10.10.0.1/rest/v1/logs?since=2 hours ago`
-Returns log entries generated in the past 2 hour time window.
+Returns at the most 1000 recent log entries generated in the past 2 hour time window.
 
 
 `GET https://10.10.0.1/rest/v1/logs?after-cursor=cursor_string`
-Returns logs *after* the location specified by the given cursor. The cursor is maintained by the systemd journald service per log entry, and is displayed in the response for each log entry.  If the user wants to retrieve logs since the last request, the user has to provide the cursor value of the last log entry returned in the previous request. Here is an example for the cursor string: `s=66e980e3c7bc46bea313de741ce481bc;i=8598c;b=78537df4874046d5ae9f251193b9f0bc;m=285fc88ec04;t=52bd96c4fa130;x=2f797c4c0bb5eafc`
+Returns at the most 1000 recent logs *after* the location specified by the given cursor. The cursor is maintained by the systemd journald service per log entry, and is displayed in the response for each log entry.  If the user wants to retrieve logs since the last request, the user has to provide the cursor value of the last log entry returned in the previous request. Here is an example for cursor string: `s=66e980e3c7bc46bea313de741ce481bc;i=8598c;b=78537df4874046d5ae9f251193b9f0bc;m=285fc88ec04;t=52bd96c4fa130;x=2f797c4c0bb5eafc`
 
 
 `GET https://10.10.0.1/rest/v1/logs?offset=<int>&limit=<int>`
-As the log output can be huge, a user may request the number of log entries in a response. To do so, the user needs to pass `offset` and `limit` parameters. The `Offset` parameter is the starting log entry to obtain the results which starts with 0. The `limit` parameter defines the number of JSON log entries in the response and the valid range is 1 - 1000. These two parameters can be used along with other filtering parameters separated by `&`.
-For example, to retrieve the first 10 logs since the bootup, use `GET https:////10.10.0.1/rest/v1/logs?offset=0&limit=10`. To retrieve the next 10 logs, use `GET https:////10.10.0.1/rest/v1/logs?offset=10&limit=10`. The offset in the next request is typically the previous offset plus the limit. Following is an example to request log entries filtered based on priority level 6, and limit 5 log entries in the response:
+As the log output can be huge, a user may request the number of log entries in a response. To do so, the user needs to pass `offset` and `limit` parameters. The `Offset` parameter is the starting log entry to obtain the results which starts with 0. The `limit` parameter defines the number of JSON log entries in the response and the valid range is 1 - 10000. These two parameters can be used along with other filtering parameters separated by `&`.
+For example, to retrieve the most recent 10 logs, use `GET https:////10.10.0.1/rest/v1/logs?offset=0&limit=10`. To retrieve the next 10 recent logs, use `GET https:////10.10.0.1/rest/v1/logs?offset=10&limit=10`. The offset in the next request is typically the previous offset plus the limit. Following is an example to request log entries filtered based on priority level 6, and limit 5 log entries in the response:
     `GET https://10.10.0.1/rest/v1/logs?priority=6&offset=0&limit=5`
 
 
+
 `Get https://10.10.0.1/rest/v1/logs?<field>=<value>`
-Returns log output based on the fields matched to the given value in the systemd journal. A user may give multiple match field/values in one request.
+Returns at the most 1000 recent log entries based on the fields matched to the given value in the systemd journal. A user may give multiple match field/values in one request.
     If one match field is specified, all entries with a field matching the expression are returned in response.
     ` https://10.10.0.1/rest/v1/logs?MESSAGE_ID=50c0fa81c2a545ec982a54293f1b1945`
     If two different fields are matched, only entries matching both expressions at the same time are returned.
-    `https://10.10.0.1/rest/v1/logs?MESSAGE_ID=50c0fa81c2a545ec982a54293f1b1945&SYSLOG_INDETIFIER=ops-bgpd`
+    `https://10.10.0.1/rest/v1/logs?MESSAGE_ID=50c0fa81c2a545ec982a54293f1b1945&SYSLOG_IDENTIFIER=ops-bgpd`
     If two matches refer to the same field, all entries matching either expression are returned.
     `https://10.10.0.1/rest/v1/logs?_PID=150&_PID=178`
 
