@@ -4214,7 +4214,7 @@
     </group>
 
     <group title="System-Specific Details">
-      <column name="type">
+      <column name="type" emptyValue="system">
         <p>
           The interface type, one of:
         </p>
@@ -4282,7 +4282,7 @@
         </ul>
       </column>
 
-      <column name="options" key="local_ip">
+      <column name="options" key="local_ip" type='{"type": "string", "maxLength": 15}'>
         <p>
           The tunnel destination IP that received packets must
           match.
@@ -4339,7 +4339,7 @@
         <code>out_key</code> at the same time.
       </column>
 
-      <column name="options" key="tos">
+      <column name="options" key="tos" emptyValue="0">
         Optional.  The value of the ToS bits to be set on the encapsulating
         packet.  ToS is interpreted as DSCP and ECN bits, ECN part must be
         zero.  It may also be the word <code>inherit</code>, in which case
@@ -4356,7 +4356,7 @@
       </column>
 
       <column name="options" key="df_default"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="true">
         Optional.  If enabled, the Don't Fragment bit will be set on tunnel
         outer headers to allow path MTU discovery. Default is enabled; set
         to <code>false</code> to disable.
@@ -4378,7 +4378,7 @@
       </column>
 
       <column name="hw_status" key="ready"
-        type='{ "type": "boolean" }'>
+        type='{ "type": "boolean" }' emptyValue="false">
           Status information about hardware resource allocation on the interface.
           It is set as false if there are not enough hardware resources or if the
           resources required to configure features like ACLs in the interface have
@@ -4398,13 +4398,13 @@
       </column>
 
       <column name="forwarding_state" key="forwarding"
-        type='{ "type": "boolean" }'>
+        type='{ "type": "boolean" }' emptyValue="false">
         Enumeration that summarizes the state of the interface.
         Default value is <code>false</code>.
       </column>
 
       <column name="forwarding_state" key="interface_aggregation_forwarding"
-        type='{ "type": "boolean" }'>
+          type='{ "type": "boolean" }' emptyValue="false">
         Interface aggregation is set based on the information provided by protocols
         related to link aggregation. The asserting protocol setting
         the value of this key to be defined in the interface_aggregation_blocked_reason
@@ -4436,7 +4436,7 @@
         </p>
       </column>
 
-      <column name="kernel_interface_ready">
+      <column name="kernel_interface_ready" emptyValue="false">
         <p>
           Indicates whether kernel interface is provisioned.  Default is false.
 	</p>
@@ -4554,7 +4554,7 @@
             (Actv:1,TmOut:1,Aggr:1,Sync:1,Col:1,Dist:1,Def:0,Exp:0)
       </column>
       <column name="lacp_status" key="lacp_blocked"
-        type='{"type": "boolean"}'>
+        type='{"type": "boolean"}' emptyValue="false">
         lacp_blocked is set to 'true' if LACP decides to block the interface.
         Default value is <code>false</code>.
       </column>
@@ -4582,12 +4582,12 @@
         hardware. This value is directly copied from
         <ref table="Port" column="status" key="bond_hw_handle"/>.
       </column>
-      <column name="hw_bond_config" key="rx_enabled">
+      <column name="hw_bond_config" key="rx_enabled" emptyValue="false">
         A state flag to indicate that this interface is attached to a
         hardware LAG and receive logic is enabled.
         Defaults to <code>false</code> if unset.
       </column>
-      <column name="hw_bond_config" key="tx_enabled">
+      <column name="hw_bond_config" key="tx_enabled" emptyValue="false">
         A state flag to indicate that the transmit logic is enabled for this
         interface in hardware LAG.
         Defaults to <code>false</code> if unset.
@@ -4839,20 +4839,21 @@
       <column name="pm_info">
         Key-value pairs that report pluggable module information.
       </column>
-      <column name="pm_info" key="connector">
+      <column name="pm_info" key="connector"
+          type='{"type": "string", "enum": ["set", ["absent", "unknown", "SFP_RJ45", "SFP_SX", "SFP_LX", "SFP_CX", "SFP_SR", "SFP_LR", "SFP_LRM", "SFP_DAC", "SFP_FC", "QSFP_CR4", "QSFP_SR4", "QSFP_LR4", "SFP_ER", "QSFP28_SR4", "QSFP28_LR4", "QSFP28_CWDM4", "QSFP28_PSM4", "QSFP28_CLR4", "QSFP28_CR4"]]}'>
         The type of pluggable module connector inserted into the socket.
         The possible values are "absent", "unknown", "SFP_RJ45", "SFP_SX", "SFP_LX",
         "SFP_CX", "SFP_SR", "SFP_LR", "SFP_LRM", "SFP_DAC", "SFP_FC", "QSFP_CR4",
         "QSFP_SR4" and "QSFP_LR4".
       </column>
-      <column name="pm_info" key="connector_status">
+      <column name="pm_info" key="connector_status" type='{"type": "string", "enum": ["set", ["unrecognized", "unsupported", "supported"]]}'>
         The status of the connector to indicate whether it is supported by the hardware platform.
         The possible values are "unrecognized", "unsupported" and "supported".
       </column>
       <column name="pm_info" key="supported_speeds">
         The list of speeds, in megabits per second, supported by this pluggable module.
       </column>
-      <column name="pm_info" key="cable_technology">
+      <column name="pm_info" key="cable_technology" type='{"type": "string", "enum": ["set", ["active", "passive"]]}'>
         This indicates whether a copper pluggable module is active or passive.
         The possible values are "active" and "passive".
       </column>
@@ -4864,7 +4865,7 @@
       <column name="pm_info" key="max_speed">
         The maximum speed supported by the transceiver, in units of megabits per second.
       </column>
-      <column name="pm_info" key="power_mode">
+      <column name="pm_info" key="power_mode" type='{"type": "string", "enum": ["set", ["low", "high"]]}'>
         The power mode for the pluggable module. The possible values are "low" or "high".
         This typically applies to QSFP pluggable modules.
       </column>
@@ -5506,11 +5507,12 @@
     <column name="user_config">
       Key-value pairs that stores the user configuration of <ref table="Interface"/>.
     </column>
-    <column name="user_config" key="admin">
+    <column name="user_config" key="admin"
+        type='{"type": "string", "enum": ["set", ["up", "down"]]}' emptyValue="down">
       The user-configured administrative state of <ref table="Interface"/>.
       The possible values are "up" and "down".  Default is "down" if not specified.
     </column>
-    <column name="user_config" key="autoneg">
+    <column name="user_config" key="autoneg" type='{"type": "string", "enum": ["set", ["default", "on", "off"]]}'>
       The user-configured auto-negotiation state of <ref table="Interface"/>.
       The possible values are "default", "on", and "off".
     </column>
@@ -5518,11 +5520,11 @@
       The list of user-configured interface speeds in megabits per second.
       When autoneg is disabled, the first speed value in the list is applied.
     </column>
-    <column name="user_config" key="duplex">
+    <column name="user_config" key="duplex" type='{"type": "string", "enum": ["set", ["half", "full"]]}'>
       The user-configured duplex mode of <ref table="Interface"/>.
       The possible values are "half" and "full".
     </column>
-    <column name="user_config" key="pause">
+    <column name="user_config" key="pause" type='{"type": "string", "enum": ["set", ["none", "rx", "tx", "rxtx"]]}'>
       The user-configured Ethernet PAUSE (link-level flow control) mode
       of <ref table="Interface"/>. The possible values are "none", "rx", "tx", and "rxtx".
     </column>
@@ -5534,7 +5536,7 @@
       of <ref table="Interface"/>. The possible values are "none", "fc-fec" and "rs-fec".
       Default is "none" if not specified.
     </column>
-    <column name="user_config" key="lane_split">
+    <column name="user_config" key="lane_split" type='{"type": "string", "enum": ["set", ["split", "no-split"]]}'>
       The user-configured split mode of <ref table="Interface"/>.
       This is only applicable if an interface can be split into
       multiple interfaces, e.g. QSFP+ ports.
@@ -5558,7 +5560,7 @@
     <column name="hw_intf_config" key="enable">
       The possible values are "true" and "false".
     </column>
-    <column name="hw_intf_config" key="autoneg">
+    <column name="hw_intf_config" key="autoneg" type='{"type": "string",  "enum": ["set", ["on", "off"]]}'>
       The possible values are "on" and "off".
     </column>
     <column name="hw_intf_config" key="speeds">
@@ -5566,10 +5568,10 @@
       If autoneg is true, this is the list of advertised speeds.
       If not, the first speed in the list is the fixed speed of <ref table="Interface"/>.
     </column>
-    <column name="hw_intf_config" key="duplex">
+    <column name="hw_intf_config" key="duplex" type='{"type": "string", "enum": ["set", ["half", "full"]]}'>
       The possible values are "half" and "full".
     </column>
-    <column name="hw_intf_config" key="pause">
+    <column name="hw_intf_config" key="pause" type='{"type": "string", "enum": ["set", ["none", "rx", "tx","rxtx"]]}'>
       The possible values are "none", "rx", "tx", and "rxtx".
     </column>
     <column name="hw_intf_config" key="mtu">
@@ -5578,7 +5580,8 @@
     <column name="hw_intf_config" key="error_control">
       The possible values are "none", "fc-fec" and "rs-fec". Default is "none".
     </column>
-    <column name="hw_intf_config" key="interface_type">
+    <column name="hw_intf_config" key="interface_type"
+        type='{"type": "string", "enum": ["set", ["unknown", "backplane", "1GBASE_SX", "1GBASE_T", "10GBASE_CR", "10GBASE_SR", "10GBASE_LR", "10GBASE_LRM", "40GBASE_CR4", "40GBASE_SR4", "40GBASE_LR4", "SFP_ER", "100GBASE_SR4", "100GBASE_LR4", "100GBASE_CWDM4", "100GBASE_PSM4", "100GBASE_CLR4", "100GBASE_CR4"]]}'>
       Physical layer interface type of <ref table="Interface"/>.
       The possible values are "unknown", "backplane", "1GBASE_SX", "1GBASE_T",
       "10GBASE_CR", "10GBASE_SR", "10GBASE_LR", "10GBASE_LRM", "40GBASE_CR4",
@@ -5612,7 +5615,8 @@
     <column name="hw_intf_info" key="speeds">
       The list of supported speeds of the interface in units of megabits per second.
     </column>
-    <column name="hw_intf_info" key="connector">
+    <column name="hw_intf_info" key="connector"
+        type='{"type": "string", "enum": ["set", ["SFP_PLUS", "QSFP_PLUS", "QSFP28"]]}'>
       The form factor of the interface socket.
       The possible values are "SFP_PLUS" and "QSFP_PLUS".
     </column>
@@ -5639,7 +5643,7 @@
       splitter cable.
     </column>
     <column name="hw_intf_info" key="bridge"
-      type='{"type": "boolean"}'>
+      type='{"type": "boolean"}' emptyValue="false">
       Boolean value indicating interface is a `bridge' interface which is
       created for every bridge instance. The `bridge' interface receives all
       VLAN traffic and distributes to the vlan interfaces based on the VLAN
