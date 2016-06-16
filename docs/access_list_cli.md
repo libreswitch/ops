@@ -196,7 +196,7 @@ switch(config)# access-list log-timer default
 #### Syntax
 
 ```
-[no] apply access-list ip <acl-name> in
+[no] apply access-list ip <acl-name> {in|out}
 ```
 
 #### Description
@@ -214,15 +214,15 @@ Admin.
 
 #### Parameters
 
-| Name       | Status   | Syntax  | Description |
-|------------|----------|---------|-------------|
-| *ip*       | Required | Keyword | Apply an IPv4 ACL. |
-| *acl-name* | Required | String  | Name of the ACL to apply. |
-| *in*       | Required | Keyword | Apply to inbound (ingress) traffic. |
+| Name        | Status   | Syntax  | Description |
+|-------------|----------|---------|-------------|
+| *ip*        | Required | Keyword | Apply an IPv4 ACL. |
+| *acl-name*  | Required | String  | Name of the ACL to apply. |
+| *direction* | Required | Keyword | Choose *in* to apply to inbound (ingress) traffic or *out* for outbound (egress) traffic. |
 
 #### Examples
 
-Apply *My_ACL* on interfaces 1 and 2
+Apply *My_ACL* to ingress traffic on interfaces 1 and 2
 
 ```
 switch(config)# interface 1
@@ -261,7 +261,7 @@ switch(config)#
 #### Syntax
 
 ```
-[no] apply access-list ip <acl-name> in
+[no] apply access-list ip <acl-name> {in|out}
 ```
 
 #### Description
@@ -279,15 +279,15 @@ Admin.
 
 #### Parameters
 
-| Name       | Status   | Syntax  | Description |
-|------------|----------|---------|-------------|
-| *ip*       | Required | Keyword | Apply an IPv4 ACL. |
-| *acl-name* | Required | String  | Name of the ACL to apply. |
-| *in*       | Required | Keyword | Apply to inbound (ingress) traffic. |
+| Name        | Status   | Syntax  | Description |
+|-------------|----------|---------|-------------|
+| *ip*        | Required | Keyword | Apply an IPv4 ACL. |
+| *acl-name*  | Required | String  | Name of the ACL to apply. |
+| *direction* | Required | Keyword | Choose *in* to apply to inbound (ingress) traffic or *out* for outbound (egress) traffic. |
 
 #### Examples
 
-Apply *My_ACL* on VLANs 1 and 2
+Apply *My_ACL* to ingress traffic on VLANs 1 and 2
 
 ```
 switch(config)# vlan 1
@@ -326,7 +326,7 @@ switch(config)#
 #### Syntax
 
 ```
-show access-list [{interface|vlan} <id> [in]] [ip] [<acl-name>] [config]
+show access-list [{interface|vlan} <id> [{in|out}]] [ip] [<acl-name>] [config]
 ```
 
 #### Description
@@ -344,7 +344,7 @@ Admin.
 | **interface** | Optional | Keyword | Display ACLs applied to a specified interface name. |
 | **vlan**      | Optional | Keyword | Display ACLs applied to a specified VLAN ID. |
 | **id**        | Optional | String  | The name or ID of the interface or VLAN. |
-| **in**        | Optional | String  | Limit display to ingress ACLs. |
+| **direction** | Optional | String  | Choose **in** to limit display to ingress ACLs or **out** for egress ACLs. |
 | **ip**        | Optional | Keyword | Limit display to IPv4 ACLs. |
 | **acl-name**  | Optional | String  | Display the ACL matching this name. |
 | **config**    | Optional | String  | Display output as CLI commands. |
@@ -392,9 +392,9 @@ access-list ip My_ACL
 #### Syntax
 
 ```
-show access-list hitcounts ip <acl-name> [{interface|vlan} <id> [in]]
+show access-list hitcounts ip <acl-name> [{interface|vlan} <id> [{in|out}]]
 
-clear access-list hitcounts {all|ip <acl-name> {interface|vlan} <id> [in]}
+clear access-list hitcounts {all|ip <acl-name> {interface|vlan} <id> [{in|out}]}
 ```
 
 #### Description
@@ -419,7 +419,7 @@ Admin.
 | **interface** | Optional | Keyword | Specify the interface the ACL is applied to. |
 | **vlan**      | Optional | Keyword | Specify the VLAN the ACL is applied to. |
 | **id**        | Optional | String  | The name or ID of the interface or VLAN. |
-| **in**        | Optional | Keyword | Operate on ACLs applied to ingress traffic. |
+| **direction** | Optional | Keyword | Choose **in** to operate on ACLs applied to ingress traffic or **out** for egress traffic. |
 
 #### Examples
 
