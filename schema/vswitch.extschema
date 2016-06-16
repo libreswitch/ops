@@ -3812,6 +3812,95 @@
             "max": 1
           }
         },
+        "aclv4_out_applied": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+                "refTable": "ACL",
+                "refType" : "weak"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aclv4_out_cfg": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "ACL",
+              "refType" : "weak"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aclv4_out_cfg_version": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aclv4_out_status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "aclv4_out_statistics": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 512
+          },
+          "ephemeral": true
+        },
+        "aclv4_out_statistics_clear_requested": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aclv4_out_statistics_clear_performed": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
         "other_config": {
           "category": "configuration",
           "type": {
@@ -4421,6 +4510,95 @@
           }
         },
         "aclv4_in_statistics_clear_performed": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aclv4_out_applied": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+                "refTable": "ACL",
+                "refType" : "weak"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aclv4_out_cfg": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "ACL",
+              "refType" : "weak"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aclv4_out_cfg_version": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aclv4_out_status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "aclv4_out_statistics": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 512
+          },
+          "ephemeral": true
+        },
+        "aclv4_out_statistics_clear_requested": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "aclv4_out_statistics_clear_performed": {
           "category": "status",
           "type": {
             "key": {

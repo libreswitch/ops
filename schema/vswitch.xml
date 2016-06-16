@@ -2959,17 +2959,32 @@
         ACL applied to VLANs.
       </p>
       <column name="aclv4_in_cfg">
-        ACL, potentially in flight, desired to be applied to this VLAN, as identified
-        in the <ref table="ACL"/>.
+        Ingress IPv4 ACL, potentially in flight, desired to be applied to this VLAN, as
+        identified in the <ref table="ACL"/>.
       </column>
       <column name="aclv4_in_cfg_version">
         The version of the 'aclv4_in_cfg' column.
         This value is incremented by the management interface each- CLI/REST/Web UI, etc.
         every time it changes the 'aclv4_in_cfg' value.
-        An empty value means no ACL has been configured for the VLAN.
+        An empty value means no ingress IPv4 ACL has been configured for the VLAN.
       </column>
       <column name="aclv4_in_statistics_clear_requested">
-        The number of times a request was made to clear the ACL statistics for this VLAN.
+        The number of times a request was made to clear the ingress IPv4 ACL statistics
+        for this VLAN.
+      </column>
+      <column name="aclv4_out_cfg">
+        Egress IPv4 ACL, potentially in flight, desired to be applied to this VLAN,
+        as identified in the <ref table="ACL"/>.
+      </column>
+      <column name="aclv4_out_cfg_version">
+        The version of the 'aclv4_out_cfg' column.
+        This value is incremented by the management interface each- CLI/REST/Web UI, etc.
+        every time it changes the 'aclv4_out_cfg' value.
+        An empty value means no egress IPv4 ACL has been configured for the VLAN.
+      </column>
+      <column name="aclv4_out_statistics_clear_requested">
+        The number of times a request was made to clear the egress IPv4 ACL statistics
+        for this VLAN.
       </column>
     </group>
     <group title="ACL Status">
@@ -2977,8 +2992,8 @@
         Status of applied ACLs and ACL statistics per VLAN.
       </p>
       <column name="aclv4_in_applied">
-        Current, successfully applied ACL to this VLAN, as identified in the
-        <ref table="ACL"/>
+        Current, successfully applied ingress IPv4 ACL to this VLAN, as identified
+        in the <ref table="ACL"/>
       </column>
       <column name="aclv4_in_status">
         The status of the last version of 'aclv4_in_cfg' column, that has been
@@ -2997,12 +3012,42 @@
         Detailed reason for error state.  Expected empty when state is 'applied'
       </column>
       <column name="aclv4_in_statistics" key="sequence_number" type='{"type":"integer"}'>
-        Statistics for the ACL applied to this port for ACEs that have the
-        'count' keyword specified.  Statistics are key/value pairs of
+        Statistics for the ingress IPv4 ACL applied to this port for ACEs that have
+        the 'count' keyword specified.  Statistics are key/value pairs of
         ACL sequence number and integer representing the statistics for that entry.
       </column>
       <column name="aclv4_in_statistics_clear_performed">
-        The number of times that ACL statistics for this VLAN have been cleared..
+        The number of times that ingress IPv4 ACL statistics for this VLAN have
+        been cleared.
+      </column>
+      <column name="aclv4_out_applied">
+        Current, successfully applied egress IPv4 ACL to this VLAN, as identified
+        in the <ref table="ACL"/>
+      </column>
+      <column name="aclv4_out_status">
+        The status of the last version of 'aclv4_out_cfg' column, that has been
+        processed by switchd.
+      </column>
+      <column name="aclv4_out_status" key="version" type='{"type":"integer"}'>
+        The version of aclv4_out_cfg that corresponds to this status.
+      </column>
+      <column name="aclv4_out_status" key="state"
+            type='{"type":"string", "enum": ["set", ["applied", "out_progress", "canceled", "rejected"]]}'>
+      </column>
+      <column name="aclv4_out_status" key="code" type='{"type":"integer"}'>
+        Numeric error code.  Expected to be 0 when state is 'applied'
+      </column>
+      <column name="aclv4_out_status" key="message" type='{"type":"string"}'>
+        Detailed reason for error state.  Expected empty when state is 'applied'
+      </column>
+      <column name="aclv4_out_statistics" key="sequence_number" type='{"type":"integer"}'>
+        Statistics for the egress IPv4 ACL applied to this port for ACEs that
+        have the 'count' keyword specified.  Statistics are key/value pairs of
+        ACL sequence number and integer representing the statistics for that entry.
+      </column>
+      <column name="aclv4_out_statistics_clear_performed">
+        The number of times that egress IPv4 ACL statistics for this VLAN have
+        been cleared.
       </column>
     </group>
    <group title="Common Columns">
@@ -3973,17 +4018,32 @@
         ACL applied to ports.
       </p>
       <column name="aclv4_in_cfg">
-        ACL, potentially in flight, desired to be applied to this port, as identified
-        in the <ref table="ACL"/>.
+        Ingress IPv4 ACL, potentially in flight, desired to be applied to this port,
+        as identified in the <ref table="ACL"/>.
       </column>
       <column name="aclv4_in_cfg_version">
         The version of the 'aclv4_in_cfg' column.
         This value is incremented by the management interface - CLI/REST/Web UI, etc.
         every time it changes the 'aclv4_in_cfg' value.
-         An empty value means no ACL has been configured for the port.
+        An empty value means no ingress IPv4 ACL has been configured for the port.
       </column>
       <column name="aclv4_in_statistics_clear_requested">
-       The number of times a request was made to clear the ACL statistics for this port.
+        The number of times a request was made to clear the ingress IPv4 ACL statistics
+        for this port.
+      </column>
+      <column name="aclv4_out_cfg">
+        Egress IPv4 ACL, potentially in flight, desired to be applied to this port,
+        as identified in the <ref table="ACL"/>.
+      </column>
+      <column name="aclv4_out_cfg_version">
+        The version of the 'aclv4_out_cfg' column.
+        This value is incremented by the management interface - CLI/REST/Web UI, etc.
+        every time it changes the 'aclv4_out_cfg' value.
+        An empty value means no egress IPv4 ACL has been configured for the port.
+      </column>
+      <column name="aclv4_out_statistics_clear_requested">
+        The number of times a request was made to clear the egress IPv4 ACL statistics
+        for this port.
       </column>
     </group>
     <group title="ACL Status">
@@ -3991,8 +4051,8 @@
         Status of applied ACLs and ACLs statistics per port.
       </p>
       <column name="aclv4_in_applied">
-        Current, successfully applied ACL to this port, as identified in the
-        <ref table="ACL"/>
+        Current, successfully applied ingress IPv4 ACL to this port, as identified
+        in the <ref table="ACL"/>
       </column>
       <column name="aclv4_in_status">
         The status of the last version of 'aclv4_in_cfg' column, that has been
@@ -4011,12 +4071,44 @@
         Detailed reason for error state.  Expected empty when state is 'applied'
       </column>
       <column name="aclv4_in_statistics" key="sequence_number" type='{"type":"integer"}'>
-        Statistics for the ACL applied to this port for ACEs that have the
-        'count' keyword specified.  Statistics are key/value pairs of
-        ACL sequence number and integer representing the statistics for that entry.
+        Statistics for the ingress IPv4 ACL applied to this port for ACEs that have
+        the 'count' keyword specified.  Statistics are key/value pairs of
+        Ingress IPv4 ACL sequence number and integer representing the statistics
+        for that entry.
       </column>
       <column name="aclv4_in_statistics_clear_performed">
-        The number of times the ACL statistics for this port have been cleared.
+        The number of times the ingress IPv4 ACL statistics for this port have been
+        cleared.
+      </column>
+      <column name="aclv4_out_applied">
+        Current, successfully applied extress IPv4 ACL to this port, as identified
+        in the <ref table="ACL"/>
+      </column>
+      <column name="aclv4_out_status">
+        The status of the last version of 'aclv4_out_cfg' column, that has been
+        processed by switchd.
+      </column>
+      <column name="aclv4_out_status" key="version" type='{"type":"integer"}'>
+        The version of aclv4_out_cfg that corresponds to this status.
+      </column>
+      <column name="aclv4_out_status" key="state"
+            type='{"type":"string", "enum": ["set", ["applied", "in_progress", "canceled", "rejected"]]}'>
+      </column>
+      <column name="aclv4_out_status" key="code" type='{"type":"integer"}'>
+        Numeric error code.  Expected to be 0 when state is 'applied'
+      </column>
+      <column name="aclv4_out_status" key="message" type='{"type":"string"}'>
+        Detailed reason for error state.  Expected empty when state is 'applied'
+      </column>
+      <column name="aclv4_out_statistics" key="sequence_number" type='{"type":"integer"}'>
+        Statistics for the egress IPv4 ACL applied to this port for ACEs that have
+        the 'count' keyword specified.  Statistics are key/value pairs of
+        egress IPv4 ACL sequence number and integer representing the statistics for
+        that entry.
+      </column>
+      <column name="aclv4_out_statistics_clear_performed">
+        The number of times the egress IPv4 ACL statistics for this port have been
+        cleared.
       </column>
     </group>
     <group title="MACs Validity">
