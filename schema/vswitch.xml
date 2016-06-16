@@ -1014,30 +1014,30 @@
         Specifies the various ECMP (Equal Cost Multi-Path) configuration options.
       </p>
 
-        <column name="ecmp_config" key="enabled" type='{"type": "boolean"}'>
+        <column name="ecmp_config" key="enabled" type='{"type": "boolean"}' emptyValue="true">
             Determines whether ECMP is enabled in the system.
             Default is true.
         </column>
-        <column name="ecmp_config" key="hash_srcip_enabled" type='{"type": "boolean"}'>
+        <column name="ecmp_config" key="hash_srcip_enabled" type='{"type": "boolean"}' emptyValue="true">
             Determines whether source IP participates in ECMP hash calculation.
             Default is true.
         </column>
-        <column name="ecmp_config" key="hash_dstip_enabled" type='{"type": "boolean"}'>
+        <column name="ecmp_config" key="hash_dstip_enabled" type='{"type": "boolean"}' emptyValue="true">
             Determines whether destination IP participates in ECMP hash
             calculation.
             Default is true.
         </column>
-        <column name="ecmp_config" key="hash_srcport_enabled" type='{"type": "boolean"}'>
+        <column name="ecmp_config" key="hash_srcport_enabled" type='{"type": "boolean"}' emptyValue="true">
             Determines whether source TCP/UDP port participates in ECMP hash
             calculation.
             Default is true.
         </column>
-        <column name="ecmp_config" key="hash_dstport_enabled" type='{"type": "boolean"}'>
+        <column name="ecmp_config" key="hash_dstport_enabled" type='{"type": "boolean"}' emptyValue="true">
             Determines whether destination TCP/UDP port participates in ECMP
             hash calculation.
             Default is true.
         </column>
-        <column name="ecmp_config" key="resilient_hash_enabled" type='{"type": "boolean"}'>
+        <column name="ecmp_config" key="resilient_hash_enabled" type='{"type": "boolean"}' emptyValue="true">
             Determines whether ECMP hashing preserves traffic flows when ECMP group membership changes.
             Default is true.
         </column>
