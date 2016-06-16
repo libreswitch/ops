@@ -180,7 +180,8 @@
       </column>
 
       <column name="other_config" key="min_internal_vlan"
-              type='{"type": "integer", "minInteger": 1, "maxInteger": 4094}'>
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 4094}'
+              emptyValue="1024">
         <p>
             This key specifies a lower bound of the VLAN range, which is being used for internal system purposes.
         </p>
@@ -190,7 +191,8 @@
       </column>
 
       <column name="other_config" key="max_internal_vlan"
-              type='{"type": "integer", "minInteger": 1, "maxInteger": 4094}'>
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 4094}'
+              emptyValue="4094">
         <p>
             This key specifies an upper bound of the VLAN range, which is being used for internal system purposes.
         </p>
@@ -200,7 +202,8 @@
       </column>
 
       <column name="other_config" key="internal_vlan_policy"
-              type='{"type": "string"}'>
+              type='{"type": "string", "enum": ["set", ["ascending", "descending"]]}'
+              emptyValue="ascending">
         <p>
             This key indicates order of assignment of internal VLAN ID (ascending or descending).
         </p>
@@ -2929,7 +2932,7 @@
       <column name="description">
         User provided description of this VLAN.
       </column>
-      <column name="admin">
+      <column name="admin" emptyValue="down">
         Administratively configured state of this VLAN.
         Default is down if not specified.
       </column>
@@ -2939,7 +2942,7 @@
       <column name="hw_vlan_config">
           Key-value pairs that represent the configuration passed down to hardware.
       </column>
-      <column name="hw_vlan_config" key="enable">
+      <column name="hw_vlan_config" key="enable" type='{"type": "string", "enum": ["set", ["true", "false"]]}'>
         The possible values are "true" and "false".
       </column>
     </group>
@@ -2951,10 +2954,10 @@
       </column>
    </group>
    <group title="VLAN Status">
-      <column name="oper_state">
+      <column name="oper_state" emptyValue="down">
         Operational state of this VLAN.
       </column>
-      <column name="oper_state_reason">
+      <column name="oper_state_reason" emptyValue="admin_down">
         Human readable reason for the operational state of this VLAN.
       </column>
    </group>
