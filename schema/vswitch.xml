@@ -2073,7 +2073,7 @@
         Prepends AS numbers to the AS path. The value is a list of AS numbers seperated by a space.
       </column>
       <column name="set" key="atomic-aggregate"
-        type='{"type": "boolean"}'>
+        type='{"type": "boolean"}' emptyValue="false">
         If set to 'true', upstream routers will be notified that route is aggregated. Default is false.
       </column>
       <column name="set" key="extcommunity_rt" >
@@ -2397,26 +2397,27 @@
           IPv4 or IPv6 destination prefix and mask in the address/mask
           format. Example 192.168.0.0/16
       </column>
-      <column name="address_family">
+      <column name="address_family" emptyValue="ipv4">
         Represents the address family for this entry.
         Default value is <code>ipv4</code>.
       </column>
-      <column name="sub_address_family">
+      <column name="sub_address_family" emptyValue="unicast">
         Represents subsequent address family identifier such as unicast, multicast
         or MPLS VPN.
         Default is <code>unicast</code>.
       </column>
-      <column name="distance">
+      <column name="distance" emptyValue="0">
           Administrative distance for the route entry.
           Default value is 0.
       </column>
-      <column name="metric">
+      <column name="metric" emptyValue="0">
           This is the BGP Multi Exit Discriminator (MED) attribute used in best
           path selection.
           Default value is 0
       </column>
       <column name="weight"
-          type='{"type":"integer", "minInteger": 0, "maxInteger" : 4294967295}'>
+          type='{"type":"integer", "minInteger": 0, "maxInteger" : 4294967295}'
+          emptyValue="32768">
           Weight of the BGP route.
           Default value is 32768
       </column>
@@ -2442,7 +2443,7 @@
           <li><mark>IGP_CHANGED</mark> - Set for routes exhanged over iBGP intradomain autonomous system networks.</li>
       </ol>
       </column>
-      <column name="origin">
+      <column name="origin" emptyValue="igp">
           Origin of the BGP route.
           Allowed values are <mark>egp</mark>,<mark>igp</mark>,<mark>incomplete</mark>
           igp origin code specifies whether route entry originated from an Interior
@@ -2454,24 +2455,26 @@
           Default value is igp.
       </column>
       <column name="local_pref"
-          type='{"type":"integer", "minInteger": 0, "maxInteger" : 4294967295}'>
+          type='{"type":"integer", "minInteger": 0, "maxInteger" : 4294967295}'
+          emptyValue="0">
           Local preference of the BGP route.
           Default value is 0.
       </column>
-      <column name="aggregate">
+      <column name="aggregate" emptyValue="false">
           True if notification is sent to upstream routers that the route is aggregated.
           Default value is false.
       </column>
       <column name="aggregator_as"
-          type='{"type":"integer", "minInteger": 0, "maxInteger" : 4294967295}'>
+          type='{"type":"integer", "minInteger": 0, "maxInteger" : 4294967295}'
+          emptyValue="0">
           Originating AS number of the aggregate route.
           Default value is 0.
       </column>
-      <column name="community">
+      <column name="community" emptyValue="">
           Space delimited list of community names for the route.
           No value means that no community names are associated with the route.
       </column>
-      <column name="ecommunity">
+      <column name="ecommunity" emptyValue="">
           Space delimited list of extended community names for the route.
           No value means that no extended community names are associated with the route.
       </column>
@@ -2485,20 +2488,21 @@
           autonomous system numbers.
       </column>
       <column name="creation_time"
-          type='{"type":"integer", "minInteger": 0}'>
+          type='{"type":"integer", "minInteger": 0}'
+          emptyValue="0">
           Time in seconds, at which the route arrived from the neighbor.
           Value is the number of seconds elapsed since epoch.
           Default value is 0.
       </column>
-      <column name="protocol_iBGP">
+      <column name="protocol_iBGP" emptyValue="false">
           Specifies whether the route was learned through iBGP session.
           Default value is false.
       </column>
-      <column name="protocol_internal">
+      <column name="protocol_internal" emptyValue="false">
           Specifies whether the route originated locally on the BGP peer.
           Default value is false.
       </column>
-      <column name="aggregator">
+      <column name="aggregator" emptyValue="">
           IP address of the BGP node responsible for route aggregation.
           Value is empty if route is not aggregated.
       </column>
@@ -2514,24 +2518,28 @@
           represent route attributes.
       </p>
       <column name="path_attributes" key="bgp_flags"
-          type='{"type": "string"}'>
+          type='{"type": "string", "enum": ["set", ["", "history", "damped", "multipath", "valid", "selected"]]}'
+          emptyValue="">
           Route status flags. Allowed values are <code>history</code>,
           <code>damped</code>,<code>multipath</code>,<code>valid</code>,
           <code>selected</code>
-           Default value is 0.
+           Default value is the empty string.
       </column>
       <column name="path_attributes" key="bgp_as_path"
-          type='{"type": "string"}'>
-          List of AS path number for a route. Default is 0. Example: 200,300,400
+          type='{"type": "string"}'
+          emptyValue="">
+          List of AS path number for a route. Default is the empty string. Example: 200,300,400
       </column>
       <column name="path_attributes" key="bgp_origin"
-          type='{"type": "string"}'>
+          type='{"type": "string"}'
+          emptyValue="incomplete">
           Indicates whether a route is <code>IGP</code>, <code>EGP</code>
           or <code>incomplete</code>.
           Default is incomplete.
       </column>
       <column name="path_attributes" key="bgp_loc_pref"
-          type='{"type": "string"}'>
+          type='{"type": "integer", "minInteger": 0, "maxInteger": 4294967295}'
+          emptyValue="0">
           Local preference path attribute. Used by BGP to influence in the
           best path selection.
           Default value is 0.
@@ -2549,7 +2557,7 @@
       <column name="ip_address">
           IP address of the nexthop device.
       </column>
-      <column name="type">
+      <column name="type" emptyValue="unicast">
           Type of the nexthop.
           Default is <code>unicast</code>.
       </column>
@@ -2566,18 +2574,20 @@
       <column name="networks">
       Announces networks for given bgp router.
       </column>
-      <column name="maximum_paths">
+      <column name="maximum_paths" emptyValue="1">
       Number of paths BGP may install into the routing table. If not specified, BGP selects a
       single path.
       Default is 1.
       </column>
       <column name="timers" key="keepalive"
-             type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'>
+             type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'
+             emptyValue="60">
       Specifies BGP keepalive time in seconds.
       Default is 60 seconds.
       </column>
       <column name="timers" key="holdtime"
-              type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'>
+              type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'
+              emptyValue="180">
       Specifies BGP hold time in seconds.
       Default is 180 seconds.
       </column>
@@ -2587,15 +2597,15 @@
       <column name="redistribute_route_map">
       Specifies route-maps to be applied when redistributing routes.
       </column>
-      <column name="always_compare_med">
+      <column name="always_compare_med" emptyValue="false">
       Compares MED (Multi-Exit Discriminitor) from different neighbors.
       Default is false.
       </column>
-      <column name="deterministic_med">
+      <column name="deterministic_med" emptyValue="false">
       When enabled, selects the best-MED path among paths advertised from the neighboring AS.
       Default is false.
       </column>
-      <column name="gr_stale_timer">
+      <column name="gr_stale_timer"  emptyValue="360">
       Specifies the maximum time to hold onto restarting peer stale paths.
       Range: 1-3600 seconds.
       Default value is 360 seconds.
@@ -2604,11 +2614,11 @@
         BGP neighbors or neighbor groups, keyed by IP for the former or any
 	string name for the latter.
       </column>
-      <column name="fast_external_failover">
+      <column name="fast_external_failover" emptyValue="false">
         Enables fast external failover for BGP directly connected peering sessions.
         Default is false.
       </column>
-      <column name="log_neighbor_changes">
+      <column name="log_neighbor_changes" emptyValue="false">
         Enables logging of BGP neighbor status changes.
         Default is false.
       </column>
@@ -2634,19 +2644,19 @@
 
     <group title="Neighbor Configuration">
 
-      <column name="is_peer_group">
+      <column name="is_peer_group" emptyValue="false">
       This is a flag which identifies whether this specific entry is
       an individual BGP neighbor or is a BGP peer group.  A value
       of true implies a peer group.  Otherwise, the entry represents
       a BGP neighbor.  If the value is not set, it implies false.
       </column>
 
-      <column name="description">
+      <column name="description" emptyValue="">
       This is an optional string which can be used for describing this entry.
       Default is empty.
       </column>
 
-      <column name="shutdown">
+      <column name="shutdown" emptyValue="false">
       Specifies whether the neighbor has been administratively shut down.
       If not specified, the default is false.
       </column>
@@ -2684,7 +2694,7 @@
       This is the weight for routes from this neighbor.
       </column>
 
-      <column name="tcp_port_number">
+      <column name="tcp_port_number" emptyValue="179">
       This is the BGP neighbor's tcp port number.  Default value is 179.
       </column>
 
@@ -2692,7 +2702,7 @@
       Minimum interval between sending BGP routing updates. Range: 0-600 seconds.
       </column>
 
-      <column name="ebgp_multihop">
+      <column name="ebgp_multihop" emptyValue="false">
       If set to "true", allows BGP connections with peers that are not directly connected.
       Default is "false".
       </column>
@@ -2714,12 +2724,12 @@
       Allow inbound soft reconfiguration for this neighbor.
       </column>
 
-      <column name="remove_private_as">
+      <column name="remove_private_as" emptyValue="false">
       Specifies whether private AS should be removed.
       If not specified, the default value is false.
       </column>
 
-      <column name="passive">
+      <column name="passive" emptyValue="false">
       Indicates that open messages should NOT be sent to this neighbor.
       Default is false.
       </column>
@@ -2733,13 +2743,15 @@
       </column>
 
       <column name="timers" key="keepalive"
-        type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'>
+        type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'
+        emptyValue="60">
         Set the keepalive interval for a specific BGP peer.
         The value is keepalive interval in seconds. Default value is 60 seconds.
       </column>
 
       <column name="timers" key="holdtime"
-        type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'>
+          type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'
+          emptyValue="180">
         Set the hold time for a specific BGP peer.
         The value is hold time in seconds. Default value is 180 seconds.
       </column>
@@ -2811,7 +2823,9 @@
         informational entries indicating various status
         values for this BGP neighbor.
       </p>
-      <column name="status" key="bgp_peer_state">
+      <column name="status" key="bgp_peer_state"
+          type='{"type": "string", "enum": ["set", ["Idle", "Connect", "Active", "OpenSent", "OpenConfirm", "Established", "Clearing", "Deleted" ]]}'
+          emptyValue="Idle">
           This represents the BGP neighbor state at this specific
           instance in time.  The value can be one of Idle, Connect,
           Active, OpenSent, OpenConfirm, Established, Clearing or
