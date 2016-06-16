@@ -3,16 +3,16 @@
 ## Contents
 - [Overview](#overview)
 - [Prerequisites](#prerequisites)
-- [Ansible installation](#ansible-installation)
+- [Intalling Ansible](#installing-ansible)
 	- [Setting up the basic configuration on a control machine](#setting-up-the-basic-configuration-on-a-control-machine)
 		- [Default configuration for Ansible](#default-configuration-for-ansible)
-		- [Declaring an inventory/hosts file](#declaring-inventory/hosts-file)
-	- [Verifying Ansible installation](#verifying-ansible-installation)
+		- [Declaring an inventory file](#declaring-an-inventory-file)
+	- [Verifying the Ansible installation](#verifying-the-ansible-installation)
 - [Playbooks](#playbooks)
 - [Roles](#roles)
 	- [Ansible galaxy](#ansible-galaxy)
 - [Communicating with Openswitch](#communicating-with-openswitch)
-	- [SSH communication with Openswitch](#ssh-communiation-with-openswitch)
+	- [SSH communication with Openswitch](#ssh-communication-with-openswitch)
 - [How to write Ansible role for OpenSwitch VLAN](#how-to-write-ansible-role-for-openswitch-vlan)
 	- [Create and initialize VLAN role](#create-and-initialize-vlan-role)
 	- [Create templates based on schema](#create-templates-based-on-schema)
@@ -34,9 +34,9 @@ It is recommended on the Ansible website to use 'pip', the Python package manage
 
 ## Installing Ansible
 
-As per the flavor of the operating system, there are different ways to install Ansible.
+Based on the operating system, there are different ways to install Ansible.
 
-Recommended by Ansible official documentation for linux:
+Recommended by Ansible official documentation for Linux:
 ```
 $sudo pip install Ansible
 ```
@@ -52,8 +52,20 @@ Ansible can also be installed using apt-get provided all the package requirement
 ```
 $sudo apt-get install Ansible
 ```
+**Note:** Using a method other than the recommended `pip`, might install an older release of Ansible. To install the most recent Ansible stable release, build and install Ansible from source code. For example, to install Ansible stable release 2.1:
+```
+git clone https://github.com/ansible/ansible.git --recursive --branch stable-2.1
+sudo apt-get install python-dev
+sudo apt-get install build-essential libssl-dev libffi-dev python-dev
+sudo apt-get install graphviz
+cd ansible
+sudo make
+sudo make install
+```
 
 A working Ansible control machine Docker image is uploaded on the Docker hub and is used for running the tests.
+
+**Note:** This step is optional. Once Ansible is installed on any machine/VM, that machine/VM acts as an Ansible control machine.
 
 The command to pull the Ansible control machine is:
 ```
@@ -71,9 +83,9 @@ http://docs.ansible.com/ansible/intro_installation.html#getting-ansible
 ### Setting up the basic configuration on a control machine
 
 #### Default configuration for Ansible
-Settings in Ansible can be adjusted through the ansible.cfg file. If you use pip to install Ansible, the ansible.cfg file is present by default in the /etc/ansible/ directory. Changes can be made by creating the ansible.cfg file either in the home directory or in the current directory.
+Settings in Ansible can be adjusted through the ansible.cfg file. If you use `pip` or `apt-get` to install Ansible, the ansible.cfg file is present by default in the `/etc/ansible/` directory. Changes can be made by creating the ansible.cfg file either in the home directory or in the current directory.
 
-Here is a sample ansible.cfg file:
+Here is a sample <b>ansible.cfg</b> file:
 ```
 [defaults]
 inventory=/etc/ansible/hosts
@@ -85,13 +97,13 @@ scp_if_ssh = True
 
 ```
 
-For more information about the Ansible.cfg file, refer to:
+For more information about the ansible.cfg file, refer to:
 
 http://docs.ansible.com/ansible/intro_configuration.html
 
-#### Declaring an inventory/hosts file
+#### Declaring an inventory file
 
-Managing the list of servers or hosts that need to be automated is done by creating  an inventory file. The inventory file is by default present in the /etc/ansible/hosts directory. The location of the inventory file can be changed by providing a specific location in the ansible.cfg file. Similar to the configuration file, the inventory file can also be created in the current directory or the home directory to overwrite the default file under /etc/ansible/hosts.
+Managing the list of servers or hosts that need to be automated is done by creating an inventory file. The inventory file is by default present as ``/etc/ansible/hosts``. The location of the inventory file can be changed by providing a specific location in the ansible.cfg file. Similar to the configuration file, the inventory file can also be created in the current directory or the home directory to overwrite the default file under ``/etc/ansible``.
 
 For more information about managing the inventory and options associated with the inventory, refer to:
 
@@ -104,6 +116,7 @@ Sample inventory:
 ops ansible_host=192.168.1.10 ansible_port=22
 
 ```
+**Note:** For OpenSwitch host, the `ansible_host` value should be the same as the IP address of the management interface eth0. To check the management interface IP address, run the `ifconfig` command from the switch terminal.
 
 #### Verifying the Ansible installation
 
@@ -116,9 +129,9 @@ $ ansible localhost -m setup
 
 ## Playbooks
 
-Playbook are used to automate, configure, and orchestrate the infrastructure. As the official documentation explains, playbooks are the design plans and modules are the tools. Playbooks contain plays, and plays contain tasks.
+Playbooks are used to automate, configure, and orchestrate the infrastructure. As the official documentation explains, playbooks are the design plans and modules are the tools. Playbooks contain plays, and plays contain tasks.
 
-Sample playbook with a single play:
+Sample playbook with a single play <b>ping.yml</b>:
 
 ```
 ---
@@ -133,19 +146,53 @@ Sample playbook with a single play:
       ping:
 ```
 
+**Note:** Before using a playbook to ping/configure remote devices/hosts, communication needs to be formed between the Ansible control machine and the hosts. The preferred method is an SSH connection using a public key:
+
+Make Ansible use scp for an SSH connection:
+```
+export ANSIBLE_SCP_IF_SSH=y
+```
+Create a playbook to copy the public key to the hosts (<b>copy_public_key.yaml</b>):
+```
+- name: copy the ssh public key to the OpenSwitch
+  hosts: OpenSwitch
+  gather_facts: no
+  vars:
+    ansible_ssh_user: root
+    public_key: ~/.ssh/id_rsa.pub
+  tasks:
+    - authorized_key: user=admin key="{{ lookup('file', public_key) }}"
+```
+Checking for existing SSH keys by enter ``ls -al ~/.ssh``, a list of files will be returned. If <b>id_rsa.pub</b> is not in the list, follow [Generating a new SSH key](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/) guide from github.com to generate SSH key.
+
 To run the playbook use the following command:
 ```
-$ansible-playbook ping.yml
+ansible-playbook copy_public_key.yaml
 ```
+Ansible returns a success message similar to the following:
+```
+PLAY [copy the ssh public key to the OpenSwitch] *******************************
 
-For more information on writing playbboks, refer to:
+TASK [authorized_key] **********************************************************
+changed: [ops]
+
+PLAY RECAP *********************************************************************
+ops                        : ok=1    changed=1    unreachable=0    failed=0
+```
+For more information, refer to the [Communicating with Openswitch](#communicating-with-openswitch) session.
+
+After successfully copying the SSH key, run the <b>ping.yml</b> playbook to ping the hosts:
+```
+ansible-playbook ping.yml
+```
+For more information on writing playbooks, refer to:
 
 http://docs.ansible.com/ansible/playbooks_intro.html
 
 
 ## Roles
 
-For a larger and more diverse architecture, the best way to manage the orchesteration is to create and use roles.
+For a larger and more diverse architecture, the best way to manage the orchestration is to create and use roles.
 A role is an easy way to share the variables, default configuration, and host specific configuration in a structured file which is familiar to Ansible.
 A role saves the duplication of playbooks and variables.
 
@@ -218,27 +265,48 @@ It is required to have an access to the management port of the OpenSwitch in ord
 
 For an example playbook written for the initial communication with the OpenSwitch, refer to:
 
-http://git.openswitch.net/cgit/openswitch/ops-ansible/tree/examples/utility
+http://git.openswitch.net/cgit/openswitch/ops-ansible/tree/utils
 
 Use the following commands to confirm the test:
 ```
-$ git clone https://git.openswitch.net/openswitch/ops-build  ops-sim
-$ cd ops-sim
-$ make configure genericx86-64
-$ make devenv_init
-$ make devenv_add ops-ansible
-$ make testenv_init
-$ make testenv_run component ops-ansible
-
+git clone https://git.openswitch.net/openswitch/ops-build ops-sim
+cd ops-sim
+make configure genericx86-64
+make devenv_init
+make devenv_add ops-ansible
+make testenv_init
+make testenv_run component ops-ansible
 ```
 ## How to write Ansible role for OpenSwitch VLAN
 
 This section provides information on how to create an Ansible role for OpenSwitch VLAN configuration and testing.
 
 ### Create and initialize VLAN role
-First initialize the vlan role under the <b>/etc/ansible/roles</b> folder with the ansible-galaxy API:
+First initialize the vlan role under the ``/etc/ansible/roles`` folder with the ansible-galaxy API:
 ```
 ansible-galaxy init vlan
+```
+The following is the structure of the ``roles`` folder after initialize vlan role
+```
+.
+└── roles
+    └── vlan
+        ├── defaults
+        │   └── main.yml
+        ├── files
+        ├── handlers
+        │   └── main.yml
+        ├── meta
+        │   └── main.yml
+        ├── README.md
+        ├── tasks
+        │   └── main.yml
+        ├── templates
+        ├── tests
+        │   ├── inventory
+        │   └── test.yml
+        └── vars
+            └── main.yml
 ```
 The configuration of VLAN involves the VLAN ID, which is used by switches to determine to which port(s) or interface(s) broadcast packets are sent. Based on this, this VLAN role involves schema for both VLAN and Port.
 
@@ -329,7 +397,7 @@ Create the ops_system.j2 template (<b>templates/ops_system.j2</b>) to iterate th
 
   {# System.bridges column #}
   {%- if ops_bridges is defined -%}
-    {%- include ['ops_system_bridges.j2'] -%},
+    {%- include ['ops_system_bridges.j2'] -%}
   {%- endif -%}
 }
 
@@ -373,7 +441,7 @@ Based on this, create the ops_system_bridges.j2 template (<b>templates/ops_syste
   {%- endfor -%}
 }
 ```
-Refer to <i>Ports</i> table of [schema/vswitch.extschema](http://git.openswitch.net/cgit/openswitch/ops/tree/schema/vswitch.extschema), to create the ops_port.j2 template(<b>templates/ops_system_bridges.j2</b>) :
+Refer to <i>Ports</i> table of [schema/vswitch.extschema](http://git.openswitch.net/cgit/openswitch/ops/tree/schema/vswitch.extschema), to create the ops_port.j2 template(<b>templates/ops_port.j2</b>) :
 ```
 {# OpenSwitch Port table JSON template file #}
 
@@ -398,29 +466,14 @@ Refer to <i>Ports</i> table of [schema/vswitch.extschema](http://git.openswitch.
 ```
 ###Simple playbook to create VLAN
 Following is a simple playbook to create two vlans under the default bridge (<b>tests/create_vlan.yml</b>):
-
 ```
 ---
 - name: create two vlans through vlan role
-  hosts: ops
+  hosts: OpenSwitch
   gather_facts: no
   vars:
     ansible_user: admin
     ops_debug: yes
-    ops_cli_provider:
-      transport: cli
-      username: netop
-      password: netop
-      host: "{{ ansible_host }}"
-      port: "{{ ansible_port }}"
-    ops_rest_provider:
-      transport: rest
-      username: netop
-      password: netop
-      host: "{{ ansible_host }}"
-      port: "{{ ops_rest_port }}"
-      use_ssl: true
-      validate_certs: no
 
   roles:
     - role: vlan
@@ -441,13 +494,96 @@ Following is a simple playbook to create two vlans under the default bridge (<b>
         - name: 3
           tag: 3
 ```
-To fully explore the capabilities of Ansible, add multiple switch members to the <b>hosts</b> file and group them together. They are configured simultaneously when executing the playbook (for example, <b>tests/create_vlan.yml</b>). Following is a <b>hosts</b> file example:
-
+To run the test/playbook use the following command:
 ```
-[ops]
+ansible-playbook tests/create_vlan.yml
+```
+Ansible returns a success message similar to the following:
+```
+PLAY [create two vlans through vlan role] **************************************
+
+TASK [vlan : print JSON input for this play] ***********************************
+ok: [ops1] => {
+    "msg": "\n{\n\"Port\": {\"1\": {\"interfaces\": [ \"1\" ],\"vlan_mode\": \"access\",\n        \"tag\":1,\"name\": \"1\"\n    },\"2\": {\"interfaces\": [ \"2\" ],\"vlan_mode\": \"access\",\n        \"tag\":2,\"name\": \"2\"\n    },\"3\": {\"interfaces\": [ \"3\" ],\"vlan_mode\": \"access\",\n        \"tag\":3,\"name\": \"3\"\n    }},\n\"System\": {\n  \n\"bridges\": {\"bridge_normal\": {\"ports\": [\"1\",\"2\",\"3\"],\"vlans\": {\"VLAN2\": {\"admin\": [ \"up\" ],\"id\":2,\"name\": \"VLAN2\"\n            },\"VLAN3\": {\"admin\": [ \"down\" ],\"id\":3,\"name\": \"VLAN3\"\n            }},\"name\": \"bridge_normal\"\n    }}}}\n"
+}
+
+TASK [vlan : configure the switch] *********************************************
+changed: [ops1]
+
+TASK [vlan : result from the switch] *******************************************
+ok: [ops1] => {
+    "ops_result": {
+        "changed": true,
+        "updates": {
+            "Port.1": {
+                "interfaces": [
+                    "1"
+                ],
+                "name": "1",
+                "tag": 1,
+                "vlan_mode": "access"
+            },
+            "Port.2": {
+                "interfaces": [
+                    "2"
+                ],
+                "name": "2",
+                "tag": 2,
+                "vlan_mode": "access"
+            },
+            "Port.3": {
+                "interfaces": [
+                    "3"
+                ],
+                "name": "3",
+                "tag": 3,
+                "vlan_mode": "access"
+            },
+            "System.bridges.bridge_normal.ports": [
+                "1",
+                "2",
+                "3"
+            ],
+            "System.bridges.bridge_normal.vlans.VLAN2": {
+                "admin": [
+                    "up"
+                ],
+                "id": 2,
+                "name": "VLAN2"
+            },
+            "System.bridges.bridge_normal.vlans.VLAN3": {
+                "admin": [
+                    "down"
+                ],
+                "id": 3,
+                "name": "VLAN3"
+            }
+        }
+    }
+}
+
+PLAY RECAP *********************************************************************
+ops1                       : ok=3    changed=1    unreachable=0    failed=0
+```
+Verify the VLAN configuration on the OpenSwitch host using the `show vlan` command:
+```
+switch# show vlan
+
+--------------------------------------------------------------------------------------
+VLAN    Name            Status   Reason         Reserved       Interfaces
+--------------------------------------------------------------------------------------
+1       DEFAULT_VLAN_1  up       ok                            1
+2       VLAN2           up       ok                            2
+3       VLAN3           down     admin_down                    3
+```
+
+To fully explore the capabilities of Ansible, add multiple switch members to the host file and group them together. They are configured simultaneously when executing the playbook (for example, <b>tests/create_vlan.yml</b>). Following is a host file example (<b>/etc/ansible/hosts</b>):
+```
+[OpenSwitch]
 ops1 ansible_host=192.168.1.10 ansible_port=22
 ops2 ansible_host=192.168.1.11 ansible_port=22
 ```
+For more information, refer to the [Declaring an inventory file](#declaring-an-inventory-file) session.
 
 **Note:** Refer to [ops-ansible/roles](http://git.openswitch.net/cgit/openswitch/ops-ansible/tree/roles) for addtional Ansible role examples for OpenSwitch.
 
