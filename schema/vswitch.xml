@@ -426,7 +426,7 @@
    </group>
 
    <group title="SNMP configuration">
-     <column name="other_config" key="snmp_agent_port">
+     <column name="other_config" key="snmp_agent_port" emptyValue="161">
         The port on which the SNMP agent listens for SNMP requests. The default port is 161.
      </column>
      <column name="other_config" key="system_location">This key represents the system location.</column>
@@ -7908,11 +7908,11 @@
     <group title="configuration">
       <column name="receiver_address">The IP address of the trap receiver.</column>
       <column name="receiver_udp_port">The UDP port of the trap receiver.</column>
-      <column name="community_name">
+      <column name="community_name" emptyValue="public">
         SNMPv1/SNMPv2c community strings. The default community string is "public".
       </column>
-      <column name="type">Trap type. The default type is "trap".</column>
-      <column name="version">Trap/inform version. The default version is "v2c".</column>
+      <column name="type" emptyValue="trap">Trap type. The default type is "trap".</column>
+      <column name="version" emptyValue="v2c">Trap/inform version. The default version is "v2c".</column>
     </group>
   </table>
   <table name="SNMPv3_User">
@@ -7920,11 +7920,11 @@
       <column name="user_name">
         User name that should contain alphanumeric characters.
       </column>
-      <column name="auth_protocol">
+      <column name="auth_protocol" emptyValue="none">
         The authentication protocol to be used for authenticating the user.
         The default is "none".
       </column>
-      <column name="priv_protocol">
+      <column name="priv_protocol" emptyValue="none">
         The privacy protocol to be used for encrypting the user requests.
         The default is "none".
       </column>
