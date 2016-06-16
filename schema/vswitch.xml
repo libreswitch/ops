@@ -308,7 +308,8 @@
         unset.
       </column>
       <column name="lacp_config" key="lacp-system-priority"
-              type='{"type": "integer", "minInteger": 0, "maxInteger": 65535}'>
+              type='{"type": "integer", "minInteger": 0, "maxInteger": 65535}'
+              emptyValue="65534">
         The LACP system priority of this <ref table="Bridge"/>.  In LACP
         negotiations, link status decisions are made by the system with the
         numerically lower priority. Defaults to 65534.
@@ -3634,7 +3635,7 @@
           control LACP behavior.
         </p>
 
-        <column name="lacp">
+        <column name="lacp" emptyValue="off">
           Configures LACP on this port.  LACP allows directly connected
           switches to negotiate which links may be bonded.  LACP may be enabled
           on non-bonded ports for the benefit of any switches they may be
@@ -3666,7 +3667,8 @@
         </column>
 
         <column name="other_config" key="lacp-time"
-          type='{"type": "string", "enum": ["set", ["fast", "slow"]]}'>
+          type='{"type": "string", "enum": ["set", ["fast", "slow"]]}'
+          emptyValue="slow">
           <p>
             The LACP timing which should be used on this <ref table="Port"/>.
             By default <code>slow</code> is used.  When configured to be
@@ -3678,7 +3680,7 @@
         </column>
 
         <column name="other_config" key="lacp-fallback"
-          type='{"type": "boolean"}'>
+          type='{"type": "boolean"}' emptyValue="false">
           <p>
             Specifies if fallback should be used on this <ref table="Port"/>.
             Set this value to <code>true</code> to enable the member interfaces
@@ -3689,7 +3691,8 @@
         </column>
 
         <column name="other_config" key="lacp_fallback_mode"
-          type='{"type": "string", "enum": ["set", ["priority", "all_active"]]}'>
+          type='{"type": "string", "enum": ["set", ["priority", "all_active"]]}'
+          emptyValue="priority">
           <p>
             Specifies the mode used when fallback is enabled.  Priority mode uses
             the LACP interface priority to decide which port remains forwarding
@@ -3700,7 +3703,8 @@
         </column>
 
         <column name="other_config" key="lacp_fallback_timeout"
-          type='{"type": "integer", "minInteger": 0, "maxInteger": 900}'>
+          type='{"type": "integer", "minInteger": 0, "maxInteger": 900}'
+          emptyValue="0">
           <p>
             Defines the time period during which fallback remains active.  The
             timer starts at the point when the interface state machine expires
@@ -3917,7 +3921,7 @@
       <column name="lacp_status" key="bond_speed">
         Speed of interfaces operating in lag.
       </column>
-      <column name="lacp_status" key="bond_status">
+      <column name="lacp_status" key="bond_status" type='{"type": "string", "enum": ["set", ["ok", "down", "defaulted"]]}'>
         Operational status of LAG. The values are "ok" (bond is functional)
         "down" (bond isn't functional), and "defaulted" (remote LACP not
         operating, using one interface in non-LACP mode).
