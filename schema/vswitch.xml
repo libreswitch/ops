@@ -880,14 +880,17 @@
     </group>
 
     <group title="Logrotate configuration">
-        <column name="logrotate_config" key="period" type='{"type": "string"}'>
+        <column name="logrotate_config" key="period"
+            type='{"type": "string", "enum": ["set", ["hourly", "daily", "weekly", "monthly" ]]}'
+            emptyValue="daily">
             The user configured period of logrotation. The possible values are
             'hourly','daily','weekly'or 'monthly'.
             Default value is 'daily'
         </column>
 
         <column name="logrotate_config" key="maxsize"
-                type='{"type": "integer", "minInteger": 1, "maxInteger": 200}'>
+                type='{"type": "integer", "minInteger": 1, "maxInteger": 200}'
+                emptyValue="10">
             Log size (in megabytes), which would trigger rotation. 10 megabytes if not specified
         </column>
 
