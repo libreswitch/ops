@@ -224,7 +224,7 @@
         </p>
       </column>
 
-      <column name="other_config" key="banner">
+      <column name="other_config" key="banner" type='{"type": "string", "maxLength": 4095}' emptyValue="">
         <p>
             Banner to be displayed on CLI start. Maximum length 4095.
         </p>
@@ -234,7 +234,7 @@
         </p>
       </column>
 
-      <column name="other_config" key="banner_exec">
+      <column name="other_config" key="banner_exec" type='{"type": "string", "maxLength": 4095}' emptyValue="">
         <p>
             Banner to be displayed on CLI login. Maximum length 4095.
         </p>
