@@ -318,14 +318,16 @@
 
     <group title="LLDP Configurations">
       <column name="other_config" key="lldp_enable"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="false">
         Set this value to <code>true</code> to enable System level LLDP
         or to <code>false</code> to explicitly disable it.
         Default is <code>disable</code>.
       </column>
 
       <column name="other_config" key="lldp_tlv_mgmt_addr_enable"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="true">
         Set this value to <code>true</code> to enable transmission of LLDP
         Management Address TLV or set it to <code>false</code> to disable
         transmitting it.
@@ -333,7 +335,8 @@
       </column>
 
       <column name="other_config" key="lldp_tlv_port_desc_enable"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="true">
         Set this value to <code>true</code> to enable transmission of LLDP
         Port Description TLV or set it to <code>false</code> to disable
         transmitting it.
@@ -341,7 +344,7 @@
       </column>
 
       <column name="other_config" key="lldp_tlv_port_vlan_enable"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="true">
         Set this value to <code>true</code> to enable transmission of LLDP
         Port VLAN TLV or set it to <code>false</code> to disable
         transmitting it.
@@ -349,7 +352,8 @@
       </column>
 
       <column name="other_config" key="lldp_tlv_sys_cap_enable"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="true">
         Set this value to <code>true</code> to enable transmission of LLDP
         System Capabilities TLV or set it to <code>false</code> to disable
         transmitting it.
@@ -357,7 +361,8 @@
       </column>
 
       <column name="other_config" key="lldp_tlv_sys_desc_enable"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="true">
         Set this value to <code>true</code> to enable transmission of LLDP
         System Description TLV or set it to <code>false</code> to disable
         transmitting it.
@@ -365,7 +370,8 @@
       </column>
 
       <column name="other_config" key="lldp_tlv_sys_name_enable"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="true">
         Set this value to <code>true</code> to enable transmission of LLDP
         System Name TLV or set it to <code>false</code> to disable
         transmitting it.
@@ -378,7 +384,8 @@
       </column>
 
       <column name="other_config" key="lldp_tx_interval"
-              type='{"type": "integer", "minInteger": 5, "maxInteger": 32768}'>
+              type='{"type": "integer", "minInteger": 5, "maxInteger": 32768}'
+              emptyValue="30">
         <p>
             The interval in seconds at which LLDP status updates are
             transmitted to neighbors in seconds.
@@ -389,7 +396,8 @@
       </column>
 
       <column name="other_config" key="lldp_hold"
-              type='{"type": "integer", "minInteger": 2, "maxInteger": 10}'>
+              type='{"type": "integer", "minInteger": 2, "maxInteger": 10}'
+              emptyValue="4">
         <p>
           The amount of time a receiving device should hold the information
           sent by your device before discarding it.
@@ -402,7 +410,8 @@
       </column>
 
       <column name="other_config" key="lldp_reinit"
-              type='{"type": "integer", "minInteger": 1, "maxInteger": 10}'>
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 10}'
+              emptyValue="2">
         <p>
           The amount of time in seconds to wait before performing LLDP
           initialization on any interface.
@@ -654,23 +663,23 @@
         </column>
 
     <group title="LLDP Statistics">
-        <column name="lldp_statistics" key="lldp_table_inserts">
+        <column name="lldp_statistics" key="lldp_table_inserts" emptyValue="0">
             Number of neighbor entries inserted to LLDP neighbor table.
             Default is 0.
         </column>
 
-        <column name="lldp_statistics" key="lldp_table_deletes">
+        <column name="lldp_statistics" key="lldp_table_deletes" emptyValue="0">
             Number of neighbor entries deleted from LLDP neighbor table.
             Default is 0.
         </column>
 
-        <column name="lldp_statistics" key="lldp_table_drops">
+        <column name="lldp_statistics" key="lldp_table_drops" emptyValue="0">
             Number of neighbor entries that could not be added to LLDP
             neighbor table and dropped.
             Default is 0.
         </column>
 
-        <column name="lldp_statistics" key="lldp_table_ageouts">
+        <column name="lldp_statistics" key="lldp_table_ageouts" emptyValue="0">
             Number of times neighbor info was deleted from LLDP neighbor
             table because of the TTL timer associated with a neighbor
             has expired.
