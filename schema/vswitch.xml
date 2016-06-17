@@ -3683,7 +3683,7 @@
           numerically lower priority.
         </column>
 
-        <column name="other_config" key="mclag_enabled" type='{"type": "boolean"}'>
+        <column name="other_config" key="mclag_enabled" type='{"type": "boolean"}' emptyValue="false">
           Determines whether this port is an MCLAG.
           Default is false.
         </column>
@@ -5685,28 +5685,32 @@
 
        <group title="MCLAG ISL timer configuration">
          <column name="isl_timers" key="hello_interval"
-           type='{"type": "integer", "minInteger": 1, "maxInteger": 5}'>
+           type='{"type": "integer", "minInteger": 1, "maxInteger": 5}'
+           emptyValue="1">
            ISLP hello interval in seconds. The default value is <code>1</code>.
          </column>
          <column name="isl_timers" key="timeout"
-           type='{"type": "integer", "minInteger": 2, "maxInteger": 20}'>
+           type='{"type": "integer", "minInteger": 2, "maxInteger": 20}'
+           emptyValue="3">
            Configures the amount of time to wait for hellos from peer in seconds.
            The default value is <code>3</code>.
          </column>
          <column name="isl_timers" key="hold_time"
-           type='{"type": "integer", "minInteger": 0, "maxInteger": 3}'>
+           type='{"type": "integer", "minInteger": 0, "maxInteger": 3}'
+           emptyValue="0">
            Configures ISL port-flap hold time in seconds. The default value is <code>0</code>.
          </column>
        </group>
 
        <group title="MCLAG Device configuration">
          <column name="device_priority"
-           type='{"type": "integer", "minInteger": 1, "maxInteger": 16}'>
+           type='{"type": "integer", "minInteger": 1, "maxInteger": 16}'
+           emptyValue="1">
            Configures MCLAG device priority. The default value is <code>1</code>.
            Device with the lower value of priority will be the primary in the
            case of split brain handling.
          </column>
-         <column name="split_brain_handling">
+         <column name="split_brain_handling" emptyValue="one-fragment-active">
            Configures how MCLAG split-brain is handled.
            "one-fragment-active" means in case of a split, MCLAG links of primary will be active and secondary will be disabled.
            "dual-active" means in case of a split, MCLAG links of both primary and secondary will be active.
@@ -5716,7 +5720,8 @@
 
        <group title="MCLAG Operational status">
          <column name="oper_status" key="islp_state"
-           type='{"type": "string", "enum": ["set", ["out_of_sync", "in_sync"]]}'>
+           type='{"type": "string", "enum": ["set", ["out_of_sync", "in_sync"]]}'
+           emptyValue="out_of_sync">
            ISL protocol state.
            in_sync means ISLP link is established. out_of_sync means ISLP link is not established.
            Default value is <code>out_of_sync</code>.
@@ -5757,7 +5762,7 @@
        </group>
 
        <group title="MCLAG Keepalive configuration">
-         <column name="keepalive_udp_port">
+         <column name="keepalive_udp_port" emptyValue="7678">
            UDP port number of peer device. The default value is <code>7678</code>.
          </column>
          <column name="keepalive_src_ip">
@@ -5773,11 +5778,13 @@
 
        <group title="MCLAG Keepalive timer configuration">
          <column name="keepalive_timers" key="hello_interval"
-           type='{"type": "integer", "minInteger": 1, "maxInteger": 30}'>
+           type='{"type": "integer", "minInteger": 1, "maxInteger": 30}'
+           emptyValue="30">
            Keepalive hello interval in seconds. The default value is <code>30</code>.
          </column>
          <column name="keepalive_timers" key="dead_interval"
-           type='{"type": "integer", "minInteger": 2, "maxInteger": 120}'>
+           type='{"type": "integer", "minInteger": 2, "maxInteger": 120}'
+           emptyValue="90">
            Configures the amount of time to wait for keepalive packets from a peer in seconds.
            The default value is <code>90</code>.
          </column>
@@ -5788,7 +5795,8 @@
            Specifies L3 port for keepalive <ref table="Port"/>.
          </column>
          <column name="keepalive_status" key="state"
-           type='{"type": "string", "enum": ["set", ["initialized", "configured", "established", "failed", "stopped"]]}'>
+             type='{"type": "string", "enum": ["set", ["initialized", "configured", "established", "failed", "stopped"]]}'
+             emptyValue="initialized">
            State of the protocol. The default value is <code>initialized</code>.
          </column>
        </group>
