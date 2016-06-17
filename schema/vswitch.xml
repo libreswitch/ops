@@ -1459,7 +1459,7 @@
       <p>
         MSTP global configurations for all MSTIs.
       </p>
-      <column name="mstp_enable" type='{"type": "boolean"}'>
+      <column name="mstp_enable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code>, to enable MSTP.
         Default value is <code>false</code>.
       </column>
@@ -1467,7 +1467,7 @@
         Set this value to specify the MSTP configuration name.
         Default value is system MAC address.
       </column>
-      <column name="other_config" key="mstp_config_revision">
+      <column name="other_config" key="mstp_config_revision" emptyValue="0">
         Set this value to specify the configuration revision number.
         Default value is 0.
       </column>
@@ -1612,10 +1612,10 @@
       <column name="vlans">
         VLANs included in the MSTP instance.
       </column>
-      <column name="priority">
+      <column name="priority" emptyValue="8">
         Set this value to specify the priority value, configured as a multiple of 4096
         The lower a priority value, the higher the priority.
-        Default value is 32768.
+        Default value is 8.
       </column>
       <column name="bridge_identifier">
         The root bridge ID for CIST.
@@ -1630,7 +1630,7 @@
         These are status parameters for a particular MSTP instance.
         These values will be calculated at the time of protocol initialization.
      </p>
-      <column name="hardware_grp_id">
+      <column name="hardware_grp_id" emptyValue="0">
       The hardware spanning tree group ID.
       Default value is 0.
       </column>
@@ -1640,7 +1640,7 @@
       <column name="root_path_cost">
         The path cost from the transmitting Bridge to the Root Bridge for the MSTI.
       </column>
-      <column name="root_priority">
+      <column name="root_priority" emptyValue="32768">
         The root bridge priority.
         The lower a priority value, the higher the priority.
         Default value is 32768.
@@ -1655,7 +1655,7 @@
       <column name="topology_change_count">
         The total number of topology changes that have occurred for this instance.
       </column>
-      <column name="topology_unstable">
+      <column name="topology_unstable" emptyValue="false">
         This is set to <code>true</code> when a topology change has occurred.
         Once topology stabilizes it will be set back to <code>false</code>.
         Default is <code>false</code>.
@@ -1671,29 +1671,29 @@
       <column name="vlans">
         VLANs included in the CIST instance.
       </column>
-      <column name="priority">
+      <column name="priority" emptyValue="8">
         Set this value to specify the priority value, configured as a multiple of 4096
         The lower a priority value, the higher the priority.
-        Default value is 32768.
+        Default value is 8.
       </column>
       <column name="bridge_identifier">
         The root bridge ID for CIST.
         Default value 64 bit string(4 bit priority + 12 bit Instance ID + 48bit system MAC address)
       </column>
-      <column name="hello_time">
+      <column name="hello_time" emptyValue="2">
         The hello time value for this instance.
         Default value is 2.
       </column>
-      <column name="forward_delay">
+      <column name="forward_delay" emptyValue="15">
         The forward delay time value for this instance.
         Default value is 15.
       </column>
-      <column name="max_age">
+      <column name="max_age" emptyValue="20">
         Set this value to specify the maximum-aging time(The time a device waits without receiving
         spanning tree configuration messages before attempting a reconfiguration) for all MST instances.
         Default value is 20.
       </column>
-      <column name="tx_hold_count">
+      <column name="tx_hold_count" emptyValue="6">
         The value used by the MSTP transmit state machine to limit the maximum
         transmission rate of MST BPDUs within the hello interval.
         Default value is 6.
@@ -1703,7 +1703,7 @@
       </column>
     </group>
     <group title="Status">
-      <column name="hardware_grp_id">
+      <column name="hardware_grp_id" emptyValue="0">
         The hardware spanning tree group ID.
         Default value is 0.
       </column>
@@ -1713,7 +1713,7 @@
       <column name="root_path_cost">
         The path cost from the transmitting Bridge to the Root Bridge for the MSTI.
       </column>
-      <column name="root_priority">
+      <column name="root_priority" emptyValue="32768">
         The root bridge priority.
         The lower a priority value, the higher the priority.
         Default value is 32768.
@@ -1727,7 +1727,7 @@
       <column name="cist_path_cost">
         The path cost from the transmitting bridge to the CIST regional root.
       </column>
-      <column name="remaining_hops">
+      <column name="remaining_hops" emptyValue="20">
         The hop count after which this instance MSTP BPDU will be discarded.
         Default value is 20
       </column>
@@ -1758,7 +1758,7 @@
       <column name="topology_change_count">
         The total number of topology changes that have occurred for this instance.
       </column>
-      <column name="topology_unstable">
+      <column name="topology_unstable" emptyValue="false">
         This is set to <code>true</code> when a topology change has occurred.
         Once topology stabilizes it will be set back to <code>false</code>.
         Default is <code>false</code>.
@@ -1775,50 +1775,50 @@
       <column name="port">
         Specifies port for the CIST instance.
       </column>
-      <column name="port_priority">
+      <column name="port_priority" emptyValue="8">
         Set this value to specify the port-priority.
         configurable in increments of 16.
-        Default value is 128.
+        Default value is 8.
       </column>
       <column name="admin_path_cost">
         The path cost for the port to reach spanning-tree root.
       </column>
-      <column name="admin_edge_port_disable" type='{"type": "boolean"}'>
+      <column name="admin_edge_port_disable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code>, if this admin edge port should not participate in root election.
         Default is <code>false</code>.
       </column>
-      <column name="bpdus_rx_enable"  type='{"type": "boolean"}'>
+      <column name="bpdus_rx_enable"  type='{"type": "boolean"}' emptyValue="true">
         Set this value to <code>false</code> to stop transmission of BPDUs.
         Default is <code>true</code>.
       </column>
-      <column name="bpdus_tx_enable"  type='{"type": "boolean"}'>
+      <column name="bpdus_tx_enable"  type='{"type": "boolean"}' emptyValue="true">
         Set this value to <code>false</code> not to transmit the BPDUs
         Default is <code>true</code>.
       </column>
-      <column name="restricted_port_role_disable" type='{"type": "boolean"}'>
+      <column name="restricted_port_role_disable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code> if restiricted role enabled (not to be selected as Root Port for the CIST or any MSTI).
         Default is <code>false</code>.
       </column>
-      <column name="restricted_port_tcn_disable" type='{"type": "boolean"}'>
+      <column name="restricted_port_tcn_disable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code> if restiricted port tcn is enabled(not to propagate topology changes to other ports).
         Default is <code>false</code>.
       </column>
-      <column name="bpdu_guard_disable" type='{"type": "boolean"}'>
+      <column name="bpdu_guard_disable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code> if BPDU Guard enabled (to shut down the
         port if that port receives a BPDU).
         Default is <code>false</code>.
       </column>
-      <column name="loop_guard_disable" type='{"type": "boolean"}'>
+      <column name="loop_guard_disable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code> if loop guard is enabled (to block
         sending and receiving BPDUs on the port).
         Default value is <code>false</code>.
       </column>
-      <column name="root_guard_disable" type='{"type": "boolean"}'>
+      <column name="root_guard_disable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code> if root guard is enabled(to participate in STP as long
         as the device does not try to become the root).
         Default value is <code>false</code>.
       </column>
-      <column name="bpdu_filter_disable" type='{"type": "boolean"}'>
+      <column name="bpdu_filter_disable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code> if BPDU filter is enabled(to suppress
         sending and receiving BPDUs on the port).
         Default value is <code>false</code>.
@@ -1832,14 +1832,14 @@
       <column name="port_role">
         The role of this port in the active MSTP topology.
       </column>
-      <column name="port_state">
+      <column name="port_state" emptyValue="Blocking">
         The state of the port in the active topology.
         Default value is Blocking.
       </column>
       <column name="designated_root">
         The designated root ID for the port.
       </column>
-      <column name="link_type">
+      <column name="link_type" emptyValue="point_to_point">
         Specifies the link type.
         Default value is point_to_point.
       </column>
@@ -1870,7 +1870,7 @@
       <column name="fwd_transition_count">
         The number of times this port has transitioned to the forwarding state.
       </column>
-      <column name="protocol_migration_enable">
+      <column name="protocol_migration_enable" emptyValue="true">
         Set this value to <code>true</code> to switch the STP working mode
         or to <code>false</code> to explicitly disable it.
         Default is <code>true</code>.
@@ -1895,11 +1895,11 @@
       <column name="port">
       Specifies port for the MSTP instance.
       </column>
-      <column name="port_priority">
+      <column name="port_priority" emptyValue="8">
         Set this value to specify the priority value used along with the switch MAC
         address to determine which device is root. Configured as a multiple of 16.
         The lower a priority value, the higher the priority.
-        Default value is 128.
+        Default value is 8.
       </column>
       <column name="admin_path_cost">
         The cost to reach root port.
@@ -1920,14 +1920,14 @@
       <column name="port_role">
         The role of port in the active MSTP topology
       </column>
-      <column name="port_state">
+      <column name="port_state" emptyValue="Blocking">
         The state of the port in the active topology
         Default value is Blocking.
       </column>
       <column name="designated_root">
         The root bridge name for a MSTP instance.
       </column>
-      <column name="designated_root_priority">
+      <column name="designated_root_priority" emptyValue="32768">
         The priority value for designated port.
         Default value is 32768.
       </column>
@@ -3452,7 +3452,7 @@
         The VLAN associated with l3 interfaces.
       </column>
       <column name="hw_config" key="block_all_mstp"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         Indicates that the port should be blocked in all MSTP instances.
         Defaults to <code>false</code>.
       </column>
