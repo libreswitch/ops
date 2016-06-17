@@ -933,7 +933,7 @@
 
     <group title="Bufmon configuration">
       <column name="bufmon_config" key="enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         Specifies whether the bufmon feature is enabled on the system.
         False, if the value is not present.
       </column>
@@ -945,26 +945,28 @@
       </column>
 
       <column name="bufmon_config" key="periodic_collection_enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         Specifies whether periodic collection of the counters is enabled.
         False, if the value is not present.
       </column>
 
       <column name="bufmon_config" key="collection_period"
-              type='{"type": "integer", "minInteger": 1}'>
+              type='{"type": "integer", "minInteger": 1}'
+              emptyValue="5">
         Specifies the period of collection in seconds.
         Five, if the value is not present.
       </column>
 
       <column name="bufmon_config" key="threshold_trigger_collection_enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="true">
         Specifies whether counters should be collected immediately
         when one of the thresholds is crossed.
         True, if the value is not present.
       </column>
 
       <column name="bufmon_config" key="threshold_trigger_rate_limit"
-              type='{"type": "integer", "minInteger": 1, "maxInteger": 600}'>
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 600}'
+              emptyValue="60">
         Specifies maximum number of trigger generated reports per minute.
         The limit will be averaged and imposed on a per second basis.
         For example, value of 600 will allow report every 100ms.
@@ -972,7 +974,7 @@
       </column>
 
       <column name="bufmon_config" key="snapshot_on_threshold_trigger"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="true">
         Specifies whether counters should be frozen when one of the thresholds is crossed.
         True, if the value is not present.
       </column>
@@ -980,25 +982,27 @@
     </group>
     <group title="Information">
       <column name="bufmon_info" key="cap_mode_peak"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         Specifies whether the system is capable of collecting peak values of
         the counters.
         False, if the value is not present.
       </column>
       <column name="bufmon_info" key="cap_mode_current"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         Specifies whether the system is capable of collecting current values of
         the counters.
         False, if the value is not present.
       </column>
       <column name="bufmon_info" key="cap_snapshot_on_threshold_trigger"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="false">
         Specifies whether the system is capable of freezing counters values on
         threshold crossing.
         False, if the value is not present.
       </column>
       <column name="bufmon_info" key="cap_threshold_trigger_collection"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="false">
         Specifies whether the system is capable of immediately collecting values on
         threshold crossing.
         False, if the value is not present.
@@ -6510,7 +6514,7 @@
       </column>
     </group>
     <group title="Configuration">
-      <column name="enabled">
+      <column name="enabled" emptyValue="false">
         Specifies whether counter is enabled. An empty value means counter is disabled.
       </column>
 
