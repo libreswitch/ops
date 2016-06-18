@@ -62,7 +62,7 @@ class ColretrieveInterfaceTest(OpsVsiTest):
                            build=True)
 
         self.path = "/rest/v1/system/interfaces" \
-                    "?selector=configuration;depth=1;sort=name;"
+                    "?selector=status;depth=1;sort=name;"
         self.switch_ip = get_switch_ip(self.net.switches[0])
         self.cookie_header = None
 
@@ -77,13 +77,14 @@ class ColretrieveInterfaceTest(OpsVsiTest):
         if (len(complete_data_rows) == len(data_rows) and len(keys) > 0 and
            len(complete_data_rows) > 0 and len(data_rows) > 0):
             for i in range(len(data_rows)):
-                assert len(data_rows[i]['configuration']) == len(keys), \
+                assert (not len(data_rows[i]['status']) or
+                        len(data_rows[i]['status']) == len(keys)), \
                     "The amount of keys are different to %s." % len(keys)
-                for key in data_rows[i]["configuration"]:
-                    assert data_rows[i]["configuration"][key] is not None, \
+                for key in data_rows[i]["status"]:
+                    assert data_rows[i]["status"][key] is not None, \
                         "The value is empty for key %s" % key
-                    assert data_rows[i]["configuration"][key] == \
-                        complete_data_rows[i]["configuration"][key], \
+                    assert data_rows[i]["status"][key] == \
+                        complete_data_rows[i]["status"][key], \
                         "The values is different to the original row"
             return True
 
