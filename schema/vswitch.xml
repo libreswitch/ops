@@ -807,27 +807,29 @@
         The OpenSwitch switch does read the database configuration to
         determine remote IP addresses to which in-band control should apply.
       </p>
-      <column name="aaa" key="radius" type='{"type": "string"}'>
+      <column name="aaa" key="radius" type='{"type": "string"}' emptyValue="false">
         This column used for AAA feature. The valid values for the key 'radius'
         are true or false based on the user request for authentication.
         If radius=true, radius based authentication is enabled. By default
         authentication is local.
       </column>
       <column name="aaa" key="radius_auth"
-        type='{"type": "string", "enum": ["set", ["pap", "chap"]]}'>
+        type='{"type": "string", "enum": ["set", ["pap", "chap"]]}'
+        emptyValue="pap">
         Specifies encoding to be used for the user password for radius
         based authentication.
         By default <code>pap</code> is used.
       </column>
-      <column name="aaa" key="fallback" type='{"type": "string"}'>
+      <column name="aaa" key="fallback" type='{"type": "string"}' emptyValue="true">
         This column used for AAA feature. The valid values for the key 'fallback'
         are true or false based on the user request for authentication. If
         fallback=true, fall to local authentication if radius server is not reachable.
+        Default value is <code>true</code>
       </column>
-      <column name="aaa" key="ssh_passkeyauthentication_enable" type='{"type": "boolean"}'>
+      <column name="aaa" key="ssh_passkeyauthentication_enable" type='{"type": "boolean"}' emptyValue="true">
         Controls whether ssh password based authentication is enabled. Default is true.
       </column>
-      <column name="aaa" key="ssh_publickeyauthentication_enable" type='{"type": "boolean"}'>
+      <column name="aaa" key="ssh_publickeyauthentication_enable" type='{"type": "boolean"}' emptyValue="true">
         Controls whether ssh public key authentication is enabled. Default is true.
       </column>
       <column name="manager_options">
@@ -6055,22 +6057,22 @@
           Specifies the order in which radius servers are configured on the switch.
       </column>
 
-      <column name="udp_port" >
+      <column name="udp_port" emptyValue="1812">
           Specifies the udp port number for authentication. Default udp port
           number for authentication is 1812.
       </column>
 
-      <column name="passkey" >
+      <column name="passkey" emptyValue="testing123-1">
           Specifies the passkey between radius client and radius server
           for authentication. Default passkey is testing123-1.
       </column>
 
-      <column name="timeout" >
+      <column name="timeout" emptyValue="5">
           Specifies the timeout between authentication requests to radius server.
           Default timeout is 5 seconds.
       </column>
 
-      <column name="retries" >
+      <column name="retries" emptyValue="1">
           Specifies the number of retries to radius server if there is no response.
           Default retry value is 1.
       </column>
