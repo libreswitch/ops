@@ -1565,7 +1565,7 @@
     </group>
    <group title="Status">
       <column name="status" key="namespace_ready"
-          type='{"type": "boolean"}'>
+          type='{"type": "boolean"}' emptyValue="false">
           Indicates whether Linux namespace exists for this VRF. If not set,
           the assumed value is false.
       </column>
