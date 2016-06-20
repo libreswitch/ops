@@ -7862,7 +7862,7 @@
       <column name="remote_host">
          FQDN or host name or IPv4 address or IPv6 address of the syslog server.
       </column>
-      <column name="transport">
+      <column name="transport" emptyValue="udp">
          Transport layer protocol used to forward messages to the server.
          Default is <code>udp</code>
       </column>
@@ -7870,9 +7870,9 @@
          Port number on which syslog server is listening.
          Default is <code>514</code> for UDP protocol and <code>1470</code> for TCP protocol.
       </column>
-      <column name="severity">
+      <column name="severity" emptyValue="info">
          Filter syslog messages with severity.  Only messages with severity higher than or equal to the specified value will be sent to the remote server.
-         Default is <code>debug</code>.
+         Default is <code>info</code>.
       </column>
     </group>
   </table>
