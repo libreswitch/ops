@@ -253,14 +253,14 @@
 
        <group title="TFTP Server Configurations">
         <column name="other_config" key="tftp_server_enable"
-                type='{"type": "boolean"}'>
+            type='{"type": "boolean"}' emptyValue="true">
           Set this value to <code>true</code> to enable TFTP server
           and set to <code>false</code> to disable it. If not set, TFTP server
           would be enabled.
         </column>
 
         <column name="other_config" key="tftp_server_secure"
-                type='{"type": "boolean"}'>
+                type='{"type": "boolean"}' emptyValue="true">
           Set this value to <code>true</code> to enable TFTP secure mode
           and set to <code>false</code> to disable it. If not set, TFTP secure mode
           would be enabled. This config is valid only if TFTP server is enabled.
