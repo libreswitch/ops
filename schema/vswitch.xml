@@ -1047,7 +1047,7 @@
       <p>
         Specifies the NTP global configuration.
       </p>
-      <column name="ntp_config" key="authentication_enable" type='{"type": "boolean"}'>
+      <column name="ntp_config" key="authentication_enable" type='{"type": "boolean"}' emptyValue="false">
          Determines whether NTP Authentication is enabled in the system.
          Default is false.
       </column>
@@ -6780,14 +6780,15 @@
           "127.127.1.0" for non uni/multi/broadcast associations
       </column>
       <column name="association_attributes" key="prefer"
-                type='{"type": "boolean"}'>
+          type='{"type": "boolean"}' emptyValue="false">
           Preference flag to suggest for this association.
           Set this to <code>true</code> to enable preference
           for this association.
           Default is false.
       </column>
       <column name="association_attributes" key="ntp_version"
-                  type='{"type": "integer", "minInteger": 3, "maxInteger": 4}'>
+                  type='{"type": "integer", "minInteger": 3, "maxInteger": 4}'
+                  emptyValue="3">
         NTP version to use for when communicating with this association.
         Default is 3.
       </column>
@@ -6879,7 +6880,7 @@
     <column name="key_password">
       Specifies a key_password which is used for NTP authentication.
     </column>
-    <column name="trust_enable">
+    <column name="trust_enable" emptyValue="false">
       Enables trust settings for this key_id.
       Default is false.
     </column>
