@@ -3080,7 +3080,7 @@
         the packet. This value will be used later to select the egress queue
         for the packet.
       </column>
-      <column name="color">
+      <column name="color" emptyValue="green">
         It may be used later in the pipeline in packet-drop decision points.
         The default is 'green'.
       </column>
@@ -3104,7 +3104,7 @@
         indexed by the top 3-bits of this row's code_point (i.e. class selector
         bits cs0 through cs7).
       </column>
-      <column name="hw_defaults" key="default_color">
+      <column name="hw_defaults" key="default_color" emptyValue="green">
         When missing, the default is 'green'.
       </column>
       <column name="hw_defaults" key="default_priority_code_point">
@@ -3140,7 +3140,7 @@
         the packet. This value will be used later to select the egress queue
         for the packet.
       </column>
-      <column name="color">
+      <column name="color" emptyValue="green">
         It may be used later in the pipeline in packet-drop decision points.
         The default is 'green'.
       </column>
@@ -3166,7 +3166,7 @@
         <li>code_point 7 (Traffic Type NC) local_priority=7</li>
         </ul>
       </column>
-      <column name="hw_defaults" key="default_color">
+      <column name="hw_defaults" key="default_color" emptyValue="green">
         When missing, the default is 'green'.
       </column>
     </group>
