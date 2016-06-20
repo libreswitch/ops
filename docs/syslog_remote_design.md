@@ -57,7 +57,7 @@ port_number   | Port number on which the syslog server is listening.
 severity      | Filter syslog messages with severity.  Only
               | messages with severity higher than or equal to
               | the specified value will be sent to the remote
-              | server.  The default is "debug".
+              | server.  The default is "info".
 =================================================================
 ```
 
