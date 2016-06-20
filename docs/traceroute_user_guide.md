@@ -34,7 +34,7 @@ The time-to-live (TTL) value, also known as hop limit, is used in determining th
 
 *   Timeout <1-60> - Time (in seconds) to wait for a response to a probe. The default value is 3 seconds.
 
-*  Ip-option - Tells traceroute to add an IP source routing option to the outgoing packet.
+*   Ip-option - Tells traceroute to add an IP source routing option to the outgoing packet.
 
 *   Loosesourceroute <IP-ADDR> - Tells the network to route the packet through the specified gateway.
 
@@ -46,30 +46,30 @@ The time-to-live (TTL) value, also known as hop limit, is used in determining th
     Send IP traceroute UDP packets to the device that has IP address 10.168.1.146:
 ```
     switch# traceroute 10.168.1.146
-    traceroute to 10.168.1.146 (10.168.1.146) , 30 hops max
-    1 10.57.191.129 2 ms 3 ms 3 ms
-    2 10.57.232.1 4 ms 2 ms 3 ms
-    3 10.168.1.146 4 ms 3 ms 3 ms
+    traceroute to 10.168.1.146 (10.168.1.146) , 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
+      1 10.57.191.129 2 ms 3 ms 3 ms
+      2 10.57.232.1 4 ms 2 ms 3 ms
+      3 10.168.1.146 4 ms 3 ms 3 ms
 ```
 Send IP traceroute UDP packets to the device that has IP address 0.0.0.0:
 ```
     switch# traceroute 0.0.0.0
-    traceroute to 0.0.0.0 (0.0.0.0), 30 hops max
-    1   127.0.0.1  0.015ms  0.003ms  0.002ms
+    traceroute to 0.0.0.0 (0.0.0.0), 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
+      1   127.0.0.1  0.015ms  0.003ms  0.002ms
 ```
 ##### Failure case
 
 Network unreachable
 ```
    switch# traceroute 10.0.0.1
-   traceroute to 10.0.0.1 (10.0.0.1), 30 hops max
-   1  traceroute: sendto: Network is unreachable
+   traceroute to 10.0.0.1 (10.0.0.1), 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
+     1  traceroute: sendto: Network is unreachable
 ```
 Destination host unreachable
 ```
    switch# traceroute 9.0.0.6
-   traceroute to 9.0.0.6 (9.0.0.6), 30 hops max
-   1 9.0.0.2  2 ms !H  3 ms !H  2 ms !H
+   traceroute to 9.0.0.6 (9.0.0.6), 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
+     1 9.0.0.2  2 ms !H  3 ms !H  2 ms !H
 
 ```
 
@@ -112,14 +112,14 @@ Destination host unreachable
     Send IPv6 traceroute UDP packets to the device that has IPv6 address 0:0::0:1 :
 ```
     switch# traceroute6 0:0::0:1
-    traceroute to 0:0::0:1 (::1) from ::1, 30 hops max, 24 byte packets
-    1  localhost (::1)  0.117 ms  0.032 ms  0.021 ms
+    traceroute to 0:0::0:1 (::1) from ::1, 30 hops max, 3 sec. timeout, 3 probes, 24 byte packets
+     1  localhost (::1)  0.117 ms  0.032 ms  0.021 ms
 ```
     Send IP traceroute UDP packets to the device that has IP address ::0:
 ```
     switch# traceroute6 ::0
-    traceroute to ::0 (::) from ::1, 30 hops max, 24 byte packets
-    1  localhost (::1)  0.144 ms  0.03 ms  0.016 ms
+    traceroute to ::0 (::) from ::1, 30 hops max, 3 sec. timeout, 3 probes, 24 byte packets
+     1  localhost (::1)  0.144 ms  0.03 ms  0.016 ms
 ```
  ##### Failure case
 
@@ -131,8 +131,8 @@ Network unreachable
 Destination host unreachable
 ```
    switch# traceroute6 2001::2
-   traceroute to 2001::2 (2001::2) from 2001::1, 30 hops max, 24 byte packets
-   1  switch (2001::1)  2998.93 ms !H  2999.14 ms !H  2999.79 ms !H
+   traceroute to 2001::2 (2001::2) from 2001::1, 30 hops max, 3 sec. timeout, 3 probes, 24 byte packets
+    1  switch (2001::1)  2998.93 ms !H  2999.14 ms !H  2999.79 ms !H
 
 
 ```
