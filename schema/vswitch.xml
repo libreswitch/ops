@@ -1059,7 +1059,7 @@
 
     <group title="DHCP Configurations">
       <column name="dhcp_config" key="v4relay_disabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         <p>
         Set this value to <code>true</code> to disable DHCP-Relay functionality
         globally and set it to <code>false</code> to enable it. DHCP-Relay is
@@ -1071,7 +1071,7 @@
       </column>
 
       <column name="dhcp_config" key="v4relay_option82_enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         <p>
         Set this value to <code>true</code> to enable the DHCP-Relay Option 82
         and set it to <code>false</code> otherwise. This configuration is
@@ -1103,7 +1103,7 @@
       </column>
 
       <column name="dhcp_config" key="v4relay_option82_validation_enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         <p>
         Set this value to <code>true</code> to validate server response packets
         and set it to <code>false</code> otherwise. This configuration is
@@ -1114,7 +1114,8 @@
       </column>
 
       <column name="dhcp_config" key="v4relay_option82_remote_id"
-              type='{"type": "string", "enum": ["set", ["ip", "mac"]]}'>
+              type='{"type": "string", "enum": ["set", ["ip", "mac"]]}'
+              emptyValue="mac">
         <p>
         Specifies the remote ID suboption that the switch uses in Option 82 fields
         added or appended to DHCP client packets. The type of remote ID defines DHCP policy
@@ -1131,7 +1132,7 @@
       </column>
 
       <column name="dhcp_config" key="v4relay_hop_count_increment_disabled"
-              type='{"type": "boolean"}'>
+          type='{"type": "boolean"}' emptyValue="false">
         <p>
         Set this value to <code>true</code> to disable the hop count increment in
         the relayed DHCP requests and set it to <code>false</code> otherwise. This
@@ -1141,7 +1142,7 @@
       </column>
 
       <column name="dhcp_config" key="v6relay_enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         <p>
         Set this value to <code>true</code> to enable DHCPv6-Relay functionality
         globally and set it to <code>false</code> to disable it. This configuration
@@ -1152,7 +1153,7 @@
       </column>
 
       <column name="dhcp_config" key="v6relay_option79_enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         <p>
         Set this value to <code>true</code> to enable the DHCPv6-Relay Option 79
         and set it to <code>false</code> otherwise. This configuration is
@@ -6561,7 +6562,7 @@
           Key-value pairs that specifies BOOTP options for the DHCP clients.
         </column>
 
-        <column name="bootp" key="match tag">
+        <column name="bootp" key="match tag" emptyValue="no_matching_tag">
           The filename is keyed by match tag. If no key is specified, default
           key is no_matching_tag.
         </column>
@@ -6605,7 +6606,7 @@
       in the configured range.
     </column>
 
-    <column name="is_static">
+    <column name="is_static" emptyValue="false">
       Set this value to <code>true</code> to assign static IP addresses
       to DHCP clients that have static host configuration. If the value
       is set to <code>false</code>, then the IP addresses in this range
@@ -6613,7 +6614,7 @@
       range would be used for dynamic allocation.
     </column>
 
-    <column name="lease_duration">
+    <column name="lease_duration" emptyValue="60">
       Specifies the lease expiry time in minutes. If not specified,
       default value of one hour (60) would be used.
     </column>
@@ -6642,7 +6643,7 @@
       This is used when end ip address is not specified.
     </column>
 
-    <column name="prefix_len">
+    <column name="prefix_len" emptyValue="64">
       This is used only in IPv6 address ranges configuration.
       Specifies the prefix length that would be used for the
       assigned IPv6 addresses. If not specifed, default value
@@ -6687,7 +6688,7 @@
       static IP address would be assigned,
     </column>
 
-    <column name="lease_duration">
+    <column name="lease_duration" emptyValue="60">
       Specifies the lease expiry time in minutes. If not specified,
       default value of one hour (60) would be used.
     </column>
@@ -6723,7 +6724,7 @@
       DHCP clients.
     </column>
 
-    <column name="ipv6">
+    <column name="ipv6" emptyValue="false">
       Set this value to <code>true</code> if the configured option is for IPv6
       and set to <code>false</code> for IPv4 option. If not specifed,
       the configured option would be used for IPv4.
