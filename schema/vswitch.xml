@@ -2279,17 +2279,17 @@
           List of outgoing ports. Nexthop entries of type <code>unicast</code>
           can have atmost 1 port.
       </column>
-      <column name="type">
+      <column name="type" emptyValue="unicast">
           Type of the nexthop.
           Default is <code>unicast</code>.
       </column>
-      <column name="selected">
+      <column name="selected" emptyValue="true">
           Indicates if this nexthop is actively participating in forwarding.
           Multiple nexthops can exist for each route entry but the routing protocol
           can indicate if a particular nexthop should not be used in forwarding.
           Default is <code>true</code>.
       </column>
-      <column name="weight">
+      <column name="weight" emptyValue="0">
           Weight is used to differentially balance the packets. Example: For a route
           if there are 2 nexthops nh1 with weight 5 and nh2 with weight 1, then
           for every 5 packets that uses nh1, one packet will use nh2.
@@ -2303,12 +2303,12 @@
         Status information to indicate the current state of the nexthop.
       </p>
       <column name="status" key="arp_resolved"
-          type='{"type": "boolean"}'>
+          type='{"type": "boolean"}' emptyValue="false">
           Indicate if ARP is resolved for this entry. If the ARP entry is
           missing, this value is <code>false</code>
       </column>
       <column name="status" key="hw_configured"
-          type='{"type": "boolean"}'>
+          type='{"type": "boolean"}' emptyValue="false">
           Indicate if nexthop programmed in the asic. If the ARP entry is
           missing, this value is <code>false</code>
       </column>
