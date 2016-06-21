@@ -3420,7 +3420,7 @@
       bonded Port. A maximum of 8 interfaces can be assigned to a port.
     </column>
 
-    <column name="admin">
+    <column name="admin" emptyValue="up">
       The administrative state of the Port configured by user. The port admin
       state determines the hardware configuration based on the business logic.
       When port "admin" is configured down the interface(s) associated
@@ -3428,7 +3428,7 @@
       default the port is up.
     </column>
 
-    <column name="kernel_interface_ready">
+    <column name="kernel_interface_ready" emptyValue="false">
       Indicates whether kernel interface is provisioned for the port.
       Default is false.
     </column>
@@ -3638,7 +3638,7 @@
       <p>These columns apply only to bonded ports.  Their values are otherwise
           ignored.</p>
 
-      <column name="bond_mode">
+      <column name="bond_mode" emptyValue="l3-src-dst-hash">
         <p>
           The type of bonding used for a bonded port. Bond mode controls
           the selection of a interface from a group of aggregate interfaces
@@ -3835,11 +3835,11 @@
         List of interfaces on the MCLAG peer device which are part of same LAG.
         <ref table="MCLAG_Remote_Interface"/>
       </column>
-      <column name="mac_learn_disable">
+      <column name="mac_learn_disable" emptyValue="false">
         When set to 'true', mac learning will be disabled on the port.
         The default value is <code>false</code>.
       </column>
-      <column name="flood_block">
+      <column name="flood_block" emptyValue="false">
         When set to ‘true’, all flood traffic received from and forwarded to this
         port will be dropped.
         The default value is <code>false</code>.
@@ -3855,12 +3855,12 @@
         Determines whether sflow sampling is enabled on this port.
         Default is true.
       </column>
-      <column name="other_config" key="proxy_arp_enabled" type='{"type": "boolean"}'>
+      <column name="other_config" key="proxy_arp_enabled" type='{"type": "boolean"}' emptyValue="false">
         Enables proxy ARP feature on the port.
         Default is false. Port should be part of VRF in order for the feature
         to be active.
       </column>
-      <column name="other_config" key="local_proxy_arp_enabled" type='{"type": "boolean"}'>
+      <column name="other_config" key="local_proxy_arp_enabled" type='{"type": "boolean"}' emptyValue="false">
         Enables local proxy ARP feature on the port.
         Default is false. Port should be part of VRF in order for the feature
         to be active.
@@ -3900,13 +3900,13 @@
         </p>
       </column>
       <column name="forwarding_state" key="forwarding"
-        type='{ "type": "boolean" }'>
+        type='{ "type": "boolean" }' emptyValue="false">
         Enumeration that summarizes the state of the interface.  This value drives
         the forwarding state of the data path.
         Default value is <code>false</code>.
       </column>
       <column name="forwarding_state" key="port_aggregation_forwarding"
-        type='{ "type": "boolean" }'>
+        type='{ "type": "boolean" }' emptyValue="false">
         Port aggregation is set based on the information provided by protocols related
         to link aggregation. The asserting protocol setting the value of this key
         is defined in the port_aggregation_blocked_reason key.
@@ -3926,7 +3926,7 @@
           are blocked by a lacp.
       </column>
       <column name="forwarding_state" key="port_loop_protection_forwarding"
-        type='{ "type": "boolean" }'>
+        type='{ "type": "boolean" }' emptyValue="false">
         Port loop protection is set based on the information provided by protocols.
         The asserting protocol setting the value of this key is defined
         in the port_loop_protection_blocked_reason key.
@@ -4162,11 +4162,11 @@
     </group>
 
     <group title="Loop-protect per port Configuration">
-      <column name="loop_protect_enable">
+      <column name="loop_protect_enable" emptyValue="false">
         When set to <code>true</code>, Loop-protect is enabled on this port.
         Default value is <code>false</code>.
       </column>
-      <column name="loop_protect_action">
+      <column name="loop_protect_action" emptyValue="tx-disable">
         This determines action for the Loop-protect feature.The value is set to
         "tx-port-disable" for disabling the sending port on detecting a loop,
         "tx-rx-disable" disables both sending and receiving ports when loop
@@ -4187,7 +4187,7 @@
         This has the last timestamp as integer containing epoch time,when the loop was
         detected by the Loop-protect feature.
       </column>
-       <column name="loop_protect_port_disabled">
+       <column name="loop_protect_port_disabled" emptyValue="false">
         This value will be set to <code>true</code>,if the port is disabled by Loop-protect.
         Default value is <code>false</code>.
       </column>
