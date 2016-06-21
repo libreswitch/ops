@@ -10,7 +10,7 @@
 ## Overview
 The SFTP (Secure File Transfer Protocol) command is a very common method for transferring a file or executing a command in a secure mode. SFTP makes use of encrypted SSH session for it's operation. It provides an alternative to TFTP (Trivial File Transfer Protocol) for transferring sensitive information to and from the switch.
 Files transferred using SFTP are encryted and require authentication, thus providing greater security to the switch.
-Both SFTP server and client functionality is supported in OpenSwitch. If switch acts as an SFTP server, it listens on a default SSH port (default SSH port is 22) for any incoming connections, and as an SFTP client, it can initiate a file transfer or enter remote device.
+Both SFTP server and client functionality is supported in OpenSwitch. If switch acts as an SFTP server, it listens on a default SSH port (default SSH port is 22) for any incoming connections. As an SFTP client, it can initiate a file transfer or enter remote device. SFTP client commands can be accessed only by an admin user. The SFTP service is supported only in management interface.
 
 ## SFTP server
 Syntax:
@@ -152,6 +152,12 @@ switch# copy sftp abc hostmachine
 abc@hostmachine's password:
 Connected to hostmachine.
 sftp>
+sftp> get /users/abc/test_file
+Fetching /users/abc/test_file to test_file
+/users/abc/test_file                                                                                                                            100%  212     0.2KB/s   00:00
+sftp> put test_file /users/abc/
+Uploading test_file to /users/abc/test_file
+test_file                                                                                                                                      100%  212     0.2KB/s   00:00
 ```
 
 ```
@@ -166,6 +172,12 @@ Warning: Permanently added '10.1.1.1' (ECDSA) to the list of known hosts.
 abc@10.1.1.1's password:
 Connected to 10.1.1.1.
 sftp>
+sftp> get /users/abc/test_file
+Fetching /users/abc/test_file to test_file
+/users/abc/test_file                                                                                                                            100%  212     0.2KB/s   00:00
+sftp> put test_file /users/abc/
+Uploading test_file to /users/abc/test_file
+test_file                                                                                                                                      100%  212     0.2KB/s   00:00
 ```
 ```
 switch# copy sftp user IPv6-address
@@ -179,4 +191,10 @@ Warning: Permanently added 'a::1' (ECDSA) to the list of known hosts.
 abc@a::1's password:
 Connected to a::1.
 sftp>
+sftp> get /users/abc/test_file
+Fetching /users/abc/test_file to test_file
+/users/abc/test_file                                                                                                                            100%  212     0.2KB/s   00:00
+sftp> put test_file /users/abc/
+Uploading test_file to /users/abc/test_file
+test_file                                                                                                                                      100%  212     0.2KB/s   00:00
 ```

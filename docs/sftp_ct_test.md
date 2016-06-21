@@ -8,6 +8,8 @@
 - [Verify SFTP client](#verify-sftp-client)
 	- [Verify SFTP client in an interactive mode](#verify-sftp-client-in-an-interactive-mode)
 	- [Verify SFTP client in a non-interactive mode](#verify-sftp-client-in-a-non-interactive-mode)
+    - [Verify SFTP client in an interactive mode for netop user](#verify-sftp-client-in-an-interactive-mode-for-netop-user)
+    - [Verify SFTP client in a non-interactive mode for netop user](#verify-sftp-client-in-a-non-interactive-mode-for-netop-user)
 	- [Verify SFTP copy on a non mgmt interface](#verify-sftp-copy-on-a-non-mgmt-interface)
 	- [Verify SFTP copy from multiple vty sessions](#verify-sftp-copy-from-multiple-vty-sessions)
 
@@ -98,6 +100,24 @@ from switch2, which is providing SFTP server service.
 User is able to perform secure copy from switch2.
 #### Test Fail Criteria
 User is unable to perform secure copy from switch2.
+
+### Verify SFTP client in an interactive mode for netop user
+### Description
+Verify SFTP client copy is not allowed for netop users.
+### Test Result Criteria
+#### Test Pass Criteria
+Netop user is unable to perform the SFTP client copy.
+#### Test Fail Criteria
+Netop user is able to perform the SFTP client copy.
+
+### Verify SFTP client in a non-interactive mode for netop user
+### Description
+Verify SFTP client copy is not allowed for netop users.
+### Test Result Criteria
+#### Test Pass Criteria
+Netop user is unable to perform the SFTP client copy.
+#### Test Fail Criteria
+Netop user is able to perform the SFTP client copy.
 
 ### Verify SFTP copy on a non mgmt interface
 ### Description
