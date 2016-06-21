@@ -2912,7 +2912,7 @@
         Current state of the neighbor entry.
       </column>
       <column name="status" key="dp_hit"
-          type='{"type": "boolean"}'>
+          type='{"type": "boolean"}' emptyValue="true">
           Indicates if there is active traffic to the neighbor. This value
           is periodically updated. If the value is set to <code>false</code>,
           it indicates that there was no traffic to this neighbor recently.
