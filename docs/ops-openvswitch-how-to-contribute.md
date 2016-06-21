@@ -154,7 +154,7 @@ This will generate a new patch for your commit.
 In the openswitch/ops-build repo go to the directory of the ops-openvswitch
 recipe:
 ```
-cd yocto/recipes/openswitch/meta-distro-openswitch/recipes-ops/openvswitch/
+cd yocto/openswitch/meta-distro-openswitch/recipes-ops/openvswitch/
 ```
 
 To get the list of all patches issue:
