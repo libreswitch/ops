@@ -2194,34 +2194,34 @@
           if it is a directly connected device and <code>ospf</code> if OSPF
           created this entry.
       </column>
-      <column name="protocol_private">
+      <column name="protocol_private" emptyValue="false">
           Indicates that this row is a protocol specific route entry.
           The entries which have this value set, should not participate in
           routing. Example: BGP can store routes for reference and future
           selection but should not currently be used for forwarding.
           Default is <code>false</code>.
       </column>
-      <column name="selected">
+      <column name="selected" emptyValue="false">
           Route table can have entries which may not be selected for
           forwarding. This flag indicates if this entry is selected
           as an active route for forwarding.
           Default is <code>false</code>.
       </column>
-      <column name="address_family">
+      <column name="address_family" emptyValue="ipv4">
         Represents the address family for this entry.
         Default value is <code>ipv4</code>.
       </column>
-      <column name="sub_address_family">
+      <column name="sub_address_family" emptyValue="unicast">
         Represents more information regarding this entry.
         Default is <code>unicast</code>.
       </column>
-      <column name="distance">
+      <column name="distance" emptyValue="1">
           Administrative distance for the route entry. This value is populated
           every time a protocol or a user adds a new entry.
           The default value is 1 which is the default distance for static
           routes.
       </column>
-      <column name="metric">
+      <column name="metric" emptyValue="0">
           This is the BGP Multi Exit Discriminator (MED) attribute used in best
           path selection. The MED provides a dynamic way to influence another AS
           in the way to reach a certain route when there are multiple entry points
