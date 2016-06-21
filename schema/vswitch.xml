@@ -1502,7 +1502,7 @@
       </column>
 
       <column name="other_config" key="mac-aging-time"
-              type='{"type": "integer", "minInteger": 1}'>
+              type='{"type": "integer", "minInteger": 1}' emptyValue="300">
         <p>
           The maximum number of seconds to retain a MAC learning entry for
           which no packets have been seen.  The default is currently 300
@@ -1522,7 +1522,7 @@
       </column>
 
       <column name="other_config" key="mac-table-size"
-              type='{"type": "integer", "minInteger": 1}'>
+              type='{"type": "integer", "minInteger": 1}' emptyValue="16000">
         <p>
           The maximum number of MAC addresses to learn.  The default is
           currently 16K.  The value, if specified, is forced into a reasonable
