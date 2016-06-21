@@ -141,7 +141,7 @@
       <column name="dns_servers">
       </column>
 
-      <column name="router_id"  key="router_id_static" type='{"type": "boolean"}'>
+      <column name="router_id"  key="router_id_static" type='{"type": "boolean"}' emptyValue="false">
         This determines whether the system global router-ID is configured statically
         or selected by Routing Manager dynamically.
         The default value is false.
@@ -167,7 +167,7 @@
       </column>
 
       <column name="other_config" key="stats-update-interval"
-              type='{"type": "integer", "minInteger": 5000}'>
+              type='{"type": "integer", "minInteger": 5000}' emptyValue="5000">
         <p>
           Update interval for the statistics, in milliseconds.
           This option will affect the update of <code>statistics</code>,
@@ -214,7 +214,8 @@
       </column>
 
       <column name="other_config" key="cli_session_timeout"
-              type='{"type": "integer", "minInteger": 0, "maxInteger": 43200}'>
+              type='{"type": "integer", "minInteger": 0, "maxInteger": 43200}'
+              emptyValue="30">
         <p>
             This key specifies cli idle session timeout in minutes.
             Set this value to 0 to disable session timeout.
@@ -272,7 +273,7 @@
 
     <group title="SFTP Server Configurations">
         <column name="other_config" key="sftp_server_enable"
-                type='{"type": "boolean"}'>
+                type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code> to enable SFTP server
         and to set to <code>false</code> to disable it. If not set, SFTP server
         would be disabled by default.
@@ -293,7 +294,7 @@
 
     <group title="UDP Broadcast Forwarder Configurations">
         <column name="other_config" key="udp_bcast_forwarder_enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
           Set this value to <code>true</code> to enable UDP-Broadcast-Forwarder
           functionality globally and set it to <code>false</code> to disable it.
           UDP-Broadcast-Forwarder is disabled by default. If the key is missing, the
@@ -495,7 +496,7 @@
         the user or populated by the DHCP client.
         The keys of this column is same as that of mgmt_intf column.
       </column>
-      <column name="mgmt_intf_status" key="hostname">
+      <column name="mgmt_intf_status" key="hostname" emptyValue="switch">
         Hostname the system is configured with. Hostname can be configured
         through CLI, or specified in DHCP messages. If none of these are
         available, it defaults to "switch".
@@ -559,7 +560,7 @@
         </p>
 
         <column name="other_config" key="enable-statistics"
-                type='{"type": "boolean"}'>
+                type='{"type": "boolean"}' emptyValue="false">
           Statistics are disabled by default to avoid overhead in the common
           case when statistics gathering is not useful.  Set this value to
           <code>true</code> to enable populating the <ref column="statistics"/>
@@ -849,7 +850,7 @@
         The value for this key is a valid interface name that is to be
         configured as management interface
       </column>
-      <column name="mgmt_intf" key="mode" >
+      <column name="mgmt_intf" key="mode" type='{"type": "string", "enum": ["set", ["static", "dhcp"]]}' emptyValue="dhcp">
         The value is static or dhcp based on the mode in which the management
         ip is to be obtained. Default value is dhcp.
       </column>
@@ -880,7 +881,7 @@
         Specifies radius servers configuration. See the <ref table="Radius_Server"/>
         table for more information.
       </column>
-      <column name="auto_provisioning_status" key="performed" type='{"type": "boolean"}'>
+      <column name="auto_provisioning_status" key="performed" type='{"type": "boolean"}' emptyValue="false">
         Specifies whether auto-provisioning was performed. False if not specified.
       </column>
       <column name="auto_provisioning_status" key="url">
@@ -923,26 +924,28 @@
         client connections. The communication on agent port is of request - response style.
       </p>
       <column name="broadview_config" key="enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         Specifies whether the BroadView feature is enabled on the system.
         False, if the value is not present.
       </column>
 
-      <column name="broadview_config" key="client_ip" >
+      <column name="broadview_config" key="client_ip" emptyValue="127.0.0.1">
         Specifies BroadView client ip address. This is the IP that BroadView Agent
         tries to reach out to send async reports.
         If the value is not configured then default is 127.0.0.1.
       </column>
 
       <column name="broadview_config" key="client_port"
-              type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'
+              emptyValue="9070">
         Specifies BroadView client tcp port number. This is the port number along with client_ip that
         BroadView agent shoud try to reach out to send async reports.
         If no value is set, the default is 9070.
       </column>
 
       <column name="broadview_config" key="agent_port"
-              type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'
+              emptyValue="8080">
         Specifies BroadView agent tcp port number. Agent listens on this port for client connections.
         If no value is set, the default is 8080.
       </column>
@@ -1315,12 +1318,12 @@
 
     <group title="Loop-protect Configuration">
     <p>Contains global configuration for the Loop-protect feature.</p>
-      <column name="loop_protect_disable_timer">
+      <column name="loop_protect_disable_timer" emptyValue="0">
         This specifies the time in seconds for which the ports are to be disabled on
         detecting a loop.
         Default value is <code>0</code> i.e the port is disabled indefinitely.
       </column>
-      <column name="loop_protect_transmit_interval">
+      <column name="loop_protect_transmit_interval" emptyValue="5">
         This specifies the time interval in seconds between successive transmissions of
         loop-protect packets.
         Default value is <code>5</code> seconds.
