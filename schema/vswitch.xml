@@ -3239,7 +3239,7 @@
     </p>
 
     <group title="Configuration">
-      <column name="algorithm">
+      <column name="algorithm" emptyValue="strict">
         <p>
         This parameter selects the scheduling behavior of the queue:
         </p><p><code>strict</code> -
