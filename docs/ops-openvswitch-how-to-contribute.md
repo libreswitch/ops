@@ -1,4 +1,4 @@
-# Contribuiting to Open vSwitch inside OpenSwitch
+# Contributing to Open vSwitch inside OpenSwitch
 ---
 
 This document describes the workflow for contributing to the ops-openvswitch
@@ -262,7 +262,7 @@ Now that the branch history has been rewritten, the branch has to be published
 on the remote. To do this, it is necessary to use the --force option as it is
 effectively overwriting commits that were already on the remote branch.
 ```
-git push --force origin HEAD:refs/heads/patches/branch-<OVS_VERSION>
+git push --force gerrit HEAD:refs/heads/patches/branch-<OVS_VERSION>
 ```
 
 To generate the new patch the git format-patch option needs to be used in order
