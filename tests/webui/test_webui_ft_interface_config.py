@@ -55,8 +55,6 @@ PORT_DATA = {
 
 INT_DATA = {
     "configuration": {
-        "type": "system",
-        "name": "1"
     }
 }
 
@@ -168,7 +166,6 @@ class Test_CreatePatch(OpsVsiTest):
     def test_patch_other(self):
         int_data = copy.deepcopy(INT_DATA)
         self.INT_PATH = self.PATH_INT + "/2"
-        int_data["configuration"]["name"] = "2"
 
         # Setup patch
         int_data["configuration"]["user_config"] = {}
@@ -200,7 +197,6 @@ class Test_CreatePatch(OpsVsiTest):
 
         # Remove data
         int_data = copy.deepcopy(INT_DATA)
-        int_data["configuration"]["name"] = "2"
         status_code, response_data = execute_request(
             self.INT_PATH, "PATCH", json.dumps(REMOVE_PATCH), self.SWITCH_IP,
             False, xtra_header=self.cookie_header)

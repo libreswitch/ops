@@ -4418,12 +4418,22 @@
     "Interface": {
       "columns": {
         "name": {
-          "category": "configuration",
+          "category": {
+            "follows": "type"
+          },
           "type": "string",
           "mutable": false
         },
         "type": {
-          "category": "configuration",
+          "category": {
+            "per-value": [
+              { "value": "system", "category": "status" },
+              { "value": "internal", "category": "configuration" },
+              { "value": "vlansubint", "category": "configuration" },
+              { "value": "loopback", "category": "configuration" },
+              { "value": "vxlan", "category": "configuration" }
+            ]
+          },
           "mutable": false,
           "type": {
             "key": {
@@ -4542,7 +4552,7 @@
           "ephemeral": true
         },
         "split_parent": {
-          "category": "configuration",
+          "category": "status",
           "relationship": "reference",
           "type": {
             "key": {
@@ -4554,7 +4564,7 @@
           }
         },
         "split_children": {
-          "category": "configuration",
+          "category": "status",
           "relationship": "reference",
           "type": {
             "key": {
