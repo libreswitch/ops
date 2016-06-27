@@ -7686,6 +7686,22 @@
     </group>
   </table>
 
+  <table name="DHCP_Relay_V6_Mcast_Server">
+    <p>
+      Placeholder for DHCPv6 multicast server reachability information. DHCPv6 relay uses this
+      information to forward matching multicast DHCPv6 packets received on layer3 port.
+    </p>
+    <group title="DHCPv6-Relay Mcast Server Addresses">
+      <column name="ipv6_mcast_server">
+        IPv6 multicast or link local server destinations to which matching DHCP broadcast
+        packets received on layer3 port are duplicated and forwarded.
+      </column>
+      <column name="ports">
+        List of egress Ports, Packet forwarding takes place through these Ports.
+      </column>
+    </group>
+  </table>
+
   <table name="DHCP_Relay">
     <p>
       Placeholder for a set of server configuration entries. DHCP-Relay feature uses these entries
@@ -7707,13 +7723,11 @@
         List of IPv6 unicast server destinations to which DHCP broadcast packets received on the
         port are dulicated and forwarded.
         A maximum of 8 IPv6 server configurations are allowed. The count includes IPv6 multicast
-        and link local server configuration from the column "ipv6_mcast_server".
+        and link local server configuration from the column "dhcp_relay_v6_mcast_servers".
       </column>
-      <column name="ipv6_mcast_server" keyname="ipv6_address">
-        List of IPv6 multicast or link local server destinations to which matching DHCP broadcast
-        packets received on the port are duplciated and forwarded. Value of this key referenes a
-        Port table entry, packets matching the criteria are forwarded to the server through
-        this port.
+      <column name="dhcp_relay_v6_mcast_servers">
+        Packets received through this ports are duplicated and forwarded. This entry holds a reference
+        to the server address stored in <code>DHCP_Relay_V6_Mcast_Server</code> table.
         A maximum of 8 IPv6 server configurations are allowed. This count includes IPv6 unicast
         server configurations from the column "ipv6_ucast_server".
       </column>

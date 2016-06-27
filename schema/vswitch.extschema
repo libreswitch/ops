@@ -8546,6 +8546,34 @@
         }
       }
     },
+    "DHCP_Relay_V6_Mcast_Server": {
+      "columns": {
+        "ipv6_mcast_server": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 1,
+            "max": "unlimited"
+          }
+        },
+        "ports": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port"
+            },
+            "min": 1,
+            "max": 8
+          }
+        }
+      },
+      "isRoot": true
+    },
     "DHCP_Relay": {
       "columns": {
         "port": {
@@ -8594,18 +8622,13 @@
             "max": 8
           }
         },
-        "ipv6_mcast_server": {
+        "dhcp_relay_v6_mcast_servers": {
           "category": "configuration",
-          "relationship": "reference",
+          "relationship": "1:m",
           "type": {
             "key": {
-              "type": "string",
-              "maxLength": 49
-            },
-            "value": {
               "type": "uuid",
-              "refTable": "Port",
-              "refType" : "weak"
+              "refTable": "DHCP_Relay_V6_Mcast_Server"
             },
             "min": 0,
             "max": 8
