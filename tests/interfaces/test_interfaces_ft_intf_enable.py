@@ -46,13 +46,12 @@
 #      : verify   :     ping fails
 #
 
-import pytest
 from opstestfw import *
 from opstestfw.switch.CLI import *
 
 # Topology definition
 
-topoDict = {"topoType" : "physical",
+topoDict = {"topoType": "physical",
             "topoExecution": 1000,
             "topoTarget": "dut01",
             "topoDevices": "dut01 wrkston01 wrkston02",
@@ -71,6 +70,7 @@ WS2_IP = NET_1 + ".2"
 NET1_MASK = "255.255.255.0"
 NET1_BCAST = NET_1 + ".0"
 PACKET_LOSS = 15
+
 
 class Test_template:
 
@@ -96,8 +96,8 @@ class Test_template:
             rc = obj.cmd("ifconfig " + obj._intf + " netmask " + obj._netm)
             rc = obj.cmd("ifconfig " + obj._intf + " broadcast " + obj._bcast)
         else:
-            rc = obj.NetworkConfig(ipAddr=obj._ip, netMask=obj._netm, \
-                                   interface=obj._intf, \
+            rc = obj.NetworkConfig(ipAddr=obj._ip, netMask=obj._netm,
+                                   interface=obj._intf,
                                    broadcast=obj._bcast, config=True)
 
     def init_devices(self):
@@ -147,29 +147,32 @@ class Test_template:
 
     def verify_intf_admin_state(self, obj, intf, expected):
         obj.cmd("do start-shell")
-        admin_state =  obj.cmd("ovs-vsctl get interface " + str(intf) + " admin_state").splitlines()
+        admin_state = obj.cmd("ovs-vsctl get interface " +
+                              str(intf) + " admin_state").splitlines()
         obj.cmd("exit")
-        i  = len(admin_state)
+        i = len(admin_state)
         if i >= 2:
-            assert admin_state[i-1] == expected, "Interface should be %s, is %s" % \
-                                         (expected, admin_state)
+            assert admin_state[i-1] == expected, \
+                "Interface should be %s, is %s" % (expected, admin_state)
         else:
-            assert 1 == 0, "Invalid response from get admin_state, resp = %s" % admin_state
+            assert 1 == 0, \
+                "Invalid response from get admin_state, res = %s" % admin_state
 
     def verify_ping(self, src, dest, expected):
         out = src.Ping(ipAddr=dest._ip, interval=.2, errorCheck=False,
-            packetCount=30)
+                       packetCount=30)
         if out.returnCode() != 0:
             if expected is False:
                 return
             assert 1 == 0, "ping command failed, no output"
 
         LogOutput("info", "%s" % out.data)
-        success = False;
+        success = False
         if out.data['packet_loss'] <= PACKET_LOSS:
-            success = True;
+            success = True
 
-        assert success == expected, "ping was %s, expected %s" % (success, expected)
+        assert success == expected, "ping was %s, expected %s" % (success,
+                                                                  expected)
 
     def cmd_set_1(self, obj):
 
@@ -184,16 +187,16 @@ class Test_template:
         rc = obj.cmd("no shutdown")
         LogOutput("info", "sending exit")
         rc = obj.cmd("exit")
-        LogOutput("info", "sending interface 2")
-        rc = obj.cmd("interface 2")
+        LogOutput("info", "sending interface {interface_2}".format(**locals()))
+        rc = obj.cmd("interface {interface_2}".format(**locals()))
         LogOutput("info", "sending no routing")
         rc = obj.cmd("no routing")
         LogOutput("info", "sending vlan access 10")
         rc = obj.cmd("vlan access 10")
         LogOutput("info", "sending no shutdown")
         rc = obj.cmd("no shutdown")
-        LogOutput("info", "sending interface 1")
-        rc = obj.cmd("interface 1")
+        LogOutput("info", "sending interface {interface_1}".format(**locals()))
+        rc = obj.cmd("interface {interface_1}".format(**locals()))
         LogOutput("info", "sending no routing")
         rc = obj.cmd("no routing")
         LogOutput("info", "sending vlan access 10")
@@ -211,8 +214,8 @@ class Test_template:
 
         # Verify interface 1 is down
         interface_1 = self.s1.linkPortMapping['lnk01']
-        interface_2 = self.s1.linkPortMapping['lnk02']
-        LogOutput('info', "Verify that intf %s is down" %interface_1)
+
+        LogOutput('info', "Verify that intf %s is down" % interface_1)
         self.verify_intf_admin_state(self.vtyconn, interface_1, "down")
 
         # Verify ping fails
@@ -220,13 +223,13 @@ class Test_template:
         self.verify_ping(self.w1, self.w2, False)
 
         # Bring up interface 1
-        LogOutput('info', "Bring intf %s up"%interface_1)
-        rc = self.vtyconn.cmd("interface %s" %interface_1)
+        LogOutput('info', "Bring intf %s up" % interface_1)
+        rc = self.vtyconn.cmd("interface %s" % interface_1)
         rc = self.vtyconn.cmd("no shutdown")
 
         # Verify interface 1 is up
         sleep(1)
-        LogOutput('info', "Verify that intf %s is up"%interface_1)
+        LogOutput('info', "Verify that intf %s is up" % interface_1)
         self.verify_intf_admin_state(self.vtyconn, interface_1, "up")
 
         # Verify ping works
@@ -239,7 +242,7 @@ class Test_template:
 
         # Verify interface 1 is down
         sleep(1)
-        LogOutput('info', "Verify that intf %s is down"%interface_1)
+        LogOutput('info', "Verify that intf %s is down" % interface_1)
         self.verify_intf_admin_state(self.vtyconn, interface_1, "down")
 
         # Verify ping fails
