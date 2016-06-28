@@ -3058,7 +3058,7 @@
       <column name="aclv4_out_status" key="message" type='{"type":"string"}'>
         Detailed reason for error state.  Expected empty when state is 'applied'
       </column>
-      <column name="aclv4_out_statistics" key="sequence_number" type='{"type":"integer"}'>
+      <column name="aclv4_out_statistics" type='{"type":"integer"}'>
         Statistics for the egress IPv4 ACL applied to this port for ACEs that
         have the 'count' keyword specified.  Statistics are key/value pairs of
         ACL sequence number and integer representing the statistics for that entry.
@@ -4124,7 +4124,7 @@
       <column name="aclv4_out_status" key="message" type='{"type":"string"}'>
         Detailed reason for error state.  Expected empty when state is 'applied'
       </column>
-      <column name="aclv4_out_statistics" key="sequence_number" type='{"type":"integer"}'>
+      <column name="aclv4_out_statistics" type='{"type":"integer"}'>
         Statistics for the egress IPv4 ACL applied to this port for ACEs that have
         the 'count' keyword specified.  Statistics are key/value pairs of
         egress IPv4 ACL sequence number and integer representing the statistics for
