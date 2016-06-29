@@ -174,7 +174,6 @@ class systemTest(OpsVsiTest):
             'hash_srcip_enabled': "false",
             'hash_srcport_enabled': "false",
             'hash_dstip_enabled': "false",
-            'enabled': "false",
             'hash_dstport_enabled': "false"
         }
         if 'ecmp_config' in put_data:
