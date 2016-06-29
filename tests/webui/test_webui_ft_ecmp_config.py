@@ -426,7 +426,7 @@ class Test_EcmpConfig(OpsVsiTest):
             == FALSE, "ECMP resilient hash disable failed"
         info("### ECMP resilient hash disable validated ###\n")
 
-
+@pytest.mark.skipif(True, reason="Disabling due to TG-1408.")
 class Test_WebUI_ECMP:
     def setup(self):
         pass
