@@ -174,7 +174,6 @@ class systemTest(OpsVsiTest):
             'hash_srcip_enabled': "false",
             'hash_srcport_enabled': "false",
             'hash_dstip_enabled': "false",
-            'enabled': "false",
             'hash_dstport_enabled': "false"
         }
         if 'ecmp_config' in put_data:
@@ -255,7 +254,6 @@ class systemTest(OpsVsiTest):
         info("\n########## Finished executing PUT request on %s ##########\n"
              % self.PATH)
 
-@pytest.mark.skipif(True, reason="Disabling due to TG-1408.")
 class Test_system:
     def setup(self):
         pass
