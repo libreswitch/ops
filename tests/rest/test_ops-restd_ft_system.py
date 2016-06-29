@@ -255,7 +255,7 @@ class systemTest(OpsVsiTest):
         info("\n########## Finished executing PUT request on %s ##########\n"
              % self.PATH)
 
-
+@pytest.mark.skipif(True, reason="Disabling due to TG-1408.")
 class Test_system:
     def setup(self):
         pass
