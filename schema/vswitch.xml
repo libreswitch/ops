@@ -3985,15 +3985,15 @@
     <group title="Port Statistics">
       <p>
         Key-value pairs that report port statistics.  The update period
-        is controlled by <ref column="other_config"
+        is controlled by <ref table="System" column="other_config"
         key="stats-update-interval"/> in the <ref table="System"/> table.
       </p>
     </group>
 
     <group title="DHCP-Relay Statistics">
       DHCP-Relay statistics counters for both IPv4 and IPv6. The update period
-      is controlled by <ref column="other_config" key="stats-update-interval"/>in
-      <ref table="System"/>. If certain key is missing, then the assummed
+      is controlled by <ref table="System" column="other_config" key="stats-update-interval"/>
+      in <ref table="System"/>. If certain key is missing, then the assummed
       counter value is 0.
       <column name="dhcp_relay_statistics" key="valid_v4client_requests"
               type='{"type":"integer"}'>
@@ -5324,7 +5324,7 @@
       <p>
         Key-value pairs that report interface statistics.  The current
         implementation updates these counters periodically.  The update period
-        is controlled by <ref column="other_config"
+        is controlled by <ref table="System" column="other_config"
         key="stats-update-interval"/> in the <ref table="System"/> table.
      </p>
       <p>
@@ -7813,8 +7813,8 @@
       <p>
         Key-value pairs that report mirror statistics.  The counts are
         reset to zero whenever the operation state transitions to active.
-        The update period is controlled by <ref table="System"/>
-        <ref column="other_config" key="stats-update-interval"/>.
+        The update period is controlled by <ref table="System" column="other_config"
+        key="stats-update-interval"/> in table <ref table="System"/>.
         No counts may be available initally until the first update period
         has elasped.  If any key-value pairs remains missing, the hardware
         does not support that count.
