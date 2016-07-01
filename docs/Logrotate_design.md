@@ -30,7 +30,7 @@ Log-rotate works as follows:
 - The script for running the log-rotate feature runs hourly as a cron job.
 - The log-rotate script uses the Linux logrotate utility for log rotation.
 - Post rotation,log-rotate script compresses the rotated log file in gunzip format.
-- All module logs are stored in `var/log/messages` and all authentication logs are stored in `/var/log/auth.log. Only logs stored in these paths are rotated.
+- All module logs are stored in `var/log/messages`, all authentication logs are stored in `/var/log/auth.log', all audit logs are stored in '/var/log/audit/audit.log' and all event logs are stored in '/var/log/event.log'. Only logs stored in these paths are rotated.
 - Management of rotated log files:
   - Rotated log files are compressed and stored locally in the path '/var/log/', regardless of the remote host configuration 
   - Rotated log files are stored with respective time extension to the granularity of hour in the format "file1- YYYYMMDDHH.gz" (e.g., messages-2015080715.gz)
