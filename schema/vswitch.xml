@@ -3517,28 +3517,6 @@
           </li>
         </ul>
       </column>
-
-      <column name="tag">
-        <p>
-          For an access port, the port's implicitly tagged VLAN.  For a
-          native-tagged or native-untagged port, the port's native VLAN.  Must
-          be empty if this is a trunk port.
-        </p>
-      </column>
-
-      <column name="trunks">
-        <p>
-          For a trunk, native-tagged, or native-untagged port, the 802.1Q VLAN
-          or VLANs that this port trunks; if it is empty, then the port trunks
-          all VLANs defined in the <ref table="VLAN"/> table.  Must be empty
-          if this is an access port.
-        </p>
-        <p>
-          A native-tagged or native-untagged port always trunks its native
-          VLAN, regardless of whether <ref column="trunks"/> includes that
-          VLAN.
-        </p>
-      </column>
       <column name="vlan_tag">
         <p>
           For an access port, specifies the untagged 802.1Q vlan. If empty,
@@ -6711,10 +6689,6 @@
     <column name="bridge">
       Specifies the bridge <ref table="Bridge"/> on which this MAC address
       is associated.
-    </column>
-
-    <column name="vlan">
-      VLAN associated with MAC address.
     </column>
 
     <column name="mac_vlan">

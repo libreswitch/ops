@@ -3855,30 +3855,6 @@
             "max": 8
           }
         },
-        "trunks": {
-          "category": "configuration",
-          "type": {
-            "key": {
-              "type": "integer",
-              "minInteger": 1,
-              "maxInteger": 4094
-            },
-            "min": 0,
-            "max": 4096
-          }
-        },
-        "tag": {
-          "category": "configuration",
-          "type": {
-            "key": {
-              "type": "integer",
-              "minInteger": 1,
-              "maxInteger": 4094
-            },
-            "min": 0,
-            "max": 1
-          }
-        },
         "vlan_trunks": {
           "category": "configuration",
           "relationship": "reference",
@@ -5916,16 +5892,6 @@
             }
           }
         },
-        "vlan": {
-          "category": "status",
-          "type": {
-            "key": {
-              "type": "integer",
-              "minInteger": 1,
-              "maxInteger": 4094
-            }
-          }
-        },
         "mac_vlan": {
           "category": "status",
           "relationship": "reference",
@@ -5996,7 +5962,6 @@
       "indexes": [
         [
           "bridge",
-          "vlan",
           "mac_vlan",
           "from",
           "mac_addr"
