@@ -8814,9 +8814,7 @@
             "key": {
               "type": "string",
               "maxLength": 45
-            },
-            "min": 1,
-            "max": "unlimited"
+            }
           }
         },
         "ports": {

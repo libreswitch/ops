@@ -8066,7 +8066,7 @@
     </p>
     <group title="DHCPv6-Relay Mcast Server Addresses">
       <column name="ipv6_mcast_server">
-        IPv6 multicast or link local server destinations to which matching DHCP broadcast
+        IPv6 multicast or link local server destination to which matching DHCP broadcast
         packets received on layer3 port are duplicated and forwarded.
       </column>
       <column name="ports">
