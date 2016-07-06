@@ -501,7 +501,7 @@
 
       <column name="cur_cfg">
         Sequence number that OpenSwitch sets to the current value of
-        <ref column="next_cfg"/> after it finishes applying a set of
+        <ref table="System" column="next_cfg"/> after it finishes applying a set of
         configuration changes.
       </column>
 
@@ -512,8 +512,8 @@
 
       <column name="cur_hw">
         Sequence number that indicates the current change level for the h/w
-        configuration. When <ref column="cur_hw"/> is the same as <ref
-        column="next_hw"/>, then all platform daemon processing has completed
+        configuration. When <ref table="System" column="cur_hw"/> is the same as <ref
+        table="System" column="next_hw"/>, then all platform daemon processing has completed
         in response to the hardware addition or removal. This is not used for
         transceiver pluggable module insertion/removal.
       </column>
@@ -537,7 +537,7 @@
                 type='{"type": "boolean"}'>
           Statistics are disabled by default to avoid overhead in the common
           case when statistics gathering is not useful.  Set this value to
-          <code>true</code> to enable populating the <ref column="statistics"/>
+          <code>true</code> to enable populating the <ref table="System" column="statistics"/>
           column or to <code>false</code> to explicitly disable it.
         </column>
 
@@ -775,7 +775,7 @@
         These columns primarily configure the OpenSwitch database
         (<code>ovsdb-server</code>), not the OpenSwitch switch
         (<code>pswitchd</code>).  The OVSDB database also uses the <ref
-        column="ssl"/> settings.
+        table="System" column="ssl"/> settings.
       </p>
 
       <p>
@@ -1188,13 +1188,13 @@
           Specifies the queue profile for ports that do not specify their own
           queue profile (see <ref table="Port"/> q_profile column).
           When missing, the <ref table="Q_Profile"/> row with
-          <ref column="hw_default"/> true will be used.
+          <ref table="Q_Profile" column="hw_default"/> true will be used.
         </column>
         <column name="qos">
           Specifies the schedule profile for ports that do not specify their own
           schedule profile (see <ref table="Port"/> qos column).
           When missing, the <ref table="QoS"/> row with
-          <ref column="hw_default"/> true will be used.
+          <ref table="Q_Profile" column="hw_default"/> true will be used.
         </column>
     </group>
 
@@ -1206,11 +1206,11 @@
       <column name="qos_status" key="queue_profile">
         <p>
         This key's value contains the <ref table="Q_Profile"/>
-        <ref column="name"/> that is currently operating in hardware for
+        <ref table="Q_Profile" column="name"/> that is currently operating in hardware for
         ports that do not specify their own queue profile configuration.
         </p>
         <p>
-        The value may be different than the name in <ref column="q_profile"/>
+        The value may be different than the name in <ref table="Port" column="q_profile"/>
         when that queue profile cannot be supported in hardware.  In this case,
         this key's value is the name of the last successfully configured
         system queue profile.
@@ -1219,11 +1219,11 @@
       <column name="qos_status" key="schedule_profile">
         <p>
         This key's value contains the <ref table="QoS"/>
-        <ref column="name"/> that is currently operating in hardware for
+        <ref table="QoS" column="name"/> that is currently operating in hardware for
         ports that do not specify their own queue profile configuration.
         </p>
         <p>
-        The value may be different than the name in <ref column="qos"/>
+        The value may be different than the name in <ref table="System" column="qos"/>
         when that schedule profile cannot be supported in hardware.  In this
         case, this key's value may be the name of the last successfully
         configured system schedule profile.
@@ -1391,7 +1391,7 @@
     <p>
       A <ref table="Bridge"/> record represents an Ethernet switch with one or
       more ``ports,'' which are the <ref table="Port"/> records pointed to by
-      the <ref table="Bridge"/>'s <ref column="ports"/> column. In the first
+      the <ref table="Bridge"/>'s <ref table="Bridge" column="ports"/> column. In the first
       release, only one default bridge (bridge_normal) is supported
     </p>
 
@@ -1972,7 +1972,7 @@
     <group title="Status">
       <column name="cur_hw">
         Sequence number that a daemon sets to the current value of
-        <ref column="next_hw"/> in the <ref table="System"/> table after
+        <ref table="System" column="next_hw"/> in the <ref table="System"/> table after
         it has successfully responded to a hardware change.
       </column>
     </group>
@@ -3130,7 +3130,8 @@
       columns in this row.
       <column name="hw_defaults" key="default_local_priority">
         When missing, the default local_priority is obtained from the
-        <ref column="hw_defaults"/> of the <ref table="QoS_COS_Map_Entry"/> row
+        <ref table="QoS_COS_Map_Entry" column="hw_defaults"/> of the
+        <ref table="QoS_COS_Map_Entry"/> row
         indexed by the top 3-bits of this row's code_point (i.e. class selector
         bits cs0 through cs7).
       </column>
@@ -3401,10 +3402,10 @@
  <table name="Port" title="Port or bond configuration.">
     <p>A port within a <ref table="Bridge"/>.</p>
     <p>Most commonly, a port has exactly one ``interface,'' pointed to by its
-    <ref column="interfaces"/> column.  Such a port logically
+    <ref table="Port" column="interfaces"/> column.  Such a port logically
     corresponds to a port on a physical Ethernet switch.  A port
     with more than one interface is a ``bonded port'' (see
-    <ref group="Bonding Configuration"/>).</p>
+    <ref table="Port" group="Bonding Configuration"/>).</p>
     <p>Some properties that one might think as belonging to a port are actually
     part of the port's <ref table="Interface"/> members.</p>
 
@@ -3521,12 +3522,12 @@
     <group title="QoS Status">
       <column name="qos_status" key="queue_profile">
       Contains the name of the queue profile that is operating in hardware.
-      This may different than the name in <ref column="q_profile"/> when
+      This may different than the name in <ref table="Port" column="q_profile"/> when
       that profile cannot be supported in hardware.
       </column>
       <column name="qos_status" key="schedule_profile">
       Contains the name of the schedule profile that is operating in hardware.
-      This may different than the name in <ref column="qos"/> when
+      This may different than the name in <ref table="Port" column="qos"/> when
       that profile cannot be supported in hardware.
       </column>
     </group>
@@ -3538,7 +3539,7 @@
         <dd>
           <p>
             A trunk port carries packets on one or more VLANs specified
-            in the <ref column="trunks"/> column (or all VLANs defined in
+            in the <ref table="Port" column="trunks"/> column (or all VLANs defined in
             <ref table="VLAN"/> table if trunks is empty or not specified).
             A packet that ingresses on a trunk port is in the VLAN
             specified in its 802.1Q header, or VLAN 1 if the packet has no
@@ -3556,7 +3557,7 @@
         <dd>
           <p>
             An access port carries packets on exactly one VLAN specified in the
-            <ref column="tag"/> column.  Packets egressing on an access port
+            <ref table="VLAN" column="tag"/> column.  Packets egressing on an access port
             have no 802.1Q header.
           </p>
 
@@ -3571,7 +3572,7 @@
         <dd>
           A native-tagged port resembles a trunk port, with the exception that
           a packet without an 802.1Q header that ingresses on a native-tagged
-          port is in the ``native VLAN'' (specified in the <ref column="tag"/>
+          port is in the ``native VLAN'' (specified in the <ref table="VLAN" column="tag"/>
           column).
         </dd>
 
@@ -3594,11 +3595,11 @@
         </p>
         <ul>
           <li>
-            If <ref column="tag"/> contains a value, the port is an access
-            port.  The <ref column="trunks"/> column should be empty.
+            If <ref table="Port" column="tag"/> contains a value, the port is an access
+            port.  The <ref table="Port" column="trunks"/> column should be empty.
           </li>
           <li>
-            Otherwise, the port is a trunk port.  The <ref column="trunks"/>
+            Otherwise, the port is a trunk port.  The <ref table="Port" column="trunks"/>
             column value is honored if it is present.
           </li>
         </ul>
@@ -3621,7 +3622,7 @@
         </p>
         <p>
           A native-tagged or native-untagged port always trunks its native
-          VLAN, regardless of whether <ref column="trunks"/> includes that
+          VLAN, regardless of whether <ref table="Port" column="trunks"/> includes that
           VLAN.
         </p>
       </column>
@@ -3959,7 +3960,7 @@
 
       <column name="bond_status">
         Key-value pairs that report bond-specific port status (both static and
-        dynamic).  This column complements the <ref column="lacp_status"/>
+        dynamic).  This column complements the <ref table="Port" column="lacp_status"/>
         column.
       </column>
       <column name="bond_status" key="state"
@@ -3974,7 +3975,7 @@
           fowarding traffic according to LACP
         * Blocked:  All member interfaces are either not eligible or should be
           blocked according to LACP.
-          If LACP-fallback-ab is enabled, and the <ref column="lacp_status"/> is
+          If LACP-fallback-ab is enabled, and the <ref table="Port" column="lacp_status"/> is
           defaulted, then the bond state is forwarding.  If the LACP-fallback-ab
           is disable, then the state is blocked.
         * Down:  All member interfaces configured to be a member of a LAG are
@@ -4231,8 +4232,8 @@
 
           <dt><code>internal</code></dt>
           <dd>A simulated network device that sends and receives traffic.  An
-          internal interface whose <ref column="name"/> is the same as its
-          bridge's <ref table="System" column="name"/> is called the
+          internal interface whose <ref table="Interface" column="name"/> is the same as its
+          bridge's <ref table="Bridge" column="name"/> is called the
           ``local interface.''  It does not make sense to bond an internal
           interface, so the terms ``port'' and ``interface'' are often used
           imprecisely for internal interfaces.</dd>
@@ -4258,18 +4259,18 @@
 
     <group title="Tunnel Options">
       <p>
-        These options apply to interfaces with <ref column="type"/> of
+        These options apply to interfaces with <ref table="Interface" column="type"/> of
         <code>vxlan</code>.
       </p>
 
       <p>
-        Each tunnel must be uniquely identified by the combination of <ref
-        column="type"/>, <ref column="options" key="remote_ip"/>, <ref
-        column="options" key="local_ip"/>, and <ref column="options"
+        Each tunnel must be uniquely identified by the combination of <ref table="Interface"
+            column="type"/>, <ref table="Interface" column="options" key="remote_ip"/>, <ref
+        table="Interface" column="options" key="local_ip"/>, and <ref table="Interface" column="options"
         key="in_key"/>.  If two ports are defined that are the same except one
         has an optional identifier and the other does not, the more specific
-        one is matched first.  <ref column="options" key="in_key"/> is
-        considered more specific than <ref column="options" key="local_ip"/> if
+        one is matched first.  <ref table="Interface" column="options" key="in_key"/> is
+        considered more specific than <ref table="Interface" column="options" key="local_ip"/> if
         a port defines one and another port defines the other.
       </p>
 
@@ -4302,7 +4303,7 @@
         <ul>
           <li>
             <code>0</code>.  The tunnel receives packets with no key or with a
-            key of 0.  This is equivalent to specifying no <ref column="options"
+            key of 0.  This is equivalent to specifying no <ref table="Interface" column="options"
             key="in_key"/> at all.
           </li>
           <li>
@@ -4322,7 +4323,7 @@
         <ul>
           <li>
             <code>0</code>.  Packets sent through the tunnel will have no key.
-            This is equivalent to specifying no <ref column="options"
+            This is equivalent to specifying no <ref table="Interface" column="options"
             key="out_key"/> at all.
           </li>
           <li>
@@ -4800,7 +4801,7 @@
 
       <column name="status">
         Key-value pairs that report port status.  Supported status values are
-        <ref column="type"/>-dependent; some interfaces may not have a valid
+        <ref table="Interface" column="type"/>-dependent; some interfaces may not have a valid
         <ref column="status" key="driver_name"/>, for example.
       </column>
 
@@ -6188,8 +6189,8 @@
             </p>
           </dd>
         </dl>
-        <p>When multiple managers are configured, the <ref column="target"/>
-        values must be unique.  Duplicate <ref column="target"/> values yield
+        <p>When multiple managers are configured, the <ref table="Manager" column="target"/>
+        values must be unique.  Duplicate <ref table="Manager" column="target"/> values yield
         unspecified results.</p>
       </column>
 
@@ -6317,7 +6318,7 @@
       <column name="status" key="n_connections"
               type='{"type": "integer", "minInteger": 2}'>
         <p>
-          When <ref column="target"/> specifies a connection method that
+          When <ref table="Manager" column="target"/> specifies a connection method that
           listens for inbound connections (e.g. <code>ptcp:</code> or
           <code>pssl:</code>) and more than one connection is actually active,
           the value is the number of active connections.  Otherwise, this
@@ -6331,9 +6332,9 @@
       </column>
 
       <column name="status" key="bound_port" type='{"type": "integer"}'>
-          When <ref column="target"/> is <code>ptcp:</code> or
+          When <ref table="Manager" column="target"/> is <code>ptcp:</code> or
           <code>pssl:</code>, this is the TCP port on which the OVSDB server is
-          listening.  (This is is particularly useful when <ref
+          listening.  (This is is particularly useful when <ref table="Manager"
           column="target"/> specifies a port of 0, allowing the kernel to
           choose any available port.)
       </column>
@@ -7756,7 +7757,7 @@
 
     <column name="active">
       The intended state of the mirror session: active or inactive.
-      The <ref column="status" key="operation_state"/> value contains
+      The <ref table="Mirror" column="mirror_status" key="operation_state"/> value contains
       the actual state in hardware (e.g. active, inactive, or error).
       When missing or false, the state is inactive.
     </column>
