@@ -3557,8 +3557,8 @@
         <dd>
           <p>
             An access port carries packets on exactly one VLAN specified in the
-            <ref table="VLAN" column="tag"/> column.  Packets egressing on an access port
-            have no 802.1Q header.
+            <ref table="Port" column="tag"/> column.  Packets egressing on an
+            access port have no 802.1Q header.
           </p>
 
           <p>
@@ -3572,7 +3572,8 @@
         <dd>
           A native-tagged port resembles a trunk port, with the exception that
           a packet without an 802.1Q header that ingresses on a native-tagged
-          port is in the ``native VLAN'' (specified in the <ref table="VLAN" column="tag"/>
+          port is in the ``native VLAN'' (specified in the <ref table="Port"
+          column="tag"/>
           column).
         </dd>
 
