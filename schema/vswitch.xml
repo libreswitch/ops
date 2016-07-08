@@ -141,7 +141,7 @@
       <column name="dns_servers">
       </column>
 
-      <column name="router_id"  key="router_id_static" type='{"type": "boolean"}'>
+      <column name="router_id"  key="router_id_static" type='{"type": "boolean"}' emptyValue="false">
         This determines whether the system global router-ID is configured statically
         or selected by Routing Manager dynamically.
         The default value is false.
@@ -167,7 +167,7 @@
       </column>
 
       <column name="other_config" key="stats-update-interval"
-              type='{"type": "integer", "minInteger": 5000}'>
+              type='{"type": "integer", "minInteger": 5000}' emptyValue="5000">
         <p>
           Update interval for the statistics, in milliseconds.
           This option will affect the update of <code>statistics</code>,
@@ -180,7 +180,8 @@
       </column>
 
       <column name="other_config" key="min_internal_vlan"
-              type='{"type": "integer", "minInteger": 1, "maxInteger": 4094}'>
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 4094}'
+              emptyValue="1024">
         <p>
             This key specifies a lower bound of the VLAN range, which is being used for internal system purposes.
         </p>
@@ -190,7 +191,8 @@
       </column>
 
       <column name="other_config" key="max_internal_vlan"
-              type='{"type": "integer", "minInteger": 1, "maxInteger": 4094}'>
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 4094}'
+              emptyValue="4094">
         <p>
             This key specifies an upper bound of the VLAN range, which is being used for internal system purposes.
         </p>
@@ -200,7 +202,8 @@
       </column>
 
       <column name="other_config" key="internal_vlan_policy"
-              type='{"type": "string"}'>
+              type='{"type": "string", "enum": ["set", ["ascending", "descending"]]}'
+              emptyValue="ascending">
         <p>
             This key indicates order of assignment of internal VLAN ID (ascending or descending).
         </p>
@@ -211,7 +214,8 @@
       </column>
 
       <column name="other_config" key="cli_session_timeout"
-              type='{"type": "integer", "minInteger": 0, "maxInteger": 43200}'>
+              type='{"type": "integer", "minInteger": 0, "maxInteger": 43200}'
+              emptyValue="30">
         <p>
             This key specifies cli idle session timeout in minutes.
             Set this value to 0 to disable session timeout.
@@ -221,7 +225,7 @@
         </p>
       </column>
 
-      <column name="other_config" key="banner">
+      <column name="other_config" key="banner" type='{"type": "string", "maxLength": 4095}' emptyValue="">
         <p>
             Banner to be displayed on CLI start. Maximum length 4095.
         </p>
@@ -231,7 +235,7 @@
         </p>
       </column>
 
-      <column name="other_config" key="banner_exec">
+      <column name="other_config" key="banner_exec" type='{"type": "string", "maxLength": 4095}' emptyValue="">
         <p>
             Banner to be displayed on CLI login. Maximum length 4095.
         </p>
@@ -253,14 +257,14 @@
 
        <group title="TFTP Server Configurations">
         <column name="other_config" key="tftp_server_enable"
-                type='{"type": "boolean"}'>
+            type='{"type": "boolean"}' emptyValue="true">
           Set this value to <code>true</code> to enable TFTP server
           and set to <code>false</code> to disable it. If not set, TFTP server
           would be enabled.
         </column>
 
         <column name="other_config" key="tftp_server_secure"
-                type='{"type": "boolean"}'>
+                type='{"type": "boolean"}' emptyValue="true">
           Set this value to <code>true</code> to enable TFTP secure mode
           and set to <code>false</code> to disable it. If not set, TFTP secure mode
           would be enabled. This config is valid only if TFTP server is enabled.
@@ -269,7 +273,7 @@
 
     <group title="SFTP Server Configurations">
         <column name="other_config" key="sftp_server_enable"
-                type='{"type": "boolean"}'>
+                type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code> to enable SFTP server
         and to set to <code>false</code> to disable it. If not set, SFTP server
         would be disabled by default.
@@ -278,7 +282,7 @@
 
     <group title="UDP Broadcast Forwarder Configurations">
         <column name="other_config" key="udp_bcast_forwarder_enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
           Set this value to <code>true</code> to enable UDP-Broadcast-Forwarder
           functionality globally and set it to <code>false</code> to disable it.
           UDP-Broadcast-Forwarder is disabled by default. If the key is missing, the
@@ -296,7 +300,8 @@
         unset.
       </column>
       <column name="lacp_config" key="lacp-system-priority"
-              type='{"type": "integer", "minInteger": 0, "maxInteger": 65535}'>
+              type='{"type": "integer", "minInteger": 0, "maxInteger": 65535}'
+              emptyValue="65534">
         The LACP system priority of this <ref table="Bridge"/>.  In LACP
         negotiations, link status decisions are made by the system with the
         numerically lower priority. Defaults to 65534.
@@ -305,14 +310,16 @@
 
     <group title="LLDP Configurations">
       <column name="other_config" key="lldp_enable"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="false">
         Set this value to <code>true</code> to enable System level LLDP
         or to <code>false</code> to explicitly disable it.
         Default is <code>disable</code>.
       </column>
 
       <column name="other_config" key="lldp_tlv_mgmt_addr_enable"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="true">
         Set this value to <code>true</code> to enable transmission of LLDP
         Management Address TLV or set it to <code>false</code> to disable
         transmitting it.
@@ -320,7 +327,8 @@
       </column>
 
       <column name="other_config" key="lldp_tlv_port_desc_enable"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="true">
         Set this value to <code>true</code> to enable transmission of LLDP
         Port Description TLV or set it to <code>false</code> to disable
         transmitting it.
@@ -328,7 +336,7 @@
       </column>
 
       <column name="other_config" key="lldp_tlv_port_vlan_enable"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="true">
         Set this value to <code>true</code> to enable transmission of LLDP
         Port VLAN TLV or set it to <code>false</code> to disable
         transmitting it.
@@ -336,7 +344,8 @@
       </column>
 
       <column name="other_config" key="lldp_tlv_sys_cap_enable"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="true">
         Set this value to <code>true</code> to enable transmission of LLDP
         System Capabilities TLV or set it to <code>false</code> to disable
         transmitting it.
@@ -344,7 +353,8 @@
       </column>
 
       <column name="other_config" key="lldp_tlv_sys_desc_enable"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="true">
         Set this value to <code>true</code> to enable transmission of LLDP
         System Description TLV or set it to <code>false</code> to disable
         transmitting it.
@@ -352,7 +362,8 @@
       </column>
 
       <column name="other_config" key="lldp_tlv_sys_name_enable"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="true">
         Set this value to <code>true</code> to enable transmission of LLDP
         System Name TLV or set it to <code>false</code> to disable
         transmitting it.
@@ -365,7 +376,8 @@
       </column>
 
       <column name="other_config" key="lldp_tx_interval"
-              type='{"type": "integer", "minInteger": 5, "maxInteger": 32768}'>
+              type='{"type": "integer", "minInteger": 5, "maxInteger": 32768}'
+              emptyValue="30">
         <p>
             The interval in seconds at which LLDP status updates are
             transmitted to neighbors in seconds.
@@ -376,7 +388,8 @@
       </column>
 
       <column name="other_config" key="lldp_hold"
-              type='{"type": "integer", "minInteger": 2, "maxInteger": 10}'>
+              type='{"type": "integer", "minInteger": 2, "maxInteger": 10}'
+              emptyValue="4">
         <p>
           The amount of time a receiving device should hold the information
           sent by your device before discarding it.
@@ -389,7 +402,8 @@
       </column>
 
       <column name="other_config" key="lldp_reinit"
-              type='{"type": "integer", "minInteger": 1, "maxInteger": 10}'>
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 10}'
+              emptyValue="2">
         <p>
           The amount of time in seconds to wait before performing LLDP
           initialization on any interface.
@@ -401,7 +415,7 @@
    </group>
 
    <group title="SNMP configuration">
-     <column name="other_config" key="snmp_agent_port">
+     <column name="other_config" key="snmp_agent_port" emptyValue="161">
         The port on which the SNMP agent listens for SNMP requests. The default port is 161.
      </column>
      <column name="other_config" key="system_location">This key represents the system location.</column>
@@ -470,7 +484,7 @@
         the user or populated by the DHCP client.
         The keys of this column is same as that of mgmt_intf column.
       </column>
-      <column name="mgmt_intf_status" key="hostname">
+      <column name="mgmt_intf_status" key="hostname" emptyValue="switch">
         Hostname the system is configured with. Hostname can be configured
         through CLI, or specified in DHCP messages. If none of these are
         available, it defaults to "switch".
@@ -534,7 +548,7 @@
         </p>
 
         <column name="other_config" key="enable-statistics"
-                type='{"type": "boolean"}'>
+                type='{"type": "boolean"}' emptyValue="false">
           Statistics are disabled by default to avoid overhead in the common
           case when statistics gathering is not useful.  Set this value to
           <code>true</code> to enable populating the <ref table="System" column="statistics"/>
@@ -641,23 +655,23 @@
         </column>
 
     <group title="LLDP Statistics">
-        <column name="lldp_statistics" key="lldp_table_inserts">
+        <column name="lldp_statistics" key="lldp_table_inserts" emptyValue="0">
             Number of neighbor entries inserted to LLDP neighbor table.
             Default is 0.
         </column>
 
-        <column name="lldp_statistics" key="lldp_table_deletes">
+        <column name="lldp_statistics" key="lldp_table_deletes" emptyValue="0">
             Number of neighbor entries deleted from LLDP neighbor table.
             Default is 0.
         </column>
 
-        <column name="lldp_statistics" key="lldp_table_drops">
+        <column name="lldp_statistics" key="lldp_table_drops" emptyValue="0">
             Number of neighbor entries that could not be added to LLDP
             neighbor table and dropped.
             Default is 0.
         </column>
 
-        <column name="lldp_statistics" key="lldp_table_ageouts">
+        <column name="lldp_statistics" key="lldp_table_ageouts" emptyValue="0">
             Number of times neighbor info was deleted from LLDP neighbor
             table because of the TTL timer associated with a neighbor
             has expired.
@@ -782,27 +796,29 @@
         The OpenSwitch switch does read the database configuration to
         determine remote IP addresses to which in-band control should apply.
       </p>
-      <column name="aaa" key="radius" type='{"type": "string"}'>
+      <column name="aaa" key="radius" type='{"type": "string"}' emptyValue="false">
         This column used for AAA feature. The valid values for the key 'radius'
         are true or false based on the user request for authentication.
         If radius=true, radius based authentication is enabled. By default
         authentication is local.
       </column>
       <column name="aaa" key="radius_auth"
-        type='{"type": "string", "enum": ["set", ["pap", "chap"]]}'>
+        type='{"type": "string", "enum": ["set", ["pap", "chap"]]}'
+        emptyValue="pap">
         Specifies encoding to be used for the user password for radius
         based authentication.
         By default <code>pap</code> is used.
       </column>
-      <column name="aaa" key="fallback" type='{"type": "string"}'>
+      <column name="aaa" key="fallback" type='{"type": "string"}' emptyValue="true">
         This column used for AAA feature. The valid values for the key 'fallback'
         are true or false based on the user request for authentication. If
         fallback=true, fall to local authentication if radius server is not reachable.
+        Default value is <code>true</code>
       </column>
-      <column name="aaa" key="ssh_passkeyauthentication_enable" type='{"type": "boolean"}'>
+      <column name="aaa" key="ssh_passkeyauthentication_enable" type='{"type": "boolean"}' emptyValue="true">
         Controls whether ssh password based authentication is enabled. Default is true.
       </column>
-      <column name="aaa" key="ssh_publickeyauthentication_enable" type='{"type": "boolean"}'>
+      <column name="aaa" key="ssh_publickeyauthentication_enable" type='{"type": "boolean"}' emptyValue="true">
         Controls whether ssh public key authentication is enabled. Default is true.
       </column>
       <column name="manager_options">
@@ -822,7 +838,7 @@
         The value for this key is a valid interface name that is to be
         configured as management interface
       </column>
-      <column name="mgmt_intf" key="mode" >
+      <column name="mgmt_intf" key="mode" type='{"type": "string", "enum": ["set", ["static", "dhcp"]]}' emptyValue="dhcp">
         The value is static or dhcp based on the mode in which the management
         ip is to be obtained. Default value is dhcp.
       </column>
@@ -853,7 +869,7 @@
         Specifies radius servers configuration. See the <ref table="Radius_Server"/>
         table for more information.
       </column>
-      <column name="auto_provisioning_status" key="performed" type='{"type": "boolean"}'>
+      <column name="auto_provisioning_status" key="performed" type='{"type": "boolean"}' emptyValue="false">
         Specifies whether auto-provisioning was performed. False if not specified.
       </column>
       <column name="auto_provisioning_status" key="url">
@@ -867,14 +883,17 @@
     </group>
 
     <group title="Logrotate configuration">
-        <column name="logrotate_config" key="period" type='{"type": "string"}'>
+        <column name="logrotate_config" key="period"
+            type='{"type": "string", "enum": ["set", ["hourly", "daily", "weekly", "monthly" ]]}'
+            emptyValue="daily">
             The user configured period of logrotation. The possible values are
             'hourly','daily','weekly'or 'monthly'.
             Default value is 'daily'
         </column>
 
         <column name="logrotate_config" key="maxsize"
-                type='{"type": "integer", "minInteger": 1, "maxInteger": 200}'>
+                type='{"type": "integer", "minInteger": 1, "maxInteger": 200}'
+                emptyValue="10">
             Log size (in megabytes), which would trigger rotation. 10 megabytes if not specified
         </column>
 
@@ -893,26 +912,28 @@
         client connections. The communication on agent port is of request - response style.
       </p>
       <column name="broadview_config" key="enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         Specifies whether the BroadView feature is enabled on the system.
         False, if the value is not present.
       </column>
 
-      <column name="broadview_config" key="client_ip" >
+      <column name="broadview_config" key="client_ip" emptyValue="127.0.0.1">
         Specifies BroadView client ip address. This is the IP that BroadView Agent
         tries to reach out to send async reports.
         If the value is not configured then default is 127.0.0.1.
       </column>
 
       <column name="broadview_config" key="client_port"
-              type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'
+              emptyValue="9070">
         Specifies BroadView client tcp port number. This is the port number along with client_ip that
         BroadView agent shoud try to reach out to send async reports.
         If no value is set, the default is 9070.
       </column>
 
       <column name="broadview_config" key="agent_port"
-              type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'
+              emptyValue="8080">
         Specifies BroadView agent tcp port number. Agent listens on this port for client connections.
         If no value is set, the default is 8080.
       </column>
@@ -920,7 +941,7 @@
 
     <group title="Bufmon configuration">
       <column name="bufmon_config" key="enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         Specifies whether the bufmon feature is enabled on the system.
         False, if the value is not present.
       </column>
@@ -932,26 +953,28 @@
       </column>
 
       <column name="bufmon_config" key="periodic_collection_enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         Specifies whether periodic collection of the counters is enabled.
         False, if the value is not present.
       </column>
 
       <column name="bufmon_config" key="collection_period"
-              type='{"type": "integer", "minInteger": 1}'>
+              type='{"type": "integer", "minInteger": 1}'
+              emptyValue="5">
         Specifies the period of collection in seconds.
         Five, if the value is not present.
       </column>
 
       <column name="bufmon_config" key="threshold_trigger_collection_enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="true">
         Specifies whether counters should be collected immediately
         when one of the thresholds is crossed.
         True, if the value is not present.
       </column>
 
       <column name="bufmon_config" key="threshold_trigger_rate_limit"
-              type='{"type": "integer", "minInteger": 1, "maxInteger": 600}'>
+              type='{"type": "integer", "minInteger": 1, "maxInteger": 600}'
+              emptyValue="60">
         Specifies maximum number of trigger generated reports per minute.
         The limit will be averaged and imposed on a per second basis.
         For example, value of 600 will allow report every 100ms.
@@ -959,7 +982,7 @@
       </column>
 
       <column name="bufmon_config" key="snapshot_on_threshold_trigger"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="true">
         Specifies whether counters should be frozen when one of the thresholds is crossed.
         True, if the value is not present.
       </column>
@@ -967,25 +990,27 @@
     </group>
     <group title="Information">
       <column name="bufmon_info" key="cap_mode_peak"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         Specifies whether the system is capable of collecting peak values of
         the counters.
         False, if the value is not present.
       </column>
       <column name="bufmon_info" key="cap_mode_current"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         Specifies whether the system is capable of collecting current values of
         the counters.
         False, if the value is not present.
       </column>
       <column name="bufmon_info" key="cap_snapshot_on_threshold_trigger"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="false">
         Specifies whether the system is capable of freezing counters values on
         threshold crossing.
         False, if the value is not present.
       </column>
       <column name="bufmon_info" key="cap_threshold_trigger_collection"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}'
+              emptyValue="false">
         Specifies whether the system is capable of immediately collecting values on
         threshold crossing.
         False, if the value is not present.
@@ -1001,30 +1026,30 @@
         Specifies the various ECMP (Equal Cost Multi-Path) configuration options.
       </p>
 
-        <column name="ecmp_config" key="enabled" type='{"type": "boolean"}'>
+        <column name="ecmp_config" key="enabled" type='{"type": "boolean"}' emptyValue="true">
             Determines whether ECMP is enabled in the system.
             Default is true.
         </column>
-        <column name="ecmp_config" key="hash_srcip_enabled" type='{"type": "boolean"}'>
+        <column name="ecmp_config" key="hash_srcip_enabled" type='{"type": "boolean"}' emptyValue="true">
             Determines whether source IP participates in ECMP hash calculation.
             Default is true.
         </column>
-        <column name="ecmp_config" key="hash_dstip_enabled" type='{"type": "boolean"}'>
+        <column name="ecmp_config" key="hash_dstip_enabled" type='{"type": "boolean"}' emptyValue="true">
             Determines whether destination IP participates in ECMP hash
             calculation.
             Default is true.
         </column>
-        <column name="ecmp_config" key="hash_srcport_enabled" type='{"type": "boolean"}'>
+        <column name="ecmp_config" key="hash_srcport_enabled" type='{"type": "boolean"}' emptyValue="true">
             Determines whether source TCP/UDP port participates in ECMP hash
             calculation.
             Default is true.
         </column>
-        <column name="ecmp_config" key="hash_dstport_enabled" type='{"type": "boolean"}'>
+        <column name="ecmp_config" key="hash_dstport_enabled" type='{"type": "boolean"}' emptyValue="true">
             Determines whether destination TCP/UDP port participates in ECMP
             hash calculation.
             Default is true.
         </column>
-        <column name="ecmp_config" key="resilient_hash_enabled" type='{"type": "boolean"}'>
+        <column name="ecmp_config" key="resilient_hash_enabled" type='{"type": "boolean"}' emptyValue="true">
             Determines whether ECMP hashing preserves traffic flows when ECMP group membership changes.
             Default is true.
         </column>
@@ -1034,7 +1059,7 @@
       <p>
         Specifies the NTP global configuration.
       </p>
-      <column name="ntp_config" key="authentication_enable" type='{"type": "boolean"}'>
+      <column name="ntp_config" key="authentication_enable" type='{"type": "boolean"}' emptyValue="false">
          Determines whether NTP Authentication is enabled in the system.
          Default is false.
       </column>
@@ -1042,7 +1067,7 @@
 
     <group title="DHCP Configurations">
       <column name="dhcp_config" key="v4relay_disabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         <p>
         Set this value to <code>true</code> to disable DHCP-Relay functionality
         globally and set it to <code>false</code> to enable it. DHCP-Relay is
@@ -1054,7 +1079,7 @@
       </column>
 
       <column name="dhcp_config" key="v4relay_option82_enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         <p>
         Set this value to <code>true</code> to enable the DHCP-Relay Option 82
         and set it to <code>false</code> otherwise. This configuration is
@@ -1086,7 +1111,7 @@
       </column>
 
       <column name="dhcp_config" key="v4relay_option82_validation_enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         <p>
         Set this value to <code>true</code> to validate server response packets
         and set it to <code>false</code> otherwise. This configuration is
@@ -1097,7 +1122,8 @@
       </column>
 
       <column name="dhcp_config" key="v4relay_option82_remote_id"
-              type='{"type": "string", "enum": ["set", ["ip", "mac"]]}'>
+              type='{"type": "string", "enum": ["set", ["ip", "mac"]]}'
+              emptyValue="mac">
         <p>
         Specifies the remote ID suboption that the switch uses in Option 82 fields
         added or appended to DHCP client packets. The type of remote ID defines DHCP policy
@@ -1114,7 +1140,7 @@
       </column>
 
       <column name="dhcp_config" key="v4relay_hop_count_increment_disabled"
-              type='{"type": "boolean"}'>
+          type='{"type": "boolean"}' emptyValue="false">
         <p>
         Set this value to <code>true</code> to disable the hop count increment in
         the relayed DHCP requests and set it to <code>false</code> otherwise. This
@@ -1124,7 +1150,7 @@
       </column>
 
       <column name="dhcp_config" key="v6relay_enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         <p>
         Set this value to <code>true</code> to enable DHCPv6-Relay functionality
         globally and set it to <code>false</code> to disable it. This configuration
@@ -1135,7 +1161,7 @@
       </column>
 
       <column name="dhcp_config" key="v6relay_option79_enabled"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         <p>
         Set this value to <code>true</code> to enable the DHCPv6-Relay Option 79
         and set it to <code>false</code> otherwise. This configuration is
@@ -1280,12 +1306,12 @@
 
     <group title="Loop-protect Configuration">
     <p>Contains global configuration for the Loop-protect feature.</p>
-      <column name="loop_protect_disable_timer">
+      <column name="loop_protect_disable_timer" emptyValue="0">
         This specifies the time in seconds for which the ports are to be disabled on
         detecting a loop.
         Default value is <code>0</code> i.e the port is disabled indefinitely.
       </column>
-      <column name="loop_protect_transmit_interval">
+      <column name="loop_protect_transmit_interval" emptyValue="5">
         This specifies the time interval in seconds between successive transmissions of
         loop-protect packets.
         Default value is <code>5</code> seconds.
@@ -1424,7 +1450,7 @@
       <p>
         MSTP global configurations for all MSTIs.
       </p>
-      <column name="mstp_enable" type='{"type": "boolean"}'>
+      <column name="mstp_enable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code>, to enable MSTP.
         Default value is <code>false</code>.
       </column>
@@ -1432,7 +1458,7 @@
         Set this value to specify the MSTP configuration name.
         Default value is system MAC address.
       </column>
-      <column name="other_config" key="mstp_config_revision">
+      <column name="other_config" key="mstp_config_revision" emptyValue="0">
         Set this value to specify the configuration revision number.
         Default value is 0.
       </column>
@@ -1467,7 +1493,7 @@
       </column>
 
       <column name="other_config" key="mac-aging-time"
-              type='{"type": "integer", "minInteger": 1}'>
+              type='{"type": "integer", "minInteger": 1}' emptyValue="300">
         <p>
           The maximum number of seconds to retain a MAC learning entry for
           which no packets have been seen.  The default is currently 300
@@ -1487,7 +1513,7 @@
       </column>
 
       <column name="other_config" key="mac-table-size"
-              type='{"type": "integer", "minInteger": 1}'>
+              type='{"type": "integer", "minInteger": 1}' emptyValue="16000">
         <p>
           The maximum number of MAC addresses to learn.  The default is
           currently 16K.  The value, if specified, is forced into a reasonable
@@ -1552,7 +1578,7 @@
     </group>
    <group title="Status">
       <column name="status" key="namespace_ready"
-          type='{"type": "boolean"}'>
+          type='{"type": "boolean"}' emptyValue="false">
           Indicates whether Linux namespace exists for this VRF. If not set,
           the assumed value is false.
       </column>
@@ -1618,10 +1644,10 @@
       <column name="vlans">
         VLANs included in the MSTP instance.
       </column>
-      <column name="priority">
+      <column name="priority" emptyValue="8">
         Set this value to specify the priority value, configured as a multiple of 4096
         The lower a priority value, the higher the priority.
-        Default value is 32768.
+        Default value is 8.
       </column>
       <column name="bridge_identifier">
         The root bridge ID for CIST.
@@ -1636,7 +1662,7 @@
         These are status parameters for a particular MSTP instance.
         These values will be calculated at the time of protocol initialization.
      </p>
-      <column name="hardware_grp_id">
+      <column name="hardware_grp_id" emptyValue="0">
       The hardware spanning tree group ID.
       Default value is 0.
       </column>
@@ -1646,7 +1672,7 @@
       <column name="root_path_cost">
         The path cost from the transmitting Bridge to the Root Bridge for the MSTI.
       </column>
-      <column name="root_priority">
+      <column name="root_priority" emptyValue="32768">
         The root bridge priority.
         The lower a priority value, the higher the priority.
         Default value is 32768.
@@ -1664,7 +1690,7 @@
       <column name="topology_change_count">
         The total number of topology changes that have occurred for this instance.
       </column>
-      <column name="topology_unstable">
+      <column name="topology_unstable" emptyValue="false">
         This is set to <code>true</code> when a topology change has occurred.
         Once topology stabilizes it will be set back to <code>false</code>.
         Default is <code>false</code>.
@@ -1680,29 +1706,29 @@
       <column name="vlans">
         VLANs included in the CIST instance.
       </column>
-      <column name="priority">
+      <column name="priority" emptyValue="8">
         Set this value to specify the priority value, configured as a multiple of 4096
         The lower a priority value, the higher the priority.
-        Default value is 32768.
+        Default value is 8.
       </column>
       <column name="bridge_identifier">
         The root bridge ID for CIST.
         Default value 64 bit string(4 bit priority + 12 bit Instance ID + 48bit system MAC address)
       </column>
-      <column name="hello_time">
+      <column name="hello_time" emptyValue="2">
         The hello time value for this instance.
         Default value is 2.
       </column>
-      <column name="forward_delay">
+      <column name="forward_delay" emptyValue="15">
         The forward delay time value for this instance.
         Default value is 15.
       </column>
-      <column name="max_age">
+      <column name="max_age" emptyValue="20">
         Set this value to specify the maximum-aging time(The time a device waits without receiving
         spanning tree configuration messages before attempting a reconfiguration) for all MST instances.
         Default value is 20.
       </column>
-      <column name="tx_hold_count">
+      <column name="tx_hold_count" emptyValue="6">
         The value used by the MSTP transmit state machine to limit the maximum
         transmission rate of MST BPDUs within the hello interval.
         Default value is 6.
@@ -1712,7 +1738,7 @@
       </column>
     </group>
     <group title="Status">
-      <column name="hardware_grp_id">
+      <column name="hardware_grp_id" emptyValue="0">
         The hardware spanning tree group ID.
         Default value is 0.
       </column>
@@ -1722,7 +1748,7 @@
       <column name="root_path_cost">
         The path cost from the transmitting Bridge to the Root Bridge for the MSTI.
       </column>
-      <column name="root_priority">
+      <column name="root_priority" emptyValue="32768">
         The root bridge priority.
         The lower a priority value, the higher the priority.
         Default value is 32768.
@@ -1736,8 +1762,9 @@
       <column name="cist_path_cost">
         The path cost from the transmitting bridge to the CIST regional root.
       </column>
-      <column name="remaining_hops">
+      <column name="remaining_hops" emptyValue="20">
         Once known, contains the hop count after which the MSTP BPDU of this instance are discarded.
+        Default value is 20
       </column>
       <column name="oper_hello_time">
         The operating hello timer value for this instance.
@@ -1766,7 +1793,7 @@
       <column name="topology_change_count">
         The total number of topology changes that have occurred for this instance.
       </column>
-      <column name="topology_unstable">
+      <column name="topology_unstable" emptyValue="false">
         This is set to <code>true</code> when a topology change has occurred.
         Once topology stabilizes it will be set back to <code>false</code>.
         Default is <code>false</code>.
@@ -1783,50 +1810,50 @@
       <column name="port">
         Specifies port for the CIST instance.
       </column>
-      <column name="port_priority">
+      <column name="port_priority" emptyValue="8">
         Set this value to specify the port-priority.
         configurable in increments of 16.
-        Default value is 128.
+        Default value is 8.
       </column>
       <column name="admin_path_cost">
         The path cost for the port to reach spanning-tree root.
       </column>
-      <column name="admin_edge_port_disable" type='{"type": "boolean"}'>
+      <column name="admin_edge_port_disable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code>, if this admin edge port should not participate in root election.
         Default is <code>false</code>.
       </column>
-      <column name="bpdus_rx_enable"  type='{"type": "boolean"}'>
+      <column name="bpdus_rx_enable"  type='{"type": "boolean"}' emptyValue="true">
         Set this value to <code>false</code> to stop transmission of BPDUs.
         Default is <code>true</code>.
       </column>
-      <column name="bpdus_tx_enable"  type='{"type": "boolean"}'>
+      <column name="bpdus_tx_enable"  type='{"type": "boolean"}' emptyValue="true">
         Set this value to <code>false</code> not to transmit the BPDUs
         Default is <code>true</code>.
       </column>
-      <column name="restricted_port_role_disable" type='{"type": "boolean"}'>
+      <column name="restricted_port_role_disable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code> if restiricted role enabled (not to be selected as Root Port for the CIST or any MSTI).
         Default is <code>false</code>.
       </column>
-      <column name="restricted_port_tcn_disable" type='{"type": "boolean"}'>
+      <column name="restricted_port_tcn_disable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code> if restiricted port tcn is enabled(not to propagate topology changes to other ports).
         Default is <code>false</code>.
       </column>
-      <column name="bpdu_guard_disable" type='{"type": "boolean"}'>
+      <column name="bpdu_guard_disable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code> if BPDU Guard enabled (to shut down the
         port if that port receives a BPDU).
         Default is <code>false</code>.
       </column>
-      <column name="loop_guard_disable" type='{"type": "boolean"}'>
+      <column name="loop_guard_disable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code> if loop guard is enabled (to block
         sending and receiving BPDUs on the port).
         Default value is <code>false</code>.
       </column>
-      <column name="root_guard_disable" type='{"type": "boolean"}'>
+      <column name="root_guard_disable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code> if root guard is enabled(to participate in STP as long
         as the device does not try to become the root).
         Default value is <code>false</code>.
       </column>
-      <column name="bpdu_filter_disable" type='{"type": "boolean"}'>
+      <column name="bpdu_filter_disable" type='{"type": "boolean"}' emptyValue="false">
         Set this value to <code>true</code> if BPDU filter is enabled(to suppress
         sending and receiving BPDUs on the port).
         Default value is <code>false</code>.
@@ -1840,14 +1867,14 @@
       <column name="port_role">
         The role of this port in the active MSTP topology.
       </column>
-      <column name="port_state">
+      <column name="port_state" emptyValue="Blocking">
         The state of the port in the active topology.
         Default value is Blocking.
       </column>
       <column name="designated_root">
         The designated root ID for the port.
       </column>
-      <column name="link_type">
+      <column name="link_type" emptyValue="point_to_point">
         Specifies the link type.
         Default value is point_to_point.
       </column>
@@ -1878,7 +1905,7 @@
       <column name="fwd_transition_count">
         The number of times this port has transitioned to the forwarding state.
       </column>
-      <column name="protocol_migration_enable">
+      <column name="protocol_migration_enable" emptyValue="true">
         Set this value to <code>true</code> to switch the STP working mode
         or to <code>false</code> to explicitly disable it.
         Default is <code>true</code>.
@@ -1903,11 +1930,11 @@
       <column name="port">
       Specifies port for the MSTP instance.
       </column>
-      <column name="port_priority">
+      <column name="port_priority" emptyValue="8">
         Set this value to specify the priority value used along with the switch MAC
         address to determine which device is root. Configured as a multiple of 16.
         The lower a priority value, the higher the priority.
-        Default value is 128.
+        Default value is 8.
       </column>
       <column name="admin_path_cost">
         The cost to reach root port.
@@ -1928,14 +1955,14 @@
       <column name="port_role">
         The role of port in the active MSTP topology
       </column>
-      <column name="port_state">
+      <column name="port_state" emptyValue="Blocking">
         The state of the port in the active topology
         Default value is Blocking.
       </column>
       <column name="designated_root">
         The root bridge name for a MSTP instance.
       </column>
-      <column name="designated_root_priority">
+      <column name="designated_root_priority" emptyValue="32768">
         The priority value for designated port.
         Default value is 32768.
       </column>
@@ -2078,7 +2105,7 @@
         Prepends AS numbers to the AS path. The value is a list of AS numbers seperated by a space.
       </column>
       <column name="set" key="atomic-aggregate"
-        type='{"type": "boolean"}'>
+        type='{"type": "boolean"}' emptyValue="false">
         If set to 'true', upstream routers will be notified that route is aggregated. Default is false.
       </column>
       <column name="set" key="extcommunity_rt" >
@@ -2219,34 +2246,34 @@
           if it is a directly connected device and <code>ospf</code> if OSPF
           created this entry.
       </column>
-      <column name="protocol_private">
+      <column name="protocol_private" emptyValue="false">
           Indicates that this row is a protocol specific route entry.
           The entries which have this value set, should not participate in
           routing. Example: BGP can store routes for reference and future
           selection but should not currently be used for forwarding.
           Default is <code>false</code>.
       </column>
-      <column name="selected">
+      <column name="selected" emptyValue="false">
           Route table can have entries which may not be selected for
           forwarding. This flag indicates if this entry is selected
           as an active route for forwarding.
           Default is <code>false</code>.
       </column>
-      <column name="address_family">
+      <column name="address_family" emptyValue="ipv4">
         Represents the address family for this entry.
         Default value is <code>ipv4</code>.
       </column>
-      <column name="sub_address_family">
+      <column name="sub_address_family" emptyValue="unicast">
         Represents more information regarding this entry.
         Default is <code>unicast</code>.
       </column>
-      <column name="distance">
+      <column name="distance" emptyValue="1">
           Administrative distance for the route entry. This value is populated
           every time a protocol or a user adds a new entry.
           The default value is 1 which is the default distance for static
           routes.
       </column>
-      <column name="metric">
+      <column name="metric" emptyValue="0">
           This is the BGP Multi Exit Discriminator (MED) attribute used in best
           path selection. The MED provides a dynamic way to influence another AS
           in the way to reach a certain route when there are multiple entry points
@@ -2304,17 +2331,17 @@
           List of outgoing ports. Nexthop entries of type <code>unicast</code>
           can have atmost 1 port.
       </column>
-      <column name="type">
+      <column name="type" emptyValue="unicast">
           Type of the nexthop.
           Default is <code>unicast</code>.
       </column>
-      <column name="selected">
+      <column name="selected" emptyValue="true">
           Indicates if this nexthop is actively participating in forwarding.
           Multiple nexthops can exist for each route entry but the routing protocol
           can indicate if a particular nexthop should not be used in forwarding.
           Default is <code>true</code>.
       </column>
-      <column name="weight">
+      <column name="weight" emptyValue="0">
           Weight is used to differentially balance the packets. Example: For a route
           if there are 2 nexthops nh1 with weight 5 and nh2 with weight 1, then
           for every 5 packets that uses nh1, one packet will use nh2.
@@ -2328,12 +2355,12 @@
         Status information to indicate the current state of the nexthop.
       </p>
       <column name="status" key="arp_resolved"
-          type='{"type": "boolean"}'>
+          type='{"type": "boolean"}' emptyValue="false">
           Indicate if ARP is resolved for this entry. If the ARP entry is
           missing, this value is <code>false</code>
       </column>
       <column name="status" key="hw_configured"
-          type='{"type": "boolean"}'>
+          type='{"type": "boolean"}' emptyValue="false">
           Indicate if nexthop programmed in the asic. If the ARP entry is
           missing, this value is <code>false</code>
       </column>
@@ -2402,26 +2429,27 @@
           IPv4 or IPv6 destination prefix and mask in the address/mask
           format. Example 192.168.0.0/16
       </column>
-      <column name="address_family">
+      <column name="address_family" emptyValue="ipv4">
         Represents the address family for this entry.
         Default value is <code>ipv4</code>.
       </column>
-      <column name="sub_address_family">
+      <column name="sub_address_family" emptyValue="unicast">
         Represents subsequent address family identifier such as unicast, multicast
         or MPLS VPN.
         Default is <code>unicast</code>.
       </column>
-      <column name="distance">
+      <column name="distance" emptyValue="0">
           Administrative distance for the route entry.
           Default value is 0.
       </column>
-      <column name="metric">
+      <column name="metric" emptyValue="0">
           This is the BGP Multi Exit Discriminator (MED) attribute used in best
           path selection.
           Default value is 0
       </column>
       <column name="weight"
-          type='{"type":"integer", "minInteger": 0, "maxInteger" : 4294967295}'>
+          type='{"type":"integer", "minInteger": 0, "maxInteger" : 4294967295}'
+          emptyValue="32768">
           Weight of the BGP route.
           Default value is 32768
       </column>
@@ -2447,7 +2475,7 @@
           <li><mark>IGP_CHANGED</mark> - Set for routes exhanged over iBGP intradomain autonomous system networks.</li>
       </ol>
       </column>
-      <column name="origin">
+      <column name="origin" emptyValue="igp">
           Origin of the BGP route.
           Allowed values are <mark>egp</mark>,<mark>igp</mark>,<mark>incomplete</mark>
           igp origin code specifies whether route entry originated from an Interior
@@ -2459,24 +2487,26 @@
           Default value is igp.
       </column>
       <column name="local_pref"
-          type='{"type":"integer", "minInteger": 0, "maxInteger" : 4294967295}'>
+          type='{"type":"integer", "minInteger": 0, "maxInteger" : 4294967295}'
+          emptyValue="0">
           Local preference of the BGP route.
           Default value is 0.
       </column>
-      <column name="aggregate">
+      <column name="aggregate" emptyValue="false">
           True if notification is sent to upstream routers that the route is aggregated.
           Default value is false.
       </column>
       <column name="aggregator_as"
-          type='{"type":"integer", "minInteger": 0, "maxInteger" : 4294967295}'>
+          type='{"type":"integer", "minInteger": 0, "maxInteger" : 4294967295}'
+          emptyValue="0">
           Originating AS number of the aggregate route.
           Default value is 0.
       </column>
-      <column name="community">
+      <column name="community" emptyValue="">
           Space delimited list of community names for the route.
           No value means that no community names are associated with the route.
       </column>
-      <column name="ecommunity">
+      <column name="ecommunity" emptyValue="">
           Space delimited list of extended community names for the route.
           No value means that no extended community names are associated with the route.
       </column>
@@ -2490,20 +2520,21 @@
           autonomous system numbers.
       </column>
       <column name="creation_time"
-          type='{"type":"integer", "minInteger": 0}'>
+          type='{"type":"integer", "minInteger": 0}'
+          emptyValue="0">
           Time in seconds, at which the route arrived from the neighbor.
           Value is the number of seconds elapsed since epoch.
           Default value is 0.
       </column>
-      <column name="protocol_iBGP">
+      <column name="protocol_iBGP" emptyValue="false">
           Specifies whether the route was learned through iBGP session.
           Default value is false.
       </column>
-      <column name="protocol_internal">
+      <column name="protocol_internal" emptyValue="false">
           Specifies whether the route originated locally on the BGP peer.
           Default value is false.
       </column>
-      <column name="aggregator">
+      <column name="aggregator" emptyValue="">
           IP address of the BGP node responsible for route aggregation.
           Value is empty if route is not aggregated.
       </column>
@@ -2519,24 +2550,28 @@
           represent route attributes.
       </p>
       <column name="path_attributes" key="bgp_flags"
-          type='{"type": "string"}'>
+          type='{"type": "string", "enum": ["set", ["", "history", "damped", "multipath", "valid", "selected"]]}'
+          emptyValue="">
           Route status flags. Allowed values are <code>history</code>,
           <code>damped</code>,<code>multipath</code>,<code>valid</code>,
           <code>selected</code>
-           Default value is 0.
+           Default value is the empty string.
       </column>
       <column name="path_attributes" key="bgp_as_path"
-          type='{"type": "string"}'>
-          List of AS path number for a route. Default is 0. Example: 200,300,400
+          type='{"type": "string"}'
+          emptyValue="">
+          List of AS path number for a route. Default is the empty string. Example: 200,300,400
       </column>
       <column name="path_attributes" key="bgp_origin"
-          type='{"type": "string"}'>
+          type='{"type": "string"}'
+          emptyValue="incomplete">
           Indicates whether a route is <code>IGP</code>, <code>EGP</code>
           or <code>incomplete</code>.
           Default is incomplete.
       </column>
       <column name="path_attributes" key="bgp_loc_pref"
-          type='{"type": "string"}'>
+          type='{"type": "integer", "minInteger": 0, "maxInteger": 4294967295}'
+          emptyValue="0">
           Local preference path attribute. Used by BGP to influence in the
           best path selection.
           Default value is 0.
@@ -2554,7 +2589,7 @@
       <column name="ip_address">
           IP address of the nexthop device.
       </column>
-      <column name="type">
+      <column name="type" emptyValue="unicast">
           Type of the nexthop.
           Default is <code>unicast</code>.
       </column>
@@ -2571,18 +2606,20 @@
       <column name="networks">
       Announces networks for given bgp router.
       </column>
-      <column name="maximum_paths">
+      <column name="maximum_paths" emptyValue="1">
       Number of paths BGP may install into the routing table. If not specified, BGP selects a
       single path.
       Default is 1.
       </column>
       <column name="timers" key="keepalive"
-             type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'>
+             type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'
+             emptyValue="60">
       Specifies BGP keepalive time in seconds.
       Default is 60 seconds.
       </column>
       <column name="timers" key="holdtime"
-              type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'>
+              type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'
+              emptyValue="180">
       Specifies BGP hold time in seconds.
       Default is 180 seconds.
       </column>
@@ -2592,15 +2629,15 @@
       <column name="redistribute_route_map">
       Specifies route-maps to be applied when redistributing routes.
       </column>
-      <column name="always_compare_med">
+      <column name="always_compare_med" emptyValue="false">
       Compares MED (Multi-Exit Discriminitor) from different neighbors.
       Default is false.
       </column>
-      <column name="deterministic_med">
+      <column name="deterministic_med" emptyValue="false">
       When enabled, selects the best-MED path among paths advertised from the neighboring AS.
       Default is false.
       </column>
-      <column name="gr_stale_timer">
+      <column name="gr_stale_timer"  emptyValue="360">
       Specifies the maximum time to hold onto restarting peer stale paths.
       Range: 1-3600 seconds.
       Default value is 360 seconds.
@@ -2609,11 +2646,11 @@
         BGP neighbors or neighbor groups, keyed by IP for the former or any
 	string name for the latter.
       </column>
-      <column name="fast_external_failover">
+      <column name="fast_external_failover" emptyValue="false">
         Enables fast external failover for BGP directly connected peering sessions.
         Default is false.
       </column>
-      <column name="log_neighbor_changes">
+      <column name="log_neighbor_changes" emptyValue="false">
         Enables logging of BGP neighbor status changes.
         Default is false.
       </column>
@@ -2639,19 +2676,19 @@
 
     <group title="Neighbor Configuration">
 
-      <column name="is_peer_group">
+      <column name="is_peer_group" emptyValue="false">
       This is a flag which identifies whether this specific entry is
       an individual BGP neighbor or is a BGP peer group.  A value
       of true implies a peer group.  Otherwise, the entry represents
       a BGP neighbor.  If the value is not set, it implies false.
       </column>
 
-      <column name="description">
+      <column name="description" emptyValue="">
       This is an optional string which can be used for describing this entry.
       Default is empty.
       </column>
 
-      <column name="shutdown">
+      <column name="shutdown" emptyValue="false">
       Specifies whether the neighbor has been administratively shut down.
       If not specified, the default is false.
       </column>
@@ -2689,7 +2726,7 @@
       This is the weight for routes from this neighbor.
       </column>
 
-      <column name="tcp_port_number">
+      <column name="tcp_port_number" emptyValue="179">
       This is the BGP neighbor's tcp port number.  Default value is 179.
       </column>
 
@@ -2697,7 +2734,7 @@
       Minimum interval between sending BGP routing updates. Range: 0-600 seconds.
       </column>
 
-      <column name="ebgp_multihop">
+      <column name="ebgp_multihop" emptyValue="false">
       If set to "true", allows BGP connections with peers that are not directly connected.
       Default is "false".
       </column>
@@ -2719,12 +2756,12 @@
       Allow inbound soft reconfiguration for this neighbor.
       </column>
 
-      <column name="remove_private_as">
+      <column name="remove_private_as" emptyValue="false">
       Specifies whether private AS should be removed.
       If not specified, the default value is false.
       </column>
 
-      <column name="passive">
+      <column name="passive" emptyValue="false">
       Indicates that open messages should NOT be sent to this neighbor.
       Default is false.
       </column>
@@ -2738,13 +2775,15 @@
       </column>
 
       <column name="timers" key="keepalive"
-        type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'>
+        type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'
+        emptyValue="60">
         Set the keepalive interval for a specific BGP peer.
         The value is keepalive interval in seconds. Default value is 60 seconds.
       </column>
 
       <column name="timers" key="holdtime"
-        type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'>
+          type='{"type":"integer", "minInteger": 0, "maxInteger" : 65535}'
+          emptyValue="180">
         Set the hold time for a specific BGP peer.
         The value is hold time in seconds. Default value is 180 seconds.
       </column>
@@ -2816,7 +2855,9 @@
         informational entries indicating various status
         values for this BGP neighbor.
       </p>
-      <column name="status" key="bgp_peer_state">
+      <column name="status" key="bgp_peer_state"
+          type='{"type": "string", "enum": ["set", ["Idle", "Connect", "Active", "OpenSent", "OpenConfirm", "Established", "Clearing", "Deleted" ]]}'
+          emptyValue="Idle">
           This represents the BGP neighbor state at this specific
           instance in time.  The value can be one of Idle, Connect,
           Active, OpenSent, OpenConfirm, Established, Clearing or
@@ -2922,7 +2963,7 @@
         Current state of the neighbor entry.
       </column>
       <column name="status" key="dp_hit"
-          type='{"type": "boolean"}'>
+          type='{"type": "boolean"}' emptyValue="true">
           Indicates if there is active traffic to the neighbor. This value
           is periodically updated. If the value is set to <code>false</code>,
           it indicates that there was no traffic to this neighbor recently.
@@ -2942,7 +2983,7 @@
       <column name="description">
         User provided description of this VLAN.
       </column>
-      <column name="admin">
+      <column name="admin" emptyValue="down">
         Administratively configured state of this VLAN.
         Default is down if not specified.
       </column>
@@ -2952,7 +2993,7 @@
       <column name="hw_vlan_config">
           Key-value pairs that represent the configuration passed down to hardware.
       </column>
-      <column name="hw_vlan_config" key="enable">
+      <column name="hw_vlan_config" key="enable" type='{"type": "string", "enum": ["set", ["true", "false"]]}'>
         The possible values are "true" and "false".
       </column>
     </group>
@@ -2964,10 +3005,10 @@
       </column>
    </group>
    <group title="VLAN Status">
-      <column name="oper_state">
+      <column name="oper_state" emptyValue="down">
         Operational state of this VLAN.
       </column>
-      <column name="oper_state_reason">
+      <column name="oper_state_reason" emptyValue="admin_down">
         Human readable reason for the operational state of this VLAN.
       </column>
    </group>
@@ -3042,7 +3083,7 @@
       <column name="aclv4_in_status" key="message" type='{"type":"string"}'>
         Detailed reason for error state.  Expected empty when state is 'applied'
       </column>
-      <column name="aclv4_in_statistics" key="sequence_number" type='{"type":"integer"}'>
+      <column name="aclv4_in_statistics" type='{"type":"integer"}'>
         Statistics for the ingress IPv4 ACL applied to this port for ACEs that have
         the 'count' keyword specified.  Statistics are key/value pairs of
         ACL sequence number and integer representing the statistics for that entry.
@@ -3071,7 +3112,7 @@
       <column name="aclv4_out_status" key="message" type='{"type":"string"}'>
         Detailed reason for error state.  Expected empty when state is 'applied'
       </column>
-      <column name="aclv4_out_statistics" key="sequence_number" type='{"type":"integer"}'>
+      <column name="aclv4_out_statistics" type='{"type":"integer"}'>
         Statistics for the egress IPv4 ACL applied to this port for ACEs that
         have the 'count' keyword specified.  Statistics are key/value pairs of
         ACL sequence number and integer representing the statistics for that entry.
@@ -3110,7 +3151,7 @@
         the packet. This value will be used later to select the egress queue
         for the packet.
       </column>
-      <column name="color">
+      <column name="color" emptyValue="green">
         It may be used later in the pipeline in packet-drop decision points.
         The default is 'green'.
       </column>
@@ -3135,7 +3176,7 @@
         indexed by the top 3-bits of this row's code_point (i.e. class selector
         bits cs0 through cs7).
       </column>
-      <column name="hw_defaults" key="default_color">
+      <column name="hw_defaults" key="default_color" emptyValue="green">
         When missing, the default is 'green'.
       </column>
       <column name="hw_defaults" key="default_priority_code_point">
@@ -3171,7 +3212,7 @@
         the packet. This value will be used later to select the egress queue
         for the packet.
       </column>
-      <column name="color">
+      <column name="color" emptyValue="green">
         It may be used later in the pipeline in packet-drop decision points.
         The default is 'green'.
       </column>
@@ -3197,7 +3238,7 @@
         <li>code_point 7 (Traffic Type NC) local_priority=7</li>
         </ul>
       </column>
-      <column name="hw_defaults" key="default_color">
+      <column name="hw_defaults" key="default_color" emptyValue="green">
         When missing, the default is 'green'.
       </column>
     </group>
@@ -3270,7 +3311,7 @@
     </p>
 
     <group title="Configuration">
-      <column name="algorithm">
+      <column name="algorithm" emptyValue="strict">
         <p>
         This parameter selects the scheduling behavior of the queue:
         </p><p><code>strict</code> -
@@ -3429,7 +3470,7 @@
       bonded Port. A maximum of 8 interfaces can be assigned to a port.
     </column>
 
-    <column name="admin">
+    <column name="admin" emptyValue="up">
       The administrative state of the Port configured by user. The port admin
       state determines the hardware configuration based on the business logic.
       When port "admin" is configured down the interface(s) associated
@@ -3437,7 +3478,7 @@
       default the port is up.
     </column>
 
-    <column name="kernel_interface_ready">
+    <column name="kernel_interface_ready" emptyValue="false">
       Indicates whether kernel interface is provisioned for the port.
       Default is false.
     </column>
@@ -3461,7 +3502,7 @@
         The VLAN associated with l3 interfaces.
       </column>
       <column name="hw_config" key="block_all_mstp"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="false">
         Indicates that the port should be blocked in all MSTP instances.
         Defaults to <code>false</code>.
       </column>
@@ -3648,7 +3689,7 @@
       <p>These columns apply only to bonded ports.  Their values are otherwise
           ignored.</p>
 
-      <column name="bond_mode">
+      <column name="bond_mode" emptyValue="l3-src-dst-hash">
         <p>
           The type of bonding used for a bonded port. Bond mode controls
           the selection of a interface from a group of aggregate interfaces
@@ -3667,7 +3708,7 @@
           control LACP behavior.
         </p>
 
-        <column name="lacp">
+        <column name="lacp" emptyValue="off">
           Configures LACP on this port.  LACP allows directly connected
           switches to negotiate which links may be bonded.  LACP may be enabled
           on non-bonded ports for the benefit of any switches they may be
@@ -3693,13 +3734,14 @@
           numerically lower priority.
         </column>
 
-        <column name="other_config" key="mclag_enabled" type='{"type": "boolean"}'>
+        <column name="other_config" key="mclag_enabled" type='{"type": "boolean"}' emptyValue="false">
           Determines whether this port is an MCLAG.
           Default is false.
         </column>
 
         <column name="other_config" key="lacp-time"
-          type='{"type": "string", "enum": ["set", ["fast", "slow"]]}'>
+          type='{"type": "string", "enum": ["set", ["fast", "slow"]]}'
+          emptyValue="slow">
           <p>
             The LACP timing which should be used on this <ref table="Port"/>.
             By default <code>slow</code> is used.  When configured to be
@@ -3711,7 +3753,7 @@
         </column>
 
         <column name="other_config" key="lacp-fallback"
-          type='{"type": "boolean"}'>
+          type='{"type": "boolean"}' emptyValue="false">
           <p>
             Specifies if fallback should be used on this <ref table="Port"/>.
             Set this value to <code>true</code> to enable the member interfaces
@@ -3722,7 +3764,8 @@
         </column>
 
         <column name="other_config" key="lacp_fallback_mode"
-          type='{"type": "string", "enum": ["set", ["priority", "all_active"]]}'>
+          type='{"type": "string", "enum": ["set", ["priority", "all_active"]]}'
+          emptyValue="priority">
           <p>
             Specifies the mode used when fallback is enabled.  Priority mode uses
             the LACP interface priority to decide which port remains forwarding
@@ -3733,7 +3776,8 @@
         </column>
 
         <column name="other_config" key="lacp_fallback_timeout"
-          type='{"type": "integer", "minInteger": 0, "maxInteger": 900}'>
+          type='{"type": "integer", "minInteger": 0, "maxInteger": 900}'
+          emptyValue="0">
           <p>
             Defines the time period during which fallback remains active.  The
             timer starts at the point when the interface state machine expires
@@ -3767,7 +3811,8 @@
          The "Port" level OSPFv2 Routing Configurations.
        </p>
         <column name="ospf_intervals" key="transmit_delay"
-           type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+           type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'
+           emptyValue="1">
           The estimated time in seconds to transmit an LSA to a neighbor. The
           transmit_delay timer increments the age of LSAs in the update packets
           to accommodate transmission and propagation delays for the interface.
@@ -3776,13 +3821,15 @@
           The default value is 1 second.
         </column>
         <column name="ospf_intervals" key="retransmit_interval"
-           type='{"type": "integer", "minInteger": 3, "maxInteger": 65535}'>
+           type='{"type": "integer", "minInteger": 3, "maxInteger": 65535}'
+           emptyValue="5">
           The number of seconds between LSA retransmissions. It is also used
           when retransmitting Database Description and Link State Request Packets.
           The default value is 5 seconds.
         </column>
         <column name="ospf_intervals" key="hello_interval"
-          type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+          type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'
+          emptyValue="10">
           The Hello packet will be sent every hello_interval timer value seconds.
           This value must be the same for all routers attached to a common network.
           The default value is 10 seconds.
@@ -3799,7 +3846,7 @@
           The default value depends on the interface bandwidth and on the auto-cost
           reference bandwidth.
         </column>
-        <column name="ospf_priority">
+        <column name="ospf_priority" emptyValue="1">
           The router with the highest priority will be more eligible to become
           Designated Router. Setting the value to 0, makes the router ineligible
           to become Designated Router.
@@ -3809,7 +3856,7 @@
           The type of the OSPFv2 network interface.
           The default value is the type of the interface from the Interface table.
         </column>
-        <column name="ospf_mtu_ignore">
+        <column name="ospf_mtu_ignore" emptyValue="false">
           This determines if OSPFv2 should ignore any IP MTU mismatch with a
           neighbor or not.
           The default value is false, that is not to establish adjacency if
@@ -3839,11 +3886,11 @@
         List of interfaces on the MCLAG peer device which are part of same LAG.
         <ref table="MCLAG_Remote_Interface"/>
       </column>
-      <column name="mac_learn_disable">
+      <column name="mac_learn_disable" emptyValue="false">
         When set to 'true', mac learning will be disabled on the port.
         The default value is <code>false</code>.
       </column>
-      <column name="flood_block">
+      <column name="flood_block" emptyValue="false">
         When set to ‘true’, all flood traffic received from and forwarded to this
         port will be dropped.
         The default value is <code>false</code>.
@@ -3855,16 +3902,16 @@
         When set, all traffic which ingresses this port will be blocked from being
         forwarded out of the specified ports.
       </column>
-      <column name="other_config" key="sflow-enabled" type='{"type": "boolean"}'>
+      <column name="other_config" key="sflow-enabled" type='{"type": "boolean"}' emptyValue="true">
         Determines whether sflow sampling is enabled on this port.
         Default is true.
       </column>
-      <column name="other_config" key="proxy_arp_enabled" type='{"type": "boolean"}'>
+      <column name="other_config" key="proxy_arp_enabled" type='{"type": "boolean"}' emptyValue="false">
         Enables proxy ARP feature on the port.
         Default is false. Port should be part of VRF in order for the feature
         to be active.
       </column>
-      <column name="other_config" key="local_proxy_arp_enabled" type='{"type": "boolean"}'>
+      <column name="other_config" key="local_proxy_arp_enabled" type='{"type": "boolean"}' emptyValue="false">
         Enables local proxy ARP feature on the port.
         Default is false. Port should be part of VRF in order for the feature
         to be active.
@@ -3904,13 +3951,13 @@
         </p>
       </column>
       <column name="forwarding_state" key="forwarding"
-        type='{ "type": "boolean" }'>
+        type='{ "type": "boolean" }' emptyValue="false">
         Enumeration that summarizes the state of the interface.  This value drives
         the forwarding state of the data path.
         Default value is <code>false</code>.
       </column>
       <column name="forwarding_state" key="port_aggregation_forwarding"
-        type='{ "type": "boolean" }'>
+        type='{ "type": "boolean" }' emptyValue="false">
         Port aggregation is set based on the information provided by protocols related
         to link aggregation. The asserting protocol setting the value of this key
         is defined in the port_aggregation_blocked_reason key.
@@ -3930,7 +3977,7 @@
           are blocked by a lacp.
       </column>
       <column name="forwarding_state" key="port_loop_protection_forwarding"
-        type='{ "type": "boolean" }'>
+        type='{ "type": "boolean" }' emptyValue="false">
         Port loop protection is set based on the information provided by protocols.
         The asserting protocol setting the value of this key is defined
         in the port_loop_protection_blocked_reason key.
@@ -3950,7 +3997,7 @@
       <column name="lacp_status" key="bond_speed">
         Speed of interfaces operating in lag.
       </column>
-      <column name="lacp_status" key="bond_status">
+      <column name="lacp_status" key="bond_status" type='{"type": "string", "enum": ["set", ["ok", "down", "defaulted"]]}'>
         Operational status of LAG. The values are "ok" (bond is functional)
         "down" (bond isn't functional), and "defaulted" (remote LACP not
         operating, using one interface in non-LACP mode).
@@ -4103,7 +4150,7 @@
       <column name="aclv4_in_status" key="message" type='{"type":"string"}'>
         Detailed reason for error state.  Expected empty when state is 'applied'
       </column>
-      <column name="aclv4_in_statistics" key="sequence_number" type='{"type":"integer"}'>
+      <column name="aclv4_in_statistics" type='{"type":"integer"}'>
         Statistics for the ingress IPv4 ACL applied to this port for ACEs that have
         the 'count' keyword specified.  Statistics are key/value pairs of
         Ingress IPv4 ACL sequence number and integer representing the statistics
@@ -4133,7 +4180,7 @@
       <column name="aclv4_out_status" key="message" type='{"type":"string"}'>
         Detailed reason for error state.  Expected empty when state is 'applied'
       </column>
-      <column name="aclv4_out_statistics" key="sequence_number" type='{"type":"integer"}'>
+      <column name="aclv4_out_statistics" type='{"type":"integer"}'>
         Statistics for the egress IPv4 ACL applied to this port for ACEs that have
         the 'count' keyword specified.  Statistics are key/value pairs of
         egress IPv4 ACL sequence number and integer representing the statistics for
@@ -4166,11 +4213,11 @@
     </group>
 
     <group title="Loop-protect per port Configuration">
-      <column name="loop_protect_enable">
+      <column name="loop_protect_enable" emptyValue="false">
         When set to <code>true</code>, Loop-protect is enabled on this port.
         Default value is <code>false</code>.
       </column>
-      <column name="loop_protect_action">
+      <column name="loop_protect_action" emptyValue="tx-disable">
         This determines action for the Loop-protect feature.The value is set to
         "tx-port-disable" for disabling the sending port on detecting a loop,
         "tx-rx-disable" disables both sending and receiving ports when loop
@@ -4191,7 +4238,7 @@
         This has the last timestamp as integer containing epoch time,when the loop was
         detected by the Loop-protect feature.
       </column>
-       <column name="loop_protect_port_disabled">
+       <column name="loop_protect_port_disabled" emptyValue="false">
         This value will be set to <code>true</code>,if the port is disabled by Loop-protect.
         Default value is <code>false</code>.
       </column>
@@ -4218,7 +4265,7 @@
     </group>
 
     <group title="System-Specific Details">
-      <column name="type">
+      <column name="type" emptyValue="system">
         <p>
           The interface type, one of:
         </p>
@@ -4286,7 +4333,7 @@
         </ul>
       </column>
 
-      <column name="options" key="local_ip">
+      <column name="options" key="local_ip" type='{"type": "string", "maxLength": 15}'>
         <p>
           The tunnel destination IP that received packets must
           match.
@@ -4343,7 +4390,7 @@
         <code>out_key</code> at the same time.
       </column>
 
-      <column name="options" key="tos">
+      <column name="options" key="tos" emptyValue="0">
         Optional.  The value of the ToS bits to be set on the encapsulating
         packet.  ToS is interpreted as DSCP and ECN bits, ECN part must be
         zero.  It may also be the word <code>inherit</code>, in which case
@@ -4360,7 +4407,7 @@
       </column>
 
       <column name="options" key="df_default"
-              type='{"type": "boolean"}'>
+              type='{"type": "boolean"}' emptyValue="true">
         Optional.  If enabled, the Don't Fragment bit will be set on tunnel
         outer headers to allow path MTU discovery. Default is enabled; set
         to <code>false</code> to disable.
@@ -4382,7 +4429,7 @@
       </column>
 
       <column name="hw_status" key="ready"
-        type='{ "type": "boolean" }'>
+        type='{ "type": "boolean" }' emptyValue="false">
           Status information about hardware resource allocation on the interface.
           It is set as false if there are not enough hardware resources or if the
           resources required to configure features like ACLs in the interface have
@@ -4402,13 +4449,13 @@
       </column>
 
       <column name="forwarding_state" key="forwarding"
-        type='{ "type": "boolean" }'>
+        type='{ "type": "boolean" }' emptyValue="false">
         Enumeration that summarizes the state of the interface.
         Default value is <code>false</code>.
       </column>
 
       <column name="forwarding_state" key="interface_aggregation_forwarding"
-        type='{ "type": "boolean" }'>
+          type='{ "type": "boolean" }' emptyValue="false">
         Interface aggregation is set based on the information provided by protocols
         related to link aggregation. The asserting protocol setting
         the value of this key to be defined in the interface_aggregation_blocked_reason
@@ -4440,7 +4487,7 @@
         </p>
       </column>
 
-      <column name="kernel_interface_ready">
+      <column name="kernel_interface_ready" emptyValue="false">
         <p>
           Indicates whether kernel interface is provisioned.  Default is false.
 	</p>
@@ -4558,7 +4605,7 @@
             (Actv:1,TmOut:1,Aggr:1,Sync:1,Col:1,Dist:1,Def:0,Exp:0)
       </column>
       <column name="lacp_status" key="lacp_blocked"
-        type='{"type": "boolean"}'>
+        type='{"type": "boolean"}' emptyValue="false">
         lacp_blocked is set to 'true' if LACP decides to block the interface.
         Default value is <code>false</code>.
       </column>
@@ -4586,12 +4633,12 @@
         hardware. This value is directly copied from
         <ref table="Port" column="status" key="bond_hw_handle"/>.
       </column>
-      <column name="hw_bond_config" key="rx_enabled">
+      <column name="hw_bond_config" key="rx_enabled" emptyValue="false">
         A state flag to indicate that this interface is attached to a
         hardware LAG and receive logic is enabled.
         Defaults to <code>false</code> if unset.
       </column>
-      <column name="hw_bond_config" key="tx_enabled">
+      <column name="hw_bond_config" key="tx_enabled" emptyValue="false">
         A state flag to indicate that the transmit logic is enabled for this
         interface in hardware LAG.
         Defaults to <code>false</code> if unset.
@@ -4843,20 +4890,21 @@
       <column name="pm_info">
         Key-value pairs that report pluggable module information.
       </column>
-      <column name="pm_info" key="connector">
+      <column name="pm_info" key="connector"
+          type='{"type": "string", "enum": ["set", ["absent", "unknown", "SFP_RJ45", "SFP_SX", "SFP_LX", "SFP_CX", "SFP_SR", "SFP_LR", "SFP_LRM", "SFP_DAC", "SFP_FC", "QSFP_CR4", "QSFP_SR4", "QSFP_LR4", "SFP_ER", "QSFP28_SR4", "QSFP28_LR4", "QSFP28_CWDM4", "QSFP28_PSM4", "QSFP28_CLR4", "QSFP28_CR4"]]}'>
         The type of pluggable module connector inserted into the socket.
         The possible values are "absent", "unknown", "SFP_RJ45", "SFP_SX", "SFP_LX",
         "SFP_CX", "SFP_SR", "SFP_LR", "SFP_LRM", "SFP_DAC", "SFP_FC", "QSFP_CR4",
         "QSFP_SR4" and "QSFP_LR4".
       </column>
-      <column name="pm_info" key="connector_status">
+      <column name="pm_info" key="connector_status" type='{"type": "string", "enum": ["set", ["unrecognized", "unsupported", "supported"]]}'>
         The status of the connector to indicate whether it is supported by the hardware platform.
         The possible values are "unrecognized", "unsupported" and "supported".
       </column>
       <column name="pm_info" key="supported_speeds">
         The list of speeds, in megabits per second, supported by this pluggable module.
       </column>
-      <column name="pm_info" key="cable_technology">
+      <column name="pm_info" key="cable_technology" type='{"type": "string", "enum": ["set", ["active", "passive"]]}'>
         This indicates whether a copper pluggable module is active or passive.
         The possible values are "active" and "passive".
       </column>
@@ -4868,7 +4916,7 @@
       <column name="pm_info" key="max_speed">
         The maximum speed supported by the transceiver, in units of megabits per second.
       </column>
-      <column name="pm_info" key="power_mode">
+      <column name="pm_info" key="power_mode" type='{"type": "string", "enum": ["set", ["low", "high"]]}'>
         The power mode for the pluggable module. The possible values are "low" or "high".
         This typically applies to QSFP pluggable modules.
       </column>
@@ -5510,11 +5558,12 @@
     <column name="user_config">
       Key-value pairs that stores the user configuration of <ref table="Interface"/>.
     </column>
-    <column name="user_config" key="admin">
+    <column name="user_config" key="admin"
+        type='{"type": "string", "enum": ["set", ["up", "down"]]}' emptyValue="down">
       The user-configured administrative state of <ref table="Interface"/>.
       The possible values are "up" and "down".  Default is "down" if not specified.
     </column>
-    <column name="user_config" key="autoneg">
+    <column name="user_config" key="autoneg" type='{"type": "string", "enum": ["set", ["default", "on", "off"]]}'>
       The user-configured auto-negotiation state of <ref table="Interface"/>.
       The possible values are "default", "on", and "off".
     </column>
@@ -5522,11 +5571,11 @@
       The list of user-configured interface speeds in megabits per second.
       When autoneg is disabled, the first speed value in the list is applied.
     </column>
-    <column name="user_config" key="duplex">
+    <column name="user_config" key="duplex" type='{"type": "string", "enum": ["set", ["half", "full"]]}'>
       The user-configured duplex mode of <ref table="Interface"/>.
       The possible values are "half" and "full".
     </column>
-    <column name="user_config" key="pause">
+    <column name="user_config" key="pause" type='{"type": "string", "enum": ["set", ["none", "rx", "tx", "rxtx"]]}'>
       The user-configured Ethernet PAUSE (link-level flow control) mode
       of <ref table="Interface"/>. The possible values are "none", "rx", "tx", and "rxtx".
     </column>
@@ -5538,7 +5587,7 @@
       of <ref table="Interface"/>. The possible values are "none", "fc-fec" and "rs-fec".
       Default is "none" if not specified.
     </column>
-    <column name="user_config" key="lane_split">
+    <column name="user_config" key="lane_split" type='{"type": "string", "enum": ["set", ["split", "no-split"]]}'>
       The user-configured split mode of <ref table="Interface"/>.
       This is only applicable if an interface can be split into
       multiple interfaces, e.g. QSFP+ ports.
@@ -5562,7 +5611,7 @@
     <column name="hw_intf_config" key="enable">
       The possible values are "true" and "false".
     </column>
-    <column name="hw_intf_config" key="autoneg">
+    <column name="hw_intf_config" key="autoneg" type='{"type": "string",  "enum": ["set", ["on", "off"]]}'>
       The possible values are "on" and "off".
     </column>
     <column name="hw_intf_config" key="speeds">
@@ -5570,10 +5619,10 @@
       If autoneg is true, this is the list of advertised speeds.
       If not, the first speed in the list is the fixed speed of <ref table="Interface"/>.
     </column>
-    <column name="hw_intf_config" key="duplex">
+    <column name="hw_intf_config" key="duplex" type='{"type": "string", "enum": ["set", ["half", "full"]]}'>
       The possible values are "half" and "full".
     </column>
-    <column name="hw_intf_config" key="pause">
+    <column name="hw_intf_config" key="pause" type='{"type": "string", "enum": ["set", ["none", "rx", "tx","rxtx"]]}'>
       The possible values are "none", "rx", "tx", and "rxtx".
     </column>
     <column name="hw_intf_config" key="mtu">
@@ -5582,7 +5631,8 @@
     <column name="hw_intf_config" key="error_control">
       The possible values are "none", "fc-fec" and "rs-fec". Default is "none".
     </column>
-    <column name="hw_intf_config" key="interface_type">
+    <column name="hw_intf_config" key="interface_type"
+        type='{"type": "string", "enum": ["set", ["unknown", "backplane", "1GBASE_SX", "1GBASE_T", "10GBASE_CR", "10GBASE_SR", "10GBASE_LR", "10GBASE_LRM", "40GBASE_CR4", "40GBASE_SR4", "40GBASE_LR4", "SFP_ER", "100GBASE_SR4", "100GBASE_LR4", "100GBASE_CWDM4", "100GBASE_PSM4", "100GBASE_CLR4", "100GBASE_CR4"]]}'>
       Physical layer interface type of <ref table="Interface"/>.
       The possible values are "unknown", "backplane", "1GBASE_SX", "1GBASE_T",
       "10GBASE_CR", "10GBASE_SR", "10GBASE_LR", "10GBASE_LRM", "40GBASE_CR4",
@@ -5616,7 +5666,8 @@
     <column name="hw_intf_info" key="speeds">
       The list of supported speeds of the interface in units of megabits per second.
     </column>
-    <column name="hw_intf_info" key="connector">
+    <column name="hw_intf_info" key="connector"
+        type='{"type": "string", "enum": ["set", ["SFP_PLUS", "QSFP_PLUS", "QSFP28"]]}'>
       The form factor of the interface socket.
       The possible values are "SFP_PLUS" and "QSFP_PLUS".
     </column>
@@ -5643,7 +5694,7 @@
       splitter cable.
     </column>
     <column name="hw_intf_info" key="bridge"
-      type='{"type": "boolean"}'>
+      type='{"type": "boolean"}' emptyValue="false">
       Boolean value indicating interface is a `bridge' interface which is
       created for every bridge instance. The `bridge' interface receives all
       VLAN traffic and distributes to the vlan interfaces based on the VLAN
@@ -5689,28 +5740,32 @@
 
        <group title="MCLAG ISL timer configuration">
          <column name="isl_timers" key="hello_interval"
-           type='{"type": "integer", "minInteger": 1, "maxInteger": 5}'>
+           type='{"type": "integer", "minInteger": 1, "maxInteger": 5}'
+           emptyValue="1">
            ISLP hello interval in seconds. The default value is <code>1</code>.
          </column>
          <column name="isl_timers" key="timeout"
-           type='{"type": "integer", "minInteger": 2, "maxInteger": 20}'>
+           type='{"type": "integer", "minInteger": 2, "maxInteger": 20}'
+           emptyValue="3">
            Configures the amount of time to wait for hellos from peer in seconds.
            The default value is <code>3</code>.
          </column>
          <column name="isl_timers" key="hold_time"
-           type='{"type": "integer", "minInteger": 0, "maxInteger": 3}'>
+           type='{"type": "integer", "minInteger": 0, "maxInteger": 3}'
+           emptyValue="0">
            Configures ISL port-flap hold time in seconds. The default value is <code>0</code>.
          </column>
        </group>
 
        <group title="MCLAG Device configuration">
          <column name="device_priority"
-           type='{"type": "integer", "minInteger": 1, "maxInteger": 16}'>
+           type='{"type": "integer", "minInteger": 1, "maxInteger": 16}'
+           emptyValue="1">
            Configures MCLAG device priority. The default value is <code>1</code>.
            Device with the lower value of priority will be the primary in the
            case of split brain handling.
          </column>
-         <column name="split_brain_handling">
+         <column name="split_brain_handling" emptyValue="one-fragment-active">
            Configures how MCLAG split-brain is handled.
            "one-fragment-active" means in case of a split, MCLAG links of primary will be active and secondary will be disabled.
            "dual-active" means in case of a split, MCLAG links of both primary and secondary will be active.
@@ -5720,7 +5775,8 @@
 
        <group title="MCLAG Operational status">
          <column name="oper_status" key="islp_state"
-           type='{"type": "string", "enum": ["set", ["out_of_sync", "in_sync"]]}'>
+           type='{"type": "string", "enum": ["set", ["out_of_sync", "in_sync"]]}'
+           emptyValue="out_of_sync">
            ISL protocol state.
            in_sync means ISLP link is established. out_of_sync means ISLP link is not established.
            Default value is <code>out_of_sync</code>.
@@ -5761,7 +5817,7 @@
        </group>
 
        <group title="MCLAG Keepalive configuration">
-         <column name="keepalive_udp_port">
+         <column name="keepalive_udp_port" emptyValue="7678">
            UDP port number of peer device. The default value is <code>7678</code>.
          </column>
          <column name="keepalive_src_ip">
@@ -5777,11 +5833,13 @@
 
        <group title="MCLAG Keepalive timer configuration">
          <column name="keepalive_timers" key="hello_interval"
-           type='{"type": "integer", "minInteger": 1, "maxInteger": 30}'>
+           type='{"type": "integer", "minInteger": 1, "maxInteger": 30}'
+           emptyValue="30">
            Keepalive hello interval in seconds. The default value is <code>30</code>.
          </column>
          <column name="keepalive_timers" key="dead_interval"
-           type='{"type": "integer", "minInteger": 2, "maxInteger": 120}'>
+           type='{"type": "integer", "minInteger": 2, "maxInteger": 120}'
+           emptyValue="90">
            Configures the amount of time to wait for keepalive packets from a peer in seconds.
            The default value is <code>90</code>.
          </column>
@@ -5792,7 +5850,8 @@
            Specifies L3 port for keepalive <ref table="Port"/>.
          </column>
          <column name="keepalive_status" key="state"
-           type='{"type": "string", "enum": ["set", ["initialized", "configured", "established", "failed", "stopped"]]}'>
+             type='{"type": "string", "enum": ["set", ["initialized", "configured", "established", "failed", "stopped"]]}'
+             emptyValue="initialized">
            State of the protocol. The default value is <code>initialized</code>.
          </column>
        </group>
@@ -6061,22 +6120,22 @@
           Specifies the order in which radius servers are configured on the switch.
       </column>
 
-      <column name="udp_port" >
+      <column name="udp_port" emptyValue="1812">
           Specifies the udp port number for authentication. Default udp port
           number for authentication is 1812.
       </column>
 
-      <column name="passkey" >
+      <column name="passkey" emptyValue="testing123-1">
           Specifies the passkey between radius client and radius server
           for authentication. Default passkey is testing123-1.
       </column>
 
-      <column name="timeout" >
+      <column name="timeout" emptyValue="5">
           Specifies the timeout between authentication requests to radius server.
           Default timeout is 5 seconds.
       </column>
 
-      <column name="retries" >
+      <column name="retries" emptyValue="1">
           Specifies the number of retries to radius server if there is no response.
           Default retry value is 1.
       </column>
@@ -6348,7 +6407,7 @@
       </p>
 
       <column name="other_config" key="dscp"
-                type='{"type": "integer"}'>
+                type='{"type": "integer", "maxInteger": 63, "minInteger": 0}' emptyValue="48">
         The Differentiated Service Code Point (DSCP) is specified using 6 bits
         in the Type of Service (TOS) field in the IP header. DSCP provides a
         mechanism to classify the network traffic and provide Quality of
@@ -6426,7 +6485,7 @@
       vrf_default.
     </column>
 
-    <column name="sampling">
+    <column name="sampling" emptyValue="4096">
       Specifies the rate at which packets should be sampled and sent
       to the collector. If not specified, rate defaults to 4096, which means
       one out of 4096 packets, on average, will be sent to the collector.
@@ -6452,17 +6511,17 @@
       Sampling rate for the 100 Gigabit interfaces.
     </column>
 
-    <column name="polling">
+    <column name="polling" emptyValue="30">
       Specifies the interval at which counter statistics are send to the
       collector. If not specified, interval defaults to 30 seconds
     </column>
 
-    <column name="header">
+    <column name="header" emptyValue="128">
       Number of bytes of a sampled packet to send to the collector.
       If not specified, the default is 128 bytes.
     </column>
 
-    <column name="max_datagram">
+    <column name="max_datagram" emptyValue="1400">
       Maximum number of bytes that will be send in the sflow datagram.
       If not specified, the default is 1400 bytes.
     </column>
@@ -6473,7 +6532,7 @@
       derived from the first interface in alphabetical order.
     </column>
 
-    <column name="agent_addr_family">
+    <column name="agent_addr_family" emptyValue="IPv4">
       Address type of agent address reported. If agent interface has both
       IPv4 and IPv6 address configured, then this column selects which address
       will be used. Defaults to IPv4.
@@ -6539,7 +6598,7 @@
       </column>
     </group>
     <group title="Configuration">
-      <column name="enabled">
+      <column name="enabled" emptyValue="false">
         Specifies whether counter is enabled. An empty value means counter is disabled.
       </column>
 
@@ -6586,7 +6645,7 @@
           Key-value pairs that specifies BOOTP options for the DHCP clients.
         </column>
 
-        <column name="bootp" key="match tag">
+        <column name="bootp" key="match tag" emptyValue="no_matching_tag">
           The filename is keyed by match tag. If no key is specified, default
           key is no_matching_tag.
         </column>
@@ -6630,7 +6689,7 @@
       in the configured range.
     </column>
 
-    <column name="is_static">
+    <column name="is_static" emptyValue="false">
       Set this value to <code>true</code> to assign static IP addresses
       to DHCP clients that have static host configuration. If the value
       is set to <code>false</code>, then the IP addresses in this range
@@ -6638,7 +6697,7 @@
       range would be used for dynamic allocation.
     </column>
 
-    <column name="lease_duration">
+    <column name="lease_duration" emptyValue="60">
       Specifies the lease expiry time in minutes. If not specified,
       default value of one hour (60) would be used.
     </column>
@@ -6667,7 +6726,7 @@
       This is used when end ip address is not specified.
     </column>
 
-    <column name="prefix_len">
+    <column name="prefix_len" emptyValue="64">
       This is used only in IPv6 address ranges configuration.
       Specifies the prefix length that would be used for the
       assigned IPv6 addresses. If not specifed, default value
@@ -6712,7 +6771,7 @@
       static IP address would be assigned,
     </column>
 
-    <column name="lease_duration">
+    <column name="lease_duration" emptyValue="60">
       Specifies the lease expiry time in minutes. If not specified,
       default value of one hour (60) would be used.
     </column>
@@ -6748,7 +6807,7 @@
       DHCP clients.
     </column>
 
-    <column name="ipv6">
+    <column name="ipv6" emptyValue="false">
       Set this value to <code>true</code> if the configured option is for IPv6
       and set to <code>false</code> for IPv4 option. If not specifed,
       the configured option would be used for IPv4.
@@ -6809,14 +6868,15 @@
           "127.127.1.0" for non uni/multi/broadcast associations
       </column>
       <column name="association_attributes" key="prefer"
-                type='{"type": "boolean"}'>
+          type='{"type": "boolean"}' emptyValue="false">
           Preference flag to suggest for this association.
           Set this to <code>true</code> to enable preference
           for this association.
           Default is false.
       </column>
       <column name="association_attributes" key="ntp_version"
-                  type='{"type": "integer", "minInteger": 3, "maxInteger": 4}'>
+                  type='{"type": "integer", "minInteger": 3, "maxInteger": 4}'
+                  emptyValue="3">
         NTP version to use for when communicating with this association.
         Default is 3.
       </column>
@@ -6908,14 +6968,14 @@
     <column name="key_password">
       Specifies a key_password which is used for NTP authentication.
     </column>
-    <column name="trust_enable">
+    <column name="trust_enable" emptyValue="false">
       Enables trust settings for this key_id.
       Default is false.
     </column>
   </table>
   <table name="OSPF_Router" title="An OSPFv2 Router Instance">
     <group title="Configuration">
-        <column name="router_id"  key="router_id_static" type='{"type": "boolean"}'>
+        <column name="router_id"  key="router_id_static" type='{"type": "boolean"}' emptyValue="false">
           This determines whether the router-ID is configured statically on this
           router instance or not.
           The default is false.
@@ -6935,20 +6995,20 @@
           The list of all the IPv4 networks configured to run OSPFv2 protocol.
           The key is the network prefix in A.B.C.D/M format.
         </column>
-        <column name="distance"  key="all">
+        <column name="distance"  key="all" emptyValue="110">
           The administrative distance applies to all types of routes if not
           configured specifically for certain types.
           The default value is 110.
         </column>
-        <column name="distance"  key="external">
+        <column name="distance"  key="external" emptyValue="110">
           The administrative distance applies to routes of type external.
           The default is 110.
         </column>
-        <column name="distance"  key="intra_area">
+        <column name="distance"  key="intra_area" emptyValue="110">
           The administrative distance applies to routes of type intra-area.
           The default is 110.
         </column>
-        <column name="distance"  key="inter_area">
+        <column name="distance"  key="inter_area" emptyValue="110">
           The administrative distance applies to routes of type inter-area.
           The default is 110.
         </column>
@@ -6957,12 +7017,12 @@
           router should originate an AS-External (type-5) LSA describing a
           default route into the Autonomus Sytem's all external-routing capable areas.
         </column>
-        <column name="default_information"  key="default_info_originate" type='{"type": "boolean"}'>
+        <column name="default_information"  key="default_info_originate" type='{"type": "boolean"}' emptyValue="false">
           The router should advertise the default route into the Autonomus System.
           The default value is false, that is, router should not advertise the
           default route.
         </column>
-        <column name="default_information"  key="always" type='{"type": "boolean"}'>
+        <column name="default_information"  key="always" type='{"type": "boolean"}' emptyValue="false">
           The default route must be advertised always, even if the default route
           doesn't exist in the local system or VRF RIB.
           The default value is false.
@@ -6970,7 +7030,7 @@
         <column name="redistribute">
           Redistributes the different types of routes into OSPFv2 network.
         </column>
-        <column name="stub_router_adv"  key="admin_set"  type='{"type": "boolean"}'>
+        <column name="stub_router_adv"  key="admin_set"  type='{"type": "boolean"}' emptyValue="false">
           This determines whether the stub router router_lsa advertisement is
           set administratively.
           The default value is false.
@@ -6981,7 +7041,7 @@
           on start-up. The delay, in seconds, is the duration for how long, after
           the reboot, stub router router_lsa should be advertised.
         </column>
-        <column name="passive_interface_default">
+        <column name="passive_interface_default" emptyValue="false">
           This determines whether all interfaces should be set to passive by default.
           The default value is false.
         </column>
@@ -6994,12 +7054,14 @@
           If "passive_interface_default" is set "false", then this list should be empty.
         </column>
         <column name="spf_calculation" key="spf_delay"
-            type='{"type": "integer", "minInteger": 0, "maxInteger": 600000}'>
+            type='{"type": "integer", "minInteger": 0, "maxInteger": 600000}'
+            emptyValue="200">
           The initial delay time, in milliseconds, for SPF calculation schedule.
           The default value is 200 milliseconds.
         </column>
         <column name="spf_calculation"  key="spf_holdtime"
-            type='{"type": "integer", "minInteger": 0, "maxInteger": 600000}'>
+            type='{"type": "integer", "minInteger": 0, "maxInteger": 600000}'
+            emptyValue="1000">
           The minimum hold time, in milliseconds, between the SPF calculation
           schedules.
           The SPF hold time itself will be adaptive and increasing and bounded
@@ -7007,7 +7069,8 @@
           The default value is 1000 milliseconds.
         </column>
         <column name="spf_calculation"  key="spf_max_wait"
-            type='{"type": "integer", "minInteger": 0, "maxInteger": 600000}'>
+            type='{"type": "integer", "minInteger": 0, "maxInteger": 600000}'
+            emptyValue="10000">
           The the maximum wait time or hold time, in milliseconds, between the
           SPF calculation schedules.
           The default value is 10000 milliseconds.
@@ -7018,7 +7081,8 @@
           non-broadcast multi-access networks.
         </column>
         <column name="other_config"  key="default_metric"
-            type='{"type": "integer", "minInteger": 0, "maxInteger": 16777214}'>
+            type='{"type": "integer", "minInteger": 0, "maxInteger": 16777214}'
+            emptyValue="20">
           The default cost metric for the redistributed routes.
           The default value is 20.
         </column>
@@ -7029,76 +7093,78 @@
           The allowed range is 1 to 4000000 Mbps, that is 1 Mbps to 4000 Gbps.
           The default value is 40000 Mbps, that is 40 Gbps.
         </column>
-        <column name="other_config"  key="log_adjacency_changes" type='{"type": "boolean"}'>
+        <column name="other_config"  key="log_adjacency_changes" type='{"type": "boolean"}' emptyValue="false">
           This determines whether to log changes in adjacency or not.
           The default value is false.
         </column>
-        <column name="other_config"  key="log_adjacency_details" type='{"type": "boolean"}'>
+        <column name="other_config"  key="log_adjacency_details" type='{"type": "boolean"}' emptyValue="false">
           This determines whether to log changes in adjacency in detail or not.
           If the flag is not set then only changes to full or regressions are shown.
           The default value is false.
         </column>
-        <column name="other_config"  key="ospf_rfc1583_compatible" type='{"type": "boolean"}'>
+        <column name="other_config"  key="ospf_rfc1583_compatible" type='{"type": "boolean"}' emptyValue="false">
           This determines whether RFC1583 compatibility mode is enabled or not.
           If value is false then the path preference algorithm is calculated as per RFC 2328.
           The default value is false.
         </column>
-        <column name="other_config"  key="enable_ospf_opaque_lsa" type='{"type": "boolean"}'>
+        <column name="other_config"  key="enable_ospf_opaque_lsa" type='{"type": "boolean"}' emptyValue="false">
           This  determines if the OSPFv2 Opaque LSA capability is enabled or not.
           The default value is false.
         </column>
         <column name="lsa_timers"  key="lsa_arrival_interval"
-            type='{"type": "integer", "minInteger": 10, "maxInteger": 600000}'>
+            type='{"type": "integer", "minInteger": 10, "maxInteger": 600000}'
+            emptyValue="1000">
           The minimum interval, in milliseconds, between accepting the same LSA.
           The default value is 1000 milliseconds.
         </column>
         <column name="lsa_timers"  key="lsa_group_pacing"
-            type='{"type": "integer", "minInteger": 1, "maxInteger": 1800}'>
+            type='{"type": "integer", "minInteger": 1, "maxInteger": 1800}'
+            emptyValue="10">
           The LSA group pacing timer. This is the interval, in seconds, between
           group of LSA being refreshed or maxaged.
           The default value is 10 seconds.
         </column>
     </group>
     <group title="Status">
-         <column name="status"  key="abr" type='{"type": "boolean"}'>
+         <column name="status"  key="abr" type='{"type": "boolean"}' emptyValue="false">
            The Router is a OSPFv2 Area Border Router (ABR).
            The default value is false.
          </column>
-         <column name="status"  key="asbr" type='{"type": "boolean"}'>
+         <column name="status"  key="asbr" type='{"type": "boolean"}' emptyValue="false">
            The Router is a OSPFv2 Autonomus System Boundary Router (ASBR).
            The default value is false.
          </column>
-         <column name="status"  key="spf_hold_multiplier" type='{"type": "integer"}'>
+         <column name="status"  key="spf_hold_multiplier" type='{"type": "integer"}' emptyValue="1">
            This is current value of adaptive multiplier of the initial-holdtime
            and used in determining the hold time.
            The default value is 1.
          </column>
-         <column name="status"  key="ospf_rfc1583_compatibility" type='{"type": "boolean"}'>
+         <column name="status"  key="ospf_rfc1583_compatibility" type='{"type": "boolean"}' emptyValue="true">
            This describes if the device has support for rfc1583 compatibility.
            The default value is true.
          </column>
-         <column name="status"  key="capability_opaque" type='{"type": "boolean"}'>
+         <column name="status"  key="capability_opaque" type='{"type": "boolean"}' emptyValue="true">
            This describes if the device has support for Opaque lsa capability.
            The default value is true.
          </column>
-         <column name="status"  key="stub_router_support" type='{"type": "boolean"}'>
+         <column name="status"  key="stub_router_support" type='{"type": "boolean"}' emptyValue="true">
            This describes if the device has support for stub router advertisement
            as per RFC 3137.
            The default value is true.
          </column>
-         <column name="status"  key="capability_restart" type='{"type": "boolean"}'>
+         <column name="status"  key="capability_restart" type='{"type": "boolean"}' emptyValue="false">
            This describes if the device has support for Graceful OSPFv2 Restart.
            The default value is false.
          </column>
-         <column name="status"  key="opaque_status" type='{"type": "boolean"}'>
+         <column name="status"  key="opaque_status" type='{"type": "boolean"}' emptyValue="false">
            This describes if the device has support for Opaque LSA enabled.
            The default value is false.
          </column>
-         <column name="status"  key="opaque_origination_blocked" type='{"type": "boolean"}'>
+         <column name="status"  key="opaque_origination_blocked" type='{"type": "boolean"}' emptyValue="false">
            This describes if the Opaque LSA origination is blocked.
            The default value is false.
          </column>
-         <column name="status" key="as_ext_lsas_sum_cksum" type='{"type": "integer"}'>
+         <column name="status" key="as_ext_lsas_sum_cksum" type='{"type": "integer"}' emptyValue="0">
            The sum of checksum of list of AS External LSAs.
            The default value is 0.
          </column>
@@ -7128,12 +7194,12 @@
           contains the OSPFv2 interface realted configurations, statuses,
           and statistics.
         </column>
-        <column name="area_type">
+        <column name="area_type" emptyValue="default">
           This defines how the external routing and summary lsas for this area will
           be handled.
           The default value is "default".
         </column>
-        <column name="nssa_translator_role">
+        <column name="nssa_translator_role" emptyValue="candidate">
           If value is set to "always", then NSSA ABR always translates NSSA
           External (type 5) LSAs to AS External (type 7) LSAs.
           If value is set to "never", then NSSA ABR will not translate NSSA
@@ -7195,65 +7261,67 @@
           This describes the time when the last time SPF algorithm had run for
           this area.
         </column>
-        <column name="status" key="stub_router_state_active" type='{"type": "boolean"}'>
+        <column name="status" key="stub_router_state_active" type='{"type": "boolean"}' emptyValue="false">
           This describes the status of the stub_router.
           The default value is false.
         </column>
-        <column name="status" key="stub_router_admin_set" type='{"type": "boolean"}'>
+        <column name="status" key="stub_router_admin_set" type='{"type": "boolean"}' emptyValue="false">
           This describes the status of the stub_router if it is set administratively.
           The default value is false.
         </column>
-        <column name="status" key="stub_router_startup" type='{"type": "boolean"}'>
+        <column name="status" key="stub_router_startup" type='{"type": "boolean"}' emptyValue="false">
           This describes the status of the stub_router if it is set "startup".
           The default value is false.
         </column>
-        <column name="status" key="NSSA translator role"
-            type='{"type": "string", "enum": ["set", ["enable", "disable"]]}'>
+        <column name="status" key="NSSA_translator_role"
+            type='{"type": "string", "enum": ["set", ["enable", "disable"]]}'
+            emptyValue="disable">
           This describes the NSSA translator state.
           The default value is disable.
         </column>
         <column name="status" key="transit_capability"
-            type='{"type": "string", "enum": ["set", ["enable", "disable"]]}'>
+            type='{"type": "string", "enum": ["set", ["enable", "disable"]]}'
+            emptyValue="disable">
           This describes the transit capability for virtual links.
           The default value is false.
         </column>
-        <column name="status" key="active_interfaces" type='{"type": "integer"}'>
+        <column name="status" key="active_interfaces" type='{"type": "integer"}' emptyValue="0">
           This describes the number of active OSPFv2 interfaces in the area.
           The default value is 0.
         </column>
-        <column name="status" key="full_nbrs" type='{"type": "integer"}'>
+        <column name="status" key="full_nbrs" type='{"type": "integer"}' emptyValue="0">
           This describes the the number of adjacent neighbors in the area.
           The default value is 0.
         </column>
-        <column name="status" key="full_virtual_nbrs" type='{"type": "integer"}'>
+        <column name="status" key="full_virtual_nbrs" type='{"type": "integer"}' emptyValue="0">
           This describes the number of adjacent virtual neighbors.
           The default value is 0.
         </column>
-        <column name="status" key="router_lsas_sum_cksum" type='{"type": "integer"}'>
+        <column name="status" key="router_lsas_sum_cksum" type='{"type": "integer"}' emptyValue="0">
           The sum of checksums of list of Router LSAs.
           The default value is 0.
         </column>
-        <column name="status" key="network_lsas_sum_cksum" type='{"type": "integer"}'>
+        <column name="status" key="network_lsas_sum_cksum" type='{"type": "integer"}' emptyValue="0">
           The sum of checksums of list of Network LSAs.
           The default value is 0.
         </column>
-        <column name="status" key="abr_summary_lsas_sum_cksum" type='{"type": "integer"}'>
+        <column name="status" key="abr_summary_lsas_sum_cksum" type='{"type": "integer"}' emptyValue="0">
           The sum of checksums of list of Type 3 ABR Summary LSAs.
           The default value is 0.
         </column>
-        <column name="status" key="asbr_summary_lsas_sum_cksum" type='{"type": "integer"}'>
+        <column name="status" key="asbr_summary_lsas_sum_cksum" type='{"type": "integer"}' emptyValue="0">
           The sum of checksums of list of Type 4 ASBR Summary LSAs.
           The default value is 0.
         </column>
-        <column name="status" key="as_nssa_lsas_sum_cksum" type='{"type": "integer"}'>
+        <column name="status" key="as_nssa_lsas_sum_cksum" type='{"type": "integer"}' emptyValue="0">
           The sum of checksums of list of Type 7 NSSA External LSAs.
           The default value is 0.
         </column>
-        <column name="status" key="opaque_area_lsas_sum_cksum" type='{"type": "integer"}'>
+        <column name="status" key="opaque_area_lsas_sum_cksum" type='{"type": "integer"}' emptyValue="0">
           The sum of checksums of list of  Area scope Opaque LSAs.
           The default value is 0.
         </column>
-        <column name="status" key="opaque_link_lsas_sum_cksum" type='{"type": "integer"}'>
+        <column name="status" key="opaque_link_lsas_sum_cksum" type='{"type": "integer"}' emptyValue="0">
           The sum of checksums of list of Link scope Opaque LSAs.
           The default value is 0.
         </column>
@@ -7269,7 +7337,7 @@
           The number of autonomous system border routers (ASBR) in the area.
         </column>
     </group>
-        <column name="other_config"  key="stub_default_cost" type='{"type": "integer"}'>
+        <column name="other_config"  key="stub_default_cost" type='{"type": "integer"}' emptyValue="1">
           The cost metric for the default summary route sent into the stub area.
           The default value is 1.
         </column>
@@ -7281,14 +7349,15 @@
           The prefix address in A.B.C.D/M format.
         </column>
         <column name="other_config" key="cost"
-            type='{"type": "integer", "minInteger": 1, "maxInteger": 16777214}'>
+            type='{"type": "integer", "minInteger": 1, "maxInteger": 16777214}'
+            emptyValue="16777214">
           The cost of the summary address.
           The default value is 16777214.
         </column>
         <column name="other_config" key="tag" type='{"type": "string", "maxLength": 64}'>
           The tag for the summarized prefix.
         </column>
-        <column name="other_config" key="advertise" type='{"type": "boolean"}'>
+        <column name="other_config" key="advertise" type='{"type": "boolean"}' emptyValue="true">
           This determines whether to advertise the summary address or not. If
           value is false then the OSPFv2 router does not advertise this summary
           address.
@@ -7312,14 +7381,14 @@
     </group>
 
     <group title="status">
-        <column name="ifsm_state">
+        <column name="ifsm_state" emptyValue="depend_upon">
           OSPFv2 Interface FSM states.
           The default value is "depend_upon".
         </column>
         <column name="neighbors">
           The list of all the OSPFv2 neighbors on this OSPFv2 Interface.
         </column>
-        <column name="status" key="active" type='{"type": "boolean"}'>
+        <column name="status" key="active" type='{"type": "boolean"}' emptyValue="true">
           Updates status whether the interface is active.
           The default value is true.
         </column>
@@ -7380,20 +7449,20 @@
         </column>
     </group>
     <group title="status">
-        <column name="nbr_router_id">
+        <column name="nbr_router_id" emptyValue="0">
           The Neighbor Router ID is used to identify the neighbor.
           The default value is 0, which is invalid router_id.
         </column>
-        <column name="nbr_if_addr">
+        <column name="nbr_if_addr" emptyValue="0">
           The interface address of the OSPFv2 Neighbor on which the neighbor
           relationship is established.
           The default value is 0, which is invalid if_address.
         </column>
-        <column name="dr">
+        <column name="dr" emptyValue="0">
           The router ID of the Designated Router, as reported by the neighbor.
           The default value is 0.
         </column>
-        <column name="bdr">
+        <column name="bdr" emptyValue="0">
           The router ID of the Backup Designated Router, as reported by the neighbor.
           The default value is 0.
         </column>
@@ -7401,11 +7470,11 @@
           The neighbor options or capabilities such as Opaque LSA capability,
           Demand Circuit, External Attribute LSA capability, and so on.
         </column>
-        <column name="nfsm_state">
+        <column name="nfsm_state" emptyValue="down">
           OSPFv2 Neighbor FSM states.
           The default value is "down".
         </column>
-        <column name="nbr_priority">
+        <column name="nbr_priority" emptyValue="255">
           The priority of the neighbor.
           The default value is 255.
         </column>
@@ -7413,7 +7482,7 @@
           The time left for the dead timer of the neighbor to expire.
           The default value is the dead_interval for the interface.
         </column>
-        <column name="status" key="last_up_timestamp" type='{"type": "integer"}'>
+        <column name="status" key="last_up_timestamp" type='{"type": "integer"}' emptyValue="0">
           The duration since when the state of the neighbor is seen.
           The default value is 0.
         </column>
@@ -7435,23 +7504,25 @@
   </table>
   <table name="OSPF_NBMA_Neighbor" title="OSPFv2 NBMA Neighbor information">
      <group title="Configuration">
-        <column name="nbr_address">
+        <column name="nbr_address" emptyValue="0">
           The IP address of the NMBA neighbor.
           The default value is 0, which is invalid.
         </column>
         <column name="other_config" key="priority"
-            type='{"type": "integer", "minInteger": 0, "maxInteger": 255}'>
+            type='{"type": "integer", "minInteger": 0, "maxInteger": 255}'
+            emptyValue="0">
           The priority of the NMBA neighbor.
           The default value is 0.
         </column>
         <column name="other_config" key="poll_interval"
-            type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'>
+            type='{"type": "integer", "minInteger": 1, "maxInteger": 65535}'
+            emptyValue="60">
           The poll interval (in seconds) of the NMBA neighbor.
           Default is 60 seconds.
         </column>
     </group>
     <group title="status">
-        <column name="nbr_router_id">
+        <column name="nbr_router_id" emptyValue="0">
           The router ID of the neighbor.
           The default value is 0, which is invalid router_id.
         </column>
@@ -7462,7 +7533,7 @@
           The poll timer due in seconds for the NMBA neighbor.
           The default value is poll_interval.
         </column>
-        <column name="status" key="state_changes_count" type='{"type": "integer"}'>
+        <column name="status" key="state_changes_count" type='{"type": "integer"}' emptyValue="0">
           The total number of state change events.
           The default value is 0.
         </column>
@@ -7476,7 +7547,7 @@
         <column name="area_id">
           The area ID of the virtual link. Backbone area cannot have virtual link.
         </column>
-        <column name="other_config" key="hello_interval" type='{"type": "integer"}'>
+        <column name="other_config" key="hello_interval" type='{"type": "integer"}' emptyValue="10">
           The time, in seconds, between successive Hello packets.
           The default value is 10 seconds.
         </column>
@@ -7485,11 +7556,11 @@
           adjacency with local router.
           The default value is 4 times the hello interval.
         </column>
-        <column name="other_config" key="retransmit_interval" type='{"type": "integer"}'>
+        <column name="other_config" key="retransmit_interval" type='{"type": "integer"}' emptyValue="5">
           The estimated time, in seconds, between successive LSAs.
           The default value is 5 seconds.
         </column>
-        <column name="other_config" key="transmit_delay" type='{"type": "integer"}'>
+        <column name="other_config" key="transmit_delay" type='{"type": "integer"}' emptyValue="1">
           The estimated time, in seconds, to transmit an LSA to a neighbor.
           The default value is 1 second.
         </column>
@@ -7523,34 +7594,35 @@
         <column name="paths">
           The list of paths.
         </column>
-        <column name="route_info" key="cost" type='{"type": "integer", "maxInteger": 16777215}'>
+        <column name="route_info" key="cost" type='{"type": "integer", "maxInteger": 16777215}' emptyValue="16777215">
           The cost metric of the route.
           The default value is <code>16777215</code>, which is maximum metric value.
         </column>
         <column name="route_info" key="area_id" type='{"type": "integer"}'>
           The area ID of the route.
         </column>
-        <column name="route_info" key="area_type_abr" type='{"type": "boolean"}'>
+        <column name="route_info" key="area_type_abr" type='{"type": "boolean"}' emptyValue="false">
           The area type ABR.
           The default value is false.
         </column>
-        <column name="route_info" key="area_type_asbr" type='{"type": "boolean"}'>
+        <column name="route_info" key="area_type_asbr" type='{"type": "boolean"}' emptyValue="false">
           The area type ASBR.
           The default value is false.
         </column>
         <column name="route_info" key="ext_type"
-            type='{"type": "string", "enum": ["set", ["ext_type_1", "ext_type_2"]]}'>
+            type='{"type": "string", "enum": ["set", ["ext_type_1", "ext_type_2"]]}'
+            emptyValue="ext_type_1">
           External Type 1 or Type 2 Route. For External routes only.
           The default value is "ext_type_1".
         </column>
-        <column name="route_info" key="type2_cost" type='{"type": "integer", "maxInteger": 16777215}'>
+        <column name="route_info" key="type2_cost" type='{"type": "integer", "maxInteger": 16777215}' emptyValue="16777215">
           The External Type 2 route cost.
           The default value is <code>16777215</code>, which is maximum metric value.
         </column>
         <column name="route_info" key="ext_tag" type='{"type": "string"}'>
           The tag of the route.
         </column>
-        <column name="route_info" key="asbr_router_id" type='{"type": "integer"}'>
+        <column name="route_info" key="asbr_router_id" type='{"type": "integer"}' emptyValue="0">
           The ASBR router ID.
           The default value is 0, which is invalid router ID.
         </column>
@@ -7559,7 +7631,7 @@
 
   <table name="OSPF_LSA" title="OSPFv2 link state related information">
     <group title="status">
-        <column name="area_id">
+        <column name="area_id" emptyValue="0">
           The OSPFv2 Area ID. This is for area scope LSAs.
           The default value is 0.
         </column>
@@ -7585,15 +7657,15 @@
         <column name="flags">
           The flags in the OSPFv2 Router LSA.
         </column>
-        <column name="chksum">
+        <column name="chksum" emptyValue="0">
           The checksum in the OSPFv2 LSA.
           The default value is 0.
         </column>
-        <column name="length">
+        <column name="length" emptyValue="20">
           The length of the OSPFv2 LSA in bytes.
           The default value is 20 bytes.
         </column>
-        <column name="num_router_links">
+        <column name="num_router_links" emptyValue="0">
           Total number of router links. This is applicable in case of Router LSA.
           The default value is 0.
         </column>
@@ -7756,7 +7828,7 @@
       There must be a user-defined name of the mirror session.
     </column>
 
-    <column name="active">
+    <column name="active" emptyValue="false">
       The intended state of the mirror session: active or inactive.
       The <ref table="Mirror" column="mirror_status" key="operation_state"/> value contains
       the actual state in hardware (e.g. active, inactive, or error).
@@ -7803,7 +7875,8 @@
       </column>
       <column name="mirror_status" key="operation_state"
               type='{"type":"string",
-                     "enum": ["set", ["active", "shutdown", "internal_error", "driver_error", "unknown_error"]]}'>
+              "enum": ["set", ["active", "shutdown", "internal_error", "driver_error", "unknown_error"]]}'
+              emptyValue="shutdown">
         Operational state of the mirror session in hardware.
         Only the value "active" means the hardware mirroring is running.
         Any other value, or if the key is missing, means the session
@@ -7896,7 +7969,7 @@
       <column name="remote_host">
          FQDN or host name or IPv4 address or IPv6 address of the syslog server.
       </column>
-      <column name="transport">
+      <column name="transport" emptyValue="udp">
          Transport layer protocol used to forward messages to the server.
          Default is <code>udp</code>
       </column>
@@ -7904,9 +7977,9 @@
          Port number on which syslog server is listening.
          Default is <code>514</code> for UDP protocol and <code>1470</code> for TCP protocol.
       </column>
-      <column name="severity">
+      <column name="severity" emptyValue="info">
          Filter syslog messages with severity.  Only messages with severity higher than or equal to the specified value will be sent to the remote server.
-         Default is <code>debug</code>.
+         Default is <code>info</code>.
       </column>
     </group>
   </table>
@@ -7914,11 +7987,11 @@
     <group title="configuration">
       <column name="receiver_address">The IP address of the trap receiver.</column>
       <column name="receiver_udp_port">The UDP port of the trap receiver.</column>
-      <column name="community_name">
+      <column name="community_name" emptyValue="public">
         SNMPv1/SNMPv2c community strings. The default community string is "public".
       </column>
-      <column name="type">Trap type. The default type is "trap".</column>
-      <column name="version">Trap/inform version. The default version is "v2c".</column>
+      <column name="type" emptyValue="trap">Trap type. The default type is "trap".</column>
+      <column name="version" emptyValue="v2c">Trap/inform version. The default version is "v2c".</column>
     </group>
   </table>
   <table name="SNMPv3_User">
@@ -7926,11 +7999,11 @@
       <column name="user_name">
         User name that should contain alphanumeric characters.
       </column>
-      <column name="auth_protocol">
+      <column name="auth_protocol" emptyValue="none">
         The authentication protocol to be used for authenticating the user.
         The default is "none".
       </column>
-      <column name="priv_protocol">
+      <column name="priv_protocol" emptyValue="none">
         The privacy protocol to be used for encrypting the user requests.
         The default is "none".
       </column>
@@ -7972,7 +8045,7 @@
         the cfg_version column when the ACL processing begins. This value is cleared
         when the ACL status is updated to 'applied' or 'rejected.'
       </column>
-      <column name="status"  key="status_string" type='{"type":"string"}'>
+      <column name="status"  key="status_string" type='{"type":"string", "enum": ["set", ["in_progress", "applied", "rejected", "canceled"]]}'>
         The status of the last version of 'cfg_aces' column, that has been
         processed by switchd.  Accepted values are: 'in_progress', 'applied', 'rejected',
         and 'canceled'.
@@ -7980,7 +8053,7 @@
       <column name="status" key="version" type='{"type":"integer"}'>
         The version of cfg_aces that corresponds to this status.
       </column>
-      <column name="status" key="state" type='{"type":"string"}'>
+      <column name="status" key="state" type='{"type":"string", "enum": ["set", ["in_progress", "applied", "rejected", "canceled"]]}'>
         Valid values are 'applied', 'in_progress', 'canceled', 'rejected'
       </column>
       <column name="status" key="code" type='{"type":"integer"}'>
