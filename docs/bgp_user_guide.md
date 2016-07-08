@@ -117,10 +117,6 @@ To set up the optional configuration:
    `router bgp <asn>`, `neighbor (A.B.C.D|X:X::X:X|WORD) ttl-security hops <1-254>`
    The `no neighbor (A.B.C.D|X:X::X:X|WORD) ttl-security hops <1-254>` command disables the maximum number of hops specification.
 
- - Specify the source address to use for the BGP session to the neighbor using the following command:
-   `router bgp <asn>`, `neighbor (A.B.C.D|X:X::X:X|WORD) update-source (A.B.C.D|X:X::X:X|WORD)`
-   The `neighbor (A.B.C.D|X:X::X:X|WORD) update-source (A.B.C.D|X:X::X:X|WORD)` command removes the source address.
-
 - The peer-group is a collection of peers that share the same outbound policy. Neighbors belonging to the same peer-group might have different inbound policies. All peer commands are applicable to the peer-group as well. Following are the peer-group configuration commands.
   Enter the following BGP peer-group commands in the order shown:
 

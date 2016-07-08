@@ -29,7 +29,6 @@
 		- [neighbor prefix-list](#neighbor-prefix-list)
 		- [neighbor soft-reconfiguration](#neighbor-soft-reconfiguration)
 		- [neighbor ttl-security](#neighbor-ttl-security)
-		- [neighbor update-source](#neighbor-update-source)
 	- [as-path access-list](#as-path-access-list)
 - [Route-map configuration commands](#route-map-configuration-commands)
 	- [route-map](#route-map)
@@ -744,34 +743,6 @@ Admin user.
 s1(config-router)# neighbor 10.1.1.1 ttl-security hops 2
 s1(config-router)# no neighbor 10.1.1.1 ttl-security hops 2
 ```
-
-#### neighbor update-source
-##### Syntax
-```
-[no] neighbor (A.B.C.D|X:X::X:X|WORD) update-source (A.B.C.D|X:X::X:X|WORD)
-```
-##### Description
-This command updates the neighbor's source address to use for the BGP session.
-
-##### Authority
-Admin user.
-
-##### Parameters
-| Parameter | Status   | Syntax |  Description          |
-|-----------|----------|----------------------|
-| *A.B.C.D*  | Optional | A.B.C.D | The peer IPv4 address. |
-| *X:X::X:X*  | Optional | X:X:X:X | The peer IPv6 address. |
-| *WORD*  | Optional | WORD | The neighbor tag. |
-| *A.B.C.D*  | Optional | A.B.C.D | The IPv4 address. |
-| *X:X::X:X*  | Optional | X:X:X:X | The IPv6 address. |
-| *WORD*  | Optional | WORD | The interface name. |
-
-##### Examples
-```
-s1(config-router)# neighbor 10.0.0.1 update-source loopback0
-s1(config-router)# no neighbor 10.0.0.1 update-source loopback0
-```
-
 ### as-path access-list
 #### Syntax
 ```
