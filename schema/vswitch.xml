@@ -132,6 +132,13 @@
 
       <column name="hostname">
       </column>
+      <column name="timezone">
+        User configured Timezone. Time zone of the device in case sensitive Posix format
+        - "US/Pacific","Asia/Singapore", "Etc/GMT".
+        Please refer to the full list of supported time zones at
+        <code>https://en.wikipedia.org/wiki/List_of_tz_database_time_zones</code>.
+        If not specified, system defaults to "UTC" timezone.
+      </column>
 
       <column name="domain_name">
         Domain name as configured by the user.
