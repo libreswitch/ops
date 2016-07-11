@@ -3242,6 +3242,10 @@
       <column name="state">
         Current state of the neighbor entry.
       </column>
+      <column name="in_use_by_routes">
+        When set to <code>true</code>, indicates this IP is used as a nexthop
+        by one or more route entries. Default is <code>false</code>
+      </column>
       <column name="status" key="dp_hit"
           type='{"type": "boolean"}' emptyValue="true">
           Indicates if there is active traffic to the neighbor. This value
