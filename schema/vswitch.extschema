@@ -3586,6 +3586,16 @@
             "max": 1
           }
         },
+        "in_use_by_routes": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
         "status": {
           "category": "status",
           "type": {
