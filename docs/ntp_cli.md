@@ -309,8 +309,12 @@ Auth-failed pkts: Packets dropped due to authentication failure.
 Declined pkts: Packets denied access for any reason.
 Restricted pkts: Packets dropped due to NTP access control.
 Rate-limited pkts: Number of packets discarded due to rate limitation.
-KOD pkts: Number of Kiss of Death packets.
+KOD pkts: Number of Kiss of Death packets sent.
 ```
+For general NTP debugging information, see
+[http://doc.ntp.org/4.2.6p5/debug.html](http://doc.ntp.org/4.2.6p5/debug.html).
+[http://doc.ntp.org/4.2.8p8/monopt.html](http://doc.ntp.org/4.2.8p8/monopt.html).
+
 Note: Because ntpq sends query messages to ntpd for fetching status information.
 `Rx-pkts` field may show a non-zero packet count, even when ntp association is not
 configured on the switch.

@@ -220,7 +220,7 @@ For example:
 - Declined pkts - Packets denied access for any reason.
 - Restricted pkts - Packets dropped due to NTP access control.
 - Rate-limited pkts - Number of packets discarded due to rate limitation.
-- KOD pkts - Number of Kiss of Death packets.
+- KOD pkts - Number of Kiss of Death packets sent.
 
 When the switch successfully synchronizes to a server, the corresponding status is displayed as part of `show ntp status` output.
 
@@ -229,8 +229,8 @@ For the list of supported values, see
 http://doc.ntp.org/4.2.6p5/refclock.html
 
 For general NTP debugging information, see
-http://doc.ntp.org/4.2.6p5/debug.html
-
+[http://doc.ntp.org/4.2.6p5/debug.html](http://doc.ntp.org/4.2.6p5/debug.html).
+[http://doc.ntp.org/4.2.8p8/monopt.html](http://doc.ntp.org/4.2.8p8/monopt.html).
 
 ## CLI
 
