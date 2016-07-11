@@ -6938,7 +6938,7 @@
           Key-value pairs that specifies BOOTP options for the DHCP clients.
         </column>
 
-        <column name="bootp" key="match tag" emptyValue="no_matching_tag">
+        <column name="bootp" emptyValue="no_matching_tag">
           The filename is keyed by match tag. If no key is specified, default
           key is no_matching_tag.
         </column>
