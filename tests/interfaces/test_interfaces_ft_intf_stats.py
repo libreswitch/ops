@@ -153,16 +153,21 @@ class Test_template:
         self.open_vtysh()
 
     def verify_ping(self, src, dest, expected):
-        out = src.Ping(ipAddr=dest._ip, interval=.2, errorCheck=False,
-            packetCount=PING_CNT)
+        retry = 3
+        current_iteration = 1
+        while current_iteration <= retry:
+            out = src.Ping(ipAddr=dest._ip, interval=.2, errorCheck=False,
+                           packetCount=PING_CNT)
 
-        if out is None:
-            assert 1 == 0, "ping command failed, no output"
+            if out is None:
+                assert 1 == 0, "ping command failed, no output"
 
-        LogOutput("info", "%s" % out.data)
-        success = False;
-        if out.data['packet_loss'] <= PACKET_LOSS:
-            success = True;
+            LogOutput("info", "%s" % out.data)
+            success = False;
+            if out.data['packet_loss'] <= PACKET_LOSS:
+                success = True;
+                break
+            current_iteration += 1
 
         assert success == expected, "ping was %s, expected %s" % (success, expected)
 
@@ -272,7 +277,7 @@ class Test_template:
         LogOutput("info", "sending exit")
         rc = obj.cmd("exit")
         LogOutput("info", "sending interface %s"%interface_2)
-        rc = obj.cmd("interface 2")
+        rc = obj.cmd("interface %s"%interface_2)
         LogOutput("info", "sending no routing")
         rc = obj.cmd("no routing")
         LogOutput("info", "sending vlan access 10")
@@ -282,7 +287,7 @@ class Test_template:
         LogOutput("info", "sending exit")
         rc = obj.cmd("exit")
         LogOutput("info", "sending interface %s"%interface_1)
-        rc = obj.cmd("interface 1")
+        rc = obj.cmd("interface %s"%interface_1)
         LogOutput("info", "sending no routing")
         rc = obj.cmd("no routing")
         LogOutput("info", "sending vlan access 10")
