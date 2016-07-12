@@ -39,7 +39,7 @@ NUM_HOSTS_PER_SWITCH = 0
 base_vlan_data = {
     "configuration": {
         "name": "test",
-        "id": 1,
+        "id": 2,
         "description": "test vlan",
         "admin": ["up"],
         "other_config": {},
@@ -96,7 +96,7 @@ class UpdateExistingVlan(OpsVsiTest):
 
         self.path = "/rest/v1/system/bridges"
         self.switch_ip = get_switch_ip(self.net.switches[0])
-        self.vlan_id = 1
+        self.vlan_id = 2
         self.vlan_name = "fake_vlan"
         self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
         self.vlan = "%s/%s/vlans/%s" % (self.path,
@@ -188,7 +188,7 @@ class UpdateVlanInvalidName(OpsVsiTest):
 
         self.path = "/rest/v1/system/bridges"
         self.switch_ip = get_switch_ip(self.net.switches[0])
-        self.vlan_id = 1
+        self.vlan_id = 2
         self.vlan_name = "fake_vlan"
         self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
         self.vlan = "%s/%s/vlans/%s" % (self.path,
@@ -288,7 +288,7 @@ class UpdateVlanInvalidId(OpsVsiTest):
 
         self.path = "/rest/v1/system/bridges"
         self.switch_ip = get_switch_ip(self.net.switches[0])
-        self.vlan_id = 1
+        self.vlan_id = 2
         self.vlan_name = "fake_vlan"
         self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
         self.vlan = "%s/%s/vlans/%s" % (self.path,
@@ -388,7 +388,7 @@ class UpdateVlanInvalidDescription(OpsVsiTest):
 
         self.path = "/rest/v1/system/bridges"
         self.switch_ip = get_switch_ip(self.net.switches[0])
-        self.vlan_id = 1
+        self.vlan_id = 2
         self.vlan_name = "fake_vlan"
         self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
         self.vlan = "%s/%s/vlans/%s" % (self.path,
@@ -488,7 +488,7 @@ class UpdateVlanInvalidAdmin(OpsVsiTest):
 
         self.path = "/rest/v1/system/bridges"
         self.SWITCH_IP = get_switch_ip(self.net.switches[0])
-        self.vlan_id = 1
+        self.vlan_id = 2
         self.vlan_name = "fake_vlan"
         self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
         self.vlan = "%s/%s/vlans/%s" % (self.path,
@@ -587,7 +587,7 @@ class UpdateVlanInvalidOtherConfig(OpsVsiTest):
 
         self.path = "/rest/v1/system/bridges"
         self.switch_ip = get_switch_ip(self.net.switches[0])
-        self.vlan_id = 1
+        self.vlan_id = 2
         self.vlan_name = "fake_vlan"
         self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
         self.vlan = "%s/%s/vlans/%s" % (self.path,
@@ -687,7 +687,7 @@ class UpdateVlanInvalidExternalIds(OpsVsiTest):
 
         self.path = "/rest/v1/system/bridges"
         self.switch_ip = get_switch_ip(self.net.switches[0])
-        self.vlan_id = 1
+        self.vlan_id = 2
         self.vlan_name = "fake_vlan"
         self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
         self.vlan = "%s/%s/vlans/%s" % (self.path,

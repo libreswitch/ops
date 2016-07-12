@@ -145,7 +145,7 @@ class DeleteExistentVlan(OpsVsiTest):
 
         self.path = "/rest/v1/system/bridges"
         self.switch_ip = get_switch_ip(self.net.switches[0])
-        self.vlan_id = 1
+        self.vlan_id = 2
         self.vlan_name = "fake_vlan"
         self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
         self.cookie_header = None

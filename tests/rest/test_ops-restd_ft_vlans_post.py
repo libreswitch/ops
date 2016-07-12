@@ -37,7 +37,7 @@ NUM_HOSTS_PER_SWITCH = 0
 base_vlan_data = {
     "configuration": {
         "name": "test",
-        "id": 1,
+        "id": 2,
         "description": "test_vlan",
         "admin": ["up"],
         "other_config": {},
@@ -102,7 +102,7 @@ class CreateBasicVlan(OpsVsiTest):
                {
                    "configuration": {
                        "name": "fake_vlan_1",
-                       "id": 1,
+                       "id": 2,
                        "description": "test vlan",
                        "admin": ["up"],
                        "other_config": {},
@@ -816,7 +816,7 @@ class CreateVlanDuplicated(OpsVsiTest):
                {
                    "configuration": {
                        "name": "fake_vlan_1",
-                       "id": 1,
+                       "id": 2,
                        "description": "test vlan",
                        "admin": ["up"],
                        "other_config": {},

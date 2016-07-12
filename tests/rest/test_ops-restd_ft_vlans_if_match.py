@@ -85,7 +85,7 @@ class IfMatchVlanTest(OpsVsiTest):
 
         self.path = "/rest/v1/system/bridges"
         self.switch_ip = get_switch_ip(self.net.switches[0])
-        self.vlan_id = 1
+        self.vlan_id = 2
         self.vlan_name = "fake_vlan"
         self.vlan_path = "%s/%s/vlans" % (self.path, DEFAULT_BRIDGE)
         self.vlan = "%s/%s/vlans/%s" % (self.path,
@@ -260,8 +260,8 @@ class IfMatchVlanTest(OpsVsiTest):
         etag, pre_put_get_data = self.get_etag_and_data(cond_path)
 
         # Fill Vlan data
-        fake_vlan_name = "VLAN2"
-        vlan_id = 2
+        fake_vlan_name = "VLAN3"
+        vlan_id = 3
         data = FAKE_VLAN_DATA % {"name": fake_vlan_name, "id": vlan_id}
 
         # Try to create the resource using a valid etag
@@ -292,8 +292,8 @@ class IfMatchVlanTest(OpsVsiTest):
             etag = '"abcdef"'
 
         # Fill Vlan data
-        fake_vlan_name = "VLAN2"
-        vlan_id = 2
+        fake_vlan_name = "VLAN3"
+        vlan_id = 3
         data = FAKE_VLAN_DATA % {"name": fake_vlan_name, "id": vlan_id}
 
         # Try to create the resource using a invalid etag
@@ -399,8 +399,8 @@ class IfMatchVlanTest(OpsVsiTest):
     def test_delete_vlan_etag_match(self):
         info(TEST_START % "DELETE VLAN with matching Etag")
         # 1- Create Fake VLAN
-        fake_vlan_name = "VLAN2"
-        vlan_id = 2
+        fake_vlan_name = "VLAN3"
+        vlan_id = 3
         create_fake_vlan(Test_IfMatchVlan.test_var.vlan_path,
                          Test_IfMatchVlan.test_var.switch_ip,
                          fake_vlan_name, vlan_id)
@@ -426,8 +426,8 @@ class IfMatchVlanTest(OpsVsiTest):
     def test_delete_vlan_etag_not_match(self):
         info(TEST_START % "DELETE VLAN with not matching Etag")
         # 1- Create Fake VLAN
-        fake_vlan_name = "VLAN2"
-        vlan_id = 2
+        fake_vlan_name = "VLAN3"
+        vlan_id = 3
         create_fake_vlan(Test_IfMatchVlan.test_var.vlan_path,
                          Test_IfMatchVlan.test_var.switch_ip,
                          fake_vlan_name, vlan_id)
