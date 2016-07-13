@@ -298,6 +298,54 @@
           and set it to <code>false</code> to disable it. VRRP is disabled by default.
         </column>
     </group>
+
+    <group title="BFD Enable">
+        <column name="bfd_enable"
+                type='{"type": "boolean"}'>
+          Set this value to <code>true</code> to enable BFD functionality globally
+          and set it to <code>false</code> to disable it. BFD is disabled by default.
+        </column>
+    </group>
+
+    <group title="BFD Global Parameters">
+        <p>
+          Bidirectional Forwarding Detection (BFD) is a protocol, defined in
+          RFC 5880 intended to detect faults in the bidirectional path between
+          two forwarding engines, including physical interfaces, subinterfaces,
+          data link(s), and to the extent possible the forwarding engines
+          themselves, with potentially very low latency.
+          BFD operates by regularly transmitting BFD control messages at a rate
+          negotiated independently in each direction. Each endpoint specifies the
+          rate at which it expects to receive control messages, and the rate at
+          which it is willing to transmit them.
+        </p>
+        <column name="bfd_global_params" key="interval"
+              type='{"type": "integer", "minInteger": 15, "maxInteger": 300000}'
+              emptyValue="1000">
+          The shortest interval, in milliseconds, at which this BFD session is
+          willing to transmit BFD control messages. Messages will actually be
+          transmitted at a slower rate if the remote endpoint is not willing
+          to receive as quickly as specified. Defaults to 1000.
+        </column>
+        <column name="bfd_global_params" key="min_rx"
+              type='{"type": "integer", "minInteger": 15, "maxInteger": 300000}'
+              emptyValue="1000">
+          The shortest interval, in milliseconds, at which this BFD session offers
+          to receive BFD control messages. The remote endpoint may choose to send
+          messages at a slower rate. Defaults to 1000.
+        </column>
+        <column name="bfd_global_params" key="decay_min_rx"
+              type='{"type": "integer", "minInteger": 0, "maxInteger": 255}'
+              emptyValue="3">
+          An alternate receive interval, in milliseconds, that must be greater
+          than or equal to bfd:min_rx. The implementation switches from bfd:min_rx
+          to bfd:decay_min_rx when there is no obvious incoming data traffic at
+          the interface, to reduce the CPU and bandwidth cost of monitoring an idle
+          interface. This feature may be disabled by setting a value of 0.
+          This feature is reset whenever bfd:decay_min_rx or bfd:min_rx changes.
+        </column>
+    </group>
+
     <group title="LACP Configurations">
       <column name="lacp_config" key="lacp-system-id">
         The LACP system ID of this <ref table="Bridge"/>.  The system ID of a
@@ -3085,6 +3133,16 @@
       <column name="local_interface">
       Reference to the corresponding interface.  This is used only for ipv6.
       Default is none.
+      </column>
+
+      <column name="bfd_fallover_enable">
+      Enables BFD support for fallover.
+      Default is no-fallover.
+      </column>
+
+      <column name="bfd_session">
+      BFD session reference corresponding to the BGP Peer, as identified in
+      the <ref table="BFD_Session"/>.
       </column>
 
       <column name="remote_as">
@@ -8366,6 +8424,176 @@
       </column>
       <column name="ports">
         List of egress Ports, Packet forwarding takes place through these Ports.
+      </column>
+    </group>
+  </table>
+
+  <table name="BFD_Session">
+    <p>
+      BFD per session information table.
+    </p>
+    <group title="BFD Configuration">
+      <column name="enable">
+        True when BFD is enabled globally.
+        If not specified, BFD will not be enabled by default.
+      </column>
+      <column name="min_rx"
+              type='{"type": "integer", "minInteger": 15, "maxInteger": 300000}'>
+        The shortest interval, in milliseconds, at which this BFD session offers
+        to receive BFD control messages. The remote endpoint may choose to send
+        messages at a slower rate. Defaults to bfd_global_params:min_rx.
+      </column>
+      <column name="min_tx"
+              type='{"type": "integer", "minInteger": 15, "maxInteger": 300000}'>
+        The shortest interval, in milliseconds, at which this BFD session is
+        willing to transmit BFD control messages. Messages will actually be
+        transmitted at a slower rate if the remote endpoint is not willing
+        to receive as quickly as specified. Defaults to bfd_global_params:min_tx.
+      </column>
+      <column name="decay_min_rx"
+              type='{"type": "integer", "minInteger": 0, "maxInteger": 255}'>
+        An alternate receive interval, in milliseconds, that must be greater
+        than or equal to bfd:min_rx. The implementation switches from bfd:min_rx
+        to bfd:decay_min_rx when there is no obvious incoming data traffic at
+        the interface, to reduce the CPU and bandwidth cost of monitoring an idle
+        interface. This feature may be disabled by setting a value of 0.
+        This feature is reset whenever bfd:decay_min_rx or bfd:min_rx changes.
+      </column>
+      <column name="bfd_src_ip">
+        Set to an IPv4 address to set the IP address used as source for
+        transmitted BFD packets.
+      </column>
+      <column name="bfd_dst_ip">
+        Set to an IPv4 address to set the IP address used as destination for
+        transmitted BFD packets.
+      </column>
+      <column name="forwarding_if_rx">
+        This param is applicable for BFD sessions on physical/logical
+        interface. When true, traffic received on the Interface is used to
+        indicate the capability of packet I/O. BFD control packets are still
+        transmitted and received. At least one BFD control packet must be
+        received every 100 * bfd:min_rx amount of time. Otherwise, even if
+        traffic are received, the bfd:forwarding will be false.
+      </column>
+      <column name="cpath_down">
+        Set to true to notify the remote endpoint that traffic should not be
+        forwarded to this system for some reason other than a connectivty
+        failure on the interface being monitored. The typical underlying
+        reason is ‘‘concatenated path down,’’ that is, that connectivity
+        beyond the local system is down. Defaults to false
+      </column>
+      <column name="check_tnl_key">
+        Set to true to make BFD accept only control messages with a tunnel key
+        of zero. By default, BFD accepts control messages with any tunnel key.
+      </column>
+      <column name="bfd_local_src_mac">
+        Set to an Ethernet address in the form xx:xx:xx:xx:xx:xx to set the
+        MAC used as source for transmitted BFD packets. The default is the
+        mac address of the BFD enabled interface / out going interface
+      </column>
+      <column name="bfd_local_dst_mac">
+        Set to an Ethernet address in the form xx:xx:xx:xx:xx:xx to set the
+        MAC used as destination for transmitted BFD packets.
+      </column>
+      <column name="bfd_remote_dst_mac">
+        Set to an Ethernet address in the form xx:xx:xx:xx:xx:xx to set the
+        MAC used for checking the destination of received BFD packets.
+        Packets with different destination MAC will not be considered
+        as BFD packets. If not specified the destination MAC address of
+        received BFD packets are not checked.
+      </column>
+    </group>
+
+    <group title="BFD Status">
+      <column name="state"
+              type='{"type":"string",
+              "enum": ["set", ["down", "init", "up", "admin_down"]]}' >
+        Reports the state of the BFD session.
+        The BFD session is fully healthy and negotiated if UP.
+      </column>
+      <column name="remote_state"
+              type='{"type":"string",
+              "enum": ["set", ["down", "init", "up", "admin_down"]]}' >
+        Reports the state of the remote endpoint's BFD session.
+        The possible values are one of down, init, up, or admin_down.
+      </column>
+      <column name="diagnostic"
+              type='{"type":"string",
+              "enum": ["set", ["none",
+                               "control_detect_expired",
+                               "echo_failed",
+                               "neighbor_session_down",
+                               "forwarding_reset",
+                               "path_down",
+                               "concat_path_down",
+                               "admin_down",
+                               "reverse_concat_path_down",
+                               "max_diagnostics"]]}' >
+        In case of a problem, set to an error message that reports what the
+        local BFD session thinks is wrong.
+        The error messages are defined in section 4.1 of [RFC 5880].
+      </column>
+      <column name="remote_diagnostic"
+              type='{"type":"string",
+              "enum": ["set", ["none",
+                               "control_detect_expired",
+                               "echo_failed",
+                               "neighbor_session_down",
+                               "forwarding_reset",
+                               "path_down",
+                               "concat_path_down",
+                               "admin_down",
+                               "reverse_concat_path_down",
+                               "max_diagnostics"]]}' >
+        In case of a problem, set to an error message that reports what the
+        remote endpoint’s BFD session thinks is wrong.
+        The error messages are defined in section 4.1 of [RFC 5880].
+      </column>
+      <column name="forwarding">
+        This param is applicable for BFD sessions on physical/logical
+        interface.
+        Reports whether the BFD session believes this Interface may be used
+        to forward traffic. Typically this means the local session is
+        signaling UP, and the remote system isn’t signaling a problem such
+        as concatenated path down.
+      </column>
+      <column name="flap_count">
+        Counts the number of bfd_status:forwarding flaps since start. A flap
+        is considered as a change of the bfd_status:forwarding value.
+      </column>
+      <column name="session_id">
+        BFD session identifier, useful for troubleshooting
+      </column>
+      <column name="from"
+              type='{"type":"string",
+              "enum": ["set", ["static", "bgp"]]}'>
+        Originator of the BFD session.
+      </column>
+      <column name="local_discriminator">
+        BFD session local discriminator value, useful for troubleshooting
+      </column>
+      <column name="remote_discriminator">
+        BFD session endpoint's discriminator value, useful for troubleshooting
+      </column>
+      <column name="effective_min_tx_interval">
+        BFD session operational min_tx interval as determined after the session
+        negotiation with remote endpoint
+      </column>
+      <column name="effective_min_rx_interval">
+        BFD session operational min_rx interval as determined after the session
+        negotiation with remote endpoint
+      </column>
+      <column name="remote_min_tx_interval">
+        BFD session remote operational min_tx interval as detected by the
+        local endpoint
+      </column>
+      <column name="remote_min_rx_interval">
+        BFD session remote operational min_rx interval as detected by the
+        local endpoint
+      </column>
+      <column name="remote_multiplier">
+        BFD session remote operational multiplier as detected by the
+        local endpoint
       </column>
     </group>
   </table>

@@ -208,6 +208,25 @@
             "max": "unlimited"
           }
         },
+        "bfd_enable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "bfd_global_params": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
         "lacp_config": {
           "category": "configuration",
           "type": {
@@ -3163,6 +3182,28 @@
             "key": {
               "type": "uuid",
               "refTable": "Interface"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "bfd_fallover_enable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "bfd_session": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "BFD_Session"
             },
             "min": 0,
             "max": 1
@@ -7109,6 +7150,272 @@
       ],
       "isRoot": true
     },
+    "BFD_Session": {
+        "columns": {
+            "enable": {
+                "category": {
+                  "follows": "from"
+                },
+                "type": {
+                    "key": {
+                        "type": "boolean"
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "bfd_src_ip": {
+                "category": {
+                  "follows": "from"
+                },
+                "type": {
+                    "key": {
+                        "type": "string",
+                        "maxLength": 49
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "bfd_dst_ip": {
+                "category": {
+                  "follows": "from"
+                },
+                "type": {
+                    "key": {
+                        "type": "string",
+                        "maxLength": 49
+                    }
+                },
+                "mutable": false
+            },
+            "min_rx": {
+                "category": {
+                  "follows": "from"
+                },
+                "type": {
+                    "key": {
+                        "type": "integer",
+                        "minInteger": 15,
+                        "maxInteger": 300000
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "min_tx": {
+                "category": {
+                  "follows": "from"
+                },
+                "type": {
+                    "key": {
+                        "type": "integer",
+                        "minInteger": 15,
+                        "maxInteger": 300000
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "decay_min_rx": {
+                "category": {
+                  "follows": "from"
+                },
+                "type": {
+                    "key": {
+                        "type": "integer",
+                        "minInteger": 1,
+                        "maxInteger": 255
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "forwarding_if_rx": {
+                "category": {
+                  "follows": "from"
+                },
+                "type": {
+                    "key": {
+                        "type": "boolean"
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "cpath_down": {
+                "category": {
+                  "follows": "from"
+                },
+                "type": {
+                    "key": {
+                        "type": "boolean"
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "check_tnl_key": {
+                "category": {
+                  "follows": "from"
+                },
+                "type": {
+                    "key": {
+                        "type": "boolean"
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "bfd_local_src_mac": {
+                "category": {
+                  "follows": "from"
+                },
+                "type": {
+                    "key": {
+                        "type": "string",
+                        "maxLength": 17
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "bfd_local_dst_mac": {
+                "category": {
+                  "follows": "from"
+                },
+                "type": {
+                    "key": {
+                        "type": "string",
+                        "maxLength": 17
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "bfd_remote_dst_mac": {
+                "category": {
+                  "follows": "from"
+                },
+                "type": {
+                    "key": {
+                        "type": "string",
+                        "maxLength": 17
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "state": {
+                "category": "status",
+                "type": {
+                    "key": {
+                        "type": "string"
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "remote_state": {
+                "category": "status",
+                "type": {
+                    "key": {
+                        "type": "string"
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "diagnostic": {
+                "category": "status",
+                "type": {
+                    "key": {
+                        "type": "string"
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "remote_diagnostic": {
+                "category": "status",
+                "type": {
+                    "key": {
+                        "type": "string"
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "forwarding": {
+                "category": "status",
+                "type": {
+                    "key": {
+                        "type": "boolean"
+                    },
+                    "min": 0,
+                    "max": 1
+                }
+            },
+            "flap_count": {
+                "category": "status",
+                "type": "integer"
+            },
+            "session_id": {
+                "category": "status",
+                "type": "integer"
+            },
+            "from": {
+                "category": {
+                   "per-value": [
+                      { "value": "static", "category": "configuration" },
+                      { "value": "bgp", "category": "status" }
+                   ]
+                },
+                "type": {
+                   "key": {
+                      "type": "string",
+                      "enum": ["set", ["static", "bgp"] ]
+                   }
+                },
+                "mutable": false
+            },
+            "local_discriminator": {
+                "category": "status",
+                "type": "integer"
+            },
+            "remote_discriminator": {
+                "category": "status",
+                "type": "integer"
+            },
+            "effective_min_tx_interval": {
+                "category": "status",
+                "type": "integer"
+            },
+            "effective_min_rx_interval": {
+                "category": "status",
+                "type": "integer"
+            },
+            "remote_min_tx_interval": {
+                "category": "status",
+                "type": "integer"
+            },
+            "remote_min_rx_interval": {
+                "category": "status",
+                "type": "integer"
+            },
+            "remote_multiplier": {
+                "category": "status",
+                "type": "integer"
+            }
+        },
+        "indexes": [
+          [
+            "bfd_dst_ip",
+            "from"
+          ]
+        ],
+   "isRoot": true
+   },
    "sFlow":{
       "columns":{
        "name":{
