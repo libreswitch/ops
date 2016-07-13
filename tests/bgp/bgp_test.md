@@ -1,4 +1,4 @@
-BGP Test Cases
+eBGP Test Cases
 ==============
 
 ## Contents
@@ -13,7 +13,7 @@ BGP Test Cases
 
 ##  Basic route advertisement
 ### Objective
-The test case verifies the BGP route advertisement by emulating two BGP peers and verifying the received route from the peer.
+The test case verifies the eBGP route advertisement by emulating two eBGP peers and verifying the received route from the peer.
 
 ### Requirements
 
@@ -82,8 +82,8 @@ router bgp 2
     ip address 9.0.0.2/8
     ```
 
-2. Verify that the BGP processes are running on the switches by confirming that a non-null value is displayed after executing "pgrep -f bgpd".
-3. Apply BGP configurations in **vtysh** for each switch with the following commands:
+2. Verify that the eBGP processes are running on the switches by confirming that a non-null value is displayed after executing "pgrep -f bgpd".
+3. Apply eBGP configurations in **vtysh** for each switch with the following commands:
 
     ***Switch 1***
 
@@ -105,7 +105,7 @@ router bgp 2
     neighbor 9.0.0.1 remote-as 1
     ```
 
-4. Verify all BGP configurations by comparing the expected values against the output of **show running-config**.
+4. Verify all eBGP configurations by comparing the expected values against the output of **show running-config**.
 5. Confirm that the network advertised from switch 2 is in the output of **show ip bgp** on switch 1.
 6. Verify that the network advertised from switch 1 is in the output of **show ip bgp** on switch 2.
 
@@ -135,8 +135,8 @@ Local router-id 9.0.0.2
 The test case is considered failing in the following cases:
 
 - The advertised routes from the peers are not present in the output from the **show ip bgp** command and fails during verification.
-- The BGP daemon is not running on at least one of the switches and fails during verification.
-- The BGP configurations are not applied successfully and the test fails during verification.
+- The eBGP daemon is not running on at least one of the switches and fails during verification.
+- The eBGP configurations are not applied successfully and the test fails during verification.
 
 
 
@@ -144,7 +144,7 @@ The test case is considered failing in the following cases:
 
 ##  Neighbor password
 ### Objective
-The test case verifies the **neighbor password** and **no neighbor password** commands by verifying the BGP connection state after setting an incorrect password, correct password, and removing the password.
+The test case verifies the **neighbor password** and **no neighbor password** commands by verifying the eBGP connection state after setting an incorrect password, correct password, and removing the password.
 
 ### Requirements
 
@@ -215,8 +215,8 @@ router bgp 2
     ip address 9.0.0.2/8
     ```
 
-2. Verify that the BGP processes are running on the switches by confirming that a non-null value is displayed after executing "pgrep -f bgpd".
-3. Apply BGP configurations in **vtysh** for each switch with the following commands:
+2. Verify that the eBGP processes are running on the switches by confirming that a non-null value is displayed after executing "pgrep -f bgpd".
+3. Apply eBGP configurations in **vtysh** for each switch with the following commands:
 
     ***Switch 1***
 
@@ -336,7 +336,7 @@ The test case is considered passing if the established connection is no longer c
 The test case is considered failing in the following cases:
 
 - The advertised routes from the peer are not present in the output from the **show ip bgp** command and fails during verification when the correct password is configured.
-- The BGP daemon is not running on at least one of the switches and fails during verification.
+- The eBGP daemon is not running on at least one of the switches and fails during verification.
 - The state of the neighbor is established in the command **show ip bgp summary** output after setting the incorrect password or when the password is removed on switch 1.
 
 
@@ -449,8 +449,8 @@ The command **neighbor remove-private-AS**, applied on switch 2, removes the AS 
     ip address 29.0.0.3/8
     ```
 
-2. Verify that the BGP processes are running on the switches by confirming a non-null value exists after executing "pgrep -f bgpd".
-3. Apply BGP configurations in **vtysh** for each switch with the following commands:
+2. Verify that the eBGP processes are running on the switches by confirming a non-null value exists after executing "pgrep -f bgpd".
+3. Apply eBGP configurations in **vtysh** for each switch with the following commands:
 
     ***Switch 1***
 
@@ -541,7 +541,7 @@ Local router-id 9.0.0.1
 The test case is considered failing in the following cases:
 
 - The advertised routes from the peers are not present in the output from the **show ip bgp** command.
-- The BGP daemon is not running on at least one of the switches and the test fails during verification.
+- The eBGP daemon is not running on at least one of the switches and the test fails during verification.
 - The advertised routes from switch 2 includes the AS number for switch 3 in the output from the **show ip bgp** command on switch 1 after setting **neighbor remove-private-AS**.
 - The advertised routes from switch 2 does not include the AS number for switch 3 in the output from the **show ip bgp** command on switch 1 after setting **no neighbor remove-private-AS**.
 
@@ -620,8 +620,8 @@ router bgp 2
     ip address 9.0.0.2/8
     ```
 
-2. Verify that the BGP processes are running on the switches by confirmiing that a non-null value rexists after executing "pgrep -f bgpd".
-3. Apply BGP configurations in **vtysh** for each switch with the following commands:
+2. Verify that the eBGP processes are running on the switches by confirmiing that a non-null value rexists after executing "pgrep -f bgpd".
+3. Apply eBGP configurations in **vtysh** for each switch with the following commands:
 
     ***Switch 1***
 
@@ -701,7 +701,7 @@ Local router-id 9.0.0.2
 The test case is considered failing in the following cases:
 
 - The advertised routes from the peer are not present in the output from the **show ip bgp** command and the test fails during verification when the neighbor configurations are applied.
-- The BGP daemon is not running on at least one of the switches and fails during verification.
+- The eBGP daemon is not running on at least one of the switches and fails during verification.
 - The advertised routes from the peer are still present in the output from the **show ip bgp** command after applying the **no neighbor remote-as** command.
 
 
@@ -785,8 +785,8 @@ The test case verifies the **neighbor peer-group** command by creating a peer-gr
     ip address 9.0.0.2/8
     ```
 
-2. Verify that the BGP processes are running on the switches by confirming a non-null value exists after executing "pgrep -f bgpd".
-3. Apply BGP configurations in **vtysh** for each switch with the following commands:
+2. Verify that the eBGP processes are running on the switches by confirming a non-null value exists after executing "pgrep -f bgpd".
+3. Apply eBGP configurations in **vtysh** for each switch with the following commands:
 
     ***Switch 1***
 
@@ -812,7 +812,7 @@ The test case verifies the **neighbor peer-group** command by creating a peer-gr
     neighbor 9.0.0.1 peer-group extern-peer-group
     ```
 
-4. Verify all BGP configurations by comparing the expected values against the output of the **show running-config** command.
+4. Verify all eBGP configurations by comparing the expected values against the output of the **show running-config** command.
 5. Verify that the **neighbor peer-group** configuration is applied succesfully by checking the route from switch 2 is received on switch 1 and the route from switch 1 is received on switch 2 via the **show ip bgp** command.
 6. Remove the neighbor peer-group configuration on switch 1 by issuing the following commands in **vtysh**:
 
@@ -871,7 +871,7 @@ Local router-id 9.0.0.2
 The test case is considered failing in the following cases:
 
 - The advertised routes from the peers are not present in the output from the **show ip bgp** command and fails during verification when the neighbor peer-group configurations are applied.
-- The BGP daemon is not running on at least one of the switches and fails during verification.
+- The eBGP daemon is not running on at least one of the switches and fails during verification.
 - The advertised routes from the peer are still present in the output from the **show ip bgp** command after applying the **no neighbor peer-group** command.
 
 
@@ -962,7 +962,7 @@ The test case verifies the **ip prefix-list** command by configuring a **route-m
     ip address 8.0.0.2/8
     ```
 
-2. Verify that the BGP processes are running on the switches by confirming that a non-null value exists after executing "pgrep -f bgpd".
+2. Verify that the eBGP processes are running on the switches by confirming that a non-null value exists after executing "pgrep -f bgpd".
 3. Create the IP prefix-lists on switch 1 to prohibit network 9.0.0.0/8 and permit network 10.0.0.0/8 with the following commands:
 
     ***Switch 1***
@@ -985,7 +985,7 @@ The test case verifies the **ip prefix-list** command by configuring a **route-m
     set community 1:5003 additive
     ```
 
-5. Apply the BGP configurations on each switch. The route-map configuration is applied to a neighbor, which will filter outgoing advertised routes.
+5. Apply the eBGP configurations on each switch. The route-map configuration is applied to a neighbor, which will filter outgoing advertised routes.
 
     ***Switch 1***
 
@@ -1009,7 +1009,7 @@ The test case verifies the **ip prefix-list** command by configuring a **route-m
     neighbor 8.0.0.1 remote-as 1
     ```
 
-6. Verify all BGP configurations by comparing the expected values against the output of the **show running-config** command.
+6. Verify all eBGP configurations by comparing the expected values against the output of the **show running-config** command.
 7. Confirm that the **neighbor route-map** configuration is applied succesfully by checking that the network 9.0.0.0/8 from switch 1 is not received and the network 10.0.0.0/8 is received on switch 2 via the **show ip bgp** command.
 8. Ensure that the metric value, as configured on switch 1, is reflected in the received route on switch 2 via the **show ip bgp** command.
 9. Remove the **set metric** and **set community** configurations on switch 1 by issuing the following commands in **vtysh**:
@@ -1099,7 +1099,7 @@ Local router-id 8.0.0.2
 The test case is considered failing in the following cases:
 
 - The advertised routes from the peers are not present in the output of the **show ip bgp** command.
-- The BGP daemon is not running on at least one of the switches and fails during verification.
+- The eBGP daemon is not running on at least one of the switches and fails during verification.
 - The prohibited network 9.0.0.0/8 from switch 1 exists in the output of the **show ip bgp** command on switch 2 prior to the removal of the **route-map match** configuration.
 - The set metric value is not 1000 for the routes from switch 1 prior to the removal of the **route-map set** configuration.
 - The network 9.0.0.0/8 is not present in the output of the **show ip bgp** command on switch 2 after the **no route-map match** command is executed.
@@ -1242,9 +1242,9 @@ The test case verifies the **ip prefix-list** command by configuring a **route-m
     ```
 
 3. Configure the IP addresses **11.0.1.1/8** and **12.0.1.1/8** on hosts 1 and 2, respectively.
-4. Verify that the BGP processes are running on the switches by verifying a non-null value exists after executing "pgrep -f bgpd".
+4. Verify that the eBGP processes are running on the switches by verifying a non-null value exists after executing "pgrep -f bgpd".
 5. Confirm thatthe hosts are not able to perform a PING.
-6. Apply the BGP configurations in **vtysh** for each switch with the following commands:
+6. Apply the eBGP configurations in **vtysh** for each switch with the following commands:
 
     ***Switch 1***
 
@@ -1287,7 +1287,7 @@ The test case verifies the **ip prefix-list** command by configuring a **route-m
     neighbor extern-peer-group remote-as 1
     ```
 
-7. Verify all the BGP configurations by comparing the expected values against the output of the **show running-config** command.
+7. Verify all the eBGP configurations by comparing the expected values against the output of the **show running-config** command.
 8. Confirm that the **neighbor route-map** configuration is applied succesfully by checking that the switch 1 network 10.0.0.0/8 is not received and that the network 11.0.0.0/8 is received on switch 2 via the **show ip bgp** command.
 9. Ensure that the hosts are able to PING after the routes are advertised.
 
@@ -1320,6 +1320,6 @@ The test case is considered failing in the following cases:
 
 - The advertised routes from the peer are not present in the output from the **show ip bgp** command.
 - The output of the **show running-config** command does not match with the input configuration.
-- The BGP daemon is not running on at least one of the switches and fails during verification.
+- The eBGP daemon is not running on at least one of the switches and fails during verification.
 - The prohibited network 10.0.0.0/8 from switch 1 exists in the output of the **show ip bgp** command on switch 2.
-- The hosts are not able to PING after BGP routes are advertised.
+- The hosts are not able to PING after eBGP routes are advertised.

@@ -1,5 +1,5 @@
-#Overview of BGP Integration with OpenSwitch Architecture
-OpenSwitch is designed to achieve optimal modularization, high availability, portability, extensibility, and unrestricted reuse of open source projects. The Quagga Border Gateway protocol (BGP) project is integrated as one of the OpenSwitch modules. BGP alone can provide complete dynamic routing for OpenSwitch. It can also work together with other protocols such as OSPF, ISIS and so on. This document mainly focuses on the role that BGP plays in the OpenSwitch architecture and its interaction with other modules. For the BGP internal design, see http://www.openswitch.net/documents/dev/ops-quagga/DESIGN. For the details of any other module that partcicipates with BGP and Openswitch, see the corresponding design module at http://www.openswitch.net/documents/dev/ops-xxx/DESIGN.
+#Overview of eBGP Integration with OpenSwitch Architecture
+OpenSwitch is designed to achieve optimal modularization, high availability, portability, extensibility, and unrestricted reuse of open source projects. The Quagga Border Gateway protocol (BGP) project is integrated as one of the OpenSwitch modules. eBGP alone can provide complete dynamic routing for OpenSwitch. It can also work together with other protocols such as OSPF, ISIS and so on. This document mainly focuses on the role that eBGP plays in the OpenSwitch architecture and its interaction with other modules. For the eBGP internal design, see http://www.openswitch.net/documents/dev/ops-quagga/DESIGN. For the details of any other module that partcicipates with eBGP and Openswitch, see the corresponding design module at http://www.openswitch.net/documents/dev/ops-xxx/DESIGN.
 
 #Participating modules and data flow
 
@@ -43,68 +43,68 @@ Figure 1 indicates intermodule communications and BGP data flow through the Open
     |                              |       |         |        | (PIM/IGMP)   |
     +------------------------------+       +---------+        +--------------+
 
-                         Figure 1, BGP Routing Architecture Overview
+                         Figure 1, eBGP Routing Architecture Overview
 ```
 
 ##OVSDB
-OVSDB serves as a central communication hub and all other modules communicate to and from BGP indirectly through OVSDB. As a result, BGP is shielded from all sorts of issues from other modules in the system. The OVSDB also provides a single data view to all modules in the system. All modules and OVSDB interact through publish and subscribe mechanisms.
+OVSDB serves as a central communication hub and all other modules communicate to and from eBGP indirectly through OVSDB. As a result, eBGP is shielded from all sorts of issues from other modules in the system. The OVSDB also provides a single data view to all modules in the system. All modules and OVSDB interact through publish and subscribe mechanisms.
 
 ##BGP
 BGP is an exterior gateway protocol (EGP) that is designed to exchange routing information among routers and switches in various autonomous systems (AS). BGP runs on top of the TCP protocol.
 
 ##Kernel
-All the BGP protocol control packets, such as open, update, keepalive, and notification are sent and received through the kernel (BGP<--->Kernel<--->ASIC). In addition to providing operating system functions and TCP for BGP, the kernel receives a copy of forwarding information base (FIB) and can do slow path forwarding compared to ASIC fast path forwarding.
+All the eBGP protocol control packets, such as open, update, keepalive, and notification are sent and received through the kernel (eBGP<--->Kernel<--->ASIC). In addition to providing operating system functions and TCP for eBGP, the kernel receives a copy of forwarding information base (FIB) and can do slow path forwarding compared to ASIC fast path forwarding.
 
 ##OSPF and ISIS
-OSPF or ISIS are both link state interior gateway protocols (IGP) that are designed to discover the shortest paths through routers and switches in a single autonomous system. OSPF runs on top of the IP protocol. The OSPF process supports IPv4, and the OSPF3 supports IPv6. Unlike OSPF, ISIS runs natively on an L2 and it does not need interface addressing information to transmit a message. Therefore, it can route multiple protocols and support both IPv4 and IPv6. BGP often relies on IGP to resolve its protocol next hops.
+OSPF or ISIS are both link state interior gateway protocols (IGP) that are designed to discover the shortest paths through routers and switches in a single autonomous system. OSPF runs on top of the IP protocol. The OSPF process supports IPv4, and the OSPF3 supports IPv6. Unlike OSPF, ISIS runs natively on an L2 and it does not need interface addressing information to transmit a message. Therefore, it can route multiple protocols and support both IPv4 and IPv6. eBGP often relies on IGP to resolve its protocol next hops.
 
 ##UI
-The CLI or REST or both are responsible for BGP configurations, state monitoring, show commands, and debug dumping.
+The CLI or REST or both are responsible for eBGP configurations, state monitoring, show commands, and debug dumping.
 
 ##Portd/interface
-BGP receives interface up or down state changes, address notifications from Portd and state notifications from interface modules.
+eBGP receives interface up or down state changes, address notifications from Portd and state notifications from interface modules.
 
 ##Zebra
-Zebra creates FIB by selecting active routes from all routes learned from all the protocols including BGP. On selecting the active routes, Zebra downloads FIB to the kernel, triggers the start of BGP route redistribution, and does next hop recursive resolution on behalf of BGP.
+Zebra creates FIB by selecting active routes from all routes learned from all the protocols including eBGP. On selecting the active routes, Zebra downloads FIB to the kernel, triggers the start of eBGP route redistribution, and does next hop recursive resolution on behalf of eBGP.
 
 ##BFD
-Bidirectional Forwarding Detection (BFD) can be used to detect faults between two forwarding engines connected by a link. It provides low-overhead detection of faults on physical media that does not support failure detection itself, such as Ethernet, virtual circuits, and tunnels. BGP protocols can use BFD to receive faster notification of failing links using the native keepalive mechanism to play an important role for BGP fast convergence or fast recovering from link failures. Fast detection of failures is the key for BGP to converge quickly by using ECMP or add path.
+Bidirectional Forwarding Detection (BFD) can be used to detect faults between two forwarding engines connected by a link. It provides low-overhead detection of faults on physical media that does not support failure detection itself, such as Ethernet, virtual circuits, and tunnels. eBGP protocols can use BFD to receive faster notification of failing links using the native keepalive mechanism to play an important role for eBGP fast convergence or fast recovering from link failures. Fast detection of failures is the key for eBGP to converge quickly by using ECMP or add path.
 
 ##MPLS-LDP-RSVP
-LDP and RSVP are both MPLS signaling protocols that are used to set up MPLS tunnels. In L3 VPN deployment, BGP relies on the MPLS tunnels to route VPN traffic.
+LDP and RSVP are both MPLS signaling protocols that are used to set up MPLS tunnels. In L3 VPN deployment, eBGP relies on the MPLS tunnels to route VPN traffic.
 
 ##HA in OpenSwitch architecture
     - Non-stop forwarding or graceful restart (GR)
     - Non-stop routing (NSR)
 
 ##Policy
-The routing policy in Quagga is a library. BGP includes all routing policy in the BGP process. Then it can be applied when importing or exporting BGP routes. The prefix list can be used for filtering, while the route map can be used to change BGP path attributes.
+The routing policy in Quagga is a library. eBGP includes all routing policy in the eBGP process. Then it can be applied when importing or exporting eBGP routes. The prefix list can be used for filtering, while the route map can be used to change eBGP path attributes.
 
 
 ##Inter module data flows
-###Path for BGP input:
-    - Configurations:                     BGP <--- OVSDB <--- UI
-    - Port/Interface up/down/addresss:    BGP <--- OVSDB <--- Portd
-    - Redistributed routes:               BGP <--- OVSDB <--- Zebra
-    - Recursive nexthop resolution:       BGP <--- OVSDB <--- Zebra
-    - Route map configuration:            BGP <--- OVSDB <--- Policy
-    - Protocol packets:                   BGP <--- Kernel <--- ASIC (3-1)
+###Path for eBGP input:
+    - Configurations:                     eBGP <--- OVSDB <--- UI
+    - Port/Interface up/down/addresss:    eBGP <--- OVSDB <--- Portd
+    - Redistributed routes:               eBGP <--- OVSDB <--- Zebra
+    - Recursive nexthop resolution:       eBGP <--- OVSDB <--- Zebra
+    - Route map configuration:            eBGP <--- OVSDB <--- Policy
+    - Protocol packets:                   eBGP <--- Kernel <--- ASIC (3-1)
 
-###Path for BGP output:
-    - Best routes:                        BGP ---> OVSDB ---> Zebra
-    - Local RIB:                          BGP ---> OVSDB
-    - show/dump/statistics                BGP ---> OVSDB ---> UI
-    - Advertise routes, keepalive etc:    BGP ---> Kernel ---> ASIC (1-3)
+###Path for eBGP output:
+    - Best routes:                        eBGP ---> OVSDB ---> Zebra
+    - Local RIB:                          eBGP ---> OVSDB
+    - show/dump/statistics                eBGP ---> OVSDB ---> UI
+    - Advertise routes, keepalive etc:    eBGP ---> Kernel ---> ASIC (1-3)
 
 
 #OVSDB-Schema
 ------------
-All BGP configurations originate from the OVSDB. The UI writes configurations to the OVSDB. There are two OVSDB tables designed for BGP configurations that correspond to three hierarchical levels of BGP configurations. The BGP router table is used for global BGP configurations. The BGP neighbor and peer group tables store group and peer level configurations. BGP subscribes to OVSDB, whenever there is a new configuration or if there are new configuration changes, BGP gets a notification, and picks up the new configurations, and then programs the BGP back end as if the configuration is accessed directly from the CLI.
+All eBGP configurations originate from the OVSDB. The UI writes configurations to the OVSDB. There are two OVSDB tables designed for eBGP configurations that correspond to three hierarchical levels of eBGP configurations. The BGP router table is used for global BGP configurations. The eBGP neighbor and peer group tables store group and peer level configurations. eBGP subscribes to OVSDB, whenever there is a new configuration or if there are new configuration changes, eBGP gets a notification, and picks up the new configurations, and then programs the eBGP back end as if the configuration is accessed directly from the CLI.
 
-After BGP selects the best paths, it writes the selected routes to the RIB table in the OVSDB, triggering the start of the FIB computation by Zebra. BGP also writes statistics to the OVSDB BGP tables.
+After eBGP selects the best paths, it writes the selected routes to the RIB table in the OVSDB, triggering the start of the FIB computation by Zebra. eBGP also writes statistics to the OVSDB eBGP tables.
 
-##BGP and OVSDB table relationships
-Figure 2 describes the interaction between the BGP and the OVSDB tables.
+##eBGP and OVSDB table relationships
+Figure 2 describes the interaction between the eBGP and the OVSDB tables.
 
 ```ditaa
 
@@ -138,17 +138,17 @@ Figure 2 describes the interaction between the BGP and the OVSDB tables.
     |       +-------->  BGP_RIB   +-------> BGP_Nexthop |
     +-------+        +------------+       +-------------+
 
-              Figure 2 BGP and OVSDB tables
+              Figure 2 eBGP and OVSDB tables
 ```
 
 Note: Route numbers correspond to the numbers displayed in Figure 2.
 
-      - Route number 1 shows the relationship between the VRF, BGP_Router and the BGP_Neighbor tables. BGP subscribes to VRF, BGP_router, BGP_Neighbor tables for BGP configurations. BPG also publishes statistics to the three BGP tables.
-      - Route number 2 displays the relationship between the BGP, Route_Map and Rt_Map_Entry. The BGP subscribes to the route map tables for route map configurations.
-      - Route number 3 shows the relationship between the BGP, Prefix_List and the Plist_Entry. BGP subscribes to the prefix tables for prefix filter configurations.
-      - Route 4 displays the BGP, global RIB and FIB relationship. BGP publishes the best paths to the global RIB table. BGP also subscribs to FIB for route redistribution and nexthop resolution.
-      - Route 5 displays the BGP, port and Interface relationship. BGP subscribes to the port and interface table for interface states and addresses.
-      - Route 6 shows the BGP sending local routes to the BGP_RIB table in the OVSDB that serves as a database for BGP internal data.
+      - Route number 1 shows the relationship between the VRF, BGP_Router and the BGP_Neighbor tables. eBGP subscribes to VRF, BGP_router, BGP_Neighbor tables for eBGP configurations. eBGP also publishes statistics to the three eBGP tables.
+      - Route number 2 displays the relationship between the eBGP, Route_Map and Rt_Map_Entry. The eBGP subscribes to the route map tables for route map configurations.
+      - Route number 3 shows the relationship between the eBGP, Prefix_List and the Plist_Entry. eBGP subscribes to the prefix tables for prefix filter configurations.
+      - Route 4 displays the eBGP, global RIB and FIB relationship. eBGP publishes the best paths to the global RIB table. eBGP also subscribs to FIB for route redistribution and nexthop resolution.
+      - Route 5 displays the eBGP, port and Interface relationship. eBGP subscribes to the port and interface table for interface states and addresses.
+      - Route 6 shows the eBGP sending local routes to the BGP_RIB table in the OVSDB that serves as a database for eBGP internal data.
 
 ##TABLE SUMMARY
 The following list summarizes the purpose of each of the tables and their corresponding tables in the OpenSwitch database. Each table is described in more detail following the summary table.
@@ -160,18 +160,18 @@ The following list summarizes the purpose of each of the tables and their corres
     Table             |  Purpose
 ======================|=========================================================
     VRF               |  Virtual Routing and Forwarding
-    BGP_Router        |  BGP configurations, statuses and statistics
-    BGP_Neighbor      |  BGP peer groups, peers, statuses and statistics
-    Route_Map         |  Route map to modify BGP path attributes
+    BGP_Router        |  eBGP configurations, statuses and statistics
+    BGP_Neighbor      |  eBGP peer groups, peers, statuses and statistics
+    Route_Map         |  Route map to modify eBGP path attributes
     Route_Map_Entry   |  Ordered entries of route map
-    Prefix_List       |  Prefix list used to filter BGP routes
+    Prefix_List       |  Prefix list used to filter eBGP routes
     Prefix_List_Entry |  Ordered entries of prefix list
     RIB/FIB           |  Routing Information Base and FIB
     Nexthop           |  Nexthops for IP routes
     Port              |  Physical port, including L3 interface addresses
     Interface         |  Interface state
-    BGP_RIB           |  BGP private RIB, status and statistics
-    BGP_Nexthop       |  BGP private next hops
+    BGP_RIB           |  eBGP private RIB, status and statistics
+    BGP_Nexthop       |  eBGP private next hops
 ----------------------|---------------------------------------------------------
 
 ```
@@ -183,7 +183,7 @@ The following list summarizes the purpose of each of the tables and their corres
 =====================|==========================================================
     Name             |   tag of vrf
 ---------------------|----------------------------------------------------------
-    bgp_routers      |   references to BGP Router Table
+    bgp_routers      |   references to BGP_Router Table
 ---------------------|----------------------------------------------------------
 
 ```
@@ -194,9 +194,9 @@ The following list summarizes the purpose of each of the tables and their corres
 
     Column           |   Purpose
 =====================|==========================================================
-  router_id          |   id of BGP router
+  router_id          |   id of eBGP router
 ---------------------|----------------------------------------------------------
-  networks           |   BGP configured network routes
+  networks           |   eBGP configured network routes
 ---------------------|----------------------------------------------------------
   maximum_paths      |   max ECMP path allowed, to enable ECMP
 ---------------------|----------------------------------------------------------
@@ -204,7 +204,7 @@ The following list summarizes the purpose of each of the tables and their corres
   timers             |   keepalive
                      |   holdtime
 ---------------------|----------------------------------------------------------
-  redistribute       |   export routes from other protocols to BGP
+  redistribute       |   export routes from other protocols to eBGP
 ---------------------|----------------------------------------------------------
   always_compare_med |   TBD
 ---------------------|----------------------------------------------------------
@@ -291,7 +291,7 @@ The following list summarizes the purpose of each of the tables and their corres
                      |   bgp-peer-readtime: when was last time u/k message received
                      |   bgp-peer-readtime: when was last time peer get reset
 ---------------------|----------------------------------------------------------
-  timers connect     |   BGP connect tiemr
+  timers connect     |  eBGP connect tiemr
 ---------------------|----------------------------------------------------------
   advertisement-interval| Minimum gap between send updates
 ---------------------|----------------------------------------------------------
@@ -303,7 +303,7 @@ The following list summarizes the purpose of each of the tables and their corres
 ---------------------|----------------------------------------------------------
   disable-connected-check| Multihop EBGP
 ---------------------|----------------------------------------------------------
-  ebgp-multihop      |  Enable multihop EBGP
+  ebgp-multihop      |  Enable multihop eBGP
 ---------------------|----------------------------------------------------------
   next-hop-self      |  TBD
 ---------------------|----------------------------------------------------------
@@ -311,7 +311,7 @@ The following list summarizes the purpose of each of the tables and their corres
 ---------------------|----------------------------------------------------------
   send-community     |  Send cummunity to this nbr
 ---------------------|----------------------------------------------------------
-  ttl-security hops  |  Max hop to BGP peer
+  ttl-security hops  |  Max hop to eBGP peer
 ---------------------|----------------------------------------------------------
 
 ```
@@ -439,7 +439,7 @@ The following list summarizes the purpose of each of the tables and their corres
 -----------------------|----------------------------------------------------------
     distance           |   Administrative preference of this route
 -----------------------|----------------------------------------------------------
-    metric             |   BGP MED value
+    metric             |   eBGP MED value
 -----------------------|----------------------------------------------------------
                        |   n_nexthops: count of nh
     nexthops           |   Array of pointer to next hop table row
@@ -449,7 +449,7 @@ The following list summarizes the purpose of each of the tables and their corres
 
 ```
 
-###Table 10 Column summary for BGP RIB (BGP_Route) table
+###Table 10 Column summary for eBGP RIB (BGP_Route) table
 
 ```ditaa
 
@@ -463,11 +463,11 @@ The following list summarizes the purpose of each of the tables and their corres
 -----------------------|----------------------------------------------------------
     sub_address_family |   Unicast, multicast
 -----------------------|----------------------------------------------------------
-    peer               |   BGP peer IPv4 address
+    peer               |   eBGP peer IPv4 address
 -----------------------|----------------------------------------------------------
     distance           |   Administrative preference of this route
 -----------------------|----------------------------------------------------------
-    metric             |   BGP MED value
+    metric             |   eBGP MED value
 -----------------------|----------------------------------------------------------
                        |   n_nexthops: count of nh
     bgp_nexthops       |   Array of pointer to bgp next hop table row

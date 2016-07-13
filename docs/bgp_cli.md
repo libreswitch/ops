@@ -1,8 +1,8 @@
-#BGP Command Reference
+#eBGP Command Reference
 =======================
 
 ##Contents
-- [BGP configuration commands](#bgp-configuration-commands)
+- [eBGP configuration commands](#eBGP-configuration-commands)
 	- [router bgp](#router-bgp)
 	- [bgp router-id](#bgp-router-id)
 	- [IPv4 network](#ipv4-network)
@@ -12,7 +12,7 @@
 	- [bgp fast-external-failover](#bgp-fast-external-failover)
 	- [bgp log-neighbor-changes](#bgp-log-neighbor-changes)
 	- [redistribute routes](#redistribute-routes)
-	- [BGP neighbor commands](#bgp-neighbor-commands)
+	- [eBGP neighbor commands](#eBGP-neighbor-commands)
 		- [neighbor remote-as](#neighbor-remote-as)
 		- [neighbor description](#neighbor-description)
 		- [neighbor password](#neighbor-password)
@@ -89,11 +89,11 @@
 	- [show as-path access list](#show-as-path-access-list)
 	- [show as-path access list WORD](#show-as-path-access-list-word)
 
-## BGP configuration commands
+## eBGP configuration commands
 
 ### router bgp
 
-To use the BGP feature, first configure the BGP router as shown below.
+To use the eBGP feature, first configure the eBGP router as shown below.
 
 #### Syntax
 ```
@@ -101,7 +101,7 @@ To use the BGP feature, first configure the BGP router as shown below.
 ```
 
 #### Description
-This command is used to configure the BGP router. The Autonomous System (AS) number is needed to configure the BGP router. The BGP protocol uses the AS number to detect whether the BGP connection is internal or external.
+This command is used to configure the eBGP router. The Autonomous System (AS) number is needed to configure the eBGP router. The BGP protocol uses the AS number to detect whether the BGP connection is internal or external.
 
 #### Authority
 Admin user.
@@ -110,7 +110,7 @@ Admin user.
 | Parameter | Status   | Syntax |	Description          |
 |-----------|----------|----------------------|
 | *asn*  | Required | 1 - 4294967295 | The AS number. |
-| **no** | Optional | Literal | Destroys a BGP router with the specified AS number. |
+| **no** | Optional | Literal | Destroys an eBGP router with the specified AS number. |
 
 #### Examples
 ```
@@ -125,7 +125,7 @@ s1(config)#no router bgp 6001
 ```
 
 #### Description
-This command specifies the BGP router-ID for a BGP router.
+This command specifies the eBGP router-ID for an eBGP router.
 
 #### Authority
 Admin user.
@@ -134,7 +134,7 @@ Admin user.
 | Parameter | Status   | Syntax |	Description          |
 |-----------|----------|----------------------|
 | *A.B.C.D*  | Required | A.B.C.D | The IPv4 address. |
-| **no** | Optional | Literal | Deletes the BGP router IP address. |
+| **no** | Optional | Literal | Deletes the eBGP router IP address. |
 
 #### Examples
 ```
@@ -158,7 +158,7 @@ Admin user.
 | Parameter | Status   | Syntax |	Description          |
 |-----------|----------|----------------------|
 | *A.B.C.D/M*  | Required | A.B.C.D/M | IPv4 address with the prefix length.|
-| **no** | Optional | Literal | Removes the announced network for the BGP router. |
+| **no** | Optional | Literal | Removes the announced network for the eBGP router. |
 
 #### Examples
 The following configuration example shows that network 10.0.0.0/8 is announced to all neighbors:
@@ -180,7 +180,7 @@ router bgp 6001
 ```
 
 #### Description
-This command sets the maximum number of paths for a BGP router.
+This command sets the maximum number of paths for an eBGP router.
 
 #### Authority
 Admin user.
@@ -205,7 +205,7 @@ s1(config-router)# maximum-paths 5
 ```
 
 #### Description
-This command sets the keepalive interval and hold time for a BGP router.
+This command sets the keepalive interval and hold time for an eBGP router.
 
 #### Authority
 Admin user.
@@ -254,7 +254,7 @@ s1(config-router)# no ipv6 bgp network 2001:1::1/64
 ```
 
 #### Description
-This command is used to enable fast external failover for BGP directly connected peering sessions.
+This command is used to enable fast external failover for eBGP directly connected peering sessions.
 
 #### Authority
 Admin user.
@@ -262,7 +262,7 @@ Admin user.
 #### Parameters
 | Parameter | Status   | Syntax | Description          |
 |-----------|----------|----------------------|
-| **no** | Optional | Literal | Disables BGP fast external failover. |
+| **no** | Optional | Literal | Disables eBGP fast external failover. |
 
 #### Examples
 ```
@@ -277,7 +277,7 @@ s1(config-router)# no bgp fast-external-failover
 ```
 
 #### Description
-This command enables logging of BGP neighbor resets and status changes (up and down).
+This command enables logging of eBGP neighbor resets and status changes (up and down).
 
 #### Authority
 Admin user.
@@ -300,7 +300,7 @@ s1(config-router)# no bgp log-neighbor-changes
 [no] redistribute <connected | static | ospf> route-map <name>
 ```
 #### Description
-This command configures the route redistribution of the specified protocol or kind into BGP; filtering the routes using the given route-map, if specified.
+This command configures the route redistribution of the specified protocol or kind into eBGP; filtering the routes using the given route-map, if specified.
 
 #### Authority
 Admin user.
@@ -309,7 +309,7 @@ Admin user.
 | Parameter | Status   | Syntax |       Description          |
 |-----------|----------|----------------------|
 | *name*  | Optional | String of maximum length 80 characters. | The route-map name. |
-| **no** | Optional | Literal | Removes the redistribution of routes from BGP. |
+| **no** | Optional | Literal | Removes the redistribution of routes from eBGP. |
 
 #### Examples
 ```
@@ -324,7 +324,7 @@ s1(config-router)# redistribute static route-map rm1
 s1(config-router)# redistribute ospf route-map rm1
 ```
 
-### BGP neighbor commands
+### eBGP neighbor commands
 #### neighbor remote-as
 
 ##### Syntax
@@ -343,7 +343,7 @@ Admin user.
 |-----------|----------|----------------------|
 | *A.B.C.D*  | Required | A.B.C.D | The peer IPv4 address. |
 | *asn* | Required| 1 - 4294967295 |  The autonomous system number of the peer. |
-| **no** | Optional | Literal | Deletes a configured BGP peer. |
+| **no** | Optional | Literal | Deletes a configured eBGP peer. |
 
 ##### Examples
 ```
@@ -385,7 +385,7 @@ s1(config-router)# neighbor 9.0.0.2 description peer1
 ```
 
 ##### Description
-This command enables MD5 authentication on a TCP connection between BGP peers.
+This command enables MD5 authentication on a TCP connection between eBGP peers.
 
 ##### Authority
 Admin user.
@@ -411,7 +411,7 @@ s1(config-router)# neighbor 9.0.0.2 password secret
 ```
 
 ##### Description
-This command sets the keepalive interval and hold time for a specific BGP peer.
+This command sets the keepalive interval and hold time for a specific eBGP peer.
 
 ##### Authority
 Admin user.
@@ -446,7 +446,7 @@ Admin user.
 | Parameter | Status   | Syntax |	Description          |
 |-----------|----------|----------------------|
 | *A.B.C.D*  | Required | A.B.C.D | The peer IPv4 address. |
-| *val* | Required| 1-10| Number of times BGP allows an instance of AS to be in the AS_PATH. |
+| *val* | Required| 1-10| Number of times eBGP allows an instance of AS to be in the AS_PATH. |
 | **no** | Optional | Literal | Clears the state. |
 
 ##### Examples
@@ -489,7 +489,7 @@ s1(config-router)# neighbor 9.0.0.2 remove-private-AS
 ```
 
 ##### Description
-This command enables software-based reconfiguration to generate inbound updates from a neighbor without clearing the BGP session. Issue the `no` command to clear this state.
+This command enables software-based reconfiguration to generate inbound updates from a neighbor without clearing the eBGP session. Issue the `no` command to clear this state.
 
 ##### Authority
 admin
@@ -514,7 +514,7 @@ s1(config-router)# neighbor 9.0.0.2 soft-reconfiguration inbound
 ```
 
 ##### Description
-This command shuts down the peer. Use this syntax to preserve the neighbor configuration, but drop the BGP peer state.
+This command shuts down the peer. Use this syntax to preserve the neighbor configuration, but drop the eBGP peer state.
 
 ##### Authority
 Admin user.
@@ -601,8 +601,8 @@ Admin user.
 |-----------|----------|----------------------|
 | *A.B.C.D*  | Optional | A.B.C.D | The peer IPv4 address. |
 | *X:X::X:X*  | Optional | X:X:X:X | The peer IPv6 address. |
-| *interval* | Required| 0-600 |  The time interval for sending BGP routing updates in secs. |
-| **no** | Optional | Literal | Deletes the advertisement interval for a configured BGP peer. |
+| *interval* | Required| 0-600 |  The time interval for sending eBGP routing updates in secs. |
+| **no** | Optional | Literal | Deletes the advertisement interval for a configured eBGP peer. |
 
 ##### Examples
 ```
@@ -622,7 +622,7 @@ s1(config-router)# no neighbor 2001:db8:0:1 advertisement-interval 400
 [no] neighbor <A.B.C.D | X:X::X:X | peer_group_name> ebgp-multihop
 ```
 ##### Description
-This command attempts BGP connections with external AS routers that are not directly connected.
+This command attempts eBGP connections with external AS routers that are not directly connected.
 
 ##### Authority
 Admin user.
@@ -725,7 +725,7 @@ s1(config-router)# no neighbor 10.108.1.1 soft-reconfiguration inbound
 [no] neighbor (A.B.C.D|X:X::X:X|WORD) ttl-security hops <1-254>
 ```
 ##### Description
-This command specifies the maximum number of hops to the BGP peer.
+This command specifies the maximum number of hops to the eBGP peer.
 
 ##### Authority
 Admin user.
@@ -750,7 +750,7 @@ s1(config-router)# no neighbor 10.1.1.1 ttl-security hops 2
 ```
 
 #### Description
-This command facilitates the configuration of access lists, based on autonomous system paths that control routing updates. Autonomous system paths are based on BGP autonomous paths information. Access lists are filters that restrict the routing information that a router learns or advertises to and from a neighbor. Multiple BGP peers or route maps can reference a single access list. These access lists can be applied to both inbound and outbound route updates. Each route update is passed through the access list. BGP applies each rule in the access list in the order it appears in the list. When a route matches a rule, the decision to permit the route through or deny the route from the filter is made, and no further rules are processed. A regular expression is a pattern used to match against an input string. In BGP, regular expression can be built to match information about an autonomous system path.
+This command facilitates the configuration of access lists, based on autonomous system paths that control routing updates. Autonomous system paths are based on eBGP autonomous paths information. Access lists are filters that restrict the routing information that a router learns or advertises to and from a neighbor. Multiple eBGP peers or route maps can reference a single access list. These access lists can be applied to both inbound and outbound route updates. Each route update is passed through the access list. eBGP applies each rule in the access list in the order it appears in the list. When a route matches a rule, the decision to permit the route through or deny the route from the filter is made, and no further rules are processed. A regular expression is a pattern used to match against an input string. In eBGP, regular expression can be built to match information about an autonomous system path.
 
 #### Authority
 Admin user.
@@ -807,7 +807,7 @@ s1(config)# route-map rm1 deny 1
 ```
 
 ##### Description
-This command matches a BGP autonomous system path access list.
+This command matches an eBGP autonomous system path access list.
 
 ##### Authority
 Admin user.
@@ -832,7 +832,7 @@ s1(config-route-map)# no match as-path
 ```
 
 ##### Description
-This command matches a BGP community. Use this command in route-map configuration mode.
+This command matches an eBGP community. Use this command in route-map configuration mode.
 
 ##### Authority
 Admin user.
@@ -859,7 +859,7 @@ s1(config-route-map)# no match community
 ```
 
 ##### Description
-This command matches a BGP community with an exact match of communities.
+This command matches an eBGP community with an exact match of communities.
 
 ##### Authority
 Admin user.
@@ -886,7 +886,7 @@ s1(config-route-map)# no match community c1 exact-match
 ```
 
 ##### Description
-This command matches the BGP extended community list attributes. Use this command in route-map mode.
+This command matches the eBGP extended community list attributes. Use this command in route-map mode.
 
 ##### Authority
 Admin user.
@@ -1011,7 +1011,7 @@ s1(config-route-map)# no match metric
 ```
 
 ##### Description
-This command matches BGP routes based on the origin of the specified route.
+This command matches eBGP routes based on the origin of the specified route.
 
 ##### Authority
 Admin user.
@@ -1038,7 +1038,7 @@ s1(config-route-map)# no match origin
 ```
 
 ##### Description
-This command matches the portion of BGP routes defined by a percentage value.
+This command matches the portion of eBGP routes defined by a percentage value.
 
 ##### Authority
 Admin user.
@@ -1064,7 +1064,7 @@ Route-map Command: [no] set metric <val>
 ```
 
 #### Description
-The `set community` command sets the BGP community attribute. The `set metric` command sets the BGP attribute MED.
+The `set community` command sets the eBGP community attribute. The `set metric` command sets the eBGP attribute MED.
 
 #### Authority
 Admin user.
@@ -1072,7 +1072,7 @@ Admin user.
 #### Parameters
 | Parameter | Status   | Syntax |	Description          |
 |-----------|----------|----------------------|
-| *AA:NN*  | Required | AS1:AS2 where AS is an integer in the range <1-4294967295>. | Sets the BGP community attribute. |
+| *AA:NN*  | Required | AS1:AS2 where AS is an integer in the range <1-4294967295>. | Sets the eBGP community attribute. |
 | *val*  | Required | Integer in the range <0-4294967295>.  | Sets the metric value. |
 | **no** | Optional | Literal | Clears the community attribute. |
 
@@ -1187,7 +1187,7 @@ s1(config-route-map)#set atomic-aggregate
 ```
 
 ##### Description
-This command removes the COMMUNITY attributes from the BGP routes identified in the specified community list. It also deletes matching communities for the route map.
+This command removes the COMMUNITY attributes from the eBGP routes identified in the specified community list. It also deletes matching communities for the route map.
 
 ##### Authority
 Admin user.
@@ -1239,7 +1239,7 @@ s1(config-route-map)#set community 6000:100
 ```
 
 ##### Description
-This command sets the target extended community (in decimal notation) of a BGP route. The COMMUNITY attribute value has the syntax AA:NN, where AA represents an AS or IP address, and NN is the community identifier.
+This command sets the target extended community (in decimal notation) of an eBGP route. The COMMUNITY attribute value has the syntax AA:NN, where AA represents an AS or IP address, and NN is the community identifier.
 
 ##### Authority
 Admin user.
@@ -1264,7 +1264,7 @@ s1(config-route-map)#set extcommunity rt 9.0.0.1:100
 ```
 
 ##### Description
-This command sets the site-of-origin extended community (in decimal notation) of a BGP route. The COMMUNITY attribute value has the syntax AA:NN, where AA represents an AS or IP address, and NN is the community identifier.
+This command sets the site-of-origin extended community (in decimal notation) of an eBGP route. The COMMUNITY attribute value has the syntax AA:NN, where AA represents an AS or IP address, and NN is the community identifier.
 
 ##### Authority
 Admin user.
@@ -1289,7 +1289,7 @@ s1(config-route-map)#set extcommunity soo 9.0.0.1:100
 ```
 
 ##### Description
-This command sets the BGP-4+ global IPv6 next hop address.
+This command sets the eBGP-4+ global IPv6 next hop address.
 
 ##### Authority
 Admin user.
@@ -1298,7 +1298,7 @@ Admin user.
 | Parameter | Status   | Syntax |       Description          |
 |-----------|----------|----------------------|
 | *X:X::X:X*  | Required | X:X::X:X | The IPv6 address. |
-| **no** | Optional | Literal | Unsets the BGP-4+ global IPv6 next hop address for the route map. |
+| **no** | Optional | Literal | Unsets the eBGP-4+ global IPv6 next hop address for the route map. |
 
 ##### Examples
 ```
@@ -1337,7 +1337,7 @@ s1(config-route-map)#set local-preference 1
 ```
 
 ##### Description
-This command specifies the relative change of metric which is used with BGP route advertisement. This command takes the route's current metric and increases or decreases it by a specified value before it is propagated. If the value is specified as negative and ends up being negative after the metric decrease, the value is interpreted as an increase in metric.
+This command specifies the relative change of metric which is used with eBGP route advertisement. This command takes the route's current metric and increases or decreases it by a specified value before it is propagated. If the value is specified as negative and ends up being negative after the metric decrease, the value is interpreted as an increase in metric.
 
 ##### Authority
 Admin user.
@@ -1346,7 +1346,7 @@ Admin user.
 | Parameter | Status   | Syntax |       Description          |
 |-----------|----------|----------------------|
 | *expr* | Required | String of 80 characters maximum length. | The metric expression. |
-| **no** | Optional | Literal | Unsets the BGP local preference for the route map. |
+| **no** | Optional | Literal | Unsets the eBGP local preference for the route map. |
 
 ##### Examples
 ```
@@ -1365,7 +1365,7 @@ In this case -367 is treated as +367.
 ```
 
 ##### Description
-This command sets the ORIGIN attribute of a local BGP route to one of the following:
+This command sets the ORIGIN attribute of a local eBGP route to one of the following:
 - `egp`: Sets the value to the Network Layer Reachablility Information (NLRI) learned from the Exterior Gateway Protocol (EGP).
 - `igp`: Sets the value to the NLRI learned from a protocol internal to the originating AS.
 - `incomplete`: If the value is not `egp` or `igp`.
@@ -1379,7 +1379,7 @@ Admin user.
 | **egp** | Required | Literal  | Specifies the type-1 metric. |
 | **igp** | Required | Literal  | Specifies the type-2 metric. |
 | **incomplete** | Required | Literal  | Specifies the type-2 metric. |
-| **no** | Optional | Literal | Unsets the BGP origin attribute for the route map. |
+| **no** | Optional | Literal | Unsets the eBGP origin attribute for the route map. |
 
 ##### Examples
 ```
@@ -1394,7 +1394,7 @@ s1(config-route-map)#set origin egp
 ```
 
 ##### Description
-This command sets the weight of a BGP route. A route`s weight has the most influence when two identical BGP routes are compared. A higher number signifies a greater preference.
+This command sets the weight of an eBGP route. A route`s weight has the most influence when two identical eBGP routes are compared. A higher number signifies a greater preference.
 
 ##### Authority
 Admin user.
@@ -1563,7 +1563,7 @@ s1(config)# no ipv6 prefix-list PEER-A-PREFIXES
 ```
 
 #### Description
-This command defines a new community list. LINE is a string expression of the communities attribute. LINE can include a regular expression to match the communities attribute in BGP updates. The community is compiled into a community structure. Multiple community lists can be defined under the same name. In that case, the match happens in user-defined order. Once the community list matches to the communities attribute in BGP updates, it returns a permit or deny based on the community list definition. When there is no matched entry, deny is returned. When the community is empty, the system matches to any routes.
+This command defines a new community list. LINE is a string expression of the communities attribute. LINE can include a regular expression to match the communities attribute in eBGP updates. The community is compiled into a community structure. Multiple community lists can be defined under the same name. In that case, the match happens in user-defined order. Once the community list matches to the communities attribute in eBGP updates, it returns a permit or deny based on the community list definition. When there is no matched entry, deny is returned. When the community is empty, the system matches to any routes.
 
 #### Authority
 Admin user.
@@ -1592,7 +1592,7 @@ S1(config)#ip community-list ANY-COMMUNITIES permit .*
 [no] ip extcommunity-list WORD <deny|permit> .LINE
 ```
 #### Description
-This command defines a new extended community list.  LINE is a string expression of the extended communities attribute, and can include a regular expression to match the extended communities attribute in BGP updates.
+This command defines a new extended community list.  LINE is a string expression of the extended communities attribute, and can include a regular expression to match the extended communities attribute in eBGP updates.
 
 #### Authority
 Admin user.
@@ -1621,7 +1621,7 @@ show ip bgp [A.B.C.D][A.B.C.D/M]
 ```
 
 #### Description
-This command displays BGP routes from the BGP route table. When no route is specified, all IPv4 routes are displayed.
+This command displays eBGP routes from the BGP route table. When no route is specified, all IPv4 routes are displayed.
 
 #### Authority
 Admin user.
@@ -1655,7 +1655,7 @@ show ip bgp summary
 ```
 
 #### Description
-The command provides a summary of the BGP neighbor status.
+The command provides a summary of the eBGP neighbor status.
 
 #### Authority
 Admin user.
@@ -1681,7 +1681,7 @@ show bgp neighbors
 ```
 
 #### Description
-This command displays detailed information about BGP neighbor connections.
+This command displays detailed information about eBGP neighbor connections.
 
 #### Authority
 Admin user.
@@ -1820,7 +1820,7 @@ show ip prefix-list detail WORD
 ```
 
 #### Description
-This command displays the detailed ip prefix list configuration with a specific name.
+This command displays the detailed IP prefix list configuration with a specific name.
 
 #### Authority
 Admin user.
@@ -1950,7 +1950,7 @@ show ipv6 prefix-list detail
 ```
 
 #### Description
-This command displays the detailed ip prefix list configuration.
+This command displays the detailed IP prefix list configuration.
 
 #### Authority
 Admin user.
@@ -1978,7 +1978,7 @@ show ipv6 prefix-list detail WORD
 ```
 
 #### Description
-This command displays the detailed ip prefix list configuration with a specific name.
+This command displays the detailed IP prefix list configuration with a specific name.
 
 #### Authority
 Admin user.
@@ -2216,4 +2216,4 @@ ip as-path access-list BGP_Filter
 ```
 ## CLI
  
-Click [here](http://www.openswitch.net/documents/user/bpg_cli) for CLI commands related to the BGP feature.
+Click [here](http://www.openswitch.net/documents/user/bgp_cli) for CLI commands related to the eBGP feature.
