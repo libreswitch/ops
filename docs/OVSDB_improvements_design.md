@@ -14,6 +14,7 @@ improvements are currently available only for the C IDL.
 3. [Compound indexes](#Compound-Indexes)
 4. [jemalloc Memory Allocator](#jemalloc-Memory-Allocator)
 5. [Priority Sessions](#Priority-Sessions)
+6. [Wait Monitoring and Blocking Waits](#Wait-Monitoring-and-Blocking-Waits)
 
 ## Partial update of map columns
 
@@ -492,3 +493,145 @@ the assigned priority, like this:
 In case that an identifier wasn't specified in this file then the OVSDB Server
 assigns it the default priority (8). The file can be reloaded at runtime, using
 an ovs-appctl command.
+
+## Wait Monitoring and Blocking Waits
+
+The Wait Monitoring Functionality introduces several new methods and operations
+over the RFC 7047 that allow to:
+
+* Receive a notification when other client performs a blocking wait over OVSDB
+  rows or columns for some table.
+* The client can wait until the monitoring process unblock the blocking wait
+  before attempting other operations, like read or write from OVSDB.
+
+Those new operations allow the clients to implement synchronization mechanisms
+over OVSDB, for example, a client can delay a read until other client finishes
+writing the requested data.
+
+### Changes over RFC 7047
+#### Wait Monitor
+The `wait_monitor` request allows the client to be notified whenever there is
+a delayed transaction waiting on certain columns.
+
+The request object has the following members:
+
+* `"method": "wait_monitor"`
+* `"params": [<db-name>, <nonnull-json-value>, <wait-monitor-requests>*]`
+* `"id": <nonnull-json-value>`
+
+The `<nonnull-json-value>` parameter in “params” is used to match subsequent
+`wait_update`s notifications (see below) to this request. The
+`<wait-monitor-requests>` object describe the columns to be tracked.
+
+`<wait-monitor-requests>`
+An JSON object with the following fields:
+* `"table": Name of the table (string)`
+* `"columns": [<column>*]`
+
+The response object has the following members:
+
+- `"result": Number of columns “wait monitored” in this request.`
+- `"error": null`
+- `"id": same “id” as request`
+
+Subsequently, when waits to the specified columns are issued, changes are
+automatically sent to the client using the
+[Wait Update Notification](Wait Update Notification). This monitoring persists
+until the JSON-RPC session terminates or until the client sends a
+`wait_monitor_cancel` JSON-RPC request.
+
+This operation is idempotent, and doesn’t fail if the columns were already
+`wait monitored`.
+
+#### Wait Monitor Cancellation
+
+The `wait_monitor_cancel` request cancels a previously issued `wait_monitor`
+request. The request object members are:
+
+* `method`: `wait_monitor`
+* `params`: `[<db-name>, <wait-monitor-cancel-requests>*]`
+* `id`: `<nonnull-json-value>`
+
+The `<wait-monitor-cancel-requests>` follow the same format of
+`<wait-monitor-requests>`. No more `wait_update` messages will be sent for
+those "wait monitored" columns.
+
+The response object has the following members:
+
+* `"result": <Number of columns “wait unmonitored” in this request>`
+* `"error”: null`
+* `"id": <same “id” as request>`
+
+#### Wait Update Notification
+
+The `wait_update` notification allows a client to notify a session that is wait
+monitoring any of the requested columns whenever any transaction become blocked,
+ “waiting” on the tables/columns that the client previously sent `wait_monitor`
+ for or unblocked for such a `blocking_wait` for any reason.
+
+The notification has the following members:
+
+* `"method": "wait_update"`
+* `"params": [<json-object>]`
+
+
+The `<json-object>` in params is a JSON object with the information required by
+the client to process the request. The members of the JSON object in `params`
+are:
+
+- `"update_id": <integer>`
+- `"state": "start" | "done": current wait update state`
+- `"table": <string>: name of table`
+- `"rows": [<row uuid>*]`
+- `"columns": [<column-name>*]`
+
+The `update_id` member is an integer used to uniquely identify each of the
+`wait_update` messages the ovsdb-server is processing.
+
+The `state` member may be set to `start` or `done` according to the processing
+stage of the request: the first `wait_update` message with `state` set to
+`start` is used to communicate to a wait monitoring session about the cells that
+ need to be updated to the database. This `wait_update` transaction should be
+ unblocked using a `wait_unblock` message sent by the wait
+monitoring session, and then a second `wait_update` with `state` set to `done`
+should be sent to the monitoring session to conclude blocking wait request.
+
+The `table` member specifies the name of the table in the request as a string.
+
+The request includes a vector `rows` with each of the row’s UUID converted to
+string in JSON format and a JSON array `columns` with each of the column names
+as an element.
+
+In case the transaction includes a column which is not being updated by any
+wait monitoring session, the `wait_update` messages for the transaction should
+not be sent and an error condition should be returned instead.
+
+#### Blocking wait
+
+The "blocking_wait" object contains the following members:
+
+* `"op": "blocking_wait"        required`
+* `"timeout": <integer>         optional`
+* `"table": <table>             required`
+* `"columns":[<column>*]        required`
+* `"rows": [<row>*]             required`
+
+There is no corresponding result object.
+
+The operation waits until all the wait-monitors that received wait-update
+notification send appropriate wait-unblock messages, get cancelled or the
+connection to them is dropped.
+
+If "timeout" is specified, then the transaction aborts after the specified
+number of milliseconds. The transaction is guaranteed to be attempted at
+least once before it aborts. A "timeout" of 0 will abort the transaction
+immediatly.
+
+The errors that may be returned are one of:
+
+* `"error": "timed out"`
+  * The "timeout" was reached before the transaction was able to complete.
+* `"error": "wait unsatisfiable"`
+  * At least one of the wait-monitors that received a wait-update notification
+  regarding this request dropped the connection, therefore this operation can’t
+  be ever unblocked.
