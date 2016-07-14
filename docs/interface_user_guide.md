@@ -67,7 +67,9 @@ The MTU of a communications protocol refers to the size in bytes of the largest 
 ops-as5712(config)# mtu 2000
 ops-as5712(config)#
 ```
-Note: Maximum configurable MTU value for jumbo frame is 9192 which allows inbound jumbo packets up to 9216(9192+padding bytes(6+6+4+4+2+2 i.e DA + SA + STAG + CTAG + LEN + FCS) byte, while tagged packets of MTU + 4 bytes are permitted.
+Maximum configurable MTU value for jumbo frame is 9192 which allows inbound jumbo packets up to 9216(9192+padding bytes(6+6+4+4+2+2 i.e DA + SA + STAG + CTAG + LEN + FCS) bytes.
+
+Restrictions: Egress MTU setting allows 4 additional bytes to accommodate VLAN tag. For HigGig ports(10G/40G), actual MTU value set  in hardware is 4 more than what is passed from application (API).
 
  The `no mtu` commands reverts the mtu of the interface to default auto mode.
  The 'mtu auto' command sets MTU to system default.
