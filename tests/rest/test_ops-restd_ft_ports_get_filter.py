@@ -27,7 +27,7 @@ import urllib
 import inspect
 import types
 
-from opsvsiutils.restutils.fakes import create_fake_port
+from opsvsiutils.restutils.fakes import create_fake_port, create_fake_vlan
 from opsvsiutils.restutils.utils import execute_request, login, \
     get_switch_ip, rest_sanity_check, update_test_field, \
     get_server_crt, remove_server_crt
@@ -36,7 +36,8 @@ NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 
 NUM_FAKE_PORTS = 10
-
+DEFAULT_BRIDGE="bridge_normal"
+bridge_path = "/rest/v1/system/bridges"
 
 class myTopo (Topo):
     def build(self, hsts=0, sws=1, **_opts):
@@ -161,9 +162,14 @@ class QueryFilterPortTest (OpsVsiTest):
 
     def test_port_filter_by_trunks(self):
         test_ports = ["Port-1", "Port-3", "Port-5"]
-        test_field = "trunks"
-        test_old_value = [413]
-        test_new_value = [414]
+        test_field = "vlan_trunks"
+        test_old_value = ["/rest/v1/system/bridges/bridge_normal/vlans/VLAN413"]
+        test_new_value = ["/rest/v1/system/bridges/bridge_normal/vlans/VLAN414"]
+
+        vlan_id = 414
+        vlan_name = "VLAN414"
+        vlan_path = "%s/%s/vlans" % (bridge_path, DEFAULT_BRIDGE)
+        create_fake_vlan(vlan_path, self.switch_ip, vlan_name, vlan_id)
 
         updated_ports = len(test_ports)
         other_ports = NUM_FAKE_PORTS - updated_ports
@@ -499,9 +505,14 @@ class QueryFilterPortTest (OpsVsiTest):
 
     def test_port_filter_by_tag(self):
         test_ports = ["Port-1", "Port-2", "Port-3", "Port-4", "Port-5"]
-        test_field = "tag"
-        test_old_value = 654
-        test_new_value = 123
+        test_field = "vlan_tag"
+        test_old_value = ["/rest/v1/system/bridges/bridge_normal/vlans/VLAN654"]
+        test_new_value = ["/rest/v1/system/bridges/bridge_normal/vlans/VLAN123"]
+
+        vlan_id = 123
+        vlan_name = "VLAN123"
+        vlan_path = "%s/%s/vlans" % (bridge_path, DEFAULT_BRIDGE)
+        create_fake_vlan(vlan_path, self.switch_ip, vlan_name, vlan_id)
 
         updated_ports = len(test_ports)
         other_ports = NUM_FAKE_PORTS - updated_ports
@@ -521,7 +532,7 @@ class QueryFilterPortTest (OpsVsiTest):
         #######################################################################
         # Query for the updated port
         #######################################################################
-        path = "%s?depth=1;%s=%s" % (self.path, test_field, test_new_value)
+        path = "%s?depth=1;%s=%s" % (self.path, test_field, test_new_value[0])
 
         request_response = self.validate_request(self.switch_ip,
                                                  path,
@@ -540,7 +551,7 @@ class QueryFilterPortTest (OpsVsiTest):
         #######################################################################
         # Query for other ports
         #######################################################################
-        path = "%s?depth=1;%s=%s" % (self.path, test_field, test_old_value)
+        path = "%s?depth=1;%s=%s" % (self.path, test_field, test_old_value[0])
 
         request_response = self.validate_request(self.switch_ip,
                                                  path,
@@ -783,6 +794,16 @@ class QueryFilterPortTest (OpsVsiTest):
         info("########## End Test Filter Admin ##########\n")
 
     def setup_switch_ports(self, total):
+        vlan_id = 413
+        vlan_name = "VLAN413"
+        vlan_path = "%s/%s/vlans" % (bridge_path, DEFAULT_BRIDGE)
+        create_fake_vlan(vlan_path, self.switch_ip, vlan_name, vlan_id)
+
+        vlan_id = 654
+        vlan_name = "VLAN654"
+        vlan_path = "%s/%s/vlans" % (bridge_path, DEFAULT_BRIDGE)
+        create_fake_vlan(vlan_path, self.switch_ip, vlan_name, vlan_id)
+
         for i in range(1, total+1):
             create_fake_port(self.path, self.switch_ip, i)
 

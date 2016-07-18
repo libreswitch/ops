@@ -28,7 +28,7 @@ import urllib
 import inspect
 import types
 
-from opsvsiutils.restutils.fakes import create_fake_port
+from opsvsiutils.restutils.fakes import create_fake_port, create_fake_vlan
 from opsvsiutils.restutils.utils import execute_request, login, \
     get_switch_ip, rest_sanity_check, update_test_field, \
     fill_with_function, random_mac, random_ip6_address, \
@@ -37,6 +37,8 @@ from opsvsiutils.restutils.utils import execute_request, login, \
 NUM_OF_SWITCHES = 1
 NUM_HOSTS_PER_SWITCH = 0
 NUM_FAKE_PORTS = 10
+DEFAULT_BRIDGE = "bridge_normal"
+bridge_path = "/rest/v1/system/bridges"
 
 
 class myTopo(Topo):
@@ -222,25 +224,30 @@ class QuerySortPortTest (OpsVsiTest):
 
         expected_values = []
         for i in range(1, NUM_FAKE_PORTS + 1):
-            trunks = []
             if not desc:
-                trunks = [NUM_FAKE_PORTS + 1 - i]
+                vlan_id = NUM_FAKE_PORTS + 2 - i
             else:
-                trunks = [i]
+                vlan_id = i + 2 + NUM_FAKE_PORTS
+            vlan_name = "VLAN" + str(vlan_id)
+            vlan_path = "%s/%s/vlans" % (bridge_path, DEFAULT_BRIDGE)
+            create_fake_vlan(vlan_path, self.SWITCH_IP, vlan_name, vlan_id)
+
+            vlan_trunks = ["%s/%s" % (vlan_path, vlan_name)]
+
             update_test_field(
-                self.SWITCH_IP, self.PATH + "/Port-%s" % i, "trunks", trunks,
+                self.SWITCH_IP, self.PATH + "/Port-%s" % i, "vlan_trunks", vlan_trunks[0],
                 self.cookie_header)
-            expected_values.append(trunks)
+            expected_values.append(vlan_trunks)
 
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
                              reverse=desc)
 
-        json_data = self.execute_sort_by_request("trunks", desc)
+        json_data = self.execute_sort_by_request("vlan_trunks", desc)
         assert len(json_data) is (NUM_FAKE_PORTS), \
             "Retrieved more expected ports!"
 
-        if self.non_null_col(json_data, "trunks"):
-            self.check_sort_expectations(expected_values, json_data, "trunks")
+        if self.non_null_col(json_data, "vlan_trunks"):
+            self.check_sort_expectations(expected_values, json_data, "vlan_trunks")
         info("\n########## End to sort port by trunks ##########\n")
 
     def test_port_sort_by_ip4_address(self, desc=False):
@@ -344,28 +351,33 @@ class QuerySortPortTest (OpsVsiTest):
 
         info("\n########## End Test to sort port by bond_mode ##########\n")
 
-    def test_port_sort_by_tag(self, desc=False):
+    def test_port_sort_by_vlan_tag(self, desc=False):
         info("\n########## Test to sort port by tag ##########\n")
 
         expected_values = []
-        values = fill_with_function(random.randint(1, 4094), NUM_FAKE_PORTS)
-        for i in range(1, NUM_FAKE_PORTS + 1):
-            value = values[(i - 1)]
+        for i in range(1024, NUM_FAKE_PORTS + 1):
+            vlan_id = i
+            vlan_name = "VLAN" + str(vlan_id)
+            vlan_path = "%s/%s/vlans" % (bridge_path, DEFAULT_BRIDGE)
+
+            create_fake_vlan(vlan_path, self.SWITCH_IP, vlan_name, vlan_id)
+
+            value = ["%s/%s" % (vlan_path, vlan_name)]
             update_test_field(
-                self.SWITCH_IP, self.PATH + "/Port-%s" % i, "tag", value,
+                self.SWITCH_IP, self.PATH + "/Port-%s" % i, "vlan_tag", value[0],
                 self.cookie_header)
             expected_values.append(value)
 
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
                              reverse=desc)
 
-        json_data = self.execute_sort_by_request("tag", desc)
+        json_data = self.execute_sort_by_request("vlan_tag", desc)
 
         assert len(json_data) is (NUM_FAKE_PORTS), \
             "Retrieved more expected ports!"
 
-        if self.non_null_col(json_data, "tag"):
-            self.check_sort_expectations(expected_values, json_data, "tag")
+        if self.non_null_col(json_data, "vlan_tag"):
+            self.check_sort_expectations(expected_values, json_data, "vlan_tag")
 
         info("\n########## End Test to sort port by tag ##########\n")
 
@@ -569,6 +581,18 @@ class QuerySortPortTest (OpsVsiTest):
         info("\n########## End Test to sort port by (admin,name) ##########\n")
 
     def setup_switch_ports(self, total):
+        vlan_id = 413
+        vlan_name = "VLAN413"
+        vlan_path = "%s/%s/vlans" % (bridge_path, DEFAULT_BRIDGE)
+
+        create_fake_vlan(vlan_path, self.SWITCH_IP, vlan_name, vlan_id)
+
+        vlan_id = 654
+        vlan_name = "VLAN654"
+        vlan_path = "%s/%s/vlans" % (bridge_path, DEFAULT_BRIDGE)
+
+        create_fake_vlan(vlan_path, self.SWITCH_IP, vlan_name, vlan_id)
+
         for i in range(0, total):
             create_fake_port(self.PATH, self.SWITCH_IP, (i + 1))
 
