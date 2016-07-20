@@ -9048,7 +9048,22 @@
       </column>
       <column name="auth_pass_phrase">The key to be used by authentication protocol.</column>
       <column name="priv_pass_phrase">The key to be used by privacy protocol.</column>
+      <column name="snmpv3_contexts"> SNMPv3 contexts associated with this user</column>
     </group>
+  </table>
+  <table name="SNMPv3_Context">
+    <group title="configuration">
+      <column name="context_name">
+      An SNMP context is a collection of management information accessible by an SNMP entity.
+      if a management information has been defined under certain context by an SNMPv3 entity,
+      then any management application can access that information by giving that context name.
+      The "context name" is an octet string, which has at least one management information.
+      </column>
+      <column name="vrf">
+        Reference to the VRF to which this entry belongs to.
+      </column>
+      <column name="community_name">Snmpv2 Community associated with this context.</column>
+     </group>
   </table>
   <table name="ACL" title="Access Control List">
     <group title="Access Control List Configuration">
