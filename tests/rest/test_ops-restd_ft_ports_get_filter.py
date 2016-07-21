@@ -38,6 +38,7 @@ NUM_HOSTS_PER_SWITCH = 0
 NUM_FAKE_PORTS = 10
 
 
+
 class myTopo (Topo):
     def build(self, hsts=0, sws=1, **_opts):
         self.hsts = hsts
@@ -329,7 +330,7 @@ class QueryFilterPortTest (OpsVsiTest):
         info("\n########## Test Filter Primary IPv4 Address ##########\n")
 
         for i in range(1, NUM_FAKE_PORTS + 1):
-            test_ipv4 = "192.168.0.%s" % i
+            test_ipv4 = "192.168.0.%s/24" % i
             path = "%s?depth=1;%s=%s" % (self.path, test_field, test_ipv4)
 
             request_response = self.validate_request(self.switch_ip,
@@ -352,7 +353,7 @@ class QueryFilterPortTest (OpsVsiTest):
         info("\n########## Test Filter Secondary IP4 Address  ##########\n")
 
         for i in range(1, NUM_FAKE_PORTS + 1):
-            test_ipv4 = "192.168.1.%s" % i
+            test_ipv4 = "192.168.1.%s/24" % i
             path = "%s?depth=1;%s=%s" % (self.path, test_field, test_ipv4)
 
             request_response = self.validate_request(self.switch_ip,
@@ -762,7 +763,7 @@ class QueryFilterPortTest (OpsVsiTest):
         info("\n########## Test Filter Primary IPv6 Address ##########\n")
 
         for i in range(1, NUM_FAKE_PORTS + 1):
-            test_ip6 = "2001:0db8:85a3:0000:0000:8a2e:0370:%04d" % i
+            test_ip6 = "2001:0db8:85a3:0000:0000:8a2e:0370:%04d/64" % i
             path = "%s?depth=1;%s=%s" % (self.path, test_field, test_ip6)
 
             request_response = self.validate_request(self.switch_ip,
@@ -786,7 +787,7 @@ class QueryFilterPortTest (OpsVsiTest):
         info("\n########## Test Filter Sec. IPv6 Address ##########\n")
 
         for i in range(1, NUM_FAKE_PORTS + 1):
-            secondary_ip6 = "2001:0db8:85a3:0000:0000:8a2e:0371:%04d" % i
+            secondary_ip6 = "2002:0db8:85a3:0000:0000:8a2e:0371:%04d/64" % i
             path = "%s?depth=1;%s=%s" % (self.path, test_field, secondary_ip6)
 
             request_response = self.validate_request(self.switch_ip,

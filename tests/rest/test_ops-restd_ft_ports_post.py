@@ -123,7 +123,7 @@ class CreatePortTest (OpsVsiTest):
         info("\nAttempting to create port with incorrect type in attributes\n")
 
         data = [("ip4_address", 192, httplib.BAD_REQUEST),
-                ("ip4_address", "192.168.0.1", httplib.CREATED),
+                ("ip4_address", "192.168.0.1/24", httplib.CREATED),
                 ("tag", "675", httplib.BAD_REQUEST),
                 ("tag", 675, httplib.CREATED),
                 ("trunks", "654, 675", httplib.BAD_REQUEST),

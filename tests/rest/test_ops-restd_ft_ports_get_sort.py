@@ -283,7 +283,7 @@ class QuerySortPortTest (OpsVsiTest):
 
         expected_values = []
         for i in range(1, NUM_FAKE_PORTS + 1):
-            value = "192.168.0.%(index)s" % {"index": i}
+            value = "192.168.0.%(index)s/24" % {"index": i}
             expected_values.append(value)
 
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
@@ -309,7 +309,7 @@ class QuerySortPortTest (OpsVsiTest):
 
         expected_values = []
         for i in range(1, NUM_FAKE_PORTS + 1):
-            value = "192.168.1.%(index)s" % {"index": i}
+            value = "192.168.1.%(index)s/24" % {"index": i}
             expected_values.append(value)
 
         expected_values.sort(key=lambda val: self.sort_value_to_lower(val),
@@ -485,7 +485,8 @@ class QuerySortPortTest (OpsVsiTest):
         info("\n########## Test to sort port by ip6_address ##########\n")
 
         expected_values = []
-        values = fill_with_function(random_ip6_address(), NUM_FAKE_PORTS)
+        values = fill_with_function(random_ip6_address() + '/64',
+                                    NUM_FAKE_PORTS)
         for i in range(1, NUM_FAKE_PORTS + 1):
             value = values[i - 1]
             update_test_field(self.SWITCH_IP, self.PATH + "/Port-%s" % i,
@@ -512,7 +513,8 @@ class QuerySortPortTest (OpsVsiTest):
              "##########\n")
 
         expected_values = []
-        values = fill_with_function(random_ip6_address(), NUM_FAKE_PORTS)
+        values = fill_with_function(random_ip6_address() + '/64',
+                                    NUM_FAKE_PORTS)
         for i in range(1, NUM_FAKE_PORTS + 1):
             value = values[i - 1]
             update_test_field(self.SWITCH_IP, self.PATH + "/Port-%s" % i,
