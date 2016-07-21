@@ -3,13 +3,15 @@
 ## Overview
 This document provides a step-by-step reference for configuration of basic layer3 functionality and features.
 
-* [Layer 3 Interfaces](#layer3-interfaces)
-* [Static routes](#static-routes)
-* [ECMP](#ecmp)
-* [Internal VLAN Management](#internal-vlan-management)
-* [References](#references)
+- [Layer3 interfaces](#layer3-interfaces)
+- [VLAN interfaces](#vlan-interfaces)
+- [Static routes](#static-routes)
+- [ECMP](#ecmp)
+- [Internal VLAN management](#internal-vlan-management)
+- [Statistics](#statistics)
+- [References](#references)
 
-## Layer3 Interfaces
+## Layer3 interfaces
 OpenSwitch supports configuring IPv4 and IPv6 addresses to layer3 interfaces. Every layer3 interfaces is associated with one VRF. In the first version, only one VRF is supported and hence the association with the VRF is not necessary.
 
 To configure an interface:
@@ -22,7 +24,7 @@ ops-as5712(config-if)# ipv6 address 2000::1/120
 ops-as5712(config-if)# end
 ops-as5712#
 ```
-### VLAN Interfaces
+### VLAN interfaces
 To achieve interVLAN routing, VLAN interfaces are created. VLAN interfaces are configured similar to physical interfaces. In addition to configuring IPv4 or IPv6 addresses, these interfaces are associated with a VLAN. The VLAN ID is part of the name of the VLAN interface being configured.
 
 To configure a VLAN interface for VLAN ID 100:
@@ -210,7 +212,7 @@ Source Port        : Enabled
 Destination Port   : Enabled
 ```
 
-## Internal VLAN Management
+## Internal VLAN management
 Every layer3 interface is associated with a unique VLAN ID. By default, OpenSwitch uses VLAN IDs from the range 1024-4094 for this purpose. However, this range is configurable. The order in which the VLAN IDs are used in this range is also be specified using "ascending" or "descending" in the CLI.
 To configure the VLAN range for internal use:
 ```
@@ -231,6 +233,77 @@ Assigned Interfaces:
         400             1
 
 ops-as5712#
+```
+
+## Statistics
+Layer3 statistics are supported for physical and virtual interfaces (VLAN and subinterfaces) which have layer3 enabled. OpenSwitch supports counters for RX and TX packets and bytes, for layer3 unicast and multicast traffic. These counters only count routed traffic and do not account for switched L2 traffic, that is traffic within a given broadcast domain or VLAN. On physical L3 interfaces, the L3 counters are also supported at a protocol specific (IPv4 or IPv6) level. There is no support for IPv4 or IPv6 specific statistics for VLAN interfaces, subinterfaces and loopback interfaces.
+
+Currently, OpenSwitch accounts for all L3 ingress traffic and L3 egress traffic that is forwarded directly through the ASIC. Egress traffic that is either originated from the switch or that was forwarded by the linux kernel via slow-path is not accounted for.
+
+The following commands are used to view L3 statistics:
+
+Show L3 statistics for interface 1.
+```
+ops-as5712# show interface 1
+
+Interface 1 is up
+ Admin state is up
+ Hardware: Ethernet, MAC Address: 48:0f:cf:af:02:17
+ IPv4 address 2.2.2.1/24
+ Proxy ARP is enabled
+ Local Proxy ARP is enabled
+ MTU 1500
+ Full-duplex
+ Speed 1000 Mb/s
+ Auto-Negotiation is turned on
+ Input flow-control is off, output flow-control is off
+ RX
+           10 input packets            750 bytes
+            0 input error                0 dropped
+            0 short frame                0 overrun
+            0 CRC/FCS
+       L3:
+            ucast: 10 packets, 750 bytes
+            mcast: 0 packets, 0 bytes
+ TX
+           10 output packets           750 bytes
+            0 input error               21 dropped
+            0 collision
+       L3:
+            ucast: 10 packets, 750 bytes
+            mcast: 0 packets, 0 bytes
+```
+Show IPv4 specific L3 statistics for interface 1 (not supported for virtual L3 interfaces).
+```
+ops-as5712# show ip interface 1
+
+Interface 1 is up
+ Admin state is up
+ Hardware: Ethernet, MAC Address: 48:0f:cf:af:02:17
+ IPv4 address: 2.2.2.1/24
+ MTU 1500
+ RX
+          ucast: 10 packets, 750 bytes
+          mcast: 0 packets, 0 bytes
+ TX
+          ucast: 10 packets, 750 bytes
+          mcast: 0 packets, 0 bytes
+```
+Show IPv6 specific L3 statistics for interface 1 (not supported for virtual L3 interfaces).
+```
+ops-as5712# show ipv6 interface 1
+
+Interface 1 is up
+ Admin state is up
+ Hardware: Ethernet, MAC Address: 48:0f:cf:af:02:17
+ IPv6 address: 2000::1001/120
+ MTU 1500
+ RX
+          ucast: 10 packets, 750 bytes
+          mcast: 0 packets, 0 bytes
+ TX
+          ucast: 10 packets, 750 bytes
+          mcast: 0 packets, 0 bytes
 ```
 
 ## References
