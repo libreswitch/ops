@@ -235,7 +235,8 @@ class QuerySortPortTest (OpsVsiTest):
             vlan_trunks = ["%s/%s" % (vlan_path, vlan_name)]
 
             update_test_field(
-                self.SWITCH_IP, self.PATH + "/Port-%s" % i, "vlan_trunks", vlan_trunks[0],
+                self.SWITCH_IP, self.PATH + "/Port-%s" % i,
+                "vlan_trunks", vlan_trunks[0],
                 self.cookie_header)
             expected_values.append(vlan_trunks)
 
@@ -247,7 +248,9 @@ class QuerySortPortTest (OpsVsiTest):
             "Retrieved more expected ports!"
 
         if self.non_null_col(json_data, "vlan_trunks"):
-            self.check_sort_expectations(expected_values, json_data, "vlan_trunks")
+            self.check_sort_expectations(expected_values,
+                                         json_data,
+                                         "vlan_trunks")
         info("\n########## End to sort port by trunks ##########\n")
 
     def test_port_sort_by_ip4_address(self, desc=False):
@@ -364,7 +367,8 @@ class QuerySortPortTest (OpsVsiTest):
 
             value = ["%s/%s" % (vlan_path, vlan_name)]
             update_test_field(
-                self.SWITCH_IP, self.PATH + "/Port-%s" % i, "vlan_tag", value[0],
+                self.SWITCH_IP, self.PATH + "/Port-%s" % i,
+                "vlan_tag", value[0],
                 self.cookie_header)
             expected_values.append(value)
 
@@ -377,7 +381,8 @@ class QuerySortPortTest (OpsVsiTest):
             "Retrieved more expected ports!"
 
         if self.non_null_col(json_data, "vlan_tag"):
-            self.check_sort_expectations(expected_values, json_data, "vlan_tag")
+            self.check_sort_expectations(expected_values, json_data,
+                                         "vlan_tag")
 
         info("\n########## End Test to sort port by tag ##########\n")
 
@@ -465,7 +470,8 @@ class QuerySortPortTest (OpsVsiTest):
         info("\n########## Test to sort port by ip6_address ##########\n")
 
         expected_values = []
-        values = fill_with_function(random_ip6_address(), NUM_FAKE_PORTS)
+        values = fill_with_function(random_ip6_address() + '/64',
+                                    NUM_FAKE_PORTS)
         for i in range(1, NUM_FAKE_PORTS + 1):
             value = values[i - 1]
             update_test_field(self.SWITCH_IP, self.PATH + "/Port-%s" % i,
@@ -491,7 +497,8 @@ class QuerySortPortTest (OpsVsiTest):
              "##########\n")
 
         expected_values = []
-        values = fill_with_function(random_ip6_address(), NUM_FAKE_PORTS)
+        values = fill_with_function(random_ip6_address() + '/64',
+                                    NUM_FAKE_PORTS)
         for i in range(1, NUM_FAKE_PORTS + 1):
             value = values[i - 1]
             update_test_field(self.SWITCH_IP, self.PATH + "/Port-%s" % i,

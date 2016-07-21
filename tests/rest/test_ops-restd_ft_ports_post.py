@@ -145,7 +145,7 @@ class CreatePortTest (OpsVsiTest):
 
         create_fake_vlan(vlan_path, self.SWITCH_IP, vlan_name, vlan_id)
         data = [("ip4_address", 192, httplib.BAD_REQUEST),
-                ("ip4_address", "192.168.0.1", httplib.CREATED),
+                ("ip4_address", "192.168.0.1/24", httplib.CREATED),
                 ("vlan_tag", ["/rest/v1/system/bridges/bridge_normal/vlans/VLAN345"], httplib.BAD_REQUEST),
                 ("vlan_tag", ["/rest/v1/system/bridges/bridge_normal/vlans/VLAN675"], httplib.CREATED),
                 ("vlan_trunks", ["/rest/v1/system/bridges/bridge_normal/vlans/VLAN345", "/rest/v1/system/bridges/bridge_normal/vlans/VLAN346"], httplib.BAD_REQUEST),
