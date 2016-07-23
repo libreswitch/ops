@@ -1,0 +1,133 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/dhcp_relay.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "DHCP_Relay": {
+      "columns": {
+        "port": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "Layer 3 Port on which the configuration is made."
+          ],
+          "group": "/DHCP-Relay Configuration"
+        },
+        "vrf": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRF",
+              "refType": "weak"
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "VRF through which DHCP server is reachable."
+          ],
+          "group": "/DHCP-Relay Configuration"
+        },
+        "ipv4_ucast_server": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 15
+            },
+            "min": 0,
+            "max": 8
+          },
+          "doc": [
+            "List of IPv4 unicast server destinations to which DHCP broadcast packets",
+            "received on the port are duplicated and forwarded. A maximum of 8 ipv4 unicast",
+            "server configurations are allowed."
+          ],
+          "group": "/DHCP-Relay Configuration"
+        },
+        "ipv6_ucast_server": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 49
+            },
+            "min": 0,
+            "max": 8
+          },
+          "doc": [
+            "List of IPv6 unicast server destinations to which DHCP broadcast packets",
+            "received on the port are dulicated and forwarded. A maximum of 8 IPv6 server",
+            "configurations are allowed. The count includes IPv6 multicast and link local",
+            "server configuration from the column \"dhcp_relay_v6_mcast_servers\"."
+          ],
+          "group": "/DHCP-Relay Configuration"
+        },
+        "dhcp_relay_v6_mcast_servers": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "DHCP_Relay_V6_Mcast_Server"
+            },
+            "min": 0,
+            "max": 8
+          },
+          "doc": [
+            "Packets received through this ports are duplicated and forwarded. This entry",
+            "holds a reference to the server address stored in `DHCP_Relay_V6_Mcast_Server`",
+            "table. A maximum of 8 IPv6 server configurations are allowed. This count",
+            "includes IPv6 unicast server configurations from the column \"ipv6_ucast_server\"."
+          ],
+          "group": "/DHCP-Relay Configuration"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "bootp_gateway": {
+                "type": {
+                  "type": "string",
+                  "maxLength": 15
+                },
+                "doc": [
+                  "Provides a way to configure a gateway address for the DHCP relay agent to use",
+                  "for DHCP requests, rather than the DHCP relay agent automatically assigning the",
+                  "lowest-numbered IP address."
+                ],
+                "group": "/DHCP-Relay Configuration"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/DHCP-Relay Configuration"
+        }
+      },
+      "indexes": [
+        [
+          "port",
+          "vrf"
+        ]
+      ],
+      "isRoot": true,
+      "doc": [
+        "Placeholder for a set of server configuration entries. DHCP-Relay feature uses",
+        "these entries to forward matching DHCP broadcast packets received on the layer3",
+        "Port."
+      ]
+    }
+  }
+}

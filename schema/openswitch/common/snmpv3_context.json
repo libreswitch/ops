@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/snmpv3_context.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "SNMPv3_Context": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32
+            }
+          },
+          "mutable": false
+        },
+        "vrf": {
+          "category": "configuration",
+          "relationship": "m:1",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRF",
+              "refType": "weak_gc"
+            }
+          },
+          "doc": [
+            "Reference to the VRF to which this entry belongs to."
+          ],
+          "group": "/configuration"
+        },
+        "community_name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32
+            }
+          },
+          "doc": [
+            "Snmpv2 Community associated with this context."
+          ],
+          "group": "/configuration"
+        }
+      },
+      "indexes": [
+        [
+          "name",
+          "vrf"
+        ]
+      ],
+      "isRoot": true
+    }
+  }
+}

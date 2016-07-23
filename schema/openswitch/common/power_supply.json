@@ -1,0 +1,194 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/power_supply.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Power_supply": {
+      "columns": {
+        "name": {
+          "category": "status",
+          "type": "string",
+          "mutable": false
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "ok",
+                "fault_absent",
+                "fault_input",
+                "fault_output",
+                "unknown",
+                "unsupported",
+                "warning"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "group": "/Status"
+        },
+        "identity": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "serial_number": {
+                "type": "string",
+                "doc": [
+                  "PSU serial number to uniquely identify the PSU."
+                ],
+                "group": "/Status"
+              },
+              "product_name": {
+                "type": "string",
+                "doc": [
+                  "PSU product name identification.  This field is used to determine if the PSU is",
+                  "supported."
+                ],
+                "group": "/Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "PSU identification."
+          ],
+          "group": "/Status"
+        },
+        "characteristics": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "maximum_power": {
+                "type": "string",
+                "doc": [
+                  "Total maximum power capacity that can be supplied by the PSU in Watts."
+                ],
+                "group": "/Status"
+              },
+              "instantaneous_power": {
+                "type": "string",
+                "doc": [
+                  "Total instantaneous power supplied by the PSU in Watts."
+                ],
+                "group": "/Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Electrical characteristics."
+          ],
+          "group": "/Status"
+        },
+        "statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "valueMap": {
+              "failures": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0
+                },
+                "doc": [
+                  "Number of failures the PSU has experienced since the most recent insertion of",
+                  "the PSU and boot of the system.  The number of failures for a PSU will be",
+                  "cleared if the PSU is removed from the system or if the system is rebooted.  For",
+                  "non removable PSUs, the number of failures will not clear until the system",
+                  "reboots.  Failures are any events where power delivery from the PSU did not",
+                  "occur when expected.  This includes unsupported PSU types since their power",
+                  "delivery is not considered valid even though the PSU itself may not have an",
+                  "internal failure. Some examples of failures are over current, invalid input",
+                  "power, and unsupported PSU type."
+                ],
+                "group": "/Statistics"
+              },
+              "warnings": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0
+                },
+                "doc": [
+                  "Number of warnings the PSU has experienced since the most recent insertion of",
+                  "the PSU and boot of the system.  The number of warnings for a PSU will be",
+                  "cleared if the PSU is removed from the system or if the system is rebooted.  For",
+                  "non removable PSUs, the number of warnings will not clear until the system",
+                  "reboots.  Warnings are any events that do not impair the power delivery from the",
+                  "PSU but require notification that service may be needed.  Some examples of",
+                  "warnings are fan failures and over temperature."
+                ],
+                "group": "/Statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "doc": [
+            "Various statistics about the PSU."
+          ],
+          "group": "/Statistics"
+        },
+        "hw_config": {
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "title": "Power supplies",
+      "doc": [
+        "Information for a power supply unit (PSU)."
+      ],
+      "groupDoc": {
+        "/Status": [
+          "If the PSU does not have a means to obtain information through software to",
+          "populate a field in a Status column, then that field will remain blank."
+        ],
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}

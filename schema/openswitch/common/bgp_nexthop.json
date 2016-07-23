@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/bgp_nexthop.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "BGP_Nexthop": {
+      "columns": {
+        "ip_address": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "IP address of the nexthop device."
+          ],
+          "group": "/Status"
+        },
+        "type": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "unicast"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Type of the nexthop. Default is `unicast`."
+          ],
+          "group": "/Status",
+          "emptyValue": "unicast"
+        }
+      },
+      "title": "BGP Nexthops",
+      "doc": [
+        "List of all nexthops used by BGP. Each entry in the BGP RIB can have a reference",
+        "to one or many (for ECMP) nexthop entries."
+      ]
+    }
+  }
+}

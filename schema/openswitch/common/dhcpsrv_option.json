@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/dhcpsrv_option.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "DHCPSrv_Option": {
+      "columns": {
+        "match_tags": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The option and option value specified in the configuration would be sent only if",
+            "the DHCP request from the client matches all the tags specified in this list."
+          ]
+        },
+        "option_number": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the number of the extra option that should be sent to the DHCP",
+            "clients. The option number would be ignored if option name is specified."
+          ]
+        },
+        "option_name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the name of the extra option that should be sent to the DHCP clients."
+          ]
+        },
+        "option_value": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the value of the extra option that should be sent to the DHCP clients."
+          ]
+        },
+        "ipv6": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `true` if the configured option is for IPv6 and set to `false`",
+            "for IPv4 option. If not specifed, the configured option would be used for IPv4."
+          ],
+          "emptyValue": false
+        }
+      },
+      "doc": [
+        "Configuration to specify extra options (other than standard options) that would",
+        "be sent to the DHCP clients."
+      ]
+    }
+  }
+}

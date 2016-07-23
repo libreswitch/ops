@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/ssl.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "SSL": {
+      "columns": {
+        "private_key": {
+          "category": "configuration",
+          "type": "string",
+          "doc": [
+            "Name of a PEM file containing the private key used as the switch's identity for",
+            "SSL connections to the controller."
+          ]
+        },
+        "certificate": {
+          "category": "configuration",
+          "type": "string",
+          "doc": [
+            "Name of a PEM file containing a certificate, signed by the certificate authority",
+            "(CA) used by the controller and manager, that certifies the switch's private",
+            "key, identifying a trustworthy switch."
+          ]
+        },
+        "ca_cert": {
+          "category": "configuration",
+          "type": "string",
+          "doc": [
+            "Name of a PEM file containing the CA certificate used to verify that the switch",
+            "is connected to a trustworthy controller."
+          ]
+        },
+        "bootstrap_ca_cert": {
+          "category": "configuration",
+          "type": "boolean",
+          "doc": [
+            "If set to `true`, then OpenSwitch will attempt to obtain the CA certificate from",
+            "the controller on its first SSL connection and save it to the named PEM file. If",
+            "it is successful, it will immediately drop the connection and reconnect, and",
+            "from then on all SSL connections must be authenticated by a certificate signed",
+            "by the CA certificate thus obtained.  _This option exposes the SSL connection to",
+            "a man-in-the-middle attack obtaining the initial CA certificate._  It may still",
+            "be useful for bootstrapping."
+          ]
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "maxRows": 1,
+      "doc": [
+        "SSL configuration for an System."
+      ],
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}

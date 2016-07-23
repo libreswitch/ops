@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/dhcp_server.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "DHCP_Server": {
+      "columns": {
+        "ranges": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "DHCPSrv_Range"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Dynamic IP address ranges."
+          ],
+          "group": "/Configuration"
+        },
+        "static_hosts": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "DHCPSrv_Static_Host"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Static leases."
+          ],
+          "group": "/Configuration"
+        },
+        "dhcp_options": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "DHCPSrv_Option"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "DHCP options settings."
+          ],
+          "group": "/Configuration"
+        },
+        "matches": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "DHCPSrv_Match"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Matching incoming DHCP options."
+          ],
+          "group": "/Configuration"
+        },
+        "bootp": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The filename is keyed by match tag. If no key is specified, default key is",
+            "no_matching_tag."
+          ],
+          "group": "/Configuration/BOOTP Options Configuration",
+          "emptyValue": "no_matching_tag"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        }
+      },
+      "doc": [
+        "DHCP Server configuration."
+      ]
+    }
+  }
+}

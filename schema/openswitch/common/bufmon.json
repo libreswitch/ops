@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/bufmon.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "bufmon": {
+      "columns": {
+        "name": {
+          "category": "status",
+          "type": "string",
+          "doc": [
+            "Name of the counter as it will be shown in the management systems and will be",
+            "referenced by all the interested agents. No spaces should be used in the name."
+          ],
+          "group": "/Counter identification"
+        },
+        "hw_unit_id": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "Identifies the ASIC that counter belongs to."
+          ],
+          "group": "/Counter identification"
+        },
+        "counter_value": {
+          "category": "statistics",
+          "ephemeral": true,
+          "type": {
+            "key": {
+              "minInteger": 0,
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Last collected value of the counter."
+          ],
+          "group": "/Status"
+        },
+        "counter_vendor_specific_info": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "min": 0,
+            "max": "unlimited",
+            "value": "string"
+          },
+          "doc": [
+            "Contains any information that might help ASIC specific driver to identify the",
+            "counter. Both keys and values are driver and ASIC specific."
+          ],
+          "group": "/Counter identification"
+        },
+        "enabled": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies whether counter is enabled. An empty value means counter is disabled."
+          ],
+          "group": "/Configuration",
+          "emptyValue": false
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "key": {
+              "enum": [
+                "ok",
+                "not-properly-configured",
+                "triggered"
+              ],
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the status of the counter."
+          ],
+          "group": "/Status"
+        },
+        "trigger_threshold": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "minInteger": 0,
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies counter specific threshold that would trigger collection."
+          ],
+          "group": "/Configuration"
+        }
+      },
+      "indexes": [
+        [
+          "hw_unit_id",
+          "name"
+        ]
+      ],
+      "isRoot": true,
+      "doc": [
+        "Configuration and status of the counters per Capacity Monitoring feature"
+      ]
+    }
+  }
+}

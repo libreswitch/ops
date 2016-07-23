@@ -1,0 +1,213 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/mirror.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Mirror": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "There must be a user-defined name of the mirror session."
+          ]
+        },
+        "active": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The intended state of the mirror session: active or inactive. The",
+            "[operation_state](Mirror.mirror_status.operation_state) value contains the",
+            "actual state in hardware (e.g. active, inactive, or error). When missing or",
+            "false, the state is inactive."
+          ],
+          "emptyValue": false
+        },
+        "select_src_port": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Set of Ethernet port or LAG references in [Port](Port) on which received packets",
+            "are selected to be mirrored."
+          ],
+          "group": "/Mirroring Source(s) Configuration"
+        },
+        "select_dst_port": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Set of Ethernet port or LAG references in [Port](Port) on which transmitted",
+            "packets are selected to be mirrored."
+          ],
+          "group": "/Mirroring Source(s) Configuration"
+        },
+        "output_port": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Ethernet port or LAG reference in [Port](Port) used to transmit the mirror",
+            "packets.  There must be a valid Ethernet port or LAG for the session operation",
+            "state to become active.",
+            "",
+            "The output port should be reserved exclusively for transmitting mirror packets",
+            "for this session.  It should not pariticapte in any other network activity (e.g.",
+            "Spanning Tree, LLDP etc)."
+          ],
+          "group": "/Mirroring Destination Configuration"
+        },
+        "statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "tx_bytes": {
+                "type": "integer",
+                "doc": [
+                  "Number of bytes transmitted through this mirror."
+                ],
+                "group": "/Mirror Session Statistics"
+              },
+              "tx_packets": {
+                "type": "integer",
+                "doc": [
+                  "Number of packets transmitted through this mirror."
+                ],
+                "group": "/Mirror Session Statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/Mirror Session Statistics"
+        },
+        "mirror_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "operation_state": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "shutdown",
+                    "internal_error",
+                    "driver_error",
+                    "unknown_error"
+                  ]
+                },
+                "doc": [
+                  "Operational state of the mirror session in hardware. Only the value \"active\"",
+                  "means the hardware mirroring is running. Any other value, or if the key is",
+                  "missing, means the session is not running."
+                ],
+                "group": "/Mirror Session Status",
+                "emptyValue": "shutdown"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Key-value pair(s) that report mirror status in hardware."
+          ],
+          "group": "/Mirror Session Status"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "title": "Mirror Sessions",
+      "doc": [
+        "Mirror sessions referenced from a [Bridge](Bridge).",
+        "",
+        "A mirror configures a bridge to send copies of selected packets to special",
+        "\"mirrored\" ports, in addition to their normal destinations. Mirroring traffic",
+        "may also be referred to as SPAN."
+      ],
+      "groupDoc": {
+        "/Mirror Session Statistics": [
+          "Key-value pairs that report mirror statistics.  The counts are reset to zero",
+          "whenever the operation state transitions to active. The update period is",
+          "controlled by [stats-update-interval](System.other_config.stats-update-interval)",
+          "in table [System](System). No counts may be available initally until the first",
+          "update period has elasped.  If any key-value pairs remains missing, the hardware",
+          "does not support that count."
+        ],
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ],
+        "/Mirroring Source(s) Configuration": [
+          "To be selected for mirroring, a given packet must enter or leave the bridge",
+          "through a selected port.  If a source port is in both the select_src_port and",
+          "select_dst_port sets, then both transmitted and received packets will be",
+          "mirrored."
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,322 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/manager.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Manager": {
+      "columns": {
+        "target": {
+          "category": "configuration",
+          "type": "string",
+          "doc": [
+            "Connection method for managers.",
+            "",
+            "The following connection methods are currently supported:",
+            "",
+            "+ __`ssl:_ip_`[`:_port_`]__:    The specified SSL _port_ on the host at the",
+            "given _ip_, which must be expressed as an IP address (not a DNS name).  The",
+            "[ssl](System.ssl) column in the [System](System) table must point to a valid SSL",
+            "configuration when this form is used.   If _port_ is not specified, it currently",
+            "defaults to 6632.  In the future, the default will change to 6640, which is the",
+            "IANA-defined value.   SSL support is an optional feature that is not always",
+            "built as part of OpenSwitch.",
+            "+ __`tcp:_ip_`[`:_port_`]__:    The specified TCP _port_ on the host at the",
+            "given _ip_, which must be expressed as an IP address (not a DNS name), where",
+            "_ip_ can be IPv4 or IPv6 address.  If _ip_ is an IPv6 address, wrap it in square",
+            "brackets, e.g. `tcp:[::1]:6632`.   If _port_ is not specified, it currently",
+            "defaults to 6632.  In the future, the default will change to 6640, which is the",
+            "IANA-defined value.",
+            "+ __`pssl:`[_port_][`:_ip_`]__:    Listens for SSL connections on the specified",
+            "TCP _port_. Specify 0 for _port_ to have the kernel automatically choose an",
+            "available port.  If _ip_, which must be expressed as an IP address (not a DNS",
+            "name), is specified, then connections are restricted to the specified local IP",
+            "address (either IPv4 or IPv6 address).  If _ip_ is an IPv6 address, wrap in",
+            "square brackets, e.g. `pssl:6632:[::1]`.  If _ip_ is not specified then it",
+            "listens only on IPv4 (but not IPv6) addresses. The [ssl](System.ssl) column in",
+            "the [System](System) table must point to a valid SSL configuration when this",
+            "form is used.   If _port_ is not specified, it currently defaults to 6632.  In",
+            "the future, the default will change to 6640, which is the IANA-defined value.",
+            "SSL support is an optional feature that is not always built as part of",
+            "OpenSwitch.",
+            "+ __`ptcp:`[_port_][`:_ip_`]__:    Listens for connections on the specified TCP",
+            "_port_. Specify 0 for _port_ to have the kernel automatically choose an",
+            "available port.  If _ip_, which must be expressed as an IP address (not a DNS",
+            "name), is specified, then connections are restricted to the specified local IP",
+            "address (either IPv4 or IPv6 address).  If _ip_ is an IPv6 address, wrap it in",
+            "square brackets, e.g. `ptcp:6632:[::1]`.  If _ip_ is not specified then it",
+            "listens only on IPv4 addresses.   If _port_ is not specified, it currently",
+            "defaults to 6632.  In the future, the default will change to 6640, which is the",
+            "IANA-defined value.",
+            "",
+            "When multiple managers are configured, the [target](Manager.target) values must",
+            "be unique.  Duplicate [target](Manager.target) values yield unspecified results."
+          ],
+          "group": "/Core Features"
+        },
+        "max_backoff": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1000
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Maximum number of milliseconds to wait between connection attempts. Default is",
+            "implementation-specific."
+          ],
+          "group": "/Client Failure Detection and Handling"
+        },
+        "inactivity_probe": {
+          "category": "configuration",
+          "type": {
+            "key": "integer",
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Maximum number of milliseconds of idle time on connection to the client before",
+            "sending an inactivity probe message.  If OpenSwitch does not communicate with",
+            "the client for the specified number of seconds, it will send a probe.  If a",
+            "response is not received for the same additional amount of time, OpenSwitch",
+            "assumes the connection has been broken and attempts to reconnect.  Default is",
+            "implementation-specific. A value of 0 disables inactivity probes."
+          ],
+          "group": "/Client Failure Detection and Handling"
+        },
+        "connection_mode": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "in-band",
+                "out-of-band"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "If it is specified, this setting must be one of the following strings that",
+            "describes how OpenSwitch contacts this OVSDB client over the network:",
+            "",
+            "+ __`in-band`__:   In this mode, this connection's traffic travels over a bridge",
+            "managed by OpenSwitch.  With this setting, OpenSwitch allows traffic to and from",
+            "the client regardless of the contents of the OpenFlow flow table.  (Otherwise,",
+            "OpenSwitch would never be able to connect to the client, because it did not have",
+            "a flow to enable it.)  This is the most common connection mode because it is not",
+            "necessary to maintain two independent networks.",
+            "+ __`out-of-band`__:   In this mode, the client's traffic uses a control network",
+            "separate from that managed by OpenSwitch, that is, OpenSwitch does not use any",
+            "of its own network devices to communicate with the client. The control network",
+            "must be configured separately, before or after `pswitchd` is started.",
+            "",
+            "If not specified, the default is implementation-specific."
+          ],
+          "group": "/Core Features"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "dscp": {
+                "type": {
+                  "type": "integer",
+                  "maxInteger": 63,
+                  "minInteger": 0
+                },
+                "doc": [
+                  "The Differentiated Service Code Point (DSCP) is specified using 6 bits in the",
+                  "Type of Service (TOS) field in the IP header. DSCP provides a mechanism to",
+                  "classify the network traffic and provide Quality of Service (QoS) on IP",
+                  "networks.  The DSCP value specified here is used when establishing the",
+                  "connection between the manager and the OpenSwitch.  If no value is specified, a",
+                  "default value of 48 is chosen.  Valid DSCP values must be in the range 0 to 63."
+                ],
+                "group": "/Connection Parameters",
+                "emptyValue": "48"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": [
+            "/Connection Parameters",
+            "/Common Columns"
+          ]
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "is_connected": {
+          "category": "status",
+          "type": "boolean",
+          "ephemeral": true,
+          "doc": [
+            "`true` if currently connected to this manager, `false` otherwise."
+          ],
+          "group": "/Status"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "locks_waiting": {
+                "type": "string",
+                "doc": [
+                  "Space-separated list of the names of OVSDB locks that the connection is",
+                  "currently waiting to acquire.  Omitted if the connection is not waiting for any",
+                  "locks."
+                ],
+                "group": "/Status"
+              },
+              "locks_lost": {
+                "type": "string",
+                "doc": [
+                  "Space-separated list of the names of OVSDB locks that the connection has had",
+                  "stolen by another OVSDB client.  Omitted if no locks have been stolen from this",
+                  "connection."
+                ],
+                "group": "/Status"
+              },
+              "bound_port": {
+                "type": "integer",
+                "doc": [
+                  "When [target](Manager.target) is `ptcp:` or `pssl:`, this is the TCP port on",
+                  "which the OVSDB server is listening.  (This is is particularly useful when",
+                  "[target](Manager.target) specifies a port of 0, allowing the kernel to choose",
+                  "any available port.)"
+                ],
+                "group": "/Status"
+              },
+              "last_error": {
+                "type": "string",
+                "doc": [
+                  "A human-readable description of the last error on the connection to the manager;",
+                  "i.e. `strerror(errno)`.  This key will exist only if an error has occurred."
+                ],
+                "group": "/Status"
+              },
+              "sec_since_connect": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0
+                },
+                "doc": [
+                  "The amount of time since this manager last successfully connected to the",
+                  "database (in seconds). Value is empty if manager has never successfully",
+                  "connected."
+                ],
+                "group": "/Status"
+              },
+              "state": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "VOID",
+                    "BACKOFF",
+                    "CONNECTING",
+                    "ACTIVE",
+                    "IDLE"
+                  ]
+                },
+                "doc": [
+                  "The state of the connection to the manager:",
+                  "",
+                  "+ __`VOID`__:  Connection is disabled.",
+                  "+ __`BACKOFF`__:  Attempting to reconnect at an increasing period.",
+                  "+ __`CONNECTING`__:  Attempting to connect.",
+                  "+ __`ACTIVE`__:  Connected, remote host responsive.",
+                  "+ __`IDLE`__:  Connection is idle.  Waiting for response to keep-alive.",
+                  "",
+                  "These values may change in the future.  They are provided only for human",
+                  "consumption."
+                ],
+                "group": "/Status"
+              },
+              "locks_held": {
+                "type": "string",
+                "doc": [
+                  "Space-separated list of the names of OVSDB locks that the connection holds.",
+                  "Omitted if the connection does not hold any locks."
+                ],
+                "group": "/Status"
+              },
+              "n_connections": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 2
+                },
+                "doc": [
+                  "When [target](Manager.target) specifies a connection method that listens for",
+                  "inbound connections (e.g. `ptcp:` or `pssl:`) and more than one connection is",
+                  "actually active, the value is the number of active connections.  Otherwise, this",
+                  "key-value pair is omitted.",
+                  "",
+                  "When multiple connections are active, status columns and key-value pairs (other",
+                  "than this one) report the status of one arbitrarily chosen connection."
+                ],
+                "group": "/Status"
+              },
+              "sec_since_disconnect": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0
+                },
+                "doc": [
+                  "The amount of time since this manager last disconnected from the database (in",
+                  "seconds). Value is empty if manager has never disconnected."
+                ],
+                "group": "/Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/Status"
+        }
+      },
+      "indexes": [
+        [
+          "target"
+        ]
+      ],
+      "title": "OVSDB management connection.",
+      "doc": [
+        "Configuration for a database connection to an OpenSwitch database (OVSDB)",
+        "client.",
+        "",
+        "This table primarily configures the OpenSwitch database (`ovsdb-server`), not",
+        "the OpenSwitch switch (`ovs-vswitchd`).  The switch does read the table to",
+        "determine what connections should be treated as in-band.",
+        "",
+        "The OpenSwitch database server can initiate and maintain active connections to",
+        "remote clients.  It can also listen for database connections."
+      ],
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ],
+        "/Connection Parameters": [
+          "Additional configuration for a connection between the manager and the OpenSwitch",
+          "Database."
+        ]
+      }
+    }
+  }
+}

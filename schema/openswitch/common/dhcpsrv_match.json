@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/dhcpsrv_match.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "DHCPSrv_Match": {
+      "columns": {
+        "set_tag": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            }
+          },
+          "doc": [
+            "Specifies the name of the tag that would be set if the incoming DHCP request has",
+            "the configured option and the value."
+          ]
+        },
+        "option_number": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the number of the extra option that should be sent by the client to",
+            "set the configured tag for DHCP requests. The option number would be ignored if",
+            "option name is specified."
+          ]
+        },
+        "option_name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the name of the option that should be sent by the client to set the",
+            "configured tag for DHCP requests."
+          ]
+        },
+        "option_value": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the value of the option that should be sent by the client to set the",
+            "configured tag for DHCP requests. If the value is not specified, then the tag",
+            "would be set for any value of the option."
+          ]
+        }
+      },
+      "doc": [
+        "Configuration to set tags for the incoming DHCP requests based on the options",
+        "and its value sent by the clients."
+      ]
+    }
+  }
+}

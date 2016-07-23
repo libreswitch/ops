@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/syslog_remote.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Syslog_Remote": {
+      "columns": {
+        "remote_host": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          },
+          "doc": [
+            "FQDN or host name or IPv4 address or IPv6 address of the syslog server."
+          ],
+          "group": "/Configuration"
+        },
+        "transport": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "udp",
+                "tcp"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Transport layer protocol used to forward messages to the server. Default is",
+            "`udp`"
+          ],
+          "group": "/Configuration",
+          "emptyValue": "udp"
+        },
+        "port_number": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Port number on which syslog server is listening. Default is `514` for UDP",
+            "protocol and `1470` for TCP protocol."
+          ],
+          "group": "/Configuration"
+        },
+        "severity": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "debug",
+                "info",
+                "notice",
+                "warning",
+                "err",
+                "crit",
+                "alert",
+                "emerg"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Filter syslog messages with severity.  Only messages with severity higher than",
+            "or equal to the specified value will be sent to the remote server. Default is",
+            "`info`."
+          ],
+          "group": "/Configuration",
+          "emptyValue": "info"
+        }
+      },
+      "indexes": [
+        [
+          "remote_host"
+        ]
+      ],
+      "title": "Syslog remote configuration",
+      "doc": [
+        "Each entry contains the configuration of the remote syslog server to forward",
+        "syslog messages."
+      ]
+    }
+  }
+}

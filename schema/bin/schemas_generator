@@ -1,0 +1,224 @@
+#!/usr/bin/env python
+
+# Copyright (C) 2016 Hewlett Packard Enterprise Development LP
+#
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  not use this file except in compliance with the License. You may obtain
+#  a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+
+import sys
+
+from argparse import ArgumentParser
+from collections import OrderedDict
+
+from utils import dump_json, load_json, calculate_cksum
+from empty_values_generator import generate_empty_values
+from xml_generator import generate_xml
+from schemas_validator import validate
+
+
+COMMON_DROP_KEYS = set([
+    'emptyValue',
+    'group',
+    'groups',
+    'groupDoc',
+    'doc',
+    'title',
+    'valueMap',
+    'valueType',
+    'keyname',
+    'omitCodeGeneration',
+])
+
+OVSSCHEMA_DROP_KEYS = set([
+    'category',
+    'relationship'
+])
+
+
+CONSTRAINT_KEYS = set([
+    'minLength',
+    'maxLength',
+])
+
+ALL_DROP_KEYS = COMMON_DROP_KEYS | OVSSCHEMA_DROP_KEYS
+
+VALUE_MAP_KEY = 'valueMap'
+VALUE_TYPE_KEY = 'valueType'
+KEY = 'key'
+VALUE_KEY = 'value'
+TYPE_KEY = 'type'
+BOOLEAN_TYPE = 'boolean'
+STRING_TYPE = 'string'
+ENUM_KEY = 'enum'
+CATEGORY_KEY = 'category'
+CONFIG_CATEGORY_KEY = 'configuration'
+OMIT_CODE_GENERATION_KEY = 'omitCodeGeneration'
+IGNORE_MAP_ENUM_COLUMNS = ['other_config', 'external_ids']
+PATTERN_TAGS = ['tables', 'columns']
+
+
+def clean_schema(src_schema, dest_schema, drop_keys, pattern_keys,
+                 is_config=False, ignore_map_enum=False):
+    '''
+    Clears the src_schema of keys in drop_keys. The result is
+    built in order within dest_schema to guarantee the order of
+    keys even when replacing them, for example, valueMap for
+    value in the same position
+    '''
+
+    # Clean the schema
+    for key, value in src_schema.iteritems():
+
+        # Determine if current column is a configuration or
+        # dynamic category column, in which case map-column's
+        # valueMap keys are to be transformed into a key enum
+        if not is_config and key == CATEGORY_KEY:
+            if value == CONFIG_CATEGORY_KEY or \
+                    isinstance(value, dict):
+                is_config = True
+
+        if not ignore_map_enum and key == OMIT_CODE_GENERATION_KEY:
+            ignore_map_enum = value
+
+        # Transform map-columns to key/value entries
+        if key in (VALUE_MAP_KEY, VALUE_TYPE_KEY):
+            dest_schema[KEY] = 'string'
+            dest_schema[VALUE_KEY] = 'string'
+
+            # Generate a key enum for config map columns
+            if is_config and not ignore_map_enum:
+                enum = src_schema[VALUE_MAP_KEY].keys()
+                dest_schema[KEY] = OrderedDict()
+                dest_schema[KEY][TYPE_KEY] = 'string'
+                dest_schema[KEY][ENUM_KEY] = ['set', enum]
+
+            # If valueMap is present, use it
+            if VALUE_TYPE_KEY in src_schema:
+                dest_schema[VALUE_KEY] = src_schema[VALUE_TYPE_KEY]
+
+        # Transform enums to OVS format
+        elif key == ENUM_KEY:
+            dest_schema[key] = ['set', src_schema[key]]
+
+        # Exclude constraints for non-configuration columns
+        elif key in CONSTRAINT_KEYS:
+            if is_config:
+                dest_schema[key] = src_schema[key]
+
+        # Ignore any key in drop_keys
+        elif key not in pattern_keys:
+            if isinstance(value, OrderedDict):
+
+                # Determine if a column in IGNORE_MAP_ENUM_COLUMNS
+                # is being processed, this means that an enum will
+                # not be generated for map column's keys
+                ignore = ignore_map_enum
+                if key in IGNORE_MAP_ENUM_COLUMNS:
+                    ignore = True
+
+                local_drop_keys = [] if key in PATTERN_TAGS else drop_keys
+
+                # Clean current position's children
+                dest_schema[key] = OrderedDict()
+                clean_schema(src_schema[key], dest_schema[key], drop_keys,
+                             local_drop_keys, is_config, ignore)
+            else:
+                dest_schema[key] = src_schema[key]
+
+
+def create_extschema(unified_schema, drop_keys, add_cksum=True):
+
+    # Pop standard JSON top level keys
+    unified_schema.pop('$schema', None)
+    unified_schema.pop('id', None)
+
+    # Create empty new schema
+    target_schema = OrderedDict()
+
+    # Recursively clean the src_schema and store result in ovs_schema
+    clean_schema(unified_schema, target_schema, drop_keys, drop_keys)
+
+    if add_cksum:
+        target_schema = calculate_cksum(target_schema)
+
+    return target_schema
+
+
+def generate_schemas(unified_schema, extschema_filename, ovsschema_filename,
+                     unique_names):
+
+    if extschema_filename:
+        ext_schema = create_extschema(unified_schema,
+                                      drop_keys=COMMON_DROP_KEYS,
+                                      add_cksum=False)
+        dump_json(ext_schema, extschema_filename, unique_names)
+
+    if ovsschema_filename:
+        ovs_schema = create_extschema(unified_schema,
+                                      drop_keys=ALL_DROP_KEYS,
+                                      add_cksum=True)
+        dump_json(ovs_schema, ovsschema_filename, unique_names)
+
+
+if __name__ == '__main__':
+
+    # Setup and parse arguments
+    args_parser = \
+        ArgumentParser(description='Generates the extschema old format ' +
+                       'and the ovsschema.')
+
+    args_parser.add_argument('unified_schema_file', type=str,
+                             help='the file containing the final extschema')
+
+    args_parser.add_argument('--unique-names', action='store_true',
+                             help='generate unique file names')
+
+    args_parser.add_argument('--ovsschema', type=str,
+                             help='OVS schema filename')
+
+    args_parser.add_argument('--extschema', type=str,
+                             help='original extschema filename')
+
+    args_parser.add_argument('--xml', type=str,
+                             help='the schema documentation output filename')
+
+    args_parser.add_argument('--empty_values_header', type=str,
+                             help='the .h file containig the C empty values')
+
+    args_parser.add_argument('--metaschema', type=str,
+                             help='file describing the schema validation rules')
+
+    args = args_parser.parse_args()
+
+    if not args.extschema and not args.ovsschema:
+        sys.exit("E: At least one of ovsschema or extschema is required")
+
+    # Open the file and return a unified JSON schema file
+    unified_schema = load_json(args.unified_schema_file)
+
+    # Generate the schemas
+    generate_schemas(unified_schema,
+                     args.extschema,
+                     args.ovsschema,
+                     args.unique_names)
+
+    if args.metaschema:
+        metaschema = load_json(args.metaschema)
+        validate(metaschema, unified_schema)
+
+    if args.xml:
+        generate_xml(unified_schema,
+                     args.xml)
+
+    if args.empty_values_header:
+        generate_empty_values(unified_schema,
+                              args.empty_values_header)

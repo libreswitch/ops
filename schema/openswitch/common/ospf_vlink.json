@@ -1,0 +1,163 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/ospf_vlink.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "OSPF_Vlink": {
+      "columns": {
+        "name": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 32
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The virtual link identifier."
+          ],
+          "group": "/status"
+        },
+        "peer_router_id": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 4294967295
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "The peer router ID."
+          ],
+          "group": "/Configuration"
+        },
+        "area_id": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 4294967295
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "The area ID of the virtual link. Backbone area cannot have virtual link."
+          ],
+          "group": "/Configuration"
+        },
+        "ospf_auth_type": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "null",
+                "text",
+                "md5"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The type of OSPFv2 authentication. If not set, then the area level",
+            "authentication of the transit area, holds for the port."
+          ],
+          "group": "/Configuration"
+        },
+        "ospf_auth_text_key": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 8
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The authentication key for OSPFv2 authentication type \"text\"."
+          ],
+          "group": "/Configuration"
+        },
+        "ospf_auth_md5_keys": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 255
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 16
+            },
+            "min": 0,
+            "max": 255
+          },
+          "keyname": "key_id",
+          "doc": [
+            "The authentication keys for OSPFv2 authentication type \"md5\" message-digest."
+          ],
+          "group": "/Configuration"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "retransmit_interval": {
+                "type": "integer",
+                "doc": [
+                  "The estimated time, in seconds, between successive LSAs. The default value is 5",
+                  "seconds."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "5"
+              },
+              "dead_interval": {
+                "type": "integer",
+                "doc": [
+                  "The time, in seconds, that a neighbor waits for a Hello packet before tearing",
+                  "down adjacency with local router. The default value is 4 times the hello",
+                  "interval."
+                ],
+                "group": "/Configuration"
+              },
+              "transmit_delay": {
+                "type": "integer",
+                "doc": [
+                  "The estimated time, in seconds, to transmit an LSA to a neighbor. The default",
+                  "value is 1 second."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "1"
+              },
+              "hello_interval": {
+                "type": "integer",
+                "doc": [
+                  "The time, in seconds, between successive Hello packets. The default value is 10",
+                  "seconds."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "10"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration"
+        }
+      },
+      "title": "OSPFv2 virtual link information"
+    }
+  }
+}

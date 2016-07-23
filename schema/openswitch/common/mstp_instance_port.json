@@ -1,0 +1,209 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/mstp_instance_port.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "MSTP_Instance_Port": {
+      "columns": {
+        "port": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            }
+          },
+          "doc": [
+            "Specifies port for the MSTP instance."
+          ],
+          "group": "/Configurations"
+        },
+        "port_priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 240
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to specify the priority value used along with the switch MAC",
+            "address to determine which device is root. Configured as a multiple of 16. The",
+            "lower a priority value, the higher the priority. Default value is 8."
+          ],
+          "group": "/Configurations",
+          "emptyValue": 8
+        },
+        "admin_path_cost": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 200000000
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The cost to reach root port. Default value is determined from the interface",
+            "speed. Bandwidth           Port cost 10 Mbps             2,000,000 100 Mbps",
+            "200,000 1 Gigabit Ethernet  20,000 10 Gigabit Ethernet 2,000"
+          ],
+          "group": "/Configurations"
+        },
+        "port_role": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "Root",
+                "Designated",
+                "Alternate",
+                "Backup",
+                "Disabled"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The role of port in the active MSTP topology"
+          ],
+          "group": "/Status"
+        },
+        "port_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "Blocking",
+                "Learning",
+                "Forwarding",
+                "Disabled"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The state of the port in the active topology Default value is Blocking."
+          ],
+          "group": "/Status",
+          "emptyValue": "Blocking"
+        },
+        "designated_root": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The root bridge name for a MSTP instance."
+          ],
+          "group": "/Status"
+        },
+        "designated_root_priority": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 61440
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The priority value for designated port. Default value is 32768."
+          ],
+          "group": "/Status",
+          "emptyValue": 32768
+        },
+        "designated_cost": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 200000000
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The path cost for designated bridge."
+          ],
+          "group": "/Status"
+        },
+        "designated_bridge": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The designated bridge for this port."
+          ],
+          "group": "/Status"
+        },
+        "designated_bridge_priority": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 61440
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The designated bridge priority at this port."
+          ],
+          "group": "/Status"
+        },
+        "designated_port": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The designated port ID."
+          ],
+          "group": "/Status"
+        }
+      },
+      "title": "MSTP instance info per port",
+      "doc": [
+        "This represents information regarding a specific Port within the bridge's bridge",
+        "protocol entity, for a given MSTI."
+      ],
+      "groupDoc": {
+        "/Status": [
+          "These are status parameters for the port. These values will be calculated at the",
+          "time of protocol initialization."
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/ospf_nbma_neighbor.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "OSPF_NBMA_Neighbor": {
+      "columns": {
+        "nbr_address": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "The IP address of the NMBA neighbor. The default value is 0, which is invalid."
+          ],
+          "group": "/Configuration",
+          "emptyValue": 0
+        },
+        "interface_name": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 32
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The name of the interface on which the NBMA Neighbor is adjacent."
+          ],
+          "group": "/status"
+        },
+        "nbr_router_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The router ID of the neighbor. The default value is 0, which is invalid",
+            "router_id."
+          ],
+          "group": "/status",
+          "emptyValue": 0
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "poll_timer_due": {
+                "type": "integer",
+                "doc": [
+                  "The poll timer due in seconds for the NMBA neighbor. The default value is",
+                  "poll_interval."
+                ],
+                "group": "/status"
+              },
+              "state_changes_count": {
+                "type": "integer",
+                "doc": [
+                  "The total number of state change events. The default value is 0."
+                ],
+                "group": "/status",
+                "emptyValue": "0"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/status"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "priority": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 255
+                },
+                "doc": [
+                  "The priority of the NMBA neighbor. The default value is 0."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "0"
+              },
+              "poll_interval": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "The poll interval (in seconds) of the NMBA neighbor. Default is 60 seconds."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "60"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration"
+        }
+      },
+      "title": "OSPFv2 NBMA Neighbor information"
+    }
+  }
+}

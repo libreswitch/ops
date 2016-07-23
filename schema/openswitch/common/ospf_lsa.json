@@ -1,0 +1,239 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/ospf_lsa.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "OSPF_LSA": {
+      "columns": {
+        "area_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The OSPFv2 Area ID. This is for area scope LSAs. The default value is 0."
+          ],
+          "group": "/status",
+          "emptyValue": 0
+        },
+        "ls_birth_time": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            }
+          },
+          "doc": [
+            "The OSPFv2 LSA birth time, number of seconds elapsed since Epoch, which can be",
+            "used to compute LSA age."
+          ],
+          "group": "/status"
+        },
+        "ls_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "The OSPFv2 LS_ID."
+          ],
+          "group": "/status"
+        },
+        "adv_router": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "The Router ID of the advertising router."
+          ],
+          "group": "/status"
+        },
+        "lsa_type": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "type1_router_lsa",
+                "type2_network_lsa",
+                "type3_abr_summary_lsa",
+                "type4_asbr_summary_lsa",
+                "type5_as_external_lsa",
+                "type6_multicast_lsa",
+                "type7_nssa_lsa",
+                "type8_external_attributes_lsa",
+                "type9_opaque_link_lsa",
+                "type10_opaque_area_lsa",
+                "type11_opaque_as_lsa"
+              ]
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "The type of the OSPFv2 LSA."
+          ],
+          "group": "/status"
+        },
+        "ls_seq_num": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            }
+          },
+          "doc": [
+            "The sequence number of the OSPFv2 LSA."
+          ],
+          "group": "/status"
+        },
+        "options": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "type_of_service",
+                "external_routing",
+                "multicast",
+                "type_7_lsa",
+                "external_attributes_lsa",
+                "demand_circuits",
+                "opaque_lsa"
+              ]
+            },
+            "min": 0,
+            "max": 7
+          },
+          "doc": [
+            "The options in the OSPFv2 LSA."
+          ],
+          "group": "/status"
+        },
+        "flags": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "area_border_router",
+                "autonomus_system_boundary_router",
+                "virtual_link_endpoint"
+              ]
+            },
+            "min": 0,
+            "max": 3
+          },
+          "doc": [
+            "The flags in the OSPFv2 Router LSA."
+          ],
+          "group": "/status"
+        },
+        "chksum": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The checksum in the OSPFv2 LSA. The default value is 0."
+          ],
+          "group": "/status",
+          "emptyValue": 0
+        },
+        "length": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The length of the OSPFv2 LSA in bytes. The default value is 20 bytes."
+          ],
+          "group": "/status",
+          "emptyValue": 20
+        },
+        "num_router_links": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Total number of router links. This is applicable in case of Router LSA. The",
+            "default value is 0."
+          ],
+          "group": "/status",
+          "emptyValue": 0
+        },
+        "prefix": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 18
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The prefix in A.B.C.D/M format. This is applicable in case of the type 3 and 4",
+            "Summary LSAs."
+          ],
+          "group": "/status"
+        },
+        "lsa_data": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The OSPFv2 LSA specific data."
+          ],
+          "group": "/status"
+        }
+      },
+      "title": "OSPFv2 link state related information"
+    }
+  }
+}

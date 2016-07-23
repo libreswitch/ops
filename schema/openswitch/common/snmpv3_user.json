@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/snmpv3_user.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "SNMPv3_User": {
+      "columns": {
+        "user_name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32
+            }
+          },
+          "doc": [
+            "User name that should contain alphanumeric characters."
+          ],
+          "group": "/configuration"
+        },
+        "auth_protocol": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "md5",
+                "sha",
+                "none"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The authentication protocol to be used for authenticating the user. The default",
+            "is \"none\"."
+          ],
+          "group": "/configuration",
+          "emptyValue": "none"
+        },
+        "priv_protocol": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "aes",
+                "des",
+                "none"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The privacy protocol to be used for encrypting the user requests. The default is",
+            "\"none\"."
+          ],
+          "group": "/configuration",
+          "emptyValue": "none"
+        },
+        "auth_pass_phrase": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The key to be used by authentication protocol."
+          ],
+          "group": "/configuration"
+        },
+        "priv_pass_phrase": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The key to be used by privacy protocol."
+          ],
+          "group": "/configuration"
+        },
+        "snmpv3_contexts": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "SNMPv3_Context",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "SNMPv3 contexts associated with this user"
+          ],
+          "group": "/configuration"
+        }
+      },
+      "maxRows": 10,
+      "indexes": [
+        [
+          "user_name"
+        ]
+      ],
+      "isRoot": true
+    }
+  }
+}

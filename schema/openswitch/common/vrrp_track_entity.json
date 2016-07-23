@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/vrrp_track_entity.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "VRRP_Track_Entity": {
+      "columns": {
+        "id": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 128
+            }
+          },
+          "doc": [
+            "VRRP track entity index."
+          ],
+          "group": "/Configurations"
+        },
+        "status_up": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies track entity status based on configured tracked L3 interface state.",
+            "The status is set to `true` if the tracked L3 interface state is `up`. Otherwise",
+            "set to `false`. Default value is `false`."
+          ],
+          "group": "/Status"
+        },
+        "track_port": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies an L3 interface to track."
+          ],
+          "group": "/Configurations"
+        }
+      },
+      "indexes": [
+        [
+          "id"
+        ]
+      ],
+      "isRoot": true,
+      "title": "VRRP track entity info",
+      "doc": [
+        "This represents information regarding entities such as ports tracked by VRRP",
+        "virtual routers . This feature provides the ability to dynamically change the",
+        "priority of the virtual router(VR) when tracked entities such as ports go down.",
+        "In normal VRRP operation, one router(say Router-1) is in the Master state and",
+        "one router (Router-2) is in the Backup state. Router-1 provides the default",
+        "gateway for the hosts. If Router-1 goes down for any reason, the Backup router,",
+        "Router-2, provides the default gateway for the host. If all the tracked entities",
+        "configured on Router-1 go down, Router-1 begins sending advertisements with a",
+        "priority of zero. This causes Router-2 to take control of the virtual IP. A",
+        "Backup VR switches to priority zero instead of its configured value when all its",
+        "tracked entities go down. An Owner VR always uses priority `255` and never",
+        "relinquishes control voluntarily."
+      ],
+      "groupDoc": {
+        "/Status": [
+          "These are status parameters for a particular VRRP track entity."
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,3386 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/interface.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Interface": {
+      "columns": {
+        "name": {
+          "category": {
+            "follows": "type"
+          },
+          "type": "string",
+          "mutable": false,
+          "doc": [
+            "Interface name.  Should be alphanumeric and no more than about 8 bytes long.",
+            "May be the same as the port name, for non-bonded ports.  Must otherwise be",
+            "unique among the names of ports, interfaces, and bridges on a host."
+          ],
+          "group": "/Core Features"
+        },
+        "type": {
+          "category": {
+            "per-value": [
+              {
+                "value": "system",
+                "category": "status"
+              },
+              {
+                "value": "internal",
+                "category": "configuration"
+              },
+              {
+                "value": "vlansubint",
+                "category": "configuration"
+              },
+              {
+                "value": "loopback",
+                "category": "configuration"
+              },
+              {
+                "value": "vxlan",
+                "category": "configuration"
+              }
+            ]
+          },
+          "mutable": false,
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "system",
+                "internal",
+                "vlansubint",
+                "loopback",
+                "vxlan"
+              ]
+            }
+          },
+          "doc": [
+            "The interface type, one of:",
+            "",
+            "+ __`system`__:  An ordinary network device, e.g. `eth0` on Linux. Sometimes",
+            "referred to as ``external interfaces'' since they are generally connected to",
+            "hardware external to that on which the OpenSwitch is running.  The empty string",
+            "is a synonym for `system`.",
+            "+ __`internal`__:  A simulated network device that sends and receives traffic.",
+            "An internal interface whose [name](Interface.name) is the same as its bridge's",
+            "[name](Bridge.name) is called the ``local interface.''  It does not make sense",
+            "to bond an internal interface, so the terms ``port'' and ``interface'' are often",
+            "used imprecisely for internal interfaces.",
+            "+ __`vlansubint`__:  A sub-interface created for a physical interface. Sub-",
+            "interfaces are used for router-on-stick configurations and to allow separation",
+            "of traffic on a L3 physical interface based on dot1q encapsulation VLAN and",
+            "apply policies on them.",
+            "+ __`loopback`__:  A loopback interface is a virtual interface, supporting",
+            "IPv4/IPv6 address configuration, that remains up until it is deleted by",
+            "administrator. Loopback interface IP address is used as router-id and source",
+            "address by many protocols.",
+            "+ __`vxlan`__:  This is a vitual interface of type vxlan (L2 overlay over L3",
+            "network RFC 7348)."
+          ],
+          "group": "/System-Specific Details",
+          "emptyValue": "system"
+        },
+        "mac_in_use": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "doc": [
+            "The MAC address in use by this [Interface](Interface)."
+          ],
+          "group": "/Interface Status"
+        },
+        "lacp_current": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "doc": [
+            "Boolean value indicating LACP status for this interface.  If true, this",
+            "interface has current LACP information about its LACP partner.  This information",
+            "may be used to monitor the health of interfaces in a LACP enabled port.  This",
+            "column will be empty if LACP is not enabled."
+          ],
+          "group": "/Interface Status"
+        },
+        "statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "ipv6_mc_tx_packets": {
+                "type": "integer",
+                "doc": [
+                  "Number of transmitted ipv6 multicast packets."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              },
+              "ipv6_mc_rx_packets": {
+                "type": "integer",
+                "doc": [
+                  "Number of received ipv6 multicast packets."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              },
+              "rx_over_err": {
+                "type": "integer",
+                "doc": [
+                  "Number of packets with RX overrun."
+                ],
+                "group": "/Statistics/Statistics: Receive errors"
+              },
+              "rx_dropped": {
+                "type": "integer",
+                "doc": [
+                  "Number of packets dropped by RX."
+                ],
+                "group": "/Statistics/Statistics: Receive errors"
+              },
+              "rx_frame_err": {
+                "type": "integer",
+                "doc": [
+                  "Number of frame alignment errors."
+                ],
+                "group": "/Statistics/Statistics: Receive errors"
+              },
+              "ipv6_uc_rx_packets": {
+                "type": "integer",
+                "doc": [
+                  "Number of received ipv6 unicast packets."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              },
+              "sflow_ingress_bytes": {
+                "type": "integer",
+                "doc": [
+                  "Number of ingress bytes sampled on an interface."
+                ],
+                "group": "/Statistics/sFlow Statistics"
+              },
+              "ipv4_uc_rx_packets": {
+                "type": "integer",
+                "doc": [
+                  "Number of received ipv4 unicast packets."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              },
+              "ipv4_uc_tx_packets": {
+                "type": "integer",
+                "doc": [
+                  "Number of transmitted ipv4 unicast packets."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              },
+              "collisions": {
+                "type": "integer",
+                "doc": [
+                  "Number of collisions."
+                ],
+                "group": "/Statistics/Statistics: Transmit errors"
+              },
+              "tx_packets": {
+                "type": "integer",
+                "doc": [
+                  "Number of transmitted packets."
+                ],
+                "group": "/Statistics/Statistics: Successful transmit and receive counters"
+              },
+              "ipv6_mc_rx_bytes": {
+                "type": "integer",
+                "doc": [
+                  "Number of received ipv6 multicast bytes."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              },
+              "tx_dropped": {
+                "type": "integer",
+                "doc": [
+                  "Number of packets dropped by TX."
+                ],
+                "group": "/Statistics/Statistics: Transmit errors"
+              },
+              "rx_packets": {
+                "type": "integer",
+                "doc": [
+                  "Number of received packets."
+                ],
+                "group": "/Statistics/Statistics: Successful transmit and receive counters"
+              },
+              "ipv6_mc_tx_bytes": {
+                "type": "integer",
+                "doc": [
+                  "Number of transmitted ipv6 multicast bytes."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              },
+              "ipv4_mc_rx_bytes": {
+                "type": "integer",
+                "doc": [
+                  "Number of received ipv4 multicast bytes."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              },
+              "rx_crc_err": {
+                "type": "integer",
+                "doc": [
+                  "Number of CRC errors."
+                ],
+                "group": "/Statistics/Statistics: Receive errors"
+              },
+              "sflow_egress_bytes": {
+                "type": "integer",
+                "doc": [
+                  "Number of egress bytes sampled on an interface."
+                ],
+                "group": "/Statistics/sFlow Statistics"
+              },
+              "ipv4_mc_tx_bytes": {
+                "type": "integer",
+                "doc": [
+                  "Number of transmitted ipv4 multicast bytes."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              },
+              "tx_bytes": {
+                "type": "integer",
+                "doc": [
+                  "Number of transmitted bytes."
+                ],
+                "group": "/Statistics/Statistics: Successful transmit and receive counters"
+              },
+              "ipv4_uc_tx_bytes": {
+                "type": "integer",
+                "doc": [
+                  "Number of transmitted ipv4 unicast bytes."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              },
+              "ipv6_uc_tx_packets": {
+                "type": "integer",
+                "doc": [
+                  "Number of transmitted ipv6 unicast packets."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              },
+              "ipv4_mc_rx_packets": {
+                "type": "integer",
+                "doc": [
+                  "Number of received ipv4 multicast packets."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              },
+              "ipv4_mc_tx_packets": {
+                "type": "integer",
+                "doc": [
+                  "Number of transmitted ipv4 multicast packets."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              },
+              "sflow_egress_packets": {
+                "type": "integer",
+                "doc": [
+                  "Number of egress packets sampled on an interface."
+                ],
+                "group": "/Statistics/sFlow Statistics"
+              },
+              "rx_bytes": {
+                "type": "integer",
+                "doc": [
+                  "Number of received bytes."
+                ],
+                "group": "/Statistics/Statistics: Successful transmit and receive counters"
+              },
+              "tx_errors": {
+                "type": "integer",
+                "doc": [
+                  "Total number of transmit errors, greater than or equal to the sum of the above."
+                ],
+                "group": "/Statistics/Statistics: Transmit errors"
+              },
+              "sflow_ingress_packets": {
+                "type": "integer",
+                "doc": [
+                  "Number of ingress packets sampled on an interface."
+                ],
+                "group": "/Statistics/sFlow Statistics"
+              },
+              "ipv6_uc_rx_bytes": {
+                "type": "integer",
+                "doc": [
+                  "Number of received ipv6 unicast bytes."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              },
+              "ipv6_uc_tx_bytes": {
+                "type": "integer",
+                "doc": [
+                  "Number of transmitted ipv6 unicast bytes."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              },
+              "rx_errors": {
+                "type": "integer",
+                "doc": [
+                  "Total number of receive errors, greater than or equal to the sum of the above."
+                ],
+                "group": "/Statistics/Statistics: Receive errors"
+              },
+              "ipv4_uc_rx_bytes": {
+                "type": "integer",
+                "doc": [
+                  "Number of received ipv4 unicast bytes."
+                ],
+                "group": "/Statistics/Layer3/IP Statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": [
+            "/Statistics/Statistics: Successful transmit and receive counters",
+            "/Statistics/Statistics: Receive errors",
+            "/Statistics/Statistics: Transmit errors",
+            "/Statistics/Layer3/IP Statistics",
+            "/Statistics/sFlow Statistics"
+          ]
+        },
+        "queue_tx_bytes": {
+          "category": "statistics",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "value": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "keyname": "queue_number",
+          "doc": [
+            "For each outbound queue, a count of the queue's total bytes transmitted."
+          ],
+          "group": "/Statistics/Statistics: Interface Queue Transmit Statistics"
+        },
+        "queue_tx_packets": {
+          "category": "statistics",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "value": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "keyname": "queue_number",
+          "doc": [
+            "For each outbound queue, a count of the queue's total packets transmitted."
+          ],
+          "group": "/Statistics/Statistics: Interface Queue Transmit Statistics"
+        },
+        "queue_tx_errors": {
+          "category": "statistics",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "value": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "keyname": "queue_number",
+          "doc": [
+            "For each outbound queue, a count of the queue's total transmit errors or drops."
+          ],
+          "group": "/Statistics/Statistics: Interface Queue Transmit Statistics"
+        },
+        "lldp_statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "lldp_rx_discard": {
+                "type": "integer",
+                "doc": [
+                  "Number of lldp packet received and discarded because of missing, out-of-order or",
+                  "incorrect TLVs."
+                ],
+                "group": "/Statistics/LLDP Interface Level Statistics"
+              },
+              "lldp_rx_tlv_discard": {
+                "type": "integer",
+                "doc": [
+                  "Number of lldp TLVs discarded because of errors."
+                ],
+                "group": "/Statistics/LLDP Interface Level Statistics"
+              },
+              "lldp_tx_len_err": {
+                "type": "integer",
+                "doc": [
+                  "Number of lldp packet transmit error because of length."
+                ],
+                "group": "/Statistics/LLDP Interface Level Statistics"
+              },
+              "lldp_rx_tlv_unknown": {
+                "type": "integer",
+                "doc": [
+                  "Number of lldp TLVs discarded because of unknown tlv."
+                ],
+                "group": "/Statistics/LLDP Interface Level Statistics"
+              },
+              "lldp_rx_err": {
+                "type": "integer",
+                "doc": [
+                  "Number of lldp packets received with one or more detectable errors."
+                ],
+                "group": "/Statistics/LLDP Interface Level Statistics"
+              },
+              "lldp_tx": {
+                "type": "integer",
+                "doc": [
+                  "Number of lldp packets transmitted."
+                ],
+                "group": "/Statistics/LLDP Interface Level Statistics"
+              },
+              "lldp_rx": {
+                "type": "integer",
+                "doc": [
+                  "Number of lldp packets received."
+                ],
+                "group": "/Statistics/LLDP Interface Level Statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/Statistics/LLDP Interface Level Statistics"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "lldp_local_port_vlan": {
+                "type": "string",
+                "doc": [
+                  "Information about port VLAN config."
+                ],
+                "group": "/Interface Status/LLDP status info"
+              },
+              "lldp_local_port_description": {
+                "type": "string",
+                "doc": [
+                  "Description of LLDP port in alpha-numeric format."
+                ],
+                "group": "/Interface Status/LLDP status info"
+              },
+              "kernel_interface_error": {
+                "type": "string",
+                "doc": [
+                  "Human readable kernel interface provisioning error description."
+                ],
+                "group": "/Interface Status"
+              },
+              "driver_version": {
+                "type": "string",
+                "doc": [
+                  "The version string of the device driver controlling the network adapter."
+                ],
+                "group": "/Interface Status"
+              },
+              "driver_name": {
+                "type": "string",
+                "doc": [
+                  "The name of the device driver controlling the network adapter."
+                ],
+                "group": "/Interface Status"
+              },
+              "firmware_version": {
+                "type": "string",
+                "doc": [
+                  "The version string of the network adapter's firmware, if available."
+                ],
+                "group": "/Interface Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "doc": [
+            "Key-value pairs that report port status.  Supported status values are",
+            "[type](Interface.type)-dependent; some interfaces may not have a valid",
+            "[driver_name](Interface.status.driver_name), for example."
+          ],
+          "group": [
+            "/Interface Status",
+            "/Interface Status/LLDP status info"
+          ]
+        },
+        "split_parent": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Interface"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "For a split child interface, this is the reference to the parent",
+            "[Interface](Interface)."
+          ],
+          "group": "/Hardware Interface Information"
+        },
+        "split_children": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Interface"
+            },
+            "min": 0,
+            "max": 4
+          },
+          "doc": [
+            "For a split parent interface, this is the reference to the list of children",
+            "[Interface](Interface)s."
+          ],
+          "group": "/Hardware Interface Information"
+        },
+        "subintf_parent": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4094
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Interface"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "keyname": "dot1q_tag",
+          "doc": [
+            "For a subinterface, this column holds the reference to the parent interface",
+            "[Interface](Interface). The key is the dot1q encapsulation vlan id and the value",
+            "is the uuid of parent interface."
+          ],
+          "group": "/Hardware Interface Information"
+        },
+        "lldp_neighbor_info": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "port_description": {
+                "type": "string",
+                "doc": [
+                  "The port description field shall contain an alpha-numeric string that indicates",
+                  "the port's description."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "port_mfs": {
+                "type": "string",
+                "doc": [
+                  "Port maximum frame size."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "mgmt_ip_list": {
+                "type": "string",
+                "doc": [
+                  "A comma-seperated list of management IP addresses."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "port_lastupdate": {
+                "type": "string",
+                "doc": [
+                  "Time (posix seconds) of last update received."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "chassis_capability_available": {
+                "type": "string",
+                "doc": [
+                  "The chassis capabilities field contains a bit-map of the capabilities that",
+                  "define the primary function(s) of the system. A binary one in the associated bit",
+                  "indicates the existence of that capability. Individual systems may indicate more",
+                  "than one implemented functional capability (for example, both a bridge and",
+                  "router capability)."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "port_lastchange": {
+                "type": "string",
+                "doc": [
+                  "Time (posix seconds) of last change of values."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "port_id": {
+                "type": "string",
+                "doc": [
+                  "The Port ID is a mandatory TLV that identifies the port component of the MSAP",
+                  "identifier associated with the transmitting LLDP agent."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "chassis_refcount": {
+                "type": "string",
+                "doc": [
+                  "Chassis reference count."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "pids_len_list": {
+                "type": "string",
+                "doc": [
+                  "A comma-seperated list of length of protocol ID names."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "power_powertype": {
+                "type": "string",
+                "doc": [
+                  "Power type or LLDP_DOT3_POWER_8023AT_OFF indicating source, priority, requested",
+                  "and allocated have no meaning."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "power_supported": {
+                "type": "string",
+                "doc": [
+                  "Power value is the power the neighbor supports."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "power_paircontrol": {
+                "type": "string",
+                "doc": [
+                  "Describes the capability of controlling the power pairs functionality to switch",
+                  "pins for sourcing power. The value true indicate that the device has the",
+                  "capability to control the power pairs.  When false the PSE Pinout Alternative",
+                  "used cannot be controlled through the PethPsePortAdminEnable attribute."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "chassis_id": {
+                "type": "string",
+                "doc": [
+                  "The Chassis ID identifies the chassis containing the IEEE 802 LAN station",
+                  "associated with the transmitting LLDP agent."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "port_id_subtype": {
+                "type": "string",
+                "doc": [
+                  "The port ID subtype field shall contain an integer value indicating the basis",
+                  "for the identifier that is listed in the port ID field."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "chassis_capability_enabled": {
+                "type": "string",
+                "doc": [
+                  "The enabled capabilities field contains a bit map of the primary functions of",
+                  "the system. A binary one in a bit position indicates that the function is",
+                  "currently enabled."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "macphy_autoneg_enabled": {
+                "type": "string",
+                "doc": [
+                  "Link autonegotiation enabled."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "chassis_index": {
+                "type": "string",
+                "doc": [
+                  "The interface index value used to identify the chassis."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "chassis_name": {
+                "type": "string",
+                "doc": [
+                  "The system name field contains an alpha-numeric string that indicates the",
+                  "administratively assigned name."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "port_hidden_in": {
+                "type": "string",
+                "doc": [
+                  "Considered as hidden for reception."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "port_id_len": {
+                "type": "string",
+                "doc": [
+                  "Port ID length."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "mgmt_iface_list": {
+                "type": "string",
+                "doc": [
+                  "A comma-seperated list of management IP interfaces."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "pids_name_list": {
+                "type": "string",
+                "doc": [
+                  "A comma-seperated list of protocol ID name."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "power_priority": {
+                "type": "string",
+                "doc": [
+                  "Power priority configured on the neighbor port."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "chassis_ttl": {
+                "type": "string",
+                "doc": [
+                  "The Time To Live TLV indicates the number of seconds that the recipient LLDP",
+                  "agent is to regard the information associated with this MSAP identifier to be",
+                  "valid."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "vlan_name_list": {
+                "type": "string",
+                "doc": [
+                  "A comma-seperated list of vlan names."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "port_hidden_out": {
+                "type": "string",
+                "doc": [
+                  "Considered as hidden for transmission."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "macphy_mau_type": {
+                "type": "string",
+                "doc": [
+                  "Common enumeration values for repeater and interface MAU jack types."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "chassis_id_len": {
+                "type": "string",
+                "doc": [
+                  "Chassis ID TLV length."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "power_source": {
+                "type": "string",
+                "doc": [
+                  "Power Source code indicates neighbor Primary Power Source or the Backup Power",
+                  "Source."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "chassis_protocol": {
+                "type": "string",
+                "doc": [
+                  "Chassis protocol name (LLDP)."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "chassis_description": {
+                "type": "string",
+                "doc": [
+                  "The chassis description field contains an alpha-numeric string that is the",
+                  "textual description of the network entity. It includes the full name and version",
+                  "identification of the hardware type, software operating system, and networking",
+                  "software."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "vlan_id_list": {
+                "type": "string",
+                "doc": [
+                  "A comma-seperated list of vlan IDs."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "power_allocated": {
+                "type": "string",
+                "doc": [
+                  "The power value is the power the neighbor allocates."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "port_protocol": {
+                "type": "string",
+                "doc": [
+                  "Protocol used to get this port (LLDP)."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "ppvids_ppvid_list": {
+                "type": "string",
+                "doc": [
+                  "A comma-seperated list of port and protocol vlan IDs."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "port_pvid": {
+                "type": "string",
+                "doc": [
+                  "The port VLAN identifier field shall contain the VLAN ID for the bridge port as",
+                  "defined in 8.4.4 of IEEE Std 802.1Q."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "macphy_autoneg_advertised": {
+                "type": "string",
+                "doc": [
+                  "Link autonegotiation advertized."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "macphy_autoneg_support": {
+                "type": "string",
+                "doc": [
+                  "Link autonnegotiation supported."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "ppvids_cap_list": {
+                "type": "string",
+                "doc": [
+                  "A comma-seperated list of port and protocol vlan capablity."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "chassis_id_subtype": {
+                "type": "string",
+                "doc": [
+                  "The chassis ID subtype field contains an integer value indicating the basis for",
+                  "the chassis ID entity listed in the chassis ID field."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "power_pairs": {
+                "type": "string",
+                "doc": [
+                  "Describes or controls the pairs in use. A value of signal(1) means that the",
+                  "signal pairs only are in use. A value of spare(2) means that the spare pairs",
+                  "only are in use."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              },
+              "power_requested": {
+                "type": "string",
+                "doc": [
+                  "The power value is the power the neighbor requests."
+                ],
+                "group": "/Interface Status/LLDP Neighbor Info"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Keys-value pairs of neighbor's port info as discovered by LLDP."
+          ],
+          "group": "/Interface Status/LLDP Neighbor Info"
+        },
+        "admin_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "up",
+                "down"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "doc": [
+            "The administrative state of the physical network link."
+          ],
+          "group": "/Interface Status"
+        },
+        "link_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "up",
+                "down"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "doc": [
+            "The observed state of the physical network link.  This is ordinarily the link's",
+            "carrier status."
+          ],
+          "group": "/Interface Status"
+        },
+        "kernel_interface_ready": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Indicates whether kernel interface is provisioned.  Default is false."
+          ],
+          "group": "/Interface Status",
+          "emptyValue": false
+        },
+        "hw_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "ready": {
+                "type": "boolean",
+                "doc": [
+                  "Status information about hardware resource allocation on the interface. It is",
+                  "set as false if there are not enough hardware resources or if the resources",
+                  "required to configure features like ACLs in the interface have not been",
+                  "allocated yet.  It is set as true when all the resources have been allocated.",
+                  "The default value is `false`."
+                ],
+                "group": "/Interface Status",
+                "emptyValue": "false"
+              },
+              "ready_state_blocked_reason": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "acls",
+                    "waiting"
+                  ]
+                },
+                "doc": [
+                  "Enumeration that identifies the asserting protocol that is causing the hw_status",
+                  "ready key to be \"false\". The default value will be set to `waiting` to indicate",
+                  "that not all protocols that should set hw_status ready key have responded yet."
+                ],
+                "group": "/Interface Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/Interface Status"
+        },
+        "forwarding_state": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "interface_aggregation_forwarding": {
+                "type": "boolean",
+                "doc": [
+                  "Interface aggregation is set based on the information provided by protocols",
+                  "related to link aggregation. The asserting protocol setting the value of this",
+                  "key to be defined in the interface_aggregation_blocked_reason key. Default value",
+                  "is `false`."
+                ],
+                "group": "/Interface Status",
+                "emptyValue": "false"
+              },
+              "interface_aggregation_blocked_reason": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "lacp"
+                  ]
+                },
+                "doc": [
+                  "Enumeration that identifies the asserting protocol that causes the interface",
+                  "aggregation to be different from \"forwarding\"."
+                ],
+                "group": "/Interface Status"
+              },
+              "forwarding": {
+                "type": "boolean",
+                "doc": [
+                  "Enumeration that summarizes the state of the interface. Default value is",
+                  "`false`."
+                ],
+                "group": "/Interface Status",
+                "emptyValue": "false"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Interface Status"
+        },
+        "link_resets": {
+          "category": "statistics",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "doc": [
+            "The number of times OpenSwitch has observed the",
+            "[link_state](Interface.link_state) of this [Interface](Interface) change."
+          ],
+          "group": "/Interface Status"
+        },
+        "link_speed": {
+          "category": "status",
+          "type": {
+            "key": "integer",
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "doc": [
+            "The negotiated speed of the physical network link in bits per second. Valid",
+            "values are positive integers greater than 0."
+          ],
+          "group": "/Interface Status"
+        },
+        "duplex": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "half",
+                "full"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "doc": [
+            "The duplex mode of the physical network link."
+          ],
+          "group": "/Interface Status"
+        },
+        "pause": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "none",
+                "rx",
+                "tx",
+                "rxtx"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "doc": [
+            "The status of the Ethernet PAUSE (link-level flow control) mode of the physical",
+            "network link."
+          ],
+          "group": "/Interface Status"
+        },
+        "ofport": {
+          "type": {
+            "key": "integer",
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "OpenFlow port number for this interface.  OpenSwitch sets this column's value,",
+            "so other clients should treat it as read-only.",
+            "",
+            "The OpenFlow ``local'' port (`OFPP_LOCAL`) is 65,534. The other valid port",
+            "numbers are in the range 1 to 65,279, inclusive.  Value -1 indicates an error",
+            "adding the interface."
+          ],
+          "group": "/Core Features/OpenFlow Port Number"
+        },
+        "mtu": {
+          "category": "status",
+          "type": {
+            "key": "integer",
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "doc": [
+            "The MTU (maximum transmission unit); i.e. the largest amount of data that can",
+            "fit into a single Ethernet frame. The standard Ethernet MTU is 1500 bytes.  Some",
+            "physical media and many kinds of virtual interfaces can be configured with",
+            "higher MTUs.",
+            "",
+            "This column will be empty for an interface that does not have an MTU as, for",
+            "example, some kinds of tunnels do not."
+          ],
+          "group": "/Interface Status"
+        },
+        "error_control": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "none",
+                "fc-fec",
+                "rs-fec"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "doc": [
+            "The status of Ethernet error control (error detection and correction) mode of",
+            "the physical network link. The error control can be implemented as forward error",
+            "correction (FEC). The FEC can be implemented using Fire codes (FC-FEC) or Reed-",
+            "Solomon codes (RS-FEC)."
+          ],
+          "group": "/Interface Status"
+        },
+        "error": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "If the configuration of the [Interface](Interface) failed, OpenSwitch sets this",
+            "column to an error description in human readable form.  Otherwise, OpenSwitch",
+            "clears this column."
+          ],
+          "group": "/Interface Status"
+        },
+        "options": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "df_default": {
+                "type": "boolean",
+                "doc": [
+                  "Optional.  If enabled, the Don't Fragment bit will be set on tunnel outer",
+                  "headers to allow path MTU discovery. Default is enabled; set to `false` to",
+                  "disable."
+                ],
+                "group": "/Tunnel Options",
+                "emptyValue": "true"
+              },
+              "local_ip": {
+                "type": {
+                  "type": "string",
+                  "maxLength": 15
+                },
+                "doc": [
+                  "The tunnel destination IP that received packets must match.",
+                  "",
+                  "+ An IPv4 address (not a DNS name), e.g. `192.168.12.3`."
+                ],
+                "group": "/Tunnel Options"
+              },
+              "tos": {
+                "type": "string",
+                "doc": [
+                  "Optional.  The value of the ToS bits to be set on the encapsulating packet.  ToS",
+                  "is interpreted as DSCP and ECN bits, ECN part must be zero.  It may also be the",
+                  "word `inherit`, in which case the ToS will be copied from the inner packet if it",
+                  "is IPv4 or IPv6 (otherwise it will be 0).  The ECN fields are always inherited.",
+                  "Default is 0."
+                ],
+                "group": "/Tunnel Options",
+                "emptyValue": "0"
+              },
+              "out_key": {
+                "type": "string",
+                "doc": [
+                  "Optional.  The key to be set on outgoing packets, one of:",
+                  "",
+                  "+ `0`.  Packets sent through the tunnel will have no key. This is equivalent to",
+                  "specifying no [out_key](Interface.options.out_key) at all.",
+                  "+ A 32-bit (for GRE).  The tunnel sends packets only with the specified key.",
+                  "+ A positive 24-bit (VXLAN). The tunnel sends packets only with the specified",
+                  "key."
+                ],
+                "group": "/Tunnel Options"
+              },
+              "in_key": {
+                "type": "string",
+                "doc": [
+                  "Optional.  The key that received packets must contain, one of:",
+                  "",
+                  "+ `0`.  The tunnel receives packets with no key or with a key of 0.  This is",
+                  "equivalent to specifying no [in_key](Interface.options.in_key) at all.",
+                  "+ A 32-bit (for GRE).  The tunnel receives only packets with the specified key.",
+                  "+ A positive 24-bit (VXLAN). The tunnel receives only packets with the specified",
+                  "key."
+                ],
+                "group": "/Tunnel Options"
+              },
+              "key": {
+                "type": "string",
+                "doc": [
+                  "Optional.  Shorthand to set `in_key` and `out_key` at the same time."
+                ],
+                "group": "/Tunnel Options"
+              },
+              "ttl": {
+                "type": "string",
+                "doc": [
+                  "Optional.  The TTL to be set on the encapsulating packet.  It may also be the",
+                  "word `inherit`, in which case the TTL will be copied from the inner packet if it",
+                  "is IPv4 or IPv6 (otherwise it will be the system default, typically 64).",
+                  "Default is the system default TTL."
+                ],
+                "group": "/Tunnel Options"
+              },
+              "remote_ip": {
+                "type": "string",
+                "doc": [
+                  "Required.  The remote tunnel endpoint, one of:",
+                  "",
+                  "+ An IPv4 address (not a DNS name), e.g. `192.168.0.123`. Only unicast endpoints",
+                  "are supported."
+                ],
+                "group": "/Tunnel Options"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Tunnel Options"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "lacp-port-priority": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "The LACP port priority of this [Interface](Interface).  In LACP negotiations",
+                  "[Interface](Interface)s with numerically lower priorities are preferred for",
+                  "aggregation."
+                ],
+                "group": "/Bonding Configuration"
+              },
+              "lldp_enable_dir": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "off",
+                    "rx",
+                    "tx",
+                    "rxtx"
+                  ]
+                },
+                "doc": [
+                  "LLDP interface level config."
+                ],
+                "group": "/Common Columns/LLDP Interface configurations"
+              },
+              "lacp-port-id": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "The LACP port ID of this [Interface](Interface).  Port IDs are used in LACP",
+                  "negotiations to identify individual ports participating in a bond."
+                ],
+                "group": "/Bonding Configuration"
+              },
+              "lacp-aggregation-key": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "The LACP aggregation key of this [Interface](Interface). [Interface](Interface)s",
+                  "with different aggregation keys may not be active within a given [Port](Port) at",
+                  "the same time."
+                ],
+                "group": "/Bonding Configuration"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": [
+            "/Bonding Configuration",
+            "/Common Columns",
+            "/Common Columns/LLDP Interface configurations"
+          ]
+        },
+        "hw_intf_info": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "bridge": {
+                "type": "boolean",
+                "doc": [
+                  "Boolean value indicating interface is a `bridge' interface which is created for",
+                  "every bridge instance. The `bridge' interface receives all VLAN traffic and",
+                  "distributes to the vlan interfaces based on the VLAN tags. The default value is",
+                  "`false'"
+                ],
+                "group": "/Hardware Interface Information",
+                "emptyValue": "false"
+              },
+              "capability_split_4": {
+                "type": "string",
+                "doc": [
+                  "+ Boolean value indicating whether or not the interface supports being split",
+                  "into four split ports. For example, a QSFP",
+                  "+ port can run as a single port or can be split into four 10G split ports using",
+                  "a QSFP",
+                  "+ splitter cable."
+                ],
+                "group": "/Hardware Interface Information"
+              },
+              "switch_unit": {
+                "type": "string",
+                "doc": [
+                  "The hardware switch chip unit identifier. This value is applicable only to",
+                  "interfaces on physical switch devices."
+                ],
+                "group": "/Hardware Interface Information"
+              },
+              "pluggable": {
+                "type": "string",
+                "doc": [
+                  "Boolean value indicating whether or not the interface has a fixed connector or a",
+                  "pluggable module socket."
+                ],
+                "group": "/Hardware Interface Information"
+              },
+              "connector": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "SFP_PLUS",
+                    "QSFP_PLUS",
+                    "QSFP28"
+                  ]
+                },
+                "doc": [
+                  "The form factor of the interface socket. The possible values are \"SFP_PLUS\" and",
+                  "\"QSFP_PLUS\"."
+                ],
+                "group": "/Hardware Interface Information"
+              },
+              "capability_enet10G": {
+                "type": "string",
+                "doc": [
+                  "Boolean value indicating whether or not the interface supports Ethernet 10G",
+                  "speed."
+                ],
+                "group": "/Hardware Interface Information"
+              },
+              "switch_intf_id": {
+                "type": "string",
+                "doc": [
+                  "The hardware switch chip interface identifier. This value is applicable only to",
+                  "interfaces on physical switch devices."
+                ],
+                "group": "/Hardware Interface Information"
+              },
+              "max_speed": {
+                "type": "string",
+                "doc": [
+                  "The maximum speed of the interface in units of megabits per second."
+                ],
+                "group": "/Hardware Interface Information"
+              },
+              "mac_addr": {
+                "type": "string",
+                "doc": [
+                  "The MAC Address for the interface."
+                ],
+                "group": "/Hardware Interface Information"
+              },
+              "capability_enet40G": {
+                "type": "string",
+                "doc": [
+                  "Boolean value indicating whether or not the interface supports Ethernet 40G",
+                  "speed."
+                ],
+                "group": "/Hardware Interface Information"
+              },
+              "capability_enet1G": {
+                "type": "string",
+                "doc": [
+                  "Boolean value indicating whether or not the interface supports Ethernet 1G",
+                  "speed."
+                ],
+                "group": "/Hardware Interface Information"
+              },
+              "speeds": {
+                "type": "string",
+                "doc": [
+                  "The list of supported speeds of the interface in units of megabits per second."
+                ],
+                "group": "/Hardware Interface Information"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Key-value pairs that show the information about a physical interface."
+          ],
+          "group": "/Hardware Interface Information"
+        },
+        "user_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "pause": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "rx",
+                    "tx",
+                    "rxtx"
+                  ]
+                },
+                "doc": [
+                  "The user-configured Ethernet PAUSE (link-level flow control) mode of",
+                  "[Interface](Interface). The possible values are \"none\", \"rx\", \"tx\", and \"rxtx\"."
+                ],
+                "group": "/User Configuration"
+              },
+              "admin": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "up",
+                    "down"
+                  ]
+                },
+                "doc": [
+                  "The user-configured administrative state of [Interface](Interface). The possible",
+                  "values are \"up\" and \"down\".  Default is \"down\" if not specified."
+                ],
+                "group": "/User Configuration",
+                "emptyValue": "down"
+              },
+              "error_control": {
+                "type": "string",
+                "doc": [
+                  "The user-configured Ethernet error control (error detection and correction) mode",
+                  "of [Interface](Interface). The possible values are \"none\", \"fc-fec\" and \"rs-",
+                  "fec\". Default is \"none\" if not specified."
+                ],
+                "group": "/User Configuration"
+              },
+              "lane_split": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "split",
+                    "no-split"
+                  ]
+                },
+                "doc": [
+                  "+ The user-configured split mode of [Interface](Interface). This is only",
+                  "applicable if an interface can be split into multiple interfaces, e.g. QSFP",
+                  "+ ports. The possible values are \"split\" and \"no-split\"."
+                ],
+                "group": "/User Configuration"
+              },
+              "mtu": {
+                "type": "string",
+                "doc": [
+                  "The user-configured MTU of [Interface](Interface)."
+                ],
+                "group": "/User Configuration"
+              },
+              "duplex": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "half",
+                    "full"
+                  ]
+                },
+                "doc": [
+                  "The user-configured duplex mode of [Interface](Interface). The possible values",
+                  "are \"half\" and \"full\"."
+                ],
+                "group": "/User Configuration"
+              },
+              "autoneg": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "default",
+                    "on",
+                    "off"
+                  ]
+                },
+                "doc": [
+                  "The user-configured auto-negotiation state of [Interface](Interface). The",
+                  "possible values are \"default\", \"on\", and \"off\"."
+                ],
+                "group": "/User Configuration"
+              },
+              "speeds": {
+                "type": "string",
+                "doc": [
+                  "The list of user-configured interface speeds in megabits per second. When",
+                  "autoneg is disabled, the first speed value in the list is applied."
+                ],
+                "group": "/User Configuration"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Key-value pairs that stores the user configuration of [Interface](Interface)."
+          ],
+          "group": "/User Configuration"
+        },
+        "hw_intf_config": {
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "pause": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "rx",
+                    "tx",
+                    "rxtx"
+                  ]
+                },
+                "doc": [
+                  "The possible values are \"none\", \"rx\", \"tx\", and \"rxtx\"."
+                ],
+                "group": "/Hardware Interface Configuration"
+              },
+              "duplex": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "half",
+                    "full"
+                  ]
+                },
+                "doc": [
+                  "The possible values are \"half\" and \"full\"."
+                ],
+                "group": "/Hardware Interface Configuration"
+              },
+              "error_control": {
+                "type": "string",
+                "doc": [
+                  "The possible values are \"none\", \"fc-fec\" and \"rs-fec\". Default is \"none\"."
+                ],
+                "group": "/Hardware Interface Configuration"
+              },
+              "interface_type": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "backplane",
+                    "1GBASE_SX",
+                    "1GBASE_T",
+                    "10GBASE_CR",
+                    "10GBASE_SR",
+                    "10GBASE_LR",
+                    "10GBASE_LRM",
+                    "40GBASE_CR4",
+                    "40GBASE_SR4",
+                    "40GBASE_LR4",
+                    "SFP_ER",
+                    "100GBASE_SR4",
+                    "100GBASE_LR4",
+                    "100GBASE_CWDM4",
+                    "100GBASE_PSM4",
+                    "100GBASE_CLR4",
+                    "100GBASE_CR4"
+                  ]
+                },
+                "doc": [
+                  "Physical layer interface type of [Interface](Interface). The possible values are",
+                  "\"unknown\", \"backplane\", \"1GBASE_SX\", \"1GBASE_T\", \"10GBASE_CR\", \"10GBASE_SR\",",
+                  "\"10GBASE_LR\", \"10GBASE_LRM\", \"40GBASE_CR4\", \"40GBASE_SR4\" and \"40GBASE_LR4\"."
+                ],
+                "group": "/Hardware Interface Configuration"
+              },
+              "mtu": {
+                "type": "string",
+                "doc": [
+                  "Maximum transmission unit (MTU) of [Interface](Interface)."
+                ],
+                "group": "/Hardware Interface Configuration"
+              },
+              "enable": {
+                "type": "string",
+                "doc": [
+                  "The possible values are \"true\" and \"false\"."
+                ],
+                "group": "/Hardware Interface Configuration"
+              },
+              "autoneg": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "on",
+                    "off"
+                  ]
+                },
+                "doc": [
+                  "The possible values are \"on\" and \"off\"."
+                ],
+                "group": "/Hardware Interface Configuration"
+              },
+              "speeds": {
+                "type": "string",
+                "doc": [
+                  "The list of possible interface speeds, in megabits per second. If autoneg is",
+                  "true, this is the list of advertised speeds. If not, the first speed in the list",
+                  "is the fixed speed of [Interface](Interface)."
+                ],
+                "group": "/Hardware Interface Configuration"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Key-value pairs that represent the configuration passed down to hardware."
+          ],
+          "group": "/Hardware Interface Configuration"
+        },
+        "bond_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "state": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "up",
+                    "blocked",
+                    "down"
+                  ]
+                },
+                "doc": [
+                  "Enumeration indicating the forwarding state of the interface when it is",
+                  "configured as a member of a LAG. * Up: The interface is eligible and should be",
+                  "fowarding traffic according to LACP * Blocked:  The interface is either not",
+                  "eligible or should be blocked according to LACP.  If an interface is Rx disable,",
+                  "it is also Tx disable, thus, it is blocked * Down:  The interface is configured",
+                  "to be a member of a LAG, but it is either administratively or operatively down"
+                ],
+                "group": "/Interface Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Key-value pairs that report the status of a bond.  This applies to both static",
+            "or LACP bonds."
+          ],
+          "group": "/Interface Status"
+        },
+        "lacp_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "lacp_blocked": {
+                "type": "boolean",
+                "doc": [
+                  "lacp_blocked is set to 'true' if LACP decides to block the interface. Default",
+                  "value is `false`."
+                ],
+                "group": "/Interface Status",
+                "emptyValue": "false"
+              },
+              "actor_system_id": {
+                "type": "string",
+                "doc": [
+                  "The LACP actor system ID in the form of priority and mac address tuple."
+                ],
+                "group": "/Interface Status"
+              },
+              "partner_state": {
+                "type": "string",
+                "doc": [
+                  "The LACP partner protocol state information in an abbreviated form reporting",
+                  "status/state bit values. For example,",
+                  "(Actv:1,TmOut:1,Aggr:1,Sync:1,Col:1,Dist:1,Def:0,Exp:0)"
+                ],
+                "group": "/Interface Status"
+              },
+              "partner_port_id": {
+                "type": "string",
+                "doc": [
+                  "The LACP partner port ID in the form of priority and port number tuple."
+                ],
+                "group": "/Interface Status"
+              },
+              "actor_key": {
+                "type": "string",
+                "doc": [
+                  "The LACP actor key in use."
+                ],
+                "group": "/Interface Status"
+              },
+              "partner_key": {
+                "type": "string",
+                "doc": [
+                  "The LACP partner key in use."
+                ],
+                "group": "/Interface Status"
+              },
+              "partner_system_id": {
+                "type": "string",
+                "doc": [
+                  "The LACP partner system ID in the form of priority and mac address tuple."
+                ],
+                "group": "/Interface Status"
+              },
+              "actor_port_id": {
+                "type": "string",
+                "doc": [
+                  "The LACP actor port ID in the form of priority and port number tuple."
+                ],
+                "group": "/Interface Status"
+              },
+              "actor_state": {
+                "type": "string",
+                "doc": [
+                  "The LACP actor protocol state information in an abbreviated form reporting",
+                  "status/state bit values. For example,",
+                  "(Actv:1,TmOut:1,Aggr:1,Sync:1,Col:1,Dist:1,Def:0,Exp:0)"
+                ],
+                "group": "/Interface Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Key-value pairs that report LACP protocol status."
+          ],
+          "group": "/Interface Status"
+        },
+        "mclag_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "actor_port_id": {
+                "type": "string",
+                "doc": [
+                  "Actor port ID is in the form of device priority (2 bytes) followed by port id (2",
+                  "bytes) encoded as string in which each byte value is separated by a colon.",
+                  "Example: 00:08:00:12"
+                ],
+                "group": "/Interface Status"
+              },
+              "actor_key": {
+                "type": "string",
+                "doc": [
+                  "The actor key in use (2 bytes) encoded as a string in which each byte value is",
+                  "separated by a colon. Example: 80:00"
+                ],
+                "group": "/Interface Status"
+              },
+              "actor_system_id": {
+                "type": "string",
+                "doc": [
+                  "Actor system ID is in the form of device priority (2 bytes) followed by device",
+                  "MAC address (6 bytes) encoded as string in which each byte value is separated by",
+                  "a colon.  Example:  00:08:00:02:82:1f:60:4a Device priority range is 0 to 15.",
+                  "Default device priority value is `8`."
+                ],
+                "group": "/Interface Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Interface Status"
+        },
+        "hw_bond_config": {
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "bond_hw_handle": {
+                "type": "string",
+                "doc": [
+                  "Identifies the LAG to which this interface should be attached in hardware. This",
+                  "value is directly copied from [bond_hw_handle](Port.status.bond_hw_handle)."
+                ],
+                "group": "/Interface Status"
+              },
+              "tx_enabled": {
+                "type": "string",
+                "doc": [
+                  "A state flag to indicate that the transmit logic is enabled for this interface",
+                  "in hardware LAG. Defaults to `false` if unset."
+                ],
+                "group": "/Interface Status",
+                "emptyValue": "false"
+              },
+              "rx_enabled": {
+                "type": "string",
+                "doc": [
+                  "A state flag to indicate that this interface is attached to a hardware LAG and",
+                  "receive logic is enabled. Defaults to `false` if unset."
+                ],
+                "group": "/Interface Status",
+                "emptyValue": "false"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Key-value pairs that configure the interface as a member of bond."
+          ],
+          "group": "/Interface Status"
+        },
+        "pm_info": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "tx_power_high_alarm_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.5535
+                },
+                "doc": [
+                  "+ Alarm high threshold value of output power, ranging from 0 to 6.5535, in units",
+                  "of milliwatts. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx3_power_low_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 3 of QSFP",
+                  "+ module is below low alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_bias_high_warning_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 131
+                },
+                "doc": [
+                  "+ Warning high threshold value of TX bias current, ranging from 0 to 131, in",
+                  "units of milliamps. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx_power_high_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power exceeds high warning level.",
+                  "This value is from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx1_power_high_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 1 of QSFP",
+                  "+ module exceeds high warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx4_power_high_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 4 of QSFP",
+                  "+ module exceeds high warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx_power_low_warning_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.5535
+                },
+                "doc": [
+                  "+ Warning low threshold value of received average optical power. The valid value",
+                  "range is 0 to 6.5535, in units of milliwatts. This is a factory preset value in",
+                  "DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "vcc_low_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate internal supply voltage is below low warning level. This",
+                  "value is from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "vcc_high_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate internal supply voltage exceeds high warning level. This",
+                  "value is from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "vcc_low_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate internal supply voltage is below low alarm level. This value",
+                  "is from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_power_high_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate output power exceeds high warning level. This value is from",
+                  "DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx_power_low_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power is below low warning level.",
+                  "This value is from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "vcc_high_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate internal supply voltage exceeds high alarm level. This value",
+                  "is from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx4_power_high_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 4 of QSFP",
+                  "+ module exceeds high alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx4_power_low_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 4 of QSFP",
+                  "+ module is below low alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "temperature_low_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate internal temperature is below low alarm level. This value is",
+                  "from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx4_power_low_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 4 of QSFP",
+                  "+ module is below low warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx_power_high_alarm_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.5535
+                },
+                "doc": [
+                  "+ Alarm high threshold value of received average optical power. The valid value",
+                  "range is 0 to 6.5535, in units of milliwatts. This is a factory preset value in",
+                  "DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_bias_low_alarm_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 131
+                },
+                "doc": [
+                  "+ Alarm low threshold value of TX bias current, ranging from 0 to 131, in units",
+                  "of milliamps. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx4_bias_high_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 4 of QSFP",
+                  "+ module exceeds high warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_power_low_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate output power is below low warning level. This value is from",
+                  "DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx4_bias": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 131
+                },
+                "doc": [
+                  "+ Transceiver TX bias current in channel 4 of QSFP",
+                  "+ module, ranging from 0 to 131, in units of milliamps. This value is from DOM",
+                  "supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx2_bias_low_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 2 of QSFP",
+                  "+ module is below low alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx3_power": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.5535
+                },
+                "doc": [
+                  "+ Transceiver received average optical power in channel 3 of QSFP",
+                  "+ module. The valid value range is 0 to 6.5535, in units of milliwatts. This",
+                  "value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx2_power_low_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 2 of QSFP",
+                  "+ module is below low alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "connector_status": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "unrecognized",
+                    "unsupported",
+                    "supported"
+                  ]
+                },
+                "doc": [
+                  "The status of the connector to indicate whether it is supported by the hardware",
+                  "platform. The possible values are \"unrecognized\", \"unsupported\" and \"supported\"."
+                ],
+                "group": "/Module Information"
+              },
+              "temperature_low_alarm_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": -128,
+                  "maxReal": 128
+                },
+                "doc": [
+                  "+ Alarm low threshold value of internal temperature, ranging from -128 to 128,",
+                  "in units of Celsius. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_power_high_warning_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.5535
+                },
+                "doc": [
+                  "+ Warning high threshold value of output power, ranging from 0 to 6.5535, in",
+                  "units of milliwatts. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx2_bias_high_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 2 of QSFP",
+                  "+ module exceeds high alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "vcc": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.55
+                },
+                "doc": [
+                  "+ Internally measured transceiver supply voltage, ranging from 0 to 6.55, in",
+                  "units of Volts. This value is from DOM supporting SFP+/QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "vendor_oui": {
+                "type": "string",
+                "doc": [
+                  "The Organizationally Unique Identifier (OUI) of the module vendor."
+                ],
+                "group": "/Module Information"
+              },
+              "rx4_power": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.5535
+                },
+                "doc": [
+                  "+ Transceiver received average optical power in channel 4 of QSFP",
+                  "+ module. The valid value range is 0 to 6.5535, in units of milliwatts. This",
+                  "value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "temperature_high_alarm_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": -128,
+                  "maxReal": 128
+                },
+                "doc": [
+                  "+ Alarm high threshold value of internal temperature, ranging from -128 to 128,",
+                  "in units of Celsius. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx1_power_low_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 1 of QSFP",
+                  "+ module is below low alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx2_bias": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 131
+                },
+                "doc": [
+                  "+ Transceiver TX bias current in channel 2 of QSFP",
+                  "+ module, ranging from 0 to 131, in units of milliamps. This value is from DOM",
+                  "supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "temperature_low_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate internal temperature is below low warning level. This value",
+                  "is from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx3_power_high_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 3 of QSFP",
+                  "+ module exceeds high alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "cable_technology": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "passive"
+                  ]
+                },
+                "doc": [
+                  "This indicates whether a copper pluggable module is active or passive. The",
+                  "possible values are \"active\" and \"passive\"."
+                ],
+                "group": "/Module Information"
+              },
+              "max_speed": {
+                "type": "string",
+                "doc": [
+                  "The maximum speed supported by the transceiver, in units of megabits per second."
+                ],
+                "group": "/Module Information"
+              },
+              "rx_power": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.5535
+                },
+                "doc": [
+                  "+ Transceiver received average optical power, ranging from 0 to 6.5535, in units",
+                  "of milliwatts. This value is from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_bias_high_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current exceeds high warning level. This value is",
+                  "from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "vcc_high_warning_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.55
+                },
+                "doc": [
+                  "+ Warning high threshold value of internal supply voltage, ranging from 0 to",
+                  "6.55, in units of Volts. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx1_bias_low_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 1 of QSFP",
+                  "+ module is below low warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "temperature": {
+                "type": {
+                  "type": "real",
+                  "minReal": -128,
+                  "maxReal": 128
+                },
+                "doc": [
+                  "+ Internally measured transceiver temperature, ranging from -128 to 128, in",
+                  "units of Celsius. This value is from DOM supporting SFP+/QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "vendor_revision": {
+                "type": "string",
+                "doc": [
+                  "The vendor's module revision number."
+                ],
+                "group": "/Module Information"
+              },
+              "tx3_bias_low_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 3 of QSFP",
+                  "+ module is below low warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx3_bias_high_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 3 of QSFP",
+                  "+ module exceeds high alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx1_bias": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 131
+                },
+                "doc": [
+                  "+ Transceiver TX bias current in channel 1 of QSFP",
+                  "+ module, ranging from 0 to 131, in units of milliamps. This value is from DOM",
+                  "supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx1_bias_low_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 1 of QSFP",
+                  "+ module is below low alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx3_power_high_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 3 of QSFP",
+                  "+ module exceeds high warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "vcc_high_alarm_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.55
+                },
+                "doc": [
+                  "+ Alarm high threshold value of internal supply voltage, ranging from 0 to 6.55,",
+                  "in units of Volts. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_power_low_alarm_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.5535
+                },
+                "doc": [
+                  "+ Alarm low threshold value of output power, ranging from 0 to 6.5535, in units",
+                  "of milliwatts. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_bias_low_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current is below low alarm level. This value is from",
+                  "DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx1_power_high_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 1 of QSFP",
+                  "+ module exceeds high alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx2_bias_low_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 2 of QSFP",
+                  "+ module is below low warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx_power_low_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power is below low alarm level. This",
+                  "value is from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx_power_high_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power exceeds high alarm level. This",
+                  "value is from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "vendor_serial_number": {
+                "type": "string",
+                "doc": [
+                  "The vendor's module serial number."
+                ],
+                "group": "/Module Information"
+              },
+              "tx3_bias_low_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 3 of QSFP",
+                  "+ module is below low alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "vcc_low_alarm_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.55
+                },
+                "doc": [
+                  "+ Alarm low threshold value of internal supply voltage, ranging from 0 to 6.55,",
+                  "in units of Volts. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx2_bias_high_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 2 of QSFP",
+                  "+ module exceeds high warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "cable_length": {
+                "type": "string",
+                "doc": [
+                  "The length of the cable in meters. This is only applicable to transceivers with",
+                  "built-in cable or the maximum cable length for a transceiver restricted by",
+                  "length."
+                ],
+                "group": "/Module Information"
+              },
+              "supported_speeds": {
+                "type": "string",
+                "doc": [
+                  "The list of speeds, in megabits per second, supported by this pluggable module."
+                ],
+                "group": "/Module Information"
+              },
+              "power_mode": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "low",
+                    "high"
+                  ]
+                },
+                "doc": [
+                  "The power mode for the pluggable module. The possible values are \"low\" or",
+                  "\"high\". This typically applies to QSFP pluggable modules."
+                ],
+                "group": "/Module Information"
+              },
+              "tx1_bias_high_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 1 of QSFP",
+                  "+ module exceeds high warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx4_bias_high_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 4 of QSFP",
+                  "+ module exceeds high alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "connector": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "absent",
+                    "unknown",
+                    "SFP_RJ45",
+                    "SFP_SX",
+                    "SFP_LX",
+                    "SFP_CX",
+                    "SFP_SR",
+                    "SFP_LR",
+                    "SFP_LRM",
+                    "SFP_DAC",
+                    "SFP_FC",
+                    "QSFP_CR4",
+                    "QSFP_SR4",
+                    "QSFP_LR4",
+                    "SFP_ER",
+                    "QSFP28_SR4",
+                    "QSFP28_LR4",
+                    "QSFP28_CWDM4",
+                    "QSFP28_PSM4",
+                    "QSFP28_CLR4",
+                    "QSFP28_CR4"
+                  ]
+                },
+                "doc": [
+                  "The type of pluggable module connector inserted into the socket. The possible",
+                  "values are \"absent\", \"unknown\", \"SFP_RJ45\", \"SFP_SX\", \"SFP_LX\", \"SFP_CX\",",
+                  "\"SFP_SR\", \"SFP_LR\", \"SFP_LRM\", \"SFP_DAC\", \"SFP_FC\", \"QSFP_CR4\", \"QSFP_SR4\" and",
+                  "\"QSFP_LR4\"."
+                ],
+                "group": "/Module Information"
+              },
+              "temperature_low_warning_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": -128,
+                  "maxReal": 128
+                },
+                "doc": [
+                  "+ Warning low threshold value of internal temperature, ranging from -128 to 128,",
+                  "in units of Celsius. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx1_power": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.5535
+                },
+                "doc": [
+                  "+ Transceiver received average optical power in channel 1 of QSFP",
+                  "+ module. The valid value range is 0 to 6.5535, in units of milliwatts. This",
+                  "value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx2_power_high_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 2 of QSFP",
+                  "+ module exceeds high alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_power_high_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate output power exceeds high alarm level. This value is from DOM",
+                  "supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx3_power_low_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 3 of QSFP",
+                  "+ module is below low warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_bias_low_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current is below low warning level. This value is",
+                  "from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "temperature_high_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate internal temperature exceeds high alarm level. This value is",
+                  "from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx1_power_low_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 1 of QSFP",
+                  "+ module is below low warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx_power_high_warning_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.5535
+                },
+                "doc": [
+                  "+ Warning high threshold value of received average optical power. The valid",
+                  "value range is 0 to 6.5535, in units of milliwatts. This is a factory preset",
+                  "value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx2_power_high_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 2 of QSFP",
+                  "+ module exceeds high warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx1_bias_high_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 1 of QSFP",
+                  "+ module exceeds high alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_bias_low_warning_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 131
+                },
+                "doc": [
+                  "+ Warning low threshold value of TX bias current, ranging from 0 to 131, in",
+                  "units of milliamps. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_power_low_warning_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.5535
+                },
+                "doc": [
+                  "+ Warning low threshold value of output power, ranging from 0 to 6.5535, in",
+                  "units of milliwatts. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx_power_low_alarm_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.5535
+                },
+                "doc": [
+                  "+ Alarm low threshold value of received average optical power. The valid value",
+                  "range is 0 to 6.5535, in units of milliwatts. This is a factory preset value in",
+                  "DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx3_bias": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 131
+                },
+                "doc": [
+                  "+ Transceiver TX bias current in channel 3 of QSFP",
+                  "+ module, ranging from 0 to 131, in units of milliamps. This value is from DOM",
+                  "supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "vendor_part_number": {
+                "type": "string",
+                "doc": [
+                  "The vendor's module part number."
+                ],
+                "group": "/Module Information"
+              },
+              "temperature_high_warning_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": -128,
+                  "maxReal": 128
+                },
+                "doc": [
+                  "+ Warning high threshold value of internal temperature, ranging from -128 to",
+                  "128, in units of Celsius. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_bias": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 131
+                },
+                "doc": [
+                  "+ Transceiver TX bias current, ranging from 0 to 131, in units of milliamps.",
+                  "This value is from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_bias_high_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current exceeds high alarm level. This value is from",
+                  "DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "temperature_high_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate internal temperature exceeds high warning level. This value",
+                  "is from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx4_bias_low_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 4 of QSFP",
+                  "+ module is below low alarm level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx2_power": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.5535
+                },
+                "doc": [
+                  "+ Transceiver received average optical power in channel 2 of QSFP",
+                  "+ module. The valid value range is 0 to 6.5535, in units of milliwatts. This",
+                  "value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_power_low_alarm": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate output power is below low alarm level. This value is from DOM",
+                  "supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "vcc_low_warning_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.55
+                },
+                "doc": [
+                  "+ Warning low threshold value of internal supply voltage, ranging from 0 to",
+                  "6.55, in units of Volts. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "rx2_power_low_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate received average optical power in channel 2 of QSFP",
+                  "+ module is below low warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_power": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 6.5535
+                },
+                "doc": [
+                  "+ Transceiver output power, ranging from 0 to 6.5535, in units of milliwatts.",
+                  "This value is from DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx3_bias_high_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 3 of QSFP",
+                  "+ module exceeds high warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx_bias_high_alarm_threshold": {
+                "type": {
+                  "type": "real",
+                  "minReal": 0,
+                  "maxReal": 131
+                },
+                "doc": [
+                  "+ Alarm high threshold value of TX bias current, ranging from 0 to 131, in units",
+                  "of milliamps. This is a factory preset value in DOM supporting SFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "tx4_bias_low_warning": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "On",
+                    "Off"
+                  ]
+                },
+                "doc": [
+                  "+ Flag to indicate TX bias current in channel 4 of QSFP",
+                  "+ module is below low warning level. This value is from DOM supporting QSFP",
+                  "+ module."
+                ],
+                "group": "/Module Information"
+              },
+              "vendor_name": {
+                "type": "string",
+                "doc": [
+                  "The name of the vendor of the module."
+                ],
+                "group": "/Module Information"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Key-value pairs that report pluggable module information."
+          ],
+          "group": "/Module Information"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "title": "One physical network device in a Port.",
+      "doc": [
+        "An interface within a [Port](Port)."
+      ],
+      "groupDoc": {
+        "/Tunnel Options": [
+          "These options apply to interfaces with [type](Interface.type) of `vxlan`.",
+          "",
+          "Each tunnel must be uniquely identified by the combination of",
+          "[type](Interface.type), [remote_ip](Interface.options.remote_ip),",
+          "[local_ip](Interface.options.local_ip), and [in_key](Interface.options.in_key).",
+          "If two ports are defined that are the same except one has an optional identifier",
+          "and the other does not, the more specific one is matched first.",
+          "[in_key](Interface.options.in_key) is considered more specific than",
+          "[local_ip](Interface.options.local_ip) if a port defines one and another port",
+          "defines the other."
+        ],
+        "/Hardware Interface Configuration": [
+          "The following fields are not meant to be configured by the user, but rather by",
+          "`intfd` daemon that is responsible to consider user configuration or the port",
+          "admin_state configuration and business logic in order to determine hardware",
+          "configuration. When port associated with the interface is configured to down the",
+          "hardware configuration is forced to down."
+        ],
+        "/Hardware Interface Information": [
+          "The following fields describes the hardware information of",
+          "[Interface](Interface). These values do not change through the life of the",
+          "system."
+        ],
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ],
+        "/Core Features/OpenFlow Port Number": [
+          "When a client adds a new interface, OpenSwitch chooses an OpenFlow port number",
+          "for the new port.  If the client that adds the port fills in",
+          "[ofport_request](Interface.ofport_request), then OpenSwitch tries to use its",
+          "value as the OpenFlow port number.  Otherwise, or if the requested port number",
+          "is already in use or cannot be used for another reason, OpenSwitch automatically",
+          "assigns a free port number.  Regardless of how the port number was obtained,",
+          "OpenSwitch then reports in [ofport](Interface.ofport) the port number actually",
+          "assigned.",
+          "",
+          "OpenSwitch limits the port numbers that it automatically assigns to the range 1",
+          "through 32,767, inclusive.  Controllers therefore have free use of ports 32,768",
+          "and up."
+        ],
+        "/Module Information": [
+          "Information about the pluggable module inserted into the physical interface",
+          "socket."
+        ],
+        "/Interface Status": [
+          "Status information about interfaces attached to bridges, updated every 5",
+          "seconds.  Not all interfaces have all of these properties; virtual interfaces",
+          "don't have a link speed, for example.  Non-applicable columns will have empty",
+          "values."
+        ],
+        "/Statistics": [
+          "Key-value pairs that report interface statistics.  The current implementation",
+          "updates these counters periodically.  The update period is controlled by [stats-",
+          "update-interval](System.other_config.stats-update-interval) in the",
+          "[System](System) table.",
+          "",
+          "If an interface does not support a given statistic, then that pair is omitted."
+        ],
+        "/User Configuration": [
+          "The following fields are meant to be configured by the user. It represents the",
+          "configuration of the interface in the bridge."
+        ]
+      }
+    }
+  }
+}

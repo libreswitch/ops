@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/recursive_nexthop.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Recursive_Nexthop": {
+      "columns": {
+        "vrf": {
+          "category": "status",
+          "relationship": "m:1",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRF"
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "Reference to the VRF to which this entry belongs to."
+          ],
+          "group": "/Next hop resolution"
+        },
+        "rnh_ip": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 49
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "IPv4 or IPv6 recursive next hop address to be resolved. Example 192.168.0.2"
+          ],
+          "group": "/Next hop resolution"
+        },
+        "rnh_from": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "bgp",
+                "ldp"
+              ]
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "This indicates from which protocol the request comes."
+          ],
+          "group": "/Next hop resolution"
+        },
+        "nh_ips": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 49
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The IPv4 or IPv6 addresses of the forwarding next hops that the recursive next",
+            "hop is resolved to. It is possible that the recursive next hop is resolved to a",
+            "single forwarding next hop or a ECMP which consists a list of forwarding next",
+            "hops. Example 12.1.0.2"
+          ],
+          "group": "/Next hop resolution"
+        },
+        "nh_metric": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The cost to reach the forwarding next hops that the recursive next hop is",
+            "resolved to."
+          ],
+          "group": "/Next hop resolution"
+        },
+        "nh_ports": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The ports of the forwarding next hops that the recursive next hop is resolved",
+            "to. It is possible that the recursive next hop is resolved to a single",
+            "forwarding next hop or a ECMP which consists a list of next hops."
+          ],
+          "group": "/Next hop resolution"
+        }
+      },
+      "indexes": [
+        [
+          "vrf",
+          "rnh_ip"
+        ]
+      ],
+      "isRoot": true,
+      "title": "Next hop resolution",
+      "doc": [
+        "Recursive next hop resolution. When a protocol has a new recursive next hop and",
+        "its reachability is unknown, the protocol requests the recursive next hop to be",
+        "resolved. The result is represented as nh_ips, nh_metric, and nh_ports."
+      ]
+    }
+  }
+}

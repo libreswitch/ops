@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/queue.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Queue": {
+      "columns": {
+        "algorithm": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "strict",
+                "dwrr"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This parameter selects the scheduling behavior of the queue:",
+            "",
+            "`strict` - Strict Priority will service all packets in the queue before any",
+            "packets in lower numbered queues as long as there are no packets in any higher",
+            "number queue.",
+            "",
+            "`dwrr` - Deficit Weight Round Robin will apportion available bandwidth amongst",
+            "all non-empty dwrr queues in relation to their queue weights.",
+            "",
+            "If this parameter is missing, it is assumed to be 'strict'."
+          ],
+          "group": "/Configuration",
+          "emptyValue": "strict"
+        },
+        "weight": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The weight value for this queue. The maximum weight is hardware dependent."
+          ],
+          "group": "/Configuration"
+        },
+        "hw_default": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "When true, this row contains the hardware default schedule profile parameters",
+            "for this queue."
+          ],
+          "group": "/Hardware Default"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "title": "Queue Schedule Parameters",
+      "doc": [
+        "Contains scheduling parameters for one queue of one profile."
+      ],
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}

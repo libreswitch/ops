@@ -1,0 +1,435 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/bridge.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Bridge": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": "string",
+          "mutable": false,
+          "doc": [
+            "Bridge identifier.  Should be alphanumeric and no more than about 8 bytes long.",
+            "Must be unique among the names of ports, interfaces, and bridges on a host."
+          ],
+          "group": "/Core Features"
+        },
+        "ports": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Ports included in the bridge."
+          ],
+          "group": "/Core Features"
+        },
+        "vlans": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VLAN"
+            },
+            "min": 0,
+            "max": 4094
+          },
+          "doc": [
+            "VLANs included in the bridge."
+          ],
+          "group": "/Core Features"
+        },
+        "mstp_instances": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 64
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "MSTP_Instance"
+            },
+            "min": 0,
+            "max": 64
+          },
+          "doc": [
+            "MSTP configuration for individual instance."
+          ],
+          "group": "/Core Features"
+        },
+        "mstp_common_instance": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "MSTP_Common_Instance"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "MSTP configuration for CIST(Common Instance Spanning Tree)."
+          ],
+          "group": "/Core Features"
+        },
+        "mstp_enable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `true`, to enable MSTP. Default value is `false`."
+          ],
+          "group": "/MSTP Configurations",
+          "emptyValue": false
+        },
+        "mirrors": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Mirror"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "[Mirror](Mirror) references for sessions configured in this bridge."
+          ],
+          "group": "/Other Features"
+        },
+        "datapath_type": {
+          "category": "configuration",
+          "type": "string",
+          "doc": [
+            "Name of datapath provider."
+          ],
+          "group": "/Other Features"
+        },
+        "datapath_version": {
+          "category": "status",
+          "type": "string",
+          "group": "/Other Features"
+        },
+        "datapath_id": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "doc": [
+            "Reports the OpenFlow datapath ID in use.  Exactly 16 hex digits. (Setting this",
+            "column has no useful effect.  Set [datapath-id](Bridge.other-config.datapath-id)",
+            "instead.)"
+          ],
+          "group": "/OpenFlow Configuration"
+        },
+        "controller": {
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Controller"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "OpenFlow controller set.  If unset, then no OpenFlow controllers will be used.",
+            "",
+            "If there are primary controllers, removing all of them clears the flow table.",
+            "If there are no primary controllers, adding one also clears the flow table.",
+            "Other changes to the set of controllers, such as adding or removing a service",
+            "controller, adding another primary controller to supplement an existing primary",
+            "controller, or removing only one of two primary controllers, have no effect on",
+            "the flow table."
+          ],
+          "group": "/OpenFlow Configuration"
+        },
+        "protocols": {
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "OpenFlow10",
+                "OpenFlow11",
+                "OpenFlow12",
+                "OpenFlow13",
+                "OpenFlow14",
+                "OpenFlow15"
+              ]
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "List of OpenFlow protocols that may be used when negotiating a connection with a",
+            "controller.  OpenFlow 1.0, 1.1, 1.2, and 1.3 are enabled by default if this",
+            "column is empty.",
+            "",
+            "OpenFlow 1.4, 1.5, and 1.6 are not enabled by default because their",
+            "implementations are missing features.  In addition, the OpenFlow 1.6",
+            "specification is still under development and thus subject to change."
+          ],
+          "group": "/OpenFlow Configuration"
+        },
+        "fail_mode": {
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "standalone",
+                "secure"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "When a controller is configured, it is, ordinarily, responsible for setting up",
+            "all flows on the switch.  Thus, if the connection to the controller fails, no",
+            "new network connections can be set up. If the connection to the controller stays",
+            "down long enough, no packets can pass through the switch at all.  This setting",
+            "determines the switch's response to such a situation.  It may be set to one of",
+            "the following:",
+            "",
+            "+ __`standalone`__:  If no message is received from the controller for three",
+            "times the inactivity probe interval (see",
+            "[inactivity_probe](Bridge.inactivity_probe)), then OpenSwitch will take over",
+            "responsibility for setting up flows.  In this mode, OpenSwitch causes the bridge",
+            "to act like an ordinary MAC-learning switch.  OpenSwitch will continue to retry",
+            "connecting to the controller in the background and, when the connection",
+            "succeeds, it will discontinue its standalone behavior.",
+            "+ __`secure`__:  OpenSwitch will not set up flows on its own when the controller",
+            "connection fails or when no controllers are defined.  The bridge will continue",
+            "to retry connecting to any defined controllers forever.",
+            "",
+            "The default is `standalone` if the value is unset, but future versions of",
+            "OpenSwitch may change the default.",
+            "",
+            "The `standalone` mode can create forwarding loops on a bridge that has more than",
+            "one uplink port unless STP is enabled.  To avoid loops on such a bridge,",
+            "configure `secure` mode or enable STP (see [stp_enable](Bridge.stp_enable)).",
+            "",
+            "When more than one controller is configured, [fail_mode](Bridge.fail_mode) is",
+            "considered only when none of the configured controllers can be contacted.",
+            "",
+            "Changing [fail_mode](Bridge.fail_mode) when no primary controllers are",
+            "configured clears the flow table."
+          ],
+          "group": "/OpenFlow Configuration"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "mstp_config_digest": {
+                "type": "string",
+                "doc": [
+                  "The configuration digest for the MSTP bridge that is derived based on the VLAN",
+                  "membership of MST instances."
+                ],
+                "group": "/MSTP Status"
+              },
+              "actual-mac-table-size": {
+                "type": "string",
+                "doc": [
+                  "Actual size of the mac table. If mac-table-size exceeds hardware capability,",
+                  "then this field will show the real size used."
+                ],
+                "group": "/Bridge Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "doc": [
+            "Key-value pairs that report bridge status."
+          ],
+          "group": [
+            "/MSTP Status",
+            "/Bridge Status"
+          ]
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "datapath-id": {
+                "type": "string",
+                "doc": [
+                  "Exactly 16 hex digits to set the OpenFlow datapath ID to a specific value.  May",
+                  "not be all-zero."
+                ],
+                "group": "/OpenFlow Configuration"
+              },
+              "dp-desc": {
+                "type": "string",
+                "doc": [
+                  "Human readable description of datapath.  It it a maximum 256 byte-long free-form",
+                  "string to describe the datapath for debugging purposes, e.g. `switch3 in room",
+                  "3120`."
+                ],
+                "group": "/OpenFlow Configuration"
+              },
+              "disable-in-band": {
+                "type": "boolean",
+                "doc": [
+                  "If set to `true`, disable in-band control on the bridge regardless of controller",
+                  "and manager settings."
+                ],
+                "group": "/OpenFlow Configuration"
+              },
+              "mstp_config_revision": {
+                "type": "string",
+                "doc": [
+                  "Set this value to specify the configuration revision number. Default value is 0."
+                ],
+                "group": "/MSTP Configurations",
+                "emptyValue": "0"
+              },
+              "mac-table-size": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1
+                },
+                "doc": [
+                  "The maximum number of MAC addresses to learn.  The default is currently 16K.",
+                  "The value, if specified, is forced into a reasonable range, currently 10 to",
+                  "256K."
+                ],
+                "group": "/Other Features",
+                "emptyValue": "16000"
+              },
+              "hwaddr": {
+                "type": "string",
+                "doc": [
+                  "An Ethernet address in the form _xx_:_xx_:_xx_:_xx_:_xx_:_xx_ to set the",
+                  "hardware address of the local port and influence the datapath ID."
+                ],
+                "group": "/Other Features"
+              },
+              "mstp_config_name": {
+                "type": "string",
+                "doc": [
+                  "Set this value to specify the MSTP configuration name. Default value is system",
+                  "MAC address."
+                ],
+                "group": "/MSTP Configurations"
+              },
+              "mac-aging-time": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1
+                },
+                "doc": [
+                  "The maximum number of seconds to retain a MAC learning entry for which no",
+                  "packets have been seen.  The default is currently 300 seconds (5 minutes).  The",
+                  "value, if specified, is forced into a reasonable range, currently 15 to 3600",
+                  "seconds.",
+                  "",
+                  "A short MAC aging time allows a network to more quickly detect that a host is no",
+                  "longer connected to a switch port.  However, it also makes it more likely that",
+                  "packets will be flooded unnecessarily, when they are addressed to a connected",
+                  "host that rarely transmits packets.  To reduce the incidence of unnecessary",
+                  "flooding, use a MAC aging time longer than the maximum interval at which a host",
+                  "will ordinarily transmit packets."
+                ],
+                "group": "/Other Features",
+                "emptyValue": "300"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": [
+            "/OpenFlow Configuration",
+            "/MSTP Configurations",
+            "/Other Features",
+            "/Common Columns"
+          ]
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "flow_tables": {
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 254
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Flow_Table"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Configuration for OpenFlow tables.  Each pair maps from an OpenFlow table ID to",
+            "configuration for that table."
+          ],
+          "group": "/OpenFlow Configuration"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "doc": [
+        "Configuration for a bridge within an [System](System).",
+        "",
+        "A [Bridge](Bridge) record represents an Ethernet switch with one or more",
+        "``ports,'' which are the [Port](Port) records pointed to by the",
+        "[Bridge](Bridge)'s [ports](Bridge.ports) column. In the first release, only one",
+        "default bridge (bridge_normal) is supported"
+      ],
+      "groupDoc": {
+        "/MSTP Configurations": [
+          "MSTP global configurations for all MSTIs."
+        ],
+        "/Bridge Status": [
+          "Status information about bridges."
+        ],
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ],
+        "/MSTP Status": [
+          "MSTP global status for all MSTIs."
+        ]
+      }
+    }
+  }
+}

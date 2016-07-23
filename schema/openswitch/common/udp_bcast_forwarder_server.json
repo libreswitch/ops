@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/udp_bcast_forwarder_server.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "UDP_Bcast_Forwarder_Server": {
+      "columns": {
+        "src_port": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "Reference to the routed port on which packets are receive."
+          ],
+          "group": "/UDP Broadcast Forwarder Configuration"
+        },
+        "udp_dport": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 65535
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "UDP broadcast packets with this destination udp port are forwarded to the",
+            "configured server(s)."
+          ],
+          "group": "/UDP Broadcast Forwarder Configuration"
+        },
+        "dest_vrf": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRF",
+              "refType": "weak"
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "VRF through which server is reachable."
+          ],
+          "group": "/UDP Broadcast Forwarder Configuration"
+        },
+        "ipv4_ucast_server": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 15
+            },
+            "min": 0,
+            "max": 8
+          },
+          "doc": [
+            "List of IPv4 unicast server destinations to which matching UDP broadcast packets",
+            "received on the port are duplicated and forwarded."
+          ],
+          "group": "/UDP Broadcast Forwarder Configuration"
+        }
+      },
+      "indexes": [
+        [
+          "src_port",
+          "udp_dport",
+          "dest_vrf"
+        ]
+      ],
+      "isRoot": true,
+      "doc": [
+        "Each entry represents the match and forward criteria for UDP broadcast packets",
+        "received on the port. UDP-Broadcast-Forwarder feature uses these entries to",
+        "forward selective UDP broadcast packets received on the routed Port to the",
+        "configured server(s)."
+      ]
+    }
+  }
+}

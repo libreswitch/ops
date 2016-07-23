@@ -1,0 +1,230 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/mstp_instance.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "MSTP_Instance": {
+      "columns": {
+        "vlans": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VLAN",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 4094
+          },
+          "doc": [
+            "VLANs included in the MSTP instance."
+          ],
+          "group": "/Configurations"
+        },
+        "priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 61440
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to specify the priority value, configured as a multiple of 4096",
+            "The lower a priority value, the higher the priority. Default value is 8."
+          ],
+          "group": "/Configurations",
+          "emptyValue": 8
+        },
+        "bridge_identifier": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "+ The root bridge ID for CIST. Default value 64 bit string(4 bit priority",
+            "+ 12 bit Instance ID",
+            "+ 48bit system MAC address)"
+          ],
+          "group": "/Configurations"
+        },
+        "hardware_grp_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The hardware spanning tree group ID. Default value is 0."
+          ],
+          "group": "/Status",
+          "emptyValue": 0
+        },
+        "designated_root": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            }
+          },
+          "doc": [
+            "The root bridge name for a MSTP instance."
+          ],
+          "group": "/Status"
+        },
+        "root_path_cost": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 200000000
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The path cost from the transmitting Bridge to the Root Bridge for the MSTI."
+          ],
+          "group": "/Status"
+        },
+        "root_priority": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 61440
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The root bridge priority. The lower a priority value, the higher the priority.",
+            "Default value is 32768."
+          ],
+          "group": "/Status",
+          "emptyValue": 32768
+        },
+        "remaining_hops": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 40
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Once known, contains the hop count after which the MSTP BPDU of this instance",
+            "are discarded."
+          ],
+          "group": "/Status"
+        },
+        "root_port": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            }
+          },
+          "doc": [
+            "Specifies the root port name for a MSTP instance."
+          ],
+          "group": "/Status"
+        },
+        "time_since_top_change": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The time last topology change happened for this instance. The format for this is",
+            "number of seconds from epoch."
+          ],
+          "group": "/Status"
+        },
+        "topology_change_count": {
+          "category": "statistics",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 2147483647
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The total number of topology changes that have occurred for this instance."
+          ],
+          "group": "/Status"
+        },
+        "topology_unstable": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This is set to `true` when a topology change has occurred. Once topology",
+            "stabilizes it will be set back to `false`. Default is `false`."
+          ],
+          "group": "/Status",
+          "emptyValue": false
+        },
+        "mstp_instance_ports": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "MSTP_Instance_Port"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "MSTP configuration for port."
+          ],
+          "group": "/Configurations"
+        }
+      },
+      "title": "MSTP instance info",
+      "doc": [
+        "This represents information regarding a Bridge's Bridge Protocol entity for the",
+        "specified Spanning Tree instance."
+      ],
+      "groupDoc": {
+        "/Status": [
+          "These are status parameters for a particular MSTP instance. These values will be",
+          "calculated at the time of protocol initialization."
+        ]
+      }
+    }
+  }
+}

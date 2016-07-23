@@ -1,0 +1,267 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/acl_entry.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "ACL_Entry": {
+      "columns": {
+        "comment": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Comment to associate with the specified ACE. Optional parameter."
+          ]
+        },
+        "action": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "permit",
+                "deny"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Match Action: Optional parameter for IPv4 ACL entries. There are two types:",
+            "\"permit\" and \"deny\" If no action is specified the ACE will not be programmed in",
+            "hw."
+          ]
+        },
+        "src_ip": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Source IPv4 Address: Optional parameter.  If no IP address is specified the ACE",
+            "will not match on source IP address.  The following IPv4 address formats are",
+            "accepted: X.X.X.X/X.X.X.X"
+          ]
+        },
+        "dst_ip": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Destination IPv4 Address: Optional parameter.  If no IP address is specified the",
+            "ACE will not match on destination IP address  The following IPv4 address formats",
+            "are accepted: X.X.X.X/X.X.X.X"
+          ]
+        },
+        "protocol": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 255
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "IPv4 Protocol Optional parameter.  If no protocol is specified the ACE will not",
+            "match on protocol."
+          ]
+        },
+        "src_l4_port_min": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Source L4 Port: specifies the IPv4 L4 source port to be used as the minimum",
+            "value.  It is used in conjunction with src_l4_port_max and",
+            "src_l4_port_range_reverse to determine the desired source L4 port functionality.",
+            "Optional parameter for IPv4 ACL entries."
+          ],
+          "group": "/ACL L4 Port Configuration"
+        },
+        "src_l4_port_max": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Source L4 Port Max: specifies the maximum value It is used in conjunction with",
+            "src_l4_port_min and src_l4_port_range_reverse to determine the desired source L4",
+            "port functionality.  Optional parameter for IPv4 ACL entries."
+          ],
+          "group": "/ACL L4 Port Configuration"
+        },
+        "src_l4_port_range_reverse": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Specifies if the values in src_l4_port_min and src_l4_port_max should be treated",
+            "as specifying values not to be matched. Optional parameter for IPv4 ACL entries.",
+            "Applicable to TCP and UDP protocols."
+          ],
+          "group": "/ACL L4 Port Configuration"
+        },
+        "dst_l4_port_min": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Source L4 Port: specifies the IPv4 L4 source port to be used as the minimum",
+            "value.  It is used in conjunction with dst_l4_port_max and",
+            "dst_l4_port_range_reverse to determine the desired destination L4 port",
+            "functionality.  Optional parameter for IPv4 ACL entries."
+          ],
+          "group": "/ACL L4 Port Configuration"
+        },
+        "dst_l4_port_max": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Destination L4 Port Max: specifies the maximum value It is used in conjunction",
+            "with dst_l4_port_min and dst_l4_port_range_reverse to determine the desired",
+            "destination L4 port functionality.  Optional parameter for IPv4 ACL entries."
+          ],
+          "group": "/ACL L4 Port Configuration"
+        },
+        "dst_l4_port_range_reverse": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Specifies if the values in dst_l4_port_min and dst_l4_port_max should be treated",
+            "as specifying values not to be matched. Optional parameter for IPv4 ACL entries.",
+            "Applicable to TCP and UDP protocols."
+          ],
+          "group": "/ACL L4 Port Configuration"
+        },
+        "log": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Log Action: enable ACL logging for packets that match this ACL entry Optional",
+            "parameter for IPv4 ACL entries The following value is accepted: true"
+          ]
+        },
+        "count": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Count Action: enable hit counts in hardware for packets that match this ACL",
+            "entry Optional parameter for IPv4 ACL entries The following value is accepted:",
+            "true"
+          ]
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        }
+      },
+      "title": "Access Control Entry",
+      "groupDoc": {
+        "/ACL L4 Port Configuration": [
+          "L4 Port: specifies the IPv4 L4 port to be used as the minimum value.  It is used",
+          "in conjunction with src/dst_l4_port_max and src/dst_l4_port_range_reverse to",
+          "determine the desired L4 port functionality:  Applicable to TCP and UDP",
+          "protocols."
+        ]
+      }
+    }
+  }
+}

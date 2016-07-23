@@ -1,0 +1,146 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/ospf_route.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "OSPF_Route": {
+      "columns": {
+        "prefix": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 18
+            }
+          },
+          "doc": [
+            "Specifies the prefix address in A.B.C.D/M format."
+          ],
+          "group": "/status"
+        },
+        "path_type": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "intra_area",
+                "inter_area",
+                "external"
+              ]
+            }
+          },
+          "doc": [
+            "The value indicates whether the path type is inter-area, intra-area, or",
+            "external."
+          ],
+          "group": "/status"
+        },
+        "paths": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of paths."
+          ],
+          "group": "/status"
+        },
+        "route_info": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "area_id": {
+                "type": "integer",
+                "doc": [
+                  "The area ID of the route."
+                ],
+                "group": "/status"
+              },
+              "ext_tag": {
+                "type": "string",
+                "doc": [
+                  "The tag of the route."
+                ],
+                "group": "/status"
+              },
+              "ext_type": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "ext_type_1",
+                    "ext_type_2"
+                  ]
+                },
+                "doc": [
+                  "External Type 1 or Type 2 Route. For External routes only. The default value is",
+                  "\"ext_type_1\"."
+                ],
+                "group": "/status",
+                "emptyValue": "ext_type_1"
+              },
+              "area_type_abr": {
+                "type": "boolean",
+                "doc": [
+                  "The area type ABR. The default value is false."
+                ],
+                "group": "/status",
+                "emptyValue": "false"
+              },
+              "cost": {
+                "type": {
+                  "type": "integer",
+                  "maxInteger": 16777215
+                },
+                "doc": [
+                  "The cost metric of the route. The default value is `16777215`, which is maximum",
+                  "metric value."
+                ],
+                "group": "/status",
+                "emptyValue": "16777215"
+              },
+              "type2_cost": {
+                "type": {
+                  "type": "integer",
+                  "maxInteger": 16777215
+                },
+                "doc": [
+                  "The External Type 2 route cost. The default value is `16777215`, which is",
+                  "maximum metric value."
+                ],
+                "group": "/status",
+                "emptyValue": "16777215"
+              },
+              "asbr_router_id": {
+                "type": "integer",
+                "doc": [
+                  "The ASBR router ID. The default value is 0, which is invalid router ID."
+                ],
+                "group": "/status",
+                "emptyValue": "0"
+              },
+              "area_type_asbr": {
+                "type": "boolean",
+                "doc": [
+                  "The area type ASBR. The default value is false."
+                ],
+                "group": "/status",
+                "emptyValue": "false"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/status"
+        }
+      },
+      "title": "OSPFv2 Route related information"
+    }
+  }
+}

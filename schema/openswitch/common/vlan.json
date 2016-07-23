@@ -1,0 +1,538 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/vlan.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "VLAN": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": "string",
+          "mutable": false,
+          "doc": [
+            "VLAN name.  Should be alphanumeric and no more than about 8 bytes long."
+          ],
+          "group": "/Configuration"
+        },
+        "id": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 4094
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "The ID of this VLAN."
+          ],
+          "group": "/Configuration"
+        },
+        "description": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "User provided description of this VLAN."
+          ],
+          "group": "/Configuration"
+        },
+        "admin": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "up",
+                "down"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Administratively configured state of this VLAN. Default is down if not",
+            "specified."
+          ],
+          "group": "/Configuration",
+          "emptyValue": "down"
+        },
+        "hw_vlan_config": {
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "enable": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                },
+                "doc": [
+                  "The possible values are \"true\" and \"false\"."
+                ],
+                "group": "/Hardware VLAN Configuration"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Key-value pairs that represent the configuration passed down to hardware."
+          ],
+          "group": "/Hardware VLAN Configuration"
+        },
+        "macs_invalid": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "If `true`, indicates that MACs on this VLAN are invalid. This might be set by",
+            "any agent of the system that decides that MACs are indeed invalid. Eventually",
+            "those MACs will be cleared from the system and macs_invalid will revert to",
+            "`false`."
+          ],
+          "group": "/MACs Validity"
+        },
+        "oper_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "up",
+                "down"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Operational state of this VLAN."
+          ],
+          "group": "/VLAN Status",
+          "emptyValue": "down"
+        },
+        "oper_state_reason": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "ok",
+                "admin_down",
+                "no_member_port"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Human readable reason for the operational state of this VLAN."
+          ],
+          "group": "/VLAN Status",
+          "emptyValue": "admin_down"
+        },
+        "internal_usage": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "l3port": {
+                "type": "string",
+                "doc": [
+                  "VLAN is used internally by ASIC to configure L3 behavior of the port. The value",
+                  "is the port name that uses this VLAN."
+                ],
+                "group": "/Internal VLAN Config"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Key-value pairs that represent how this VLAN is used internally by the system."
+          ],
+          "group": "/Internal VLAN Config"
+        },
+        "aclv4_in_applied": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "ACL",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Current, successfully applied ingress IPv4 ACL to this VLAN, as identified in",
+            "the [ACL](ACL)"
+          ],
+          "group": "/ACL Status"
+        },
+        "aclv4_in_cfg": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "ACL",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Ingress IPv4 ACL, potentially in flight, desired to be applied to this VLAN, as",
+            "identified in the [ACL](ACL)."
+          ],
+          "group": "/ACL Configuration"
+        },
+        "aclv4_in_cfg_version": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The version of the 'aclv4_in_cfg' column. This value is incremented by the",
+            "management interface each- CLI/REST/Web UI, etc. every time it changes the",
+            "'aclv4_in_cfg' value. An empty value means no ingress IPv4 ACL has been",
+            "configured for the VLAN."
+          ],
+          "group": "/ACL Configuration"
+        },
+        "aclv4_in_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "code": {
+                "type": "integer",
+                "doc": [
+                  "Numeric error code.  Expected to be 0 when state is 'applied'"
+                ],
+                "group": "/ACL Status"
+              },
+              "state": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "applied",
+                    "in_progress",
+                    "canceled",
+                    "rejected"
+                  ]
+                },
+                "group": "/ACL Status"
+              },
+              "version": {
+                "type": "integer",
+                "doc": [
+                  "The version of aclv4_in_cfg that corresponds to this status."
+                ],
+                "group": "/ACL Status"
+              },
+              "message": {
+                "type": "string",
+                "doc": [
+                  "Detailed reason for error state.  Expected empty when state is 'applied'"
+                ],
+                "group": "/ACL Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The status of the last version of 'aclv4_in_cfg' column, that has been processed",
+            "by switchd."
+          ],
+          "group": "/ACL Status"
+        },
+        "aclv4_in_statistics": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 512
+          },
+          "ephemeral": true,
+          "doc": [
+            "Statistics for the ingress IPv4 ACL applied to this port for ACEs that have the",
+            "'count' keyword specified.  Statistics are key/value pairs of ACL sequence",
+            "number and integer representing the statistics for that entry."
+          ],
+          "group": "/ACL Status"
+        },
+        "aclv4_in_statistics_clear_requested": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The number of times a request was made to clear the ingress IPv4 ACL statistics",
+            "for this VLAN."
+          ],
+          "group": "/ACL Configuration"
+        },
+        "aclv4_in_statistics_clear_performed": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The number of times that ingress IPv4 ACL statistics for this VLAN have been",
+            "cleared."
+          ],
+          "group": "/ACL Status"
+        },
+        "aclv4_out_applied": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "ACL",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Current, successfully applied egress IPv4 ACL to this VLAN, as identified in the",
+            "[ACL](ACL)"
+          ],
+          "group": "/ACL Status"
+        },
+        "aclv4_out_cfg": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "ACL",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Egress IPv4 ACL, potentially in flight, desired to be applied to this VLAN, as",
+            "identified in the [ACL](ACL)."
+          ],
+          "group": "/ACL Configuration"
+        },
+        "aclv4_out_cfg_version": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The version of the 'aclv4_out_cfg' column. This value is incremented by the",
+            "management interface each- CLI/REST/Web UI, etc. every time it changes the",
+            "'aclv4_out_cfg' value. An empty value means no egress IPv4 ACL has been",
+            "configured for the VLAN."
+          ],
+          "group": "/ACL Configuration"
+        },
+        "aclv4_out_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "code": {
+                "type": "integer",
+                "doc": [
+                  "Numeric error code.  Expected to be 0 when state is 'applied'"
+                ],
+                "group": "/ACL Status"
+              },
+              "state": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "applied",
+                    "out_progress",
+                    "canceled",
+                    "rejected"
+                  ]
+                },
+                "group": "/ACL Status"
+              },
+              "version": {
+                "type": "integer",
+                "doc": [
+                  "The version of aclv4_out_cfg that corresponds to this status."
+                ],
+                "group": "/ACL Status"
+              },
+              "message": {
+                "type": "string",
+                "doc": [
+                  "Detailed reason for error state.  Expected empty when state is 'applied'"
+                ],
+                "group": "/ACL Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The status of the last version of 'aclv4_out_cfg' column, that has been",
+            "processed by switchd."
+          ],
+          "group": "/ACL Status"
+        },
+        "aclv4_out_statistics": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 512
+          },
+          "ephemeral": true,
+          "doc": [
+            "Statistics for the egress IPv4 ACL applied to this port for ACEs that have the",
+            "'count' keyword specified.  Statistics are key/value pairs of ACL sequence",
+            "number and integer representing the statistics for that entry."
+          ],
+          "group": "/ACL Status"
+        },
+        "aclv4_out_statistics_clear_requested": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The number of times a request was made to clear the egress IPv4 ACL statistics",
+            "for this VLAN."
+          ],
+          "group": "/ACL Configuration"
+        },
+        "aclv4_out_statistics_clear_performed": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The number of times that egress IPv4 ACL statistics for this VLAN have been",
+            "cleared."
+          ],
+          "group": "/ACL Status"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "title": "Virtual Local Area Network",
+      "groupDoc": {
+        "/ACL Status": [
+          "Status of applied ACLs and ACL statistics per VLAN."
+        ],
+        "/Internal VLAN Config": [
+          "Information about how this VLAN is used internally by the system. VLAN could be",
+          "used for L3 interface, sflow, etc."
+        ],
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ],
+        "/ACL Configuration": [
+          "ACL applied to VLANs."
+        ]
+      }
+    }
+  }
+}

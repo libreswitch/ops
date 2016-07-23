@@ -1,0 +1,282 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/subsystem.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Subsystem": {
+      "columns": {
+        "name": {
+          "category": "status",
+          "type": "string",
+          "mutable": false,
+          "group": "/Inventory Info"
+        },
+        "type": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "uninitialized",
+                "system",
+                "chassis",
+                "line_card",
+                "mezz_card"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "group": "/Inventory Info"
+        },
+        "interfaces": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Interface"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "References to the interfaces which are part of this subsystem."
+          ],
+          "group": "/Hardware Configuration"
+        },
+        "leds": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "LED"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration"
+        },
+        "fans": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Fan"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration"
+        },
+        "temp_sensors": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Temp_sensor"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration"
+        },
+        "power_supplies": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Power_supply"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration"
+        },
+        "asset_tag_number": {
+          "category": "configuration",
+          "type": "string",
+          "group": "/Configuration"
+        },
+        "next_mac_address": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 17,
+              "maxLength": 17
+            }
+          },
+          "doc": [
+            "Next available (unused) Ethernet MAC address from the MAC address pool for this",
+            "subsystem."
+          ],
+          "group": "/Hardware Configuration"
+        },
+        "macs_remaining": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "The number of available (unused) Ethernet MAC address from the MAC address pool",
+            "for this subsystem."
+          ],
+          "group": "/Hardware Configuration"
+        },
+        "hw_desc_dir": {
+          "type": "string",
+          "doc": [
+            "Directory where the hardware description files for this subsystem are located."
+          ],
+          "group": "/Inventory Info"
+        },
+        "other_info": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "diag_version": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "l3_port_requires_internal_vlan": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "number_of_macs": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "vendor": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "country_code": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "interface_count": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "onie_version": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "max_interface_speed": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "max_bond_member_count": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "height": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "platform_name": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "max_bond_count": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "part_number": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "device_version": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "base_mac_address": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "label_revision": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "serial_number": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "manufacture_date": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "max_transmission_unit": {
+                "type": "string",
+                "group": "/Inventory Info"
+              },
+              "manufacturer": {
+                "type": "string",
+                "group": "/Inventory Info"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Inventory Info"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "fan_speed_override": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "slow",
+                    "normal",
+                    "medium",
+                    "fast",
+                    "max"
+                  ]
+                },
+                "doc": [
+                  "If the fan_speed_override value is set, `fand` uses that value (unless the",
+                  "output of `tempd` requests max speed, in which case the fans are set to max to",
+                  "avoid an over-temperature situation)."
+                ],
+                "group": "/Common Columns"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "title": "system board, daughter card, line card, etc.",
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}

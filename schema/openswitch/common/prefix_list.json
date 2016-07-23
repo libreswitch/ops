@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/prefix_list.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Prefix_List": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          "doc": [
+            "Name of the prefix list."
+          ],
+          "group": "/Global IP Address Prefix List Configuration"
+        },
+        "description": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": 1
+          },
+          "group": "/Global IP Address Prefix List Configuration"
+        },
+        "prefix_list_entries": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Prefix_List_Entry"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "keyname": "preference",
+          "doc": [
+            "Prefix list entries keyed by preference value."
+          ],
+          "group": "/Global IP Address Prefix List Configuration"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true,
+      "title": "Prefix List",
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}

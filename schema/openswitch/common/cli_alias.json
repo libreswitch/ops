@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/cli_alias.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "CLI_Alias": {
+      "columns": {
+        "alias_name": {
+          "category": "configuration",
+          "type": "string",
+          "doc": [
+            "Shortcut name configured by the user for a set of commands."
+          ]
+        },
+        "alias_definition": {
+          "category": "configuration",
+          "type": "string",
+          "doc": [
+            "The list of commands to be executed when the shortcut is used. Different",
+            "commands can be separated by \";\". Runtime arguments can be specified using $1,",
+            "$2 etc. Any extra arguments, will be added at the end of last command. Eg:",
+            "Execute the command \"alias mycmd hostname $1; console length $2; console width",
+            "$3\" to configure \"mycmd\" as shortcut. On executing \"mycmd Switch1 80 24\", it",
+            "will be expanded to \"hostname Switch1; console length 80; console width 24\".",
+            "\"mycmd\" will be stored in alias_name\" and \"hostname $1; console length $2;",
+            "console width $3\" will be saved in alias_definition."
+          ]
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "indexes": [
+        [
+          "alias_name"
+        ]
+      ],
+      "isRoot": true,
+      "doc": [
+        "Alias configurations for the command line interface."
+      ],
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}

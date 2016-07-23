@@ -1,0 +1,267 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/ntp_association.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "NTP_Association": {
+      "columns": {
+        "vrf": {
+          "category": "configuration",
+          "relationship": "m:1",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRF"
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "Specifies which VRF this association should connect with."
+          ],
+          "group": "/NTP Association Configuration"
+        },
+        "address": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 57
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "FQDN or ip address for the association."
+          ],
+          "group": "/NTP Association Configuration"
+        },
+        "key_id": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "NTP_Key",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Key id is used if NTP client wants to connect to an authenticated association.",
+            "Key id is not used when using an unauthenticated association."
+          ],
+          "group": "/NTP Association Configuration"
+        },
+        "association_attributes": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "prefer": {
+                "type": "boolean",
+                "doc": [
+                  "Preference flag to suggest for this association. Set this to `true` to enable",
+                  "preference for this association. Default is false."
+                ],
+                "group": "/NTP Association Configuration",
+                "emptyValue": "false"
+              },
+              "version": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 3,
+                  "maxInteger": 4
+                },
+                "doc": [
+                  "NTP version to use for when communicating with this association. Default is 3."
+                ],
+                "group": "/NTP Association Configuration",
+                "emptyValue": "3"
+              },
+              "ref_clock_id": {
+                "type": "string",
+                "doc": [
+                  "The refclock driver ID, if available. A refclock driver ID like \"127.127.1.0\"",
+                  "for non uni/multi/broadcast associations"
+                ],
+                "group": "/NTP Association Configuration"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/NTP Association Configuration"
+        },
+        "association_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "network_delay": {
+                "type": "string",
+                "doc": [
+                  "Provides round trip delay (in milliseconds) between the switch and the remote",
+                  "peer or server."
+                ],
+                "group": "/NTP Association Status"
+              },
+              "jitter": {
+                "type": "string",
+                "doc": [
+                  "Provides jitter (in milliseconds) in the time reported for that remote peer or",
+                  "server."
+                ],
+                "group": "/NTP Association Status"
+              },
+              "remote_peer_address": {
+                "type": "string",
+                "doc": [
+                  "Provides the remote peer's ip address being synced to. If FQDN is used as",
+                  "\"address\" during config, then this would be the ip address."
+                ],
+                "group": "/NTP Association Status"
+              },
+              "peer_type": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "uni_or_many_cast",
+                    "bcast_or_mcast_client",
+                    "local_ref_clock",
+                    "symm_peer",
+                    "manycast_server",
+                    "bcast_server",
+                    "mcast_server"
+                  ]
+                },
+                "doc": [
+                  "Provides information about the remote peer type."
+                ],
+                "group": "/NTP Association Status"
+              },
+              "polling_interval": {
+                "type": "string",
+                "doc": [
+                  "Provides the polling frequency (in seconds) used for this peer."
+                ],
+                "group": "/NTP Association Status"
+              },
+              "reference_time": {
+                "type": "string",
+                "doc": [
+                  "Provides the time (in \"day, month date year hh:mm\" format) when the server clock",
+                  "of refid was last adjusted. Eg format Wed, Jan 13 2016  7:56:26.126"
+                ],
+                "group": "/NTP Association Status"
+              },
+              "reachability_register": {
+                "type": "string",
+                "doc": [
+                  "Provides status about the last consequetive polls for this peer. (1 bit per",
+                  "poll)"
+                ],
+                "group": "/NTP Association Status"
+              },
+              "remote_peer_ref_id": {
+                "type": "string",
+                "doc": [
+                  "Provides the reference id used by the remote peer. This can be either another",
+                  "server or stratum 1 devices like .GPS. .USNO. etc. For more info, refer to",
+                  "`http://nlug.ml1.co.uk/2012/01/ntpq-p-output/831`"
+                ],
+                "group": "/NTP Association Status"
+              },
+              "last_polled": {
+                "type": "string",
+                "doc": [
+                  "Provides information about when the peer was last polled. (in seconds ago OR 'h'",
+                  "hours ago OR 'd' days ago). Example 6h, 5d, 5 (this refers to seconds)."
+                ],
+                "group": "/NTP Association Status"
+              },
+              "associd": {
+                "type": "string",
+                "doc": [
+                  "Provides the Association ID mapped for this association. This is an Internal ID."
+                ],
+                "group": "/NTP Association Status"
+              },
+              "root_dispersion": {
+                "type": "string",
+                "doc": [
+                  "Provides maximum error relative time (in seconds) to primary reference clock."
+                ],
+                "group": "/NTP Association Status"
+              },
+              "stratum": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 16
+                },
+                "doc": [
+                  "Provides the remote peer or server stratum level. Range between 1-16."
+                ],
+                "group": "/NTP Association Status"
+              },
+              "peer_status_word": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "reject",
+                    "falsetick",
+                    "excess",
+                    "outlier",
+                    "pps_peer",
+                    "candidate",
+                    "backup",
+                    "system_peer"
+                  ]
+                },
+                "doc": [
+                  "Provides information about the peer status. Refer to link for more info",
+                  "`https://www.eecis.udel.edu/~mills/ntp/html/decode.html#peer`"
+                ],
+                "group": "/NTP Association Status"
+              },
+              "time_offset": {
+                "type": "string",
+                "doc": [
+                  "Provides Root Mean Square time (in milliseconds) between this local host and the",
+                  "remote peer or server."
+                ],
+                "group": "/NTP Association Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "doc": [
+            "Key-value pairs that report NTP association status."
+          ],
+          "group": "/NTP Association Status"
+        }
+      },
+      "indexes": [
+        [
+          "vrf",
+          "address"
+        ]
+      ],
+      "isRoot": true,
+      "maxRows": 8,
+      "doc": [
+        "NTP Client Configuration info related to configured NTP servers and their status",
+        "info.`https://www.ietf.org/rfc/rfc5907.txt`"
+      ],
+      "groupDoc": {
+        "/NTP Association Status": [
+          "Status information about NTP associations. For more info refer to",
+          "`http://doc.ntp.org/4.2.6p5/debug.html`"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,447 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/mclag.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "MCLAG": {
+      "columns": {
+        "isl_port": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "References port to be used as inter switch link."
+          ],
+          "group": "/MCLAG Port configuraiton"
+        },
+        "isl_timers": {
+          "category": "configuration",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "hold_time": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 3
+                },
+                "doc": [
+                  "Configures ISL port-flap hold time in seconds. The default value is `0`."
+                ],
+                "group": "/MCLAG ISL timer configuration",
+                "emptyValue": 0
+              },
+              "timeout": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 2,
+                  "maxInteger": 20
+                },
+                "doc": [
+                  "Configures the amount of time to wait for hellos from peer in seconds. The",
+                  "default value is `3`."
+                ],
+                "group": "/MCLAG ISL timer configuration",
+                "emptyValue": 3
+              },
+              "hello_interval": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 5
+                },
+                "doc": [
+                  "ISLP hello interval in seconds. The default value is `1`."
+                ],
+                "group": "/MCLAG ISL timer configuration",
+                "emptyValue": 1
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/MCLAG ISL timer configuration"
+        },
+        "device_priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 15
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Configures MCLAG device priority. The default value is `1`. Device with the",
+            "lower value of priority will be the primary in the case of split brain handling."
+          ],
+          "group": "/MCLAG Device configuration",
+          "emptyValue": 1
+        },
+        "split_brain_handling": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "one-fragment-active",
+                "dual-active"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Configures how MCLAG split-brain is handled. \"one-fragment-active\" means in case",
+            "of a split, MCLAG links of primary will be active and secondary will be",
+            "disabled. \"dual-active\" means in case of a split, MCLAG links of both primary",
+            "and secondary will be active. The default value is `one-fragment-active`."
+          ],
+          "group": "/MCLAG Device configuration",
+          "emptyValue": "one-fragment-active"
+        },
+        "oper_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "oper_device_priority": {
+                "type": "string",
+                "doc": [
+                  "Operational device priority. Determines primary and secondary MCLAG role."
+                ],
+                "group": "/MCLAG Operational status"
+              },
+              "islp_state": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "out_of_sync",
+                    "in_sync"
+                  ]
+                },
+                "doc": [
+                  "ISL protocol state. in_sync means ISLP link is established. out_of_sync means",
+                  "ISLP link is not established. Default value is `out_of_sync`."
+                ],
+                "group": "/MCLAG Operational status",
+                "emptyValue": "out_of_sync"
+              },
+              "oper_system_id": {
+                "type": "string",
+                "doc": [
+                  "Operational system id."
+                ],
+                "group": "/MCLAG Operational status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/MCLAG Operational status"
+        },
+        "peer_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "peer_device_priority": {
+                "type": "string",
+                "doc": [
+                  "Device priority of the peer switch."
+                ],
+                "group": "/MCLAG Peer status"
+              },
+              "peer_isl_port": {
+                "type": "string",
+                "doc": [
+                  "Name of the logical port on the peer switch configured as ISL port."
+                ],
+                "group": "/MCLAG Peer status"
+              },
+              "peer_system_id": {
+                "type": "string",
+                "doc": [
+                  "System ID of the peer switch."
+                ],
+                "group": "/MCLAG Peer status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/MCLAG Peer status"
+        },
+        "isl_statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "hello_tx": {
+                "type": "integer",
+                "doc": [
+                  "Number of ISLP hello packets transmitted."
+                ],
+                "group": "/MCLAG Port statistics"
+              },
+              "pdu_rx": {
+                "type": "integer",
+                "doc": [
+                  "Number of ISLP PDUs received."
+                ],
+                "group": "/MCLAG Port statistics"
+              },
+              "hello_rx": {
+                "type": "integer",
+                "doc": [
+                  "Number of ISLP hello packets received."
+                ],
+                "group": "/MCLAG Port statistics"
+              },
+              "pdu_tx": {
+                "type": "integer",
+                "doc": [
+                  "Number of ISLP PDUs transmitted."
+                ],
+                "group": "/MCLAG Port statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/MCLAG Port statistics"
+        },
+        "keepalive_src_ip": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "IPv4 address of the device. If not configured, keepalive functionality is",
+            "disabled."
+          ],
+          "group": "/MCLAG Keepalive configuration"
+        },
+        "keepalive_peer_ip": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "IPv4 address of the peer device. If not configured, keepalive functionality is",
+            "disabled."
+          ],
+          "group": "/MCLAG Keepalive configuration"
+        },
+        "keepalive_vrf": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRF",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "VRF to be used for keepalive routing. If not configured, keepalive functionality",
+            "is disabled."
+          ],
+          "group": "/MCLAG Keepalive configuration"
+        },
+        "keepalive_udp_port": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1024,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "UDP port number of peer device. The default value is `7678`."
+          ],
+          "group": "/MCLAG Keepalive configuration",
+          "emptyValue": 7678
+        },
+        "keepalive_timers": {
+          "category": "configuration",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "dead_interval": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 2,
+                  "maxInteger": 120
+                },
+                "doc": [
+                  "Configures the amount of time to wait for keepalive packets from a peer in",
+                  "seconds. The default value is `90`."
+                ],
+                "group": "/MCLAG Keepalive timer configuration",
+                "emptyValue": 90
+              },
+              "hello_interval": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 30
+                },
+                "doc": [
+                  "Keepalive hello interval in seconds. The default value is `30`."
+                ],
+                "group": "/MCLAG Keepalive timer configuration",
+                "emptyValue": 30
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/MCLAG Keepalive timer configuration"
+        },
+        "keepalive_port": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies L3 port for keepalive [Port](Port)."
+          ],
+          "group": "/MCLAG Keepalive status"
+        },
+        "keepalive_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "state": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "initialized",
+                    "configured",
+                    "established",
+                    "failed",
+                    "stopped"
+                  ]
+                },
+                "doc": [
+                  "State of the protocol. The default value is `initialized`."
+                ],
+                "group": "/MCLAG Keepalive status",
+                "emptyValue": "initialized"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/MCLAG Keepalive status"
+        },
+        "keepalive_peer_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "peer_device_priority": {
+                "type": "string",
+                "doc": [
+                  "Peer device priority detected by keepalive protocol. It is used when ISL is not",
+                  "operational."
+                ],
+                "group": "/keepalive peer status"
+              },
+              "peer_system_id": {
+                "type": "string",
+                "doc": [
+                  "Peer system id detected by keepalive protocol. It is used when ISL is not",
+                  "operational."
+                ],
+                "group": "/keepalive peer status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/keepalive peer status"
+        },
+        "keepalive_statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "dead_interval_timeout": {
+                "type": "integer",
+                "doc": [
+                  "Number of times keepalive packet has not been received before expiration of dead",
+                  "interval."
+                ],
+                "group": "/MCLAG Keepalive packet statistics"
+              },
+              "rx": {
+                "type": "integer",
+                "doc": [
+                  "Number of packets received."
+                ],
+                "group": "/MCLAG Keepalive packet statistics"
+              },
+              "dropped": {
+                "type": "integer",
+                "doc": [
+                  "Number of dropped packets."
+                ],
+                "group": "/MCLAG Keepalive packet statistics"
+              },
+              "tx": {
+                "type": "integer",
+                "doc": [
+                  "Number of packets transmitted."
+                ],
+                "group": "/MCLAG Keepalive packet statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/MCLAG Keepalive packet statistics"
+        }
+      },
+      "isRoot": true,
+      "maxRows": 1,
+      "title": "MCLAG ISL Port"
+    }
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/neighbor.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Neighbor": {
+      "columns": {
+        "vrf": {
+          "category": "configuration",
+          "relationship": "m:1",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRF"
+            }
+          },
+          "doc": [
+            "Reference to the VRF table, to which this neighbor belongs."
+          ],
+          "group": "/Neighbor information"
+        },
+        "ip_address": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            }
+          },
+          "doc": [
+            "The IPv4 address or the IPv6 address of neighbor"
+          ],
+          "group": "/Neighbor information"
+        },
+        "address_family": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "ipv4",
+                "ipv6"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Address family of the neighbor."
+          ],
+          "group": "/Neighbor information"
+        },
+        "mac": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "MAC address learned for this neighbor."
+          ],
+          "group": "/Neighbor information"
+        },
+        "port": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Port on which this neighbor was learned."
+          ],
+          "group": "/Neighbor information"
+        },
+        "state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "reachable",
+                "stale",
+                "incomplete",
+                "failed",
+                "permanent"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Current state of the neighbor entry."
+          ],
+          "group": "/Neighbor information"
+        },
+        "in_use_by_routes": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "When set to `true`, indicates this IP is used as a nexthop by one or more route",
+            "entries. Default is `false`"
+          ],
+          "group": "/Neighbor information"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "dp_hit": {
+                "type": "boolean",
+                "doc": [
+                  "Indicates if there is active traffic to the neighbor. This value is periodically",
+                  "updated. If the value is set to `false`, it indicates that there was no traffic",
+                  "to this neighbor recently. Default is `true`"
+                ],
+                "group": "/Neighbor information",
+                "emptyValue": "true"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/Neighbor information"
+        }
+      },
+      "indexes": [
+        [
+          "vrf",
+          "ip_address"
+        ]
+      ],
+      "isRoot": true,
+      "title": "L2 Neighbors",
+      "doc": [
+        "List of all the connected neighbors."
+      ]
+    }
+  }
+}

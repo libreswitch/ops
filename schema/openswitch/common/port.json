@@ -1,0 +1,1853 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/port.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Port": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": "string",
+          "mutable": false,
+          "doc": [
+            "Port name.  Should be alphanumeric and no more than about 8 bytes long.  May be",
+            "the same as the interface name, for non-bonded ports.  Must otherwise be unique",
+            "among the names of ports, interfaces, and bridges on a host."
+          ]
+        },
+        "interfaces": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Interface"
+            },
+            "min": 0,
+            "max": 8
+          },
+          "doc": [
+            "The port's interfaces.  If there is more than one, this is a bonded Port. A",
+            "maximum of 8 interfaces can be assigned to a port."
+          ]
+        },
+        "vlan_trunks": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VLAN",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 4094
+          },
+          "doc": [
+            "For a trunk, native-tagged, or native-untagged port, the 802.1Q VLAN or VLANs",
+            "that this port trunks; if it is empty, then the port trunks all VLANs defined in",
+            "the [VLAN](VLAN) table.  Must be empty if this is an access port.",
+            "",
+            "A native-tagged or native-untagged port always trunks its native VLAN,",
+            "regardless of whether [vlan_trunks](Port.vlan_trunks) includes that VLAN."
+          ],
+          "group": "/VLAN Configuration"
+        },
+        "vlan_tag": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VLAN",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "For an access port, specifies the untagged 802.1Q vlan. If empty, untagged",
+            "packets are dropped. For a native tagged or native untagged port, specifies the",
+            "\"native VLAN\". Must be empty for a trunk port.",
+            "",
+            "For an L3 port, the value is empty. For an interface VLAN the value will be the",
+            "VLAN on which it is created."
+          ],
+          "group": "/VLAN Configuration"
+        },
+        "vlan_mode": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "trunk",
+                "access",
+                "native-tagged",
+                "native-untagged"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The VLAN mode of the port, as described above.  When this column is empty, a",
+            "default mode is selected as follows:",
+            "",
+            "+ If [tag](Port.tag) contains a value, the port is an access port.  The",
+            "[trunks](Port.trunks) column should be empty.",
+            "+ Otherwise, the port is a trunk port.  The [trunks](Port.trunks) column value",
+            "is honored if it is present."
+          ],
+          "group": "/VLAN Configuration"
+        },
+        "vlan_options": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "vlan_tunnel_keys": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4094
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Logical_Switch",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 4095
+          },
+          "keyname": "vlan",
+          "doc": [
+            "Specifies translation from a vlan to the [Logical_Switch](Logical_Switch). If",
+            "this is an access port, only one key needs to be specified. VLAN 0 means that",
+            "untagged traffic on the port is mapped to the specified logical switch."
+          ],
+          "group": "/VLAN Configuration"
+        },
+        "mac": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The MAC address to use for this port for the purpose of choosing the bridge's",
+            "MAC address.  This column does not necessarily reflect the port's actual MAC",
+            "address, nor will setting it change the port's actual MAC address."
+          ],
+          "group": "/Other Features"
+        },
+        "ip4_address": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 18
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The IPv4 address and subnet mask in the address/mask format. This is the primary",
+            "IP address."
+          ],
+          "group": "/L3 Configuration"
+        },
+        "admin": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "up",
+                "down"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The administrative state of the Port configured by user. The port admin state",
+            "determines the hardware configuration based on the business logic. When port",
+            "\"admin\" is configured down the interface(s) associated with the port should",
+            "force their hardware configuration to down. By default the port is up."
+          ],
+          "emptyValue": "up"
+        },
+        "kernel_interface_ready": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Indicates whether kernel interface is provisioned for the port. Default is",
+            "false."
+          ],
+          "emptyValue": false
+        },
+        "ip4_address_secondary": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 18
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "This is a list of secondary IPv4 addresses and subnet mask in the address/mask",
+            "format."
+          ],
+          "group": "/L3 Configuration"
+        },
+        "ip6_address": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 49
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The IPv6 address and subnet mask in the address/mask format. This is the primary",
+            "IPv6 address."
+          ],
+          "group": "/L3 Configuration"
+        },
+        "ip6_address_secondary": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 49
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "This is a list of secondary IPv6 addresses and subnet mask in the address/mask",
+            "format."
+          ],
+          "group": "/L3 Configuration"
+        },
+        "bond_mode": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "l2-src-dst-hash",
+                "l3-src-dst-hash",
+                "l4-src-dst-hash"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The type of bonding used for a bonded port. Bond mode controls the selection of",
+            "a interface from a group of aggregate interfaces with which to transmit a frame.",
+            "This selection is performed with a hash function using either source and",
+            "destination mac addresses (l2), ip addresses (l3) or tcp/udp ports (l4) as",
+            "parameters. Defaults to `l3-src-dst-hash` if not assigned."
+          ],
+          "group": "/Bonding Configuration",
+          "emptyValue": "l3-src-dst-hash"
+        },
+        "bond_options": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "lacp": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "active",
+                "passive",
+                "off"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Configures LACP on this port.  LACP allows directly connected switches to",
+            "negotiate which links may be bonded.  LACP may be enabled on non-bonded ports",
+            "for the benefit of any switches they may be connected to.  `active` ports are",
+            "allowed to initiate LACP negotiations.  `passive` ports are allowed to",
+            "participate in LACP negotiations initiated by a remote switch, but not allowed",
+            "to initiate such negotiations themselves.  If LACP is enabled on a port whose",
+            "partner switch does not support LACP, the bond will be disabled. Defaults to",
+            "`off` if unset."
+          ],
+          "group": "/Bonding Configuration/LACP Configuration",
+          "emptyValue": "off"
+        },
+        "mclag_remote_interfaces": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "MCLAG_Remote_Interface",
+              "refType": "strong"
+            },
+            "min": 0,
+            "max": 4
+          },
+          "doc": [
+            "List of interfaces on the MCLAG peer device which are part of same LAG.",
+            "[MCLAG_Remote_Interface](MCLAG_Remote_Interface)"
+          ],
+          "group": "/Other Features"
+        },
+        "mac_learn_disable": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "When set to 'true', mac learning will be disabled on the port. The default value",
+            "is `false`."
+          ],
+          "group": "/Other Features",
+          "emptyValue": false
+        },
+        "flood_block": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "When set to 'true', all flood traffic received from and forwarded to this port",
+            "will be dropped. The default value is `false`."
+          ],
+          "group": "/Other Features",
+          "emptyValue": false
+        },
+        "egress_redirect_to_port": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "When set, egress traffic of this port will be redirected to the referenced port."
+          ],
+          "group": "/Other Features"
+        },
+        "egress_blocked_to_ports": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "When set, all traffic which ingresses this port will be blocked from being",
+            "forwarded out of the specified ports."
+          ],
+          "group": "/Other Features"
+        },
+        "bond_active_slave": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "bond_hw_handle": {
+                "type": "string",
+                "doc": [
+                  "Unique identifier of the LAG from the data path's perspective. This key value",
+                  "should be treated as opaque handle by application daemons while updating LAG",
+                  "member interfaces in hardware."
+                ],
+                "group": "/Port Status"
+              },
+              "kernel_interface_error": {
+                "type": "string",
+                "doc": [
+                  "Human readable kernel interface provisioning error description."
+                ],
+                "group": "/Port Status"
+              },
+              "error": {
+                "type": "string",
+                "doc": [
+                  "Human readable error description."
+                ],
+                "group": "/Port Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "doc": [
+            "Key-value pairs that report port status."
+          ],
+          "group": "/Port Status"
+        },
+        "forwarding_state": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "port_aggregation_blocked_reason": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "lacp"
+                  ]
+                },
+                "doc": [
+                  "Enumeration that identifies the asserting protocol that causes the port",
+                  "aggregation different from \"forwarding\". * lacp: This means that the aggregated",
+                  "state of the interfaces is driving the forwarding state of the Port, for",
+                  "example, all interfaces are blocked by a lacp."
+                ],
+                "group": "/Port Status"
+              },
+              "forwarding": {
+                "type": "boolean",
+                "doc": [
+                  "Enumeration that summarizes the state of the interface.  This value drives the",
+                  "forwarding state of the data path. Default value is `false`."
+                ],
+                "group": "/Port Status",
+                "emptyValue": "false"
+              },
+              "port_loop_protection_blocked_reason": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "mstp"
+                  ]
+                },
+                "doc": [
+                  "Enumeration that identifies the asserting protocol that causes the port loop",
+                  "protection to be blocked."
+                ],
+                "group": "/Port Status"
+              },
+              "port_loop_protection_forwarding": {
+                "type": "boolean",
+                "doc": [
+                  "Port loop protection is set based on the information provided by protocols. The",
+                  "asserting protocol setting the value of this key is defined in the",
+                  "port_loop_protection_blocked_reason key. Default value is `false`."
+                ],
+                "group": "/Port Status",
+                "emptyValue": "false"
+              },
+              "port_aggregation_forwarding": {
+                "type": "boolean",
+                "doc": [
+                  "Port aggregation is set based on the information provided by protocols related",
+                  "to link aggregation. The asserting protocol setting the value of this key is",
+                  "defined in the port_aggregation_blocked_reason key. Additionally, this key is",
+                  "used to aggregate the state of the links members of the LAG.  For example, it is",
+                  "possible that all links on a LAG are blocked by a security protocol.  This is",
+                  "reflected in this key. Default value is `false`."
+                ],
+                "group": "/Port Status",
+                "emptyValue": "false"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "doc": [
+            "The Port's forwarding state is determined by the state of the interface or",
+            "interfaces in case of LAG and by the information provided by protocols working",
+            "at the logical port level, MSTP for example.",
+            "",
+            "The value is set after all possible conditions have been taken into account.",
+            "The conditions are evaluated by an arbiter that takes the decision of which",
+            "value to set on the forwarding state based on protocol state."
+          ],
+          "group": "/Port Status"
+        },
+        "bond_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "state": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "up",
+                    "blocked",
+                    "down"
+                  ]
+                },
+                "doc": [
+                  "Enumeration summarizing the fowarding state of the bond.  It is based on the",
+                  "aggregate state of the individual member interfaces. * Up: At least one member",
+                  "interface is eligible and should be fowarding traffic according to LACP *",
+                  "Blocked:  All member interfaces are either not eligible or should be blocked",
+                  "according to LACP. If LACP-fallback-ab is enabled, and the",
+                  "[lacp_status](Port.lacp_status) is defaulted, then the bond state is forwarding.",
+                  "If the LACP-fallback-ab is disable, then the state is blocked. * Down:  All",
+                  "member interfaces configured to be a member of a LAG are either administratively",
+                  "or operatively down"
+                ],
+                "group": "/Port Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Key-value pairs that report bond-specific port status (both static and dynamic).",
+            "This column complements the [lacp_status](Port.lacp_status) column."
+          ],
+          "group": "/Port Status"
+        },
+        "lacp_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "bond_speed": {
+                "type": "string",
+                "doc": [
+                  "Speed of interfaces operating in lag."
+                ],
+                "group": "/Port Status"
+              },
+              "bond_status_reason": {
+                "type": "string",
+                "doc": [
+                  "String identifying the reason why the bond_status is \"down\"."
+                ],
+                "group": "/Port Status"
+              },
+              "bond_status": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "ok",
+                    "down",
+                    "defaulted"
+                  ]
+                },
+                "doc": [
+                  "Operational status of LAG. The values are \"ok\" (bond is functional) \"down\" (bond",
+                  "isn't functional), and \"defaulted\" (remote LACP not operating, using one",
+                  "interface in non-LACP mode)."
+                ],
+                "group": "/Port Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "doc": [
+            "Key-value pairs that report lacp-specific port status."
+          ],
+          "group": "/Port Status"
+        },
+        "statistics": {
+          "category": "statistics",
+          "type": {
+            "key": "string",
+            "value": "integer",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true
+        },
+        "hw_config": {
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "enable": {
+                "type": "boolean",
+                "doc": [
+                  "The possible values are \"true\" and \"false\"."
+                ],
+                "group": "/Hardware Port Configuration"
+              },
+              "block_all_mstp": {
+                "type": "boolean",
+                "doc": [
+                  "Indicates that the port should be blocked in all MSTP instances. Defaults to",
+                  "`false`."
+                ],
+                "group": "/Hardware Port Configuration",
+                "emptyValue": "false"
+              },
+              "internal-vlan": {
+                "type": "string",
+                "doc": [
+                  "The VLAN associated with l3 interfaces."
+                ],
+                "group": "/Hardware Port Configuration"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Key-value pairs that represent the configuration passed down to hardware."
+          ],
+          "group": "/Hardware Port Configuration"
+        },
+        "qos_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "cos_override": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 7
+                },
+                "doc": [
+                  "Specifies the port COS override to use. If the key is not specified, then no",
+                  "override will be enabled."
+                ],
+                "group": "/QoS configuration"
+              },
+              "dscp_override": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 63
+                },
+                "doc": [
+                  "Specifies the port DSCP override to use. If the key is not specified, then no",
+                  "override will be enabled."
+                ],
+                "group": "/QoS configuration"
+              },
+              "qos_trust": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "cos",
+                    "dscp"
+                  ]
+                },
+                "doc": [
+                  "Specifies the individual port QoS Trust Mode.",
+                  "",
+                  "`none` - no fields are inspected on arriving packets.  The initial local-",
+                  "priority and color meta-data values are taken from PCP 0 entry of the COS Map",
+                  "table (see [QoS_COS_Map_Entry](QoS_COS_Map_Entry)).",
+                  "",
+                  "`cos` - will use the PCP of the outermost 802.1 VLAN tag to index the COS Map",
+                  "entry to initialize the local-priority and color meta-data values of the packet.",
+                  "For untagged packets, the initial local-priority and color meta-data values are",
+                  "taken from code_point 0 entry of the COS Map table (see",
+                  "[QoS_COS_Map_Entry](QoS_COS_Map_Entry)).",
+                  "",
+                  "`dscp` - will use the DSCP value of IP packets to index the DSCP Map entry to",
+                  "initialize the local-priority and color meta-data values of the packet.  For",
+                  "non-IP packets, what meta-data values are assigned is hardware dependent.",
+                  "",
+                  "If the key is not specified, then the qos_trust value in the [System](System)",
+                  "table will be used."
+                ],
+                "group": "/QoS configuration"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/QoS configuration"
+        },
+        "q_profile": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Q_Profile"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "References queue profile for this port. If this is unspecified, then the queue",
+            "profile referenced in [System](System)) table q_profile will be used."
+          ],
+          "group": "/QoS configuration"
+        },
+        "qos": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "QoS"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "References schedule profile for this port. If this is unspecified, then the",
+            "schedule profile referenced in [System](System)) table qos will be used."
+          ],
+          "group": "/QoS configuration"
+        },
+        "qos_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "schedule_profile": {
+                "type": "string",
+                "doc": [
+                  "Contains the name of the schedule profile that is operating in hardware. This",
+                  "may different than the name in [qos](Port.qos) when that profile cannot be",
+                  "supported in hardware."
+                ],
+                "group": "/QoS Status"
+              },
+              "queue_profile": {
+                "type": "string",
+                "doc": [
+                  "Contains the name of the queue profile that is operating in hardware. This may",
+                  "different than the name in [q_profile](Port.q_profile) when that profile cannot",
+                  "be supported in hardware."
+                ],
+                "group": "/QoS Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/QoS Status"
+        },
+        "ospf_intervals": {
+          "category": "configuration",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "retransmit_interval": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 3,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "The number of seconds between LSA retransmissions. It is also used when",
+                  "retransmitting Database Description and Link State Request Packets. The default",
+                  "value is 5 seconds."
+                ],
+                "group": "/L3 Configuration/Port level OSPFv2 Configurations",
+                "emptyValue": 5
+              },
+              "dead_interval": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "The time duration, in seconds, that a neighbor should wait for a Hello packet",
+                  "before tearing down adjacencies with the local router. The dead_interval must be",
+                  "equal to or in multiples of the hello_interval. The default value is 4 times",
+                  "hello_interval seconds."
+                ],
+                "group": "/L3 Configuration/Port level OSPFv2 Configurations"
+              },
+              "hello_interval": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "The Hello packet will be sent every hello_interval timer value seconds. This",
+                  "value must be the same for all routers attached to a common network. The default",
+                  "value is 10 seconds."
+                ],
+                "group": "/L3 Configuration/Port level OSPFv2 Configurations",
+                "emptyValue": 10
+              },
+              "transmit_delay": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "The estimated time in seconds to transmit an LSA to a neighbor. The",
+                  "transmit_delay timer increments the age of LSAs in the update packets to",
+                  "accommodate transmission and propagation delays for the interface. The timer is",
+                  "more important on very low speed links where the transmission delay is more",
+                  "significant. The default value is 1 second."
+                ],
+                "group": "/L3 Configuration/Port level OSPFv2 Configurations",
+                "emptyValue": 1
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/L3 Configuration/Port level OSPFv2 Configurations"
+        },
+        "ospf_if_out_cost": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The output cost assigned to the corresponding OSPFv2 interface. The default",
+            "value depends on the interface bandwidth and on the auto-cost reference",
+            "bandwidth."
+          ],
+          "group": "/L3 Configuration/Port level OSPFv2 Configurations"
+        },
+        "ospf_priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 255
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The router with the highest priority will be more eligible to become Designated",
+            "Router. Setting the value to 0, makes the router ineligible to become Designated",
+            "Router. The default value is 1."
+          ],
+          "group": "/L3 Configuration/Port level OSPFv2 Configurations",
+          "emptyValue": 1
+        },
+        "ospf_if_type": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "ospf_iftype_none",
+                "ospf_iftype_pointopoint",
+                "ospf_iftype_broadcast",
+                "ospf_iftype_nbma",
+                "ospf_iftype_pointomultipoint",
+                "ospf_iftype_virtuallink",
+                "ospf_iftype_loopback"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The type of the OSPFv2 network interface. The default value is the type of the",
+            "interface from the Interface table."
+          ],
+          "group": "/L3 Configuration/Port level OSPFv2 Configurations"
+        },
+        "ospf_mtu_ignore": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This determines if OSPFv2 should ignore any IP MTU mismatch with a neighbor or",
+            "not. The default value is false, that is not to establish adjacency if the",
+            "neighbor MTU does not match the local interface MTU."
+          ],
+          "group": "/L3 Configuration/Port level OSPFv2 Configurations",
+          "emptyValue": false
+        },
+        "ospf_auth_type": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "null",
+                "text",
+                "md5"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The type of OSPFv2 authentication. If not set, then parent area level",
+            "authentication holds for the port."
+          ],
+          "group": "/L3 Configuration/Port level OSPFv2 Configurations"
+        },
+        "ospf_auth_text_key": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 8
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The authentication key for OSPFv2 authentication type \"text\"."
+          ],
+          "group": "/L3 Configuration/Port level OSPFv2 Configurations"
+        },
+        "ospf_auth_md5_keys": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 255
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 16
+            },
+            "min": 0,
+            "max": 255
+          },
+          "keyname": "key_id",
+          "doc": [
+            "The authentication keys for OSPFv2 authentication type \"md5\"."
+          ],
+          "group": "/L3 Configuration/Port level OSPFv2 Configurations"
+        },
+        "virtual_ip4_routers": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 255
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "VRRP"
+            },
+            "min": 0,
+            "max": 32
+          },
+          "doc": [
+            "The port's VRRP groups (or VR instances) for IPv4 address family. A maximum of",
+            "`32` VRRP groups can be assigned to a port."
+          ],
+          "group": "/L3 Configuration/Virtual Router Configurations"
+        },
+        "virtual_ip6_routers": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 255
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "VRRP"
+            },
+            "min": 0,
+            "max": 32
+          },
+          "doc": [
+            "The port's VRRP groups (or VR instances) for IPv6 address family. A maximum of",
+            "`32` VRRP groups can be assigned to a port."
+          ],
+          "group": "/L3 Configuration/Virtual Router Configurations"
+        },
+        "dhcp_relay_statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "valid_v4server_responses_with_option82": {
+                "type": "integer",
+                "doc": [
+                  "Number of valid IPv4 DHCP relay responses with option 82 processed."
+                ],
+                "group": "/DHCP-Relay Statistics"
+              },
+              "dropped_v4server_responses_with_option82": {
+                "type": "integer",
+                "doc": [
+                  "Number of IPv4 DHCP relay responses with option 82 dropped."
+                ],
+                "group": "/DHCP-Relay Statistics"
+              },
+              "dropped_v4server_responses": {
+                "type": "integer",
+                "doc": [
+                  "Number of IPv4 DHCP relay responses dropped."
+                ],
+                "group": "/DHCP-Relay Statistics"
+              },
+              "dropped_v6client_requests": {
+                "type": "integer",
+                "doc": [
+                  "Number of IPv6 DHCP relay requests dropped."
+                ],
+                "group": "/DHCP-Relay Statistics"
+              },
+              "valid_v6client_requests": {
+                "type": "integer",
+                "doc": [
+                  "Number of valid IPv6 DHCP relay requests processed."
+                ],
+                "group": "/DHCP-Relay Statistics"
+              },
+              "dropped_v4client_requests_with_option82": {
+                "type": "integer",
+                "doc": [
+                  "Number of IPv4 DHCP relay requests with option 82 dropped."
+                ],
+                "group": "/DHCP-Relay Statistics"
+              },
+              "valid_v6server_responses": {
+                "type": "integer",
+                "doc": [
+                  "Number of valid IPv6 DHCP relay responses processed."
+                ],
+                "group": "/DHCP-Relay Statistics"
+              },
+              "dropped_v4client_requests": {
+                "type": "integer",
+                "doc": [
+                  "Number of IPv4 DHCP relay requests dropped."
+                ],
+                "group": "/DHCP-Relay Statistics"
+              },
+              "valid_v4client_requests_with_option82": {
+                "type": "integer",
+                "doc": [
+                  "Number of valid IPv4 DHCP relay requests with option 82 processed."
+                ],
+                "group": "/DHCP-Relay Statistics"
+              },
+              "valid_v4client_requests": {
+                "type": "integer",
+                "doc": [
+                  "Number of valid IPv4 DHCP relay requests processed."
+                ],
+                "group": "/DHCP-Relay Statistics"
+              },
+              "valid_v4server_responses": {
+                "type": "integer",
+                "doc": [
+                  "Number of valid IPv4 DHCP relay responses processed."
+                ],
+                "group": "/DHCP-Relay Statistics"
+              },
+              "dropped_v6server_responses": {
+                "type": "integer",
+                "doc": [
+                  "Number of IPv6 DHCP relay responses dropped."
+                ],
+                "group": "/DHCP-Relay Statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/DHCP-Relay Statistics"
+        },
+        "aclv4_in_applied": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "ACL",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Current, successfully applied ingress IPv4 ACL to this port, as identified in",
+            "the [ACL](ACL)"
+          ],
+          "group": "/ACL Status"
+        },
+        "aclv4_in_cfg": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "ACL",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Ingress IPv4 ACL, potentially in flight, desired to be applied to this port, as",
+            "identified in the [ACL](ACL)."
+          ],
+          "group": "/ACL Configuration"
+        },
+        "aclv4_in_cfg_version": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The version of the 'aclv4_in_cfg' column. This value is incremented by the",
+            "management interface - CLI/REST/Web UI, etc. every time it changes the",
+            "'aclv4_in_cfg' value. An empty value means no ingress IPv4 ACL has been",
+            "configured for the port."
+          ],
+          "group": "/ACL Configuration"
+        },
+        "aclv4_in_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "code": {
+                "type": "integer",
+                "doc": [
+                  "Numeric error code.  Expected to be 0 when state is 'applied'"
+                ],
+                "group": "/ACL Status"
+              },
+              "state": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "applied",
+                    "in_progress",
+                    "canceled",
+                    "rejected"
+                  ]
+                },
+                "group": "/ACL Status"
+              },
+              "version": {
+                "type": "integer",
+                "doc": [
+                  "The version of aclv4_in_cfg that corresponds to this status."
+                ],
+                "group": "/ACL Status"
+              },
+              "message": {
+                "type": "string",
+                "doc": [
+                  "Detailed reason for error state.  Expected empty when state is 'applied'"
+                ],
+                "group": "/ACL Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The status of the last version of 'aclv4_in_cfg' column, that has been processed",
+            "by switchd."
+          ],
+          "group": "/ACL Status"
+        },
+        "aclv4_in_statistics": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 512
+          },
+          "ephemeral": true,
+          "doc": [
+            "Statistics for the ingress IPv4 ACL applied to this port for ACEs that have the",
+            "'count' keyword specified.  Statistics are key/value pairs of Ingress IPv4 ACL",
+            "sequence number and integer representing the statistics for that entry."
+          ],
+          "group": "/ACL Status"
+        },
+        "aclv4_in_statistics_clear_requested": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The number of times a request was made to clear the ingress IPv4 ACL statistics",
+            "for this port."
+          ],
+          "group": "/ACL Configuration"
+        },
+        "aclv4_in_statistics_clear_performed": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The number of times the ingress IPv4 ACL statistics for this port have been",
+            "cleared."
+          ],
+          "group": "/ACL Status"
+        },
+        "aclv4_out_applied": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "ACL",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Current, successfully applied extress IPv4 ACL to this port, as identified in",
+            "the [ACL](ACL)"
+          ],
+          "group": "/ACL Status"
+        },
+        "aclv4_out_cfg": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "ACL",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Egress IPv4 ACL, potentially in flight, desired to be applied to this port, as",
+            "identified in the [ACL](ACL)."
+          ],
+          "group": "/ACL Configuration"
+        },
+        "aclv4_out_cfg_version": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The version of the 'aclv4_out_cfg' column. This value is incremented by the",
+            "management interface - CLI/REST/Web UI, etc. every time it changes the",
+            "'aclv4_out_cfg' value. An empty value means no egress IPv4 ACL has been",
+            "configured for the port."
+          ],
+          "group": "/ACL Configuration"
+        },
+        "aclv4_out_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "code": {
+                "type": "integer",
+                "doc": [
+                  "Numeric error code.  Expected to be 0 when state is 'applied'"
+                ],
+                "group": "/ACL Status"
+              },
+              "state": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "applied",
+                    "in_progress",
+                    "canceled",
+                    "rejected"
+                  ]
+                },
+                "group": "/ACL Status"
+              },
+              "version": {
+                "type": "integer",
+                "doc": [
+                  "The version of aclv4_out_cfg that corresponds to this status."
+                ],
+                "group": "/ACL Status"
+              },
+              "message": {
+                "type": "string",
+                "doc": [
+                  "Detailed reason for error state.  Expected empty when state is 'applied'"
+                ],
+                "group": "/ACL Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The status of the last version of 'aclv4_out_cfg' column, that has been",
+            "processed by switchd."
+          ],
+          "group": "/ACL Status"
+        },
+        "aclv4_out_statistics": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 512
+          },
+          "ephemeral": true,
+          "doc": [
+            "Statistics for the egress IPv4 ACL applied to this port for ACEs that have the",
+            "'count' keyword specified.  Statistics are key/value pairs of egress IPv4 ACL",
+            "sequence number and integer representing the statistics for that entry."
+          ],
+          "group": "/ACL Status"
+        },
+        "aclv4_out_statistics_clear_requested": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The number of times a request was made to clear the egress IPv4 ACL statistics",
+            "for this port."
+          ],
+          "group": "/ACL Configuration"
+        },
+        "aclv4_out_statistics_clear_performed": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The number of times the egress IPv4 ACL statistics for this port have been",
+            "cleared."
+          ],
+          "group": "/ACL Status"
+        },
+        "macs_invalid_on_vlans": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VLAN",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 4094
+          },
+          "doc": [
+            "If a set of VLANs is specified, it indicates that MACs on this port and that set",
+            "of VLANs are invalid. This might be set by any agent of the system that decides",
+            "that MACs are indeed invalid. Eventually those MACs will be cleared from the",
+            "system and macs_invalid_on_vlans will revert to an empty set."
+          ],
+          "group": "/MACs Validity"
+        },
+        "macs_invalid": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "If `true`, indicates that MACs on this port are invalid. This might be set by",
+            "any agent of the system that decides that MACs are indeed invalid. Eventually",
+            "those MACs will be cleared from the system and macs_invalid will revert to",
+            "`false`."
+          ],
+          "group": "/MACs Validity"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "proxy_arp_enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Enables proxy ARP feature on the port. Default is false. Port should be part of",
+                  "VRF in order for the feature to be active."
+                ],
+                "group": "/Other Features",
+                "emptyValue": "false"
+              },
+              "local_proxy_arp_enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Enables local proxy ARP feature on the port. Default is false. Port should be",
+                  "part of VRF in order for the feature to be active."
+                ],
+                "group": "/Other Features",
+                "emptyValue": "false"
+              },
+              "lacp-time": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "fast",
+                    "slow"
+                  ]
+                },
+                "doc": [
+                  "The LACP timing which should be used on this [Port](Port). By default `slow` is",
+                  "used.  When configured to be `fast` LACP heartbeats are requested at a rate of",
+                  "once per second causing connectivity problems to be detected more quickly.  In",
+                  "`slow` mode, heartbeats are requested at a rate of once every 30 seconds."
+                ],
+                "group": "/Bonding Configuration/LACP Configuration",
+                "emptyValue": "slow"
+              },
+              "lacp_fallback_mode": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "priority",
+                    "all_active"
+                  ]
+                },
+                "doc": [
+                  "Specifies the mode used when fallback is enabled.  Priority mode uses the LACP",
+                  "interface priority to decide which port remains forwarding when no partner is",
+                  "detected.  The all_active mode keeps all interfaces forwarding when no partner",
+                  "is detected. The default value is `priority`."
+                ],
+                "group": "/Bonding Configuration/LACP Configuration",
+                "emptyValue": "priority"
+              },
+              "lacp_fallback_timeout": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 900
+                },
+                "doc": [
+                  "Defines the time period during which fallback remains active.  The timer starts",
+                  "at the point when the interface state machine expires and configures the default",
+                  "partner.  The unit is seconds. A value of 0 means that the timer doesn't run and",
+                  "fallback is active until it is disabled by the user or a partner is detected.",
+                  "The default value is `0`."
+                ],
+                "group": "/Bonding Configuration/LACP Configuration",
+                "emptyValue": "0"
+              },
+              "lacp-system-id": {
+                "type": "string",
+                "doc": [
+                  "The LACP system ID of this [Port](Port).  The system ID of a LACP bond is used",
+                  "to identify itself to its partners.  Must be a nonzero MAC address. Defaults to",
+                  "the bridge Ethernet address if unset."
+                ],
+                "group": "/Bonding Configuration/LACP Configuration"
+              },
+              "sflow-enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Determines whether sflow sampling is enabled on this port. Default is true."
+                ],
+                "group": "/Other Features",
+                "emptyValue": "true"
+              },
+              "lacp-system-priority": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "The LACP system priority of this [Port](Port).  In LACP negotiations, link",
+                  "status decisions are made by the system with the numerically lower priority."
+                ],
+                "group": "/Bonding Configuration/LACP Configuration"
+              },
+              "mclag_enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Determines whether this port is an MCLAG. Default is false."
+                ],
+                "group": "/Bonding Configuration/LACP Configuration",
+                "emptyValue": "false"
+              },
+              "lacp-fallback": {
+                "type": "boolean",
+                "doc": [
+                  "Specifies if fallback should be used on this [Port](Port). Set this value to",
+                  "`true` to enable the member interfaces based on the fallback mode and set to",
+                  "`false` to block all interfaces when LACP = off. If not specified, lacp-fallback",
+                  "is assumed to be false."
+                ],
+                "group": "/Bonding Configuration/LACP Configuration",
+                "emptyValue": "false"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": [
+            "/Bonding Configuration/LACP Configuration",
+            "/Other Features",
+            "/Common Columns"
+          ]
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "loop_protect_enable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "When set to `true`, Loop-protect is enabled on this port. Default value is",
+            "`false`."
+          ],
+          "group": "/Loop-protect per port Configuration",
+          "emptyValue": false
+        },
+        "loop_protect_port_disabled": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This value will be set to `true`,if the port is disabled by Loop-protect.",
+            "Default value is `false`."
+          ],
+          "group": "/Loop-protect Status",
+          "emptyValue": false
+        },
+        "loop_protect_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "last_loop_detected_time": {
+                "type": "string",
+                "doc": [
+                  "This has the last timestamp as integer containing epoch time,when the loop was",
+                  "detected by the Loop-protect feature."
+                ],
+                "group": "/Loop-protect Status"
+              },
+              "detected_on_vlan": {
+                "type": "string",
+                "doc": [
+                  "This contains the VLAN on which the loop is detected."
+                ],
+                "group": "/Loop-protect Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Loop-protect Status"
+        },
+        "loop_protect_action": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "do-not-disable",
+                "tx-disable",
+                "tx-rx-disable"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This determines action for the Loop-protect feature.The value is set to \"tx-",
+            "port-disable\" for disabling the sending port on detecting a loop, \"tx-rx-",
+            "disable\" disables both sending and receiving ports when loop is detected and",
+            "\"do-not-disable\" will not disable any port. Default value is `tx-port-disable`."
+          ],
+          "group": "/Loop-protect per port Configuration",
+          "emptyValue": "tx-disable"
+        },
+        "loop_protect_statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "loop_count": {
+                "type": "integer",
+                "doc": [
+                  "Number of times a loop has been detected on this port."
+                ],
+                "group": "/Loop-protect Statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/Loop-protect Statistics"
+        },
+        "loop_protect_vlan": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VLAN",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 4094
+          },
+          "doc": [
+            "List of VLANs on which loop-protect should operate if enabled by",
+            "loop_protect_enable. If not specified, native VLAN will be protected."
+          ],
+          "group": "/Loop-protect per port Configuration"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "title": "Port or bond configuration.",
+      "doc": [
+        "A port within a [Bridge](Bridge).",
+        "",
+        "Most commonly, a port has exactly one ``interface,'' pointed to by its",
+        "[interfaces](Port.interfaces) column.  Such a port logically corresponds to a",
+        "port on a physical Ethernet switch.  A port with more than one interface is a",
+        "``bonded port'' (see [Port](Port)).",
+        "",
+        "Some properties that one might think as belonging to a port are actually part of",
+        "the port's [Interface](Interface) members.",
+        "",
+        "If port has an IP address, then it becomes L3 and might participate in VRFs.",
+        "Unless referenced interface has an \"internal\" type, L3 port can not participate",
+        "in the bridge. \"internal\" ports that basically represent VLAN interfaces may be",
+        "referenced by both Bridge and VRF."
+      ],
+      "groupDoc": {
+        "/Port Status": [
+          "Status information about ports attached to bridges."
+        ],
+        "/VLAN Configuration": [
+          "Bridge ports support the following types of VLAN configuration:",
+          "",
+          "+ __trunk__:    A trunk port carries packets on one or more VLANs specified in",
+          "the [trunks](Port.trunks) column (or all VLANs defined in [VLAN](VLAN) table if",
+          "trunks is empty or not specified). A packet that ingresses on a trunk port is in",
+          "the VLAN specified in its 802.1Q header, or VLAN 1 if the packet has no 802.1Q",
+          "header.  A packet that egresses through a trunk port will have an 802.1Q header",
+          "if it has a nonzero VLAN ID.    Any packet that ingresses on a trunk port tagged",
+          "with a VLAN that the port does not trunk is dropped.",
+          "+ __access__:    An access port carries packets on exactly one VLAN specified in",
+          "the [tag](Port.tag) column.  Packets egressing on an access port have no 802.1Q",
+          "header.    Any packet with an 802.1Q header with a nonzero VLAN ID that",
+          "ingresses on an access port is dropped, regardless of whether the VLAN ID in the",
+          "header is the access port's VLAN ID.",
+          "+ __native-tagged__:   A native-tagged port resembles a trunk port, with the",
+          "exception that a packet without an 802.1Q header that ingresses on a native-",
+          "tagged port is in the ``native VLAN'' (specified in the [tag](Port.tag) column).",
+          "+ __native-untagged__:   A native-untagged port resembles a native-tagged port,",
+          "with the exception that a packet that egresses on a native-untagged port in the",
+          "native VLAN will not have an 802.1Q header.",
+          "",
+          "A packet will only egress through bridge ports that carry the VLAN of the",
+          "packet, as described by the rules above."
+        ],
+        "/Bonding Configuration": [
+          "A port that has more than one interface is a ``bonded port.'' Bonding allows for",
+          "load balancing and fail-over.",
+          "",
+          "The following modes (bond_mode) require the upstream switch to support 802.3ad",
+          "with successful LACP negotiation.",
+          "",
+          "These columns apply only to bonded ports.  Their values are otherwise ignored."
+        ],
+        "/L3 Configuration/Virtual Router Configurations": [
+          "The \"Port\" level VRRP group Configurations."
+        ],
+        "/Bonding Configuration/LACP Configuration": [
+          "LACP, the Link Aggregation Control Protocol, is an IEEE standard that allows",
+          "switches to automatically detect that they are connected by multiple links and",
+          "aggregate across those links.  These settings control LACP behavior."
+        ],
+        "/ACL Configuration": [
+          "ACL applied to ports."
+        ],
+        "/Port Statistics": [
+          "Key-value pairs that report port statistics.  The update period is controlled by",
+          "[stats-update-interval](System.other_config.stats-update-interval) in the",
+          "[System](System) table."
+        ],
+        "/L3 Configuration/Port level OSPFv2 Configurations": [
+          "The \"Port\" level OSPFv2 Routing Configurations."
+        ],
+        "/QoS configuration": [
+          "Specifies QoS (Quality of Service) port configuration options."
+        ],
+        "/Hardware Port Configuration": [
+          "The following fields are not meant to be configured by the user, but rather by",
+          "`portd` daemon that is responsible to consider user configuration and business",
+          "logic in order to determine hardware configuration."
+        ],
+        "/ACL Status": [
+          "Status of applied ACLs and ACLs statistics per port."
+        ],
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ],
+        "/DHCP-Relay Statistics": [
+          "DHCP-Relay statistics counters for both IPv4 and IPv6. The update period is",
+          "controlled by [stats-update-interval](System.other_config.stats-update-interval)",
+          "in [System](System). If certain key is missing, then the assummed counter value",
+          "is 0."
+        ]
+      }
+    }
+  }
+}

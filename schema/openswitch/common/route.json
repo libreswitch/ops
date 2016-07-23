@@ -1,0 +1,295 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/route.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Route": {
+      "columns": {
+        "vrf": {
+          "category": {
+            "follows": "from"
+          },
+          "relationship": "m:1",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRF"
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "Reference to the VRF table, to which this route belongs."
+          ],
+          "group": "/Global Routes Configuration"
+        },
+        "prefix": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 49
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "IPv4 or IPv6 destination prefix and mask in the address/mask format. Example",
+            "192.168.0.0/16"
+          ],
+          "group": "/Global Routes Configuration"
+        },
+        "from": {
+          "category": {
+            "per-value": [
+              {
+                "value": "connected",
+                "category": "status"
+              },
+              {
+                "value": "static",
+                "category": "configuration"
+              },
+              {
+                "value": "bgp",
+                "category": "status"
+              },
+              {
+                "value": "ospf",
+                "category": "status"
+              }
+            ]
+          },
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "connected",
+                "static",
+                "bgp",
+                "ospf"
+              ]
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "Protocol that is responsible for this entry. The value is `bgp` if BGP created",
+            "this entry, `static` when the user configures a static route, `connected` if it",
+            "is a directly connected device and `ospf` if OSPF created this entry."
+          ],
+          "group": "/Global Routes Configuration"
+        },
+        "protocol_private": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Indicates that this row is a protocol specific route entry. The entries which",
+            "have this value set, should not participate in routing. Example: BGP can store",
+            "routes for reference and future selection but should not currently be used for",
+            "forwarding. Default is `false`."
+          ],
+          "group": "/Global Routes Configuration",
+          "emptyValue": false
+        },
+        "selected": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Route table can have entries which may not be selected for forwarding. This flag",
+            "indicates if this entry is selected as an active route for forwarding. Default",
+            "is `false`."
+          ],
+          "group": "/Global Routes Configuration",
+          "emptyValue": false
+        },
+        "address_family": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "ipv4",
+                "ipv6"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Represents the address family for this entry. Default value is `ipv4`."
+          ],
+          "group": "/Global Routes Configuration",
+          "emptyValue": "ipv4"
+        },
+        "sub_address_family": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "unicast",
+                "multicast",
+                "vpn"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Represents more information regarding this entry. Default is `unicast`."
+          ],
+          "group": "/Global Routes Configuration",
+          "emptyValue": "unicast"
+        },
+        "distance": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 255
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Administrative distance for the route entry. This value is populated every time",
+            "a protocol or a user adds a new entry. The default value is 1 which is the",
+            "default distance for static routes."
+          ],
+          "group": "/Global Routes Configuration",
+          "emptyValue": 1
+        },
+        "metric": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "This is the BGP Multi Exit Discriminator (MED) attribute used in best path",
+            "selection. The MED provides a dynamic way to influence another AS in the way to",
+            "reach a certain route when there are multiple entry points for that AS.  BGP",
+            "decision process takes weight, local preference, AS path, Origin and MED into",
+            "account.  For selection, if all other factors are equal, the exit point with the",
+            "lowest MED is preferred. Default value is 0"
+          ],
+          "group": "/Global Routes Configuration",
+          "emptyValue": 0
+        },
+        "nexthops": {
+          "category": {
+            "follows": "from"
+          },
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Nexthop"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "List of all the nexthops for this entry. This will be empty in case of",
+            "blackhole."
+          ],
+          "group": "/Global Routes Configuration"
+        },
+        "protocol_specific": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "bgp_loc_pref": {
+                "type": "string",
+                "doc": [
+                  "Local preference path attribute. Used by BGP to influence in the best path",
+                  "selectionUsed by BGP to influence in the best path selection.."
+                ],
+                "group": "/Protocol Specific"
+              },
+              "bgp_origin": {
+                "type": "string",
+                "doc": [
+                  "Indicates whether a route is `IGP`, `EGP` or `incomplete`."
+                ],
+                "group": "/Protocol Specific"
+              },
+              "bgp_flags": {
+                "type": "string",
+                "doc": [
+                  "Route status flags. Allowed values are `history`, `damped`,`multipath`"
+                ],
+                "group": "/Protocol Specific"
+              },
+              "bgp_as_path": {
+                "type": "string",
+                "doc": [
+                  "List of AS path number for a route. Example: 200,300,400"
+                ],
+                "group": "/Protocol Specific"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Protocol Specific"
+        }
+      },
+      "indexes": [
+        [
+          "vrf",
+          "from",
+          "prefix"
+        ]
+      ],
+      "isRoot": true,
+      "title": "Routes Information Base",
+      "doc": [
+        "Global routes information base within an [System](System).",
+        "",
+        "A [Route](Route) record represents a route. This is a unique record per (vrf,",
+        "prefix, protocol) set."
+      ],
+      "groupDoc": {
+        "/Protocol Specific": [
+          "The `protocol_specific` column contains key-value pairs that are used by the",
+          "owner of the entry. Example: If BGP created an entry BGP can populate these key-",
+          "value pairs for its internal use. These values may not add value to other",
+          "daemons"
+        ]
+      }
+    }
+  }
+}

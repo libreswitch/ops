@@ -1,0 +1,421 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://git.openswich.net/schema/ops-db-metaschema#",
+  "description": "OpenSwitch Database metaschema",
+  "definitions": {
+
+    "atomicDataType": {
+      "type": "string",
+      "enum": [
+        "integer",
+        "real",
+        "boolean",
+        "string",
+        "uuid"
+      ]
+    },
+
+    "categoryValues": {
+      "type": "string",
+      "enum": [
+        "configuration",
+        "status",
+        "statistics"
+      ]
+    },
+
+    "relationshipValues": {
+      "type": "string",
+      "enum": [
+        "reference",
+        "1:m",
+        "m:1"
+      ]
+    },
+
+    "refTypeValues": {
+      "type": "string",
+      "enum": [
+        "strong",
+        "weak",
+        "weak_gc"
+      ]
+    },
+
+    "documentation": {
+      "type": "array",
+      "items": {
+          "type": "string"
+      },
+      "uniqueItems": false
+    },
+
+    "atomicType": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/atomicDataType"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "$ref": "#/definitions/atomicDataType"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+
+    "integerType": {
+      "type": "object",
+      "properties": {
+        "type": {"type": "string", "pattern": "^integer$"},
+        "enum": {
+          "type": "array",
+          "items": {"type": "integer"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "minInteger": {"type": "integer"},
+        "maxInteger": {"type": "integer"}
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+
+    "realType": {
+      "type": "object",
+      "properties": {
+        "type": {"type": "string", "pattern": "^real$"},
+        "enum": {
+          "type": "array",
+          "items": {"type": "number"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "minReal": {"type": "number"},
+        "maxReal": {"type": "number"}
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+
+    "stringType": {
+      "type": "object",
+      "properties": {
+        "type": {"type": "string", "pattern": "^string$"},
+        "enum": {"$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray"},
+        "minLength": {"$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveInteger"},
+        "maxLength": {"$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveInteger"}
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+
+    "uuidType": {
+      "type": "object",
+      "properties": {
+        "type": {"type": "string", "pattern": "^uuid$"},
+        "enum": {"$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray"},
+        "refTable": {"type": "string", "pattern": "^[_a-zA-Z][_a-zA-Z0-9]*$"},
+        "refType": {"$ref": "#/definitions/refTypeValues"}
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+
+    "baseType":{
+      "anyOf": [
+        {"$ref":"#/definitions/atomicType"},
+        {"$ref":"#/definitions/integerType"},
+        {"$ref":"#/definitions/realType"},
+        {"$ref":"#/definitions/stringType"},
+        {"$ref":"#/definitions/uuidType"}
+      ]
+    },
+
+    "valueMap": {
+      "type": "object",
+      "properties": {
+        "type": {"$ref": "#/definitions/baseType"},
+        "doc": {"$ref": "#/definitions/documentation"},
+        "group": {"$ref": "#/definitions/groupPath"},
+        "emptyValue": {"type": ["number","string","boolean"]}
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+
+    "valueMapField": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/definitions/valueMap"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "valueMapType":{
+      "type": "object",
+      "properties":{
+        "omitCodeGeneration": {"type":"boolean","default": false},
+        "valueType": {"$ref": "#/definitions/baseType"},
+        "valueMap": {"$ref": "#/definitions/valueMapField"},
+        "min": {"$ref": "#/definitions/integerLimit"},
+        "max": {"$ref": "#/definitions/integerLimit"}
+      },
+      "required": ["valueMap","valueType"],
+      "additionalProperties": false
+    },
+
+    "integerLimit": {
+      "anyOf": [
+        {"$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveInteger"},
+        {"type": "string", "pattern": "^unlimited$"}
+      ]
+    },
+
+    "path": {
+      "type": "string"
+    },
+
+    "pathArray": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/path"}
+    },
+
+    "indexArray": {
+      "type": "array",
+      "items": {
+        "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray"
+      }
+    },
+
+    "groupPath": {
+      "anyOf": [
+        {"$ref": "#/definitions/path"},
+        {"$ref": "#/definitions/pathArray"}
+      ]
+    },
+
+    "perValue": {
+       "type": "object",
+       "properties":{
+         "value": {},
+         "category": {"type": "string"}
+       },
+       "required": ["value", "category"],
+       "additionalProperties": false
+    },
+
+    "perValueArray": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/perValue"}
+    },
+
+    "categoryType":{
+       "oneOf": [
+         {"$ref": "#/definitions/categoryValues"},
+         {
+           "type": "object",
+           "properties": {
+             "follows": {"type": "string"}
+           },
+           "required": ["follows"],
+           "additionalProperties": false
+         },
+         {
+           "type": "object",
+           "properties": {
+             "per-value": {"$ref": "#/definitions/perValueArray"}
+           },
+           "required": ["per-value"],
+           "additionalProperties": false
+         }
+       ]
+    },
+
+    "mapType": {
+      "type": "object",
+      "properties":{
+        "key": {"$ref": "#/definitions/baseType"},
+        "value": {"$ref": "#/definitions/baseType"},
+        "min": {"$ref": "#/definitions/integerLimit"},
+        "max": {"$ref": "#/definitions/integerLimit"}
+      },
+      "required": ["key"],
+      "additionalProperties": false
+    },
+
+    "columnType": {
+      "oneOf": [
+        { "$ref": "#/definitions/atomicType" },
+        { "$ref": "#/definitions/mapType" },
+        { "$ref": "#/definitions/valueMapType" }
+      ]
+    },
+
+    "column": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/columnType"
+        },
+        "ephemeral": {
+          "type": "boolean",
+          "default": false
+        },
+        "mutable": {
+          "type": "boolean",
+          "default": true
+        },
+        "category": {
+          "$ref": "#/definitions/categoryType"
+        },
+        "group": {
+          "$ref": "#/definitions/groupPath"
+        },
+        "title": {
+          "type": "string"
+        },
+        "doc": {
+          "$ref": "#/definitions/documentation"
+        },
+        "relationship": {
+          "$ref": "#/definitions/relationshipValues"
+        },
+        "emptyValue": {
+          "type": ["number","string","boolean"]
+        },
+        "keyname": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false
+    },
+
+    "columns": {
+      "type": "object",
+      "patternProperties": {
+        "^[_a-zA-Z][_a-zA-Z0-9]*$": {
+          "$ref": "#/definitions/column"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "groupDoc": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/definitions/documentation"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "table": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "doc": {
+          "$ref": "#/definitions/documentation"
+        },
+        "columns": {
+          "$ref": "#/definitions/columns"
+        },
+        "isRoot": {
+          "type": "boolean",
+          "default": false
+        },
+        "maxRows": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "indexes": {
+          "$ref": "#/definitions/indexArray"
+        },
+        "group": {
+          "$ref": "#/definitions/groupPath"
+        },
+        "groupDoc": {
+          "$ref": "#/definitions/groupDoc"
+        }
+
+      },
+      "required": [
+        "columns"
+      ],
+      "additionalProperties": false
+    },
+
+    "tableRef": {
+      "type": "object",
+      "properties": {
+        "$ref": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "$ref"
+      ]
+    },
+
+    "tables": {
+      "type": "object",
+      "patternProperties": {
+         "^[_a-zA-Z][_a-zA-Z0-9]*$": {
+          "$ref": "#/definitions/table"
+        }
+      },
+      "additionalProperties": false
+    }
+
+  },
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
+    "id": {
+      "type": "string",
+      "format": "uri"
+    },
+    "name": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "cksum": {
+      "type": "string",
+      "pattern": "[0-9]{12} [0-9]{7}"
+    },
+    "doc": {
+      "$ref": "#/definitions/documentation"
+    },
+    "groups": {
+      "$ref": "#/definitions/groups"
+    },
+    "tables": {
+      "$ref": "#/definitions/tables"
+    }
+  },
+  "required": [
+    "name",
+    "version",
+    "tables"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,142 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/temp_sensor.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Temp_sensor": {
+      "columns": {
+        "name": {
+          "category": "status",
+          "type": "string",
+          "mutable": false,
+          "doc": [
+            "Logical name of the temperature sensor, including the subsystem name and numeric",
+            "identifier of the temperature sensor."
+          ]
+        },
+        "location": {
+          "category": "status",
+          "type": "string",
+          "doc": [
+            "Descriptive text for the physical location of the temperature sensor relative to",
+            "the subsystem."
+          ]
+        },
+        "temperature": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "Current temperature reading, in milidegrees Celcius."
+          ],
+          "group": "/Readings"
+        },
+        "min": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "Historic minimum (since last restart of tempd process), in milidegrees Celcius."
+          ],
+          "group": "/Readings"
+        },
+        "max": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "Historic maximum (since last restart of tempd process), in milidegrees Celcius."
+          ],
+          "group": "/Readings"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "uninitialized",
+                "normal",
+                "min",
+                "max",
+                "low_critical",
+                "critical",
+                "fault",
+                "emergency"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "doc": [
+            "Results of evaluation of the current temperature against the sensor's threshold",
+            "values."
+          ],
+          "group": "/Status"
+        },
+        "fan_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "normal",
+                "medium",
+                "fast",
+                "max"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "doc": [
+            "Recommended minimum fan setting based on current temperature. The fand process",
+            "should choose the worst-case sensor fan_state when determining the fan setting",
+            "for the subsystem."
+          ],
+          "group": "/Status"
+        },
+        "hw_config": {
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "title": "Temperature sensors",
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}

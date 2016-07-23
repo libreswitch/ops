@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/logical_switch.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Logical_Switch": {
+      "columns": {
+        "name": {
+          "category": "status",
+          "type": "string",
+          "mutable": false,
+          "doc": [
+            "Name of the overlay network."
+          ]
+        },
+        "description": {
+          "category": "status",
+          "type": "string",
+          "doc": [
+            "Description of the overlay network."
+          ]
+        },
+        "bridge": {
+          "category": "status",
+          "relationship": "m:1",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Bridge",
+              "refType": "weak"
+            }
+          },
+          "doc": [
+            "Reference to a [Bridge](Bridge) participating in the overlay."
+          ]
+        },
+        "tunnel_key": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            }
+          },
+          "doc": [
+            "Tunnel key used in the overlay. For VXLAN, this is the VNI."
+          ]
+        },
+        "from": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "enum": [
+                "hw-vtep"
+              ],
+              "type": "string"
+            }
+          },
+          "doc": [
+            "The entity managing the overlay."
+          ]
+        }
+      },
+      "indexes": [
+        [
+          "bridge",
+          "tunnel_key"
+        ]
+      ],
+      "isRoot": true,
+      "doc": [
+        "Configuration for identifying overlay networks associated with bridges."
+      ]
+    }
+  }
+}

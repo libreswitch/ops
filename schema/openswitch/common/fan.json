@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/fan.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Fan": {
+      "columns": {
+        "name": {
+          "category": "status",
+          "type": "string",
+          "mutable": false,
+          "group": "/Core Features"
+        },
+        "speed": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "slow",
+                "normal",
+                "medium",
+                "fast",
+                "max"
+              ]
+            }
+          },
+          "group": "/Status"
+        },
+        "direction": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "b2f",
+                "f2b"
+              ]
+            }
+          },
+          "group": "/Status"
+        },
+        "rpm": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "group": "/Status"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "uninitialized",
+                "ok",
+                "fault"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "group": "/Status"
+        },
+        "hw_config": {
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "title": "Fans on various subsystems",
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}

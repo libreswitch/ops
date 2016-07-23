@@ -1,0 +1,494 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/controller.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Controller": {
+      "columns": {
+        "target": {
+          "type": "string",
+          "doc": [
+            "Connection method for controller.",
+            "",
+            "The following connection methods are currently supported for primary",
+            "controllers:",
+            "",
+            "+ __`ssl:_ip_`[`:_port_`]__:   The specified SSL _port_ on the host at the given",
+            "_ip_, which must be expressed as an IP address (not a DNS name).  The",
+            "[ssl](System.ssl) column in the [System](System) table must point to a valid SSL",
+            "configuration when this form is used. If _port_ is not specified, it defaults to",
+            "6653. SSL support is an optional feature that is not always built as part of",
+            "OpenSwitch.",
+            "+ __`tcp:_ip_`[`:_port_`]__:    The specified TCP _port_ on the host at the",
+            "given _ip_, which must be expressed as an IP address (not a DNS name), where",
+            "_ip_ can be IPv4 or IPv6 address.  If _ip_ is an IPv6 address, wrap it in square",
+            "brackets, e.g. `tcp:[::1]:6653`.   If _port_ is not specified, it defaults to",
+            "6653.",
+            "",
+            "The following connection methods are currently supported for service",
+            "controllers:",
+            "",
+            "+ __`pssl:`[_port_][`:_ip_`]__:    Listens for SSL connections on the specified",
+            "TCP _port_. If _ip_, which must be expressed as an IP address (not a DNS name),",
+            "is specified, then connections are restricted to the specified local IP address",
+            "(either IPv4 or IPv6).  If _ip_ is an IPv6 address, wrap it in square brackets,",
+            "e.g. `pssl:6653:[::1]`.   If _port_ is not specified, it defaults to 6653.  If",
+            "_ip_ is not specified then it listens only on IPv4 (but not IPv6) addresses.",
+            "The [ssl](System.ssl) column in the [System](System) table must point to a valid",
+            "SSL configuration when this form is used.   If _port_ is not specified, it",
+            "currently to 6653.   SSL support is an optional feature that is not always built",
+            "as part of OpenSwitch.",
+            "+ __`ptcp:`[_port_][`:_ip_`]__:    Listens for connections on the specified TCP",
+            "_port_.  If _ip_, which must be expressed as an IP address (not a DNS name), is",
+            "specified, then connections are restricted to the specified local IP address",
+            "(either IPv4 or IPv6).  If _ip_ is an IPv6 address, wrap it in square brackets,",
+            "e.g. `ptcp:6653:[::1]`. If _ip_ is not specified then it listens only on IPv4",
+            "addresses.   If _port_ is not specified, it defaults to 6653.",
+            "",
+            "When multiple controllers are configured for a single bridge, the",
+            "[target](Controller.target) values must be unique.  Duplicate",
+            "[target](Controller.target) values yield unspecified results."
+          ],
+          "group": "/Core Features"
+        },
+        "max_backoff": {
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1000
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Maximum number of milliseconds to wait between connection attempts. Default is",
+            "implementation-specific."
+          ],
+          "group": "/Controller Failure Detection and Handling"
+        },
+        "inactivity_probe": {
+          "type": {
+            "key": "integer",
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Maximum number of milliseconds of idle time on connection to controller before",
+            "sending an inactivity probe message.  If OpenSwitch does not communicate with",
+            "the controller for the specified number of seconds, it will send a probe.  If a",
+            "response is not received for the same additional amount of time, OpenSwitch",
+            "assumes the connection has been broken and attempts to reconnect. Default is",
+            "implementation-specific.  A value of 0 disables inactivity probes."
+          ],
+          "group": "/Controller Failure Detection and Handling"
+        },
+        "connection_mode": {
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "in-band",
+                "out-of-band"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "If it is specified, this setting must be one of the following strings that",
+            "describes how OpenSwitch contacts this OpenFlow controller over the network:",
+            "",
+            "+ __`in-band`__:  In this mode, this controller's OpenFlow traffic travels over",
+            "the bridge associated with the controller.  With this setting, OpenSwitch allows",
+            "traffic to and from the controller regardless of the contents of the OpenFlow",
+            "flow table.  (Otherwise, OpenSwitch would never be able to connect to the",
+            "controller, because it did not have a flow to enable it.)  This is the most",
+            "common connection mode because it is not necessary to maintain two independent",
+            "networks.",
+            "+ __`out-of-band`__:  In this mode, OpenFlow traffic uses a control network",
+            "separate from the bridge associated with this controller, that is, the bridge",
+            "does not use any of its own network devices to communicate with the controller.",
+            "The control network must be configured separately, before or after `ops-switchd`",
+            "is started.",
+            "",
+            "If not specified, the default is implementation-specific."
+          ],
+          "group": "/Core Features"
+        },
+        "local_ip": {
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The IP address to configure on the local port, e.g. `192.168.0.123`.  If this",
+            "value is unset, then [local_netmask](Controller.local_netmask) and",
+            "[local_gateway](Controller.local_gateway) are ignored."
+          ],
+          "group": "/Additional In-Band Configuration"
+        },
+        "local_netmask": {
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The IP netmask to configure on the local port, e.g. `255.255.255.0`.  If",
+            "[local_ip](Controller.local_ip) is set but this value is unset, then the default",
+            "is chosen based on whether the IP address is class A, B, or C."
+          ],
+          "group": "/Additional In-Band Configuration"
+        },
+        "local_gateway": {
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The IP address of the gateway to configure on the local port, as a string, e.g.",
+            "`192.168.0.1`.  Leave this column unset if this network has no gateway."
+          ],
+          "group": "/Additional In-Band Configuration"
+        },
+        "enable_async_messages": {
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The OpenFlow protocol enables asynchronous messages at time of connection",
+            "establishment, which means that a controller can receive asynchronous messages,",
+            "potentially many of them, even if it turns them off immediately after",
+            "connecting.  Set this column to `false` to change OpenSwitch behavior to",
+            "disable, by default, all asynchronous messages.  The controller can use the",
+            "`NXT_SET_ASYNC_CONFIG` Nicira extension to OpenFlow to turn on any messages that",
+            "it does want to receive, if any."
+          ],
+          "group": "/Asynchronous Messages"
+        },
+        "controller_rate_limit": {
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 100
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The maximum rate at which the switch will forward packets to the OpenFlow",
+            "controller, in packets per second.  If no value is specified, rate limiting is",
+            "disabled."
+          ],
+          "group": "/Asynchronous Messages/Controller Rate Limiting"
+        },
+        "controller_burst_limit": {
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 25
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "When a high rate triggers rate-limiting, OpenSwitch queues packets to the",
+            "controller for each port and transmits them to the controller at the configured",
+            "rate.  This value limits the number of queued packets.  Ports on a bridge share",
+            "the packet queue fairly.",
+            "",
+            "This value has no effect unless",
+            "[controller_rate_limit](Controller.controller_rate_limit) is configured.  The",
+            "current default when this value is not specified is one-quarter of",
+            "[controller_rate_limit](Controller.controller_rate_limit), meaning that queuing",
+            "can delay forwarding a packet to the controller by up to 250 ms."
+          ],
+          "group": "/Asynchronous Messages/Controller Rate Limiting"
+        },
+        "other_config": {
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "dscp": {
+                "type": "integer",
+                "doc": [
+                  "The Differentiated Service Code Point (DSCP) is specified using 6 bits in the",
+                  "Type of Service (TOS) field in the IP header. DSCP provides a mechanism to",
+                  "classify the network traffic and provide Quality of Service (QoS) on IP",
+                  "networks.  The DSCP value specified here is used when establishing the",
+                  "connection between the controller and the OpenSwitch.  If no value is specified,",
+                  "a default value of 48 is chosen.  Valid DSCP values must be in the range 0 to",
+                  "63."
+                ],
+                "group": "/Connection Parameters"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": [
+            "/Connection Parameters",
+            "/Common Columns"
+          ]
+        },
+        "external_ids": {
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "is_connected": {
+          "type": "boolean",
+          "ephemeral": true,
+          "doc": [
+            "`true` if currently connected to this controller, `false` otherwise."
+          ],
+          "group": "/Controller Status"
+        },
+        "role": {
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "other",
+                "master",
+                "slave"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "ephemeral": true,
+          "doc": [
+            "The level of authority this controller has on the associated bridge. Possible",
+            "values are:",
+            "",
+            "+ __`other`__:  Allows the controller access to all OpenFlow features.",
+            "+ __`master`__:  Equivalent to `other`, except that there may be at most one",
+            "master controller at a time.  When a controller configures itself as `master`,",
+            "any existing master is demoted to the `slave` role.",
+            "+ __`slave`__:  Allows the controller read-only access to OpenFlow features.",
+            "Attempts to modify the flow table will be rejected with an error.  Slave",
+            "controllers do not receive OFPT_PACKET_IN or OFPT_FLOW_REMOVED messages, but",
+            "they do receive OFPT_PORT_STATUS messages."
+          ],
+          "group": "/Controller Status"
+        },
+        "status": {
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "packet-in-TYPE-backlog": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0
+                },
+                "doc": [
+                  "Number of packets currently queued.  The other statistics increase",
+                  "monotonically, but this one fluctuates between 0 and the",
+                  "[controller_burst_limit](Controller.controller_burst_limit) as conditions",
+                  "change."
+                ],
+                "group": "/Asynchronous Messages/Controller Rate Limiting/Controller Rate Limiting Statistics"
+              },
+              "last_error": {
+                "type": "string",
+                "doc": [
+                  "A human-readable description of the last error on the connection to the",
+                  "controller; i.e. `strerror(errno)`.  This key will exist only if an error has",
+                  "occurred."
+                ],
+                "group": "/Controller Status"
+              },
+              "sec_since_connect": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0
+                },
+                "doc": [
+                  "The amount of time since this controller last successfully connected to the",
+                  "switch (in seconds).  Value is empty if controller has never successfully",
+                  "connected."
+                ],
+                "group": "/Controller Status"
+              },
+              "sec_since_disconnect": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1
+                },
+                "doc": [
+                  "The amount of time since this controller last disconnected from the switch (in",
+                  "seconds). Value is empty if controller has never disconnected."
+                ],
+                "group": "/Controller Status"
+              },
+              "state": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "VOID",
+                    "BACKOFF",
+                    "CONNECTING",
+                    "ACTIVE",
+                    "IDLE"
+                  ]
+                },
+                "doc": [
+                  "The state of the connection to the controller:",
+                  "",
+                  "+ __`VOID`__:  Connection is disabled.",
+                  "+ __`BACKOFF`__:  Attempting to reconnect at an increasing period.",
+                  "+ __`CONNECTING`__:  Attempting to connect.",
+                  "+ __`ACTIVE`__:  Connected, remote host responsive.",
+                  "+ __`IDLE`__:  Connection is idle.  Waiting for response to keep-alive.",
+                  "",
+                  "These values may change in the future.  They are provided only for human",
+                  "consumption."
+                ],
+                "group": "/Controller Status"
+              },
+              "packet-in-TYPE-bypassed": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0
+                },
+                "doc": [
+                  "Number of packets sent directly to the controller, without queuing, because the",
+                  "rate did not exceed the configured maximum."
+                ],
+                "group": "/Asynchronous Messages/Controller Rate Limiting/Controller Rate Limiting Statistics"
+              },
+              "packet-in-TYPE-queued": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0
+                },
+                "doc": [
+                  "Number of packets added to the queue to send later."
+                ],
+                "group": "/Asynchronous Messages/Controller Rate Limiting/Controller Rate Limiting Statistics"
+              },
+              "packet-in-TYPE-dropped": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0
+                },
+                "doc": [
+                  "Number of packets added to the queue that were later dropped due to overflow.",
+                  "This value is less than or equal to [packet-in-TYPE-queued](Controller.status",
+                  ".packet-in-TYPE-queued)."
+                ],
+                "group": "/Asynchronous Messages/Controller Rate Limiting/Controller Rate Limiting Statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": [
+            "/Asynchronous Messages/Controller Rate Limiting/Controller Rate Limiting Statistics",
+            "/Controller Status"
+          ]
+        }
+      },
+      "title": "OpenFlow controller configuration.",
+      "doc": [
+        "An OpenFlow controller.",
+        "",
+        "OpenSwitch supports two kinds of OpenFlow controllers:",
+        "",
+        "+ __Primary controllers__:    This is the kind of controller envisioned by the",
+        "OpenFlow 1.0 specification.  Usually, a primary controller implements a network",
+        "policy by taking charge of the switch's flow table.    OpenSwitch initiates and",
+        "maintains persistent connections to primary controllers, retrying the connection",
+        "each time it fails or drops.  The [fail_mode](Bridge.fail_mode) column in the",
+        "[Bridge](Bridge) table applies to primary controllers.    OpenSwitch permits a",
+        "bridge to have any number of primary controllers.  When multiple controllers are",
+        "configured, OpenSwitch connects to all of them simultaneously.  Because OpenFlow",
+        "1.0 does not specify how multiple controllers coordinate in interacting with a",
+        "single switch, more than one primary controller should be specified only if the",
+        "controllers are themselves designed to coordinate with each other.  (The Nicira-",
+        "defined `NXT_ROLE` OpenFlow vendor extension may be useful for this.)",
+        "+ __Service controllers__:    These kinds of OpenFlow controller connections are",
+        "intended for occasional support and maintenance use, e.g. with `ovs-ofctl`.",
+        "Usually a service controller connects only briefly to inspect or modify some of",
+        "a switch's state.    OpenSwitch listens for incoming connections from service",
+        "controllers.  The service controllers initiate and, if necessary, maintain the",
+        "connections from their end.  The [fail_mode](Bridge.fail_mode) column in the",
+        "[Bridge](Bridge) table does not apply to service controllers.    OpenSwitch",
+        "supports configuring any number of service controllers.",
+        "",
+        "The [target](Controller.target) determines the type of controller."
+      ],
+      "groupDoc": {
+        "/Asynchronous Messages/Controller Rate Limiting": [
+          "A switch can forward packets to a controller over the OpenFlow protocol.",
+          "Forwarding packets this way at too high a rate can overwhelm a controller,",
+          "frustrate use of the OpenFlow connection for other purposes, increase the",
+          "latency of flow setup, and use an unreasonable amount of bandwidth.  Therefore,",
+          "OpenSwitch supports limiting the rate of packet forwarding to a controller.",
+          "",
+          "There are two main reasons in OpenFlow for a packet to be sent to a controller:",
+          "either the packet ``misses'' in the flow table, that is, there is no matching",
+          "flow, or a flow table action says to send the packet to the controller.",
+          "OpenSwitch limits the rate of each kind of packet separately at the configured",
+          "rate.  Therefore, the actual rate that packets are sent to the controller can be",
+          "up to twice the configured rate, when packets are sent for both reasons.",
+          "",
+          "This feature is specific to forwarding packets over an OpenFlow connection.  It",
+          "is not general-purpose QoS.  See the [QoS](QoS) table for quality of service",
+          "configuration."
+        ],
+        "/Asynchronous Messages": [
+          "OpenFlow switches send certain messages to controllers spontanenously, that is,",
+          "not in response to any request from the controller.  These messages are called",
+          "``asynchronous messages.''  These columns allow asynchronous messages to be",
+          "limited or disabled to ensure the best use of network resources."
+        ],
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ],
+        "/Additional In-Band Configuration": [
+          "These values are considered only in in-band control mode (see",
+          "[connection_mode](Controller.connection_mode)).",
+          "",
+          "When multiple controllers are configured on a single bridge, there should be",
+          "only one set of unique values in these columns.  If different values are set for",
+          "these columns in different controllers, the effect is unspecified."
+        ],
+        "/Asynchronous Messages/Controller Rate Limiting/Controller Rate Limiting Statistics": [
+          "These values report the effects of rate limiting.  Their values are relative to",
+          "establishment of the most recent OpenFlow connection, or since rate limiting was",
+          "enabled, whichever happened more recently.  Each consists of two values, one",
+          "with `TYPE` replaced by `miss` for rate limiting flow table misses, and the",
+          "other with `TYPE` replaced by `action` for rate limiting packets sent by",
+          "OpenFlow actions.",
+          "",
+          "These statistics are reported only when controller rate limiting is enabled."
+        ],
+        "/Connection Parameters": [
+          "Additional configuration for a connection between the controller and the",
+          "OpenSwitch."
+        ]
+      }
+    }
+  }
+}

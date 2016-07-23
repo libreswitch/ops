@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/bgp_aspath_filter.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "BGP_ASPath_Filter": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          "doc": [
+            "Name of the as-path filter."
+          ],
+          "group": "/IP AS Path Filter List Configuration"
+        },
+        "permit": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Permitted POSIX regular expressions."
+          ],
+          "group": "/IP AS Path Filter List Configuration"
+        },
+        "deny": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Denied POSIX regular expressions."
+          ],
+          "group": "/IP AS Path Filter List Configuration"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true,
+      "title": "BGP ASPath Filter"
+    }
+  }
+}

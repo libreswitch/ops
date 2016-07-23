@@ -1,0 +1,302 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/vrf.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "VRF": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 32
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "VRF identifier. Should be alphanumeric. VRF names must be unique."
+          ],
+          "group": "/Configuration"
+        },
+        "table_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Kernel table_id assigned for routing table of this VRF."
+          ],
+          "group": "/Configuration"
+        },
+        "ports": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Ports included in the VRF."
+          ],
+          "group": "/Configuration"
+        },
+        "bgp_routers": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "BGP_Router"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "keyname": "asn",
+          "doc": [
+            "BGP routers keyed by ASN value."
+          ],
+          "group": "/Configuration"
+        },
+        "ospf_routers": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 65535
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "OSPF_Router"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "keyname": "instance_tag",
+          "doc": [
+            "The list of all the OSPFv2 Router instances."
+          ],
+          "group": "/Configuration"
+        },
+        "dhcp_server": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "DHCP_Server"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "DHCP Server in the VRF."
+          ],
+          "group": "/Configuration"
+        },
+        "active_router_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Router-ID (in IPv4 format) that is currently used in the system, unless",
+            "overridden by protocol specific one."
+          ],
+          "group": "/Configuration"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "namespace_ready": {
+                "type": "boolean",
+                "doc": [
+                  "Indicates whether Linux namespace exists for this VRF. If not set, the assumed",
+                  "value is false."
+                ],
+                "group": "/Status",
+                "emptyValue": "false"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/Status"
+        },
+        "source_interface": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "valueType": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "valueMap": {
+              "tftp": {
+                "type": {
+                  "type": "uuid",
+                  "refTable": "Port",
+                  "refType": "weak"
+                },
+                "doc": [
+                  "Provides source interface for outgoing tftp packets. If not present, the key",
+                  "\"all\" provides the source interface for outgoing tftp packets. Otherwise regular",
+                  "routing rules take place."
+                ],
+                "group": "/Source Interface Selection Configurations"
+              },
+              "radius": {
+                "type": {
+                  "type": "uuid",
+                  "refTable": "Port",
+                  "refType": "weak"
+                },
+                "doc": [
+                  "Provides source interface for outgoing radius server packets. If not present,",
+                  "the key \"all\" provides the source interface for outgoing tftp packets. Otherwise",
+                  "regular routing rules take place."
+                ],
+                "group": "/Source Interface Selection Configurations"
+              },
+              "all": {
+                "type": {
+                  "type": "uuid",
+                  "refTable": "Port",
+                  "refType": "weak"
+                },
+                "doc": [
+                  "Provides the configuration for supported protocols for which source interface is",
+                  "not configured."
+                ],
+                "group": "/Source Interface Selection Configurations"
+              }
+            },
+            "min": 0,
+            "max": 3
+          },
+          "group": "/Source Interface Selection Configurations"
+        },
+        "source_ip": {
+          "category": "configuration",
+          "type": {
+            "valueType": {
+              "type": "string",
+              "minLength": 7,
+              "maxLength": 15
+            },
+            "valueMap": {
+              "tftp": {
+                "type": {
+                  "type": "string",
+                  "minLength": 7,
+                  "maxLength": 15
+                },
+                "doc": [
+                  "Provides source ip for outgoing tftp packets. If not present, the key \"all\"",
+                  "provides the source ip for outgoing tftp packets. Otherwise regular routing",
+                  "rules take place."
+                ],
+                "group": "/Source Interface Selection Configurations"
+              },
+              "radius": {
+                "type": {
+                  "type": "string",
+                  "minLength": 7,
+                  "maxLength": 15
+                },
+                "doc": [
+                  "Provides source ip for outgoing radius packets. If not present, the key \"all\"",
+                  "provides the source ip for outgoing tftp packets. Otherwise regular routing",
+                  "rules take place."
+                ],
+                "group": "/Source Interface Selection Configurations"
+              },
+              "all": {
+                "type": {
+                  "type": "string",
+                  "minLength": 7,
+                  "maxLength": 15
+                },
+                "doc": [
+                  "Provides the configuration for supported protocols for which source ip is not",
+                  "configured."
+                ],
+                "group": "/Source Interface Selection Configurations"
+              }
+            },
+            "min": 0,
+            "max": 3
+          },
+          "group": "/Source Interface Selection Configurations"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "title": "Virtual Routing and Forwarding",
+      "doc": [
+        "Each entry in this table represents a single routing domain, commonly known as",
+        "Virtual Routing and Forwarding."
+      ],
+      "groupDoc": {
+        "/Source Interface Selection Configurations": [
+          "In case same key exists in \"source_interface\", \"source_ip\" columns, later gets",
+          "the priority."
+        ],
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,469 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/mstp_common_instance_port.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "MSTP_Common_Instance_Port": {
+      "columns": {
+        "port": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies port for the CIST instance."
+          ],
+          "group": "/Configurations"
+        },
+        "port_priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 240
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to specify the port-priority. configurable in increments of 16.",
+            "Default value is 8."
+          ],
+          "group": "/Configurations",
+          "emptyValue": 8
+        },
+        "admin_path_cost": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 200000000
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The path cost for the port to reach spanning-tree root."
+          ],
+          "group": "/Configurations"
+        },
+        "port_role": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "Root",
+                "Designated",
+                "Alternate",
+                "Backup",
+                "Disabled"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The role of this port in the active MSTP topology."
+          ],
+          "group": "/Status"
+        },
+        "port_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "Blocking",
+                "Learning",
+                "Forwarding",
+                "Disabled"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The state of the port in the active topology. Default value is Blocking."
+          ],
+          "group": "/Status",
+          "emptyValue": "Blocking"
+        },
+        "admin_edge_port_disable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `true`, if this admin edge port should not participate in root",
+            "election. Default is `false`."
+          ],
+          "group": "/Configurations",
+          "emptyValue": false
+        },
+        "bpdus_rx_enable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `false` to stop transmission of BPDUs. Default is `true`."
+          ],
+          "group": "/Configurations",
+          "emptyValue": true
+        },
+        "bpdus_tx_enable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `false` not to transmit the BPDUs Default is `true`."
+          ],
+          "group": "/Configurations",
+          "emptyValue": true
+        },
+        "restricted_port_role_disable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `true` if restiricted role enabled (not to be selected as Root",
+            "Port for the CIST or any MSTI). Default is `false`."
+          ],
+          "group": "/Configurations",
+          "emptyValue": false
+        },
+        "restricted_port_tcn_disable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `true` if restiricted port tcn is enabled(not to propagate",
+            "topology changes to other ports). Default is `false`."
+          ],
+          "group": "/Configurations",
+          "emptyValue": false
+        },
+        "bpdu_guard_disable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `true` if BPDU Guard enabled (to shut down the port if that",
+            "port receives a BPDU). Default is `false`."
+          ],
+          "group": "/Configurations",
+          "emptyValue": false
+        },
+        "loop_guard_disable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `true` if loop guard is enabled (to block sending and",
+            "receiving BPDUs on the port). Default value is `false`."
+          ],
+          "group": "/Configurations",
+          "emptyValue": false
+        },
+        "root_guard_disable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `true` if root guard is enabled(to participate in STP as long",
+            "as the device does not try to become the root). Default value is `false`."
+          ],
+          "group": "/Configurations",
+          "emptyValue": false
+        },
+        "bpdu_filter_disable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `true` if BPDU filter is enabled(to suppress sending and",
+            "receiving BPDUs on the port). Default value is `false`."
+          ],
+          "group": "/Configurations",
+          "emptyValue": false
+        },
+        "designated_root": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            }
+          },
+          "doc": [
+            "The designated root ID for the port."
+          ],
+          "group": "/Status"
+        },
+        "link_type": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "point_to_point",
+                "shared"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the link type. Default value is point_to_point."
+          ],
+          "group": "/Status",
+          "emptyValue": "point_to_point"
+        },
+        "oper_edge_port": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The operational port type as edge port or not for the CIST."
+          ],
+          "group": "/Status"
+        },
+        "cist_regional_root_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The regional root Id for the CIST."
+          ],
+          "group": "/Status"
+        },
+        "cist_path_cost": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 200000000
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The CIST path cost from the transmitting bridge to the CIST regional root."
+          ],
+          "group": "/Status"
+        },
+        "port_path_cost": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 200000000
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The operational value of the path cost."
+          ],
+          "group": "/Status"
+        },
+        "designated_path_cost": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 200000000
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The path cost for this port."
+          ],
+          "group": "/Status"
+        },
+        "designated_bridge": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            }
+          },
+          "doc": [
+            "The designated bridge identifier component of the port's MSTI port priority",
+            "vector."
+          ],
+          "group": "/Status"
+        },
+        "designated_port": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The designated port identifier component of the port's MSTI port priority",
+            "vector."
+          ],
+          "group": "/Status"
+        },
+        "port_hello_time": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 2,
+              "maxInteger": 10
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The port's hello time value, for the CIST."
+          ],
+          "group": "/Status"
+        },
+        "fwd_transition_count": {
+          "category": "statistics",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 2147483647
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The number of times this port has transitioned to the forwarding state."
+          ],
+          "group": "/Status"
+        },
+        "protocol_migration_enable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `true` to switch the STP working mode or to `false` to",
+            "explicitly disable it. Default is `true`."
+          ],
+          "group": "/Status",
+          "emptyValue": true
+        },
+        "mstp_statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "mstp_BPDUs_Rx": {
+                "type": "string",
+                "doc": [
+                  "The received BPDU count."
+                ],
+                "group": "/Statistics"
+              },
+              "mstp_BPDUs_Tx": {
+                "type": "string",
+                "doc": [
+                  "The transmitted BPDU count."
+                ],
+                "group": "/Statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Statistics"
+        }
+      },
+      "title": "MSTP common instance port info",
+      "doc": [
+        "This represents information regarding a specific Port within the Bridge's Bridge",
+        "Protocol entity, for the CIST."
+      ],
+      "groupDoc": {
+        "/Status": [
+          "These are status parameters for the common instance. These values will be",
+          "calculated from the time of protocol initialization."
+        ]
+      }
+    }
+  }
+}

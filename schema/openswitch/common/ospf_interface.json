@@ -1,0 +1,239 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/ospf_interface.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "OSPF_Interface": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 32
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "The OSPFv2 Interface name."
+          ],
+          "group": "/Configuration"
+        },
+        "port": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The \"Port\" corresponding to the OSPFv2 Interface."
+          ],
+          "group": "/Configuration"
+        },
+        "ospf_vlink": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_Vlink",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The virtual link related configurations. This is valid for the interface of type",
+            "\"virtual link\"."
+          ],
+          "group": "/Configuration"
+        },
+        "ifsm_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "depend_upon",
+                "down",
+                "loopback",
+                "waiting",
+                "point_to_point",
+                "dr_other",
+                "backup_dr",
+                "dr"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "OSPFv2 Interface FSM states. The default value is \"depend_upon\"."
+          ],
+          "group": "/status",
+          "emptyValue": "depend_upon"
+        },
+        "neighbors": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_Neighbor"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all the OSPFv2 neighbors on this OSPFv2 Interface."
+          ],
+          "group": "/status"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "active": {
+                "type": "boolean",
+                "doc": [
+                  "Updates status whether the interface is active. The default value is true."
+                ],
+                "group": "/status",
+                "emptyValue": "true"
+              },
+              "hello_due_at": {
+                "type": "integer",
+                "doc": [
+                  "Updates when the next hello is due on the interface in seconds. The default",
+                  "value is hello_interval on this interface."
+                ],
+                "group": "/status"
+              },
+              "if_out_cost": {
+                "type": "integer",
+                "doc": [
+                  "The interface out cost. If not configured, this is calculated as per the auto",
+                  "cost bandwidth reference and interface speed."
+                ],
+                "group": "/status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/status"
+        },
+        "statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "ls_ack_rcvd": {
+                "type": "integer",
+                "doc": [
+                  "The total number of Link State Ack packets received on the interface."
+                ],
+                "group": "/statistics"
+              },
+              "hello_rcvd": {
+                "type": "integer",
+                "doc": [
+                  "The total number of hello packets received on the interface."
+                ],
+                "group": "/statistics"
+              },
+              "ls_upd_rcvd": {
+                "type": "integer",
+                "doc": [
+                  "The total number of Link State Update packets received on the interface."
+                ],
+                "group": "/statistics"
+              },
+              "ls_req_sent": {
+                "type": "integer",
+                "doc": [
+                  "The total number of Link State Request packets sent on the interface."
+                ],
+                "group": "/statistics"
+              },
+              "ls_req_rcvd": {
+                "type": "integer",
+                "doc": [
+                  "The total number of Link State Request packets received on the interface."
+                ],
+                "group": "/statistics"
+              },
+              "db_desc_rcvd": {
+                "type": "integer",
+                "doc": [
+                  "The total number of DataBase Description packets received on the interface."
+                ],
+                "group": "/statistics"
+              },
+              "ls_upd_sent": {
+                "type": "integer",
+                "doc": [
+                  "The total number of Link State Update packets sent on the interface."
+                ],
+                "group": "/statistics"
+              },
+              "ls_ack_sent": {
+                "type": "integer",
+                "doc": [
+                  "The total number of Link State Ack packets sent on the interface."
+                ],
+                "group": "/statistics"
+              },
+              "rx_discard": {
+                "type": "integer",
+                "doc": [
+                  "The total number of  received packets discarded on the interface."
+                ],
+                "group": "/statistics"
+              },
+              "hello_sent": {
+                "type": "integer",
+                "doc": [
+                  "The total number of hello packets sent on the interface."
+                ],
+                "group": "/statistics"
+              },
+              "state_changes": {
+                "type": "integer",
+                "doc": [
+                  "The total number of state changes on the interface."
+                ],
+                "group": "/statistics"
+              },
+              "db_desc_sent": {
+                "type": "integer",
+                "doc": [
+                  "The total number of DataBase Description packets sent on the interface."
+                ],
+                "group": "/statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/statistics"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "title": "OSPFv2 Interface related configurations"
+    }
+  }
+}

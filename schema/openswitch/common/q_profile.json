@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/q_profile.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Q_Profile": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "There must be a user-defined name of the schedule profile."
+          ],
+          "group": "/Configuration"
+        },
+        "q_profile_entries": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Q_Profile_Entry"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "keyname": "queue_number",
+          "doc": [
+            "Configuration parameters for individual queues.",
+            "",
+            "Queues are numbered in *priority order*, with zero being the lowest priority.",
+            "The maximum number of queues is hardware dependent."
+          ],
+          "group": "/Configuration"
+        },
+        "hw_default": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "When true, this row contains the hardware default queue profile.",
+            "",
+            "The default queue profile will be 8 queues when any of the following conditions",
+            "occur:",
+            "",
+            "+No row in this table has hw_default true +More than one row in this table has",
+            "hw_default true +Any [Q_Profile_Entry](Q_Profile_Entry) rows referenced do not",
+            "have their hw_default true"
+          ],
+          "group": "/Hardware Default"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true,
+      "title": "Quality of Service Queue Profile",
+      "doc": [
+        "Used to specify named profiles of queue configuration. Ports use a queue profile",
+        "to configure their packet queue settings."
+      ],
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}

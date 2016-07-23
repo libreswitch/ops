@@ -1,0 +1,239 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/ospf_neighbor.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "OSPF_Neighbor": {
+      "columns": {
+        "nbr_router_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The Neighbor Router ID is used to identify the neighbor. The default value is 0,",
+            "which is invalid router_id."
+          ],
+          "group": "/status",
+          "emptyValue": 0
+        },
+        "nbr_if_addr": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The interface address of the OSPFv2 Neighbor on which the neighbor relationship",
+            "is established. The default value is 0, which is invalid if_address."
+          ],
+          "group": "/status",
+          "emptyValue": 0
+        },
+        "dr": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The router ID of the Designated Router, as reported by the neighbor. The default",
+            "value is 0."
+          ],
+          "group": "/status",
+          "emptyValue": 0
+        },
+        "bdr": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The router ID of the Backup Designated Router, as reported by the neighbor. The",
+            "default value is 0."
+          ],
+          "group": "/status",
+          "emptyValue": 0
+        },
+        "nbr_options": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "type_of_service",
+                "external_routing",
+                "multicast",
+                "type_7_lsa",
+                "external_attributes_lsa",
+                "demand_circuits",
+                "opaque_lsa"
+              ]
+            },
+            "min": 0,
+            "max": 7
+          },
+          "doc": [
+            "The neighbor options or capabilities such as Opaque LSA capability, Demand",
+            "Circuit, External Attribute LSA capability, and so on."
+          ],
+          "group": "/status"
+        },
+        "nfsm_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "depend_upon",
+                "down",
+                "deleted",
+                "attempt",
+                "init",
+                "two_way",
+                "ex_start",
+                "exchange",
+                "loading",
+                "full"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "OSPFv2 Neighbor FSM states. The default value is \"down\"."
+          ],
+          "group": "/status",
+          "emptyValue": "down"
+        },
+        "nbr_priority": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 255
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The priority of the neighbor. The default value is 255."
+          ],
+          "group": "/status",
+          "emptyValue": 255
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "last_up_timestamp": {
+                "type": "integer",
+                "doc": [
+                  "The duration since when the state of the neighbor is seen. The default value is",
+                  "0."
+                ],
+                "group": "/status",
+                "emptyValue": "0"
+              },
+              "dead_timer_due": {
+                "type": "integer",
+                "doc": [
+                  "The time left for the dead timer of the neighbor to expire. The default value is",
+                  "the dead_interval for the interface."
+                ],
+                "group": "/status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/status"
+        },
+        "statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "ls_request_count": {
+                "type": "integer",
+                "doc": [
+                  "The total number of link state request packets."
+                ],
+                "group": "/statistics"
+              },
+              "ls_retransmit_count": {
+                "type": "integer",
+                "doc": [
+                  "The total number of link state packets retransmitted."
+                ],
+                "group": "/statistics"
+              },
+              "db_summary_count": {
+                "type": "integer",
+                "doc": [
+                  "The total number of DataBase summary reports."
+                ],
+                "group": "/statistics"
+              },
+              "state_changes_count": {
+                "type": "integer",
+                "doc": [
+                  "The total number of state change events on this interface."
+                ],
+                "group": "/statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/statistics"
+        },
+        "nbma_nbr": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_NBMA_Neighbor",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The NBMA Neighbor related configurations, and statuses. This is valid in case of",
+            "NBMA Neighbor only."
+          ],
+          "group": "/Configuration"
+        }
+      },
+      "title": "OSPFv2 Neighbor information"
+    }
+  }
+}

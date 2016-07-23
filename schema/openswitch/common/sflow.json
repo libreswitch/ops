@@ -1,0 +1,211 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/sflow.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "sFlow": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": "string",
+          "mutable": false,
+          "doc": [
+            "sFlow identifier for the configuration. Should be alphanumeric."
+          ]
+        },
+        "targets": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "sFlow collectors in the form `_ip_:_port_`. Port defaults to 6343 if not",
+            "specified. Can have multiple collectors. Atleast one target has to be configured",
+            "for sflow to be enabled. Collectors can only be reached over vrf_default."
+          ]
+        },
+        "sampling": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the rate at which packets should be sampled and sent to the collector.",
+            "If not specified, rate defaults to 4096, which means one out of 4096 packets, on",
+            "average, will be sent to the collector."
+          ],
+          "emptyValue": 4096
+        },
+        "sampling_per_speed": {
+          "category": "configuration",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "40G": {
+                "type": "integer",
+                "doc": [
+                  "Sampling rate for the 40 Gigabit interfaces."
+                ]
+              },
+              "100G": {
+                "type": "integer",
+                "doc": [
+                  "Sampling rate for the 100 Gigabit interfaces."
+                ]
+              },
+              "10G": {
+                "type": "integer",
+                "doc": [
+                  "Sampling rate for the 10 Gigabit interfaces."
+                ]
+              },
+              "1G": {
+                "type": "integer",
+                "doc": [
+                  "Sampling rate for the 1 Gigabit interfaces."
+                ]
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The sampling rate can be configured per interface-speed (in Mbps) which means",
+            "the rate will be applied only for interfaces that match the speed. For example,",
+            "`sflow sampling 1024 1G` means a sampling rate of 1024 is applied to all the",
+            "1Gig interfaces on the system. If interface-speed is not specified, the global",
+            "rate is applied on the interface."
+          ]
+        },
+        "polling": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the interval at which counter statistics are send to the collector. If",
+            "not specified, interval defaults to 30 seconds"
+          ],
+          "emptyValue": 30
+        },
+        "header": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Number of bytes of a sampled packet to send to the collector. If not specified,",
+            "the default is 128 bytes."
+          ],
+          "emptyValue": 128
+        },
+        "max_datagram": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Maximum number of bytes that will be send in the sflow datagram. If not",
+            "specified, the default is 1400 bytes."
+          ],
+          "emptyValue": 1400
+        },
+        "agent": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Name of the network device whose IP address should be reported as the ``agent",
+            "address'' to collectors.  If not specified, the agent IP is derived from the",
+            "first interface in alphabetical order."
+          ]
+        },
+        "agent_addr_family": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "ipv4",
+                "ipv6"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Address type of agent address reported. If agent interface has both IPv4 and",
+            "IPv6 address configured, then this column selects which address will be used.",
+            "Defaults to ipv4."
+          ],
+          "emptyValue": "ipv4"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          }
+        },
+        "statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "num_sampled_pkts": {
+                "type": "string",
+                "doc": [
+                  "Total number of sampled packets sent to the collector."
+                ]
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "doc": [
+            "Key value pairs that has sampling statistics."
+          ]
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true,
+      "doc": [
+        "A set of sFlow(R) configurations.  sFlow is a protocol for remote monitoring of",
+        "switches."
+      ]
+    }
+  }
+}

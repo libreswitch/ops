@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/daemon.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Daemon": {
+      "columns": {
+        "name": {
+          "category": "status",
+          "type": "string",
+          "mutable": false,
+          "doc": [
+            "The name of the daemon."
+          ],
+          "group": "/Configuration"
+        },
+        "is_hw_handler": {
+          "type": "boolean",
+          "doc": [
+            "A boolean to indicate if this daemon is responsible for processing hardware",
+            "description information (either on boot, or as hardware subsystems are added or",
+            "removed)."
+          ],
+          "group": "/Configuration"
+        },
+        "cur_hw": {
+          "type": "integer",
+          "doc": [
+            "Sequence number that a daemon sets to the current value of",
+            "[next_hw](System.next_hw) in the [System](System) table after it has",
+            "successfully responded to a hardware change."
+          ],
+          "group": "/Status"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "title": "Daemon Information",
+      "doc": [
+        "Each entry in this table represents a single system daemon and contains",
+        "information about that specific daemon. One use is to identify those daemons",
+        "that read and process hardware description files to add new hardware into the",
+        "db."
+      ]
+    }
+  }
+}

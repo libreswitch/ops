@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/radius_server.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Radius_Server": {
+      "columns": {
+        "ip_address": {
+          "category": "configuration",
+          "type": "string",
+          "mutable": false,
+          "doc": [
+            "IP address of the radius server configured."
+          ]
+        },
+        "priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 64
+            }
+          },
+          "doc": [
+            "Specifies the order in which radius servers are configured on the switch."
+          ]
+        },
+        "udp_port": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the udp port number for authentication. Default udp port number for",
+            "authentication is 1812."
+          ],
+          "emptyValue": 1812
+        },
+        "passkey": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 32
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the passkey between radius client and radius server for",
+            "authentication. Default passkey is testing123-1."
+          ],
+          "emptyValue": "testing123-1"
+        },
+        "timeout": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 60
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the timeout between authentication requests to radius server. Default",
+            "timeout is 5 seconds."
+          ],
+          "emptyValue": 5
+        },
+        "retries": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 5
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the number of retries to radius server if there is no response.",
+            "Default retry value is 1."
+          ],
+          "emptyValue": 1
+        }
+      },
+      "indexes": [
+        [
+          "ip_address"
+        ]
+      ],
+      "title": "Radius server configuration",
+      "doc": [
+        "These radius servers are being used for authenticating when users wants to login",
+        "to the box."
+      ]
+    }
+  }
+}

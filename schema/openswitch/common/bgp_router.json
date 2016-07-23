@@ -1,0 +1,283 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/bgp_router.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "BGP_Router": {
+      "columns": {
+        "router_id": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 15
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the router-id for given ASN."
+          ],
+          "group": "/Configuration"
+        },
+        "networks": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 49
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Announces networks for given bgp router."
+          ],
+          "group": "/Configuration"
+        },
+        "maximum_paths": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 255
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Number of paths BGP may install into the routing table. If not specified, BGP",
+            "selects a single path. Default is 1."
+          ],
+          "group": "/Configuration",
+          "emptyValue": 1
+        },
+        "timers": {
+          "category": "configuration",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "holdtime": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "Specifies BGP hold time in seconds. Default is 180 seconds."
+                ],
+                "group": "/Configuration",
+                "emptyValue": 180
+              },
+              "keepalive": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "Specifies BGP keepalive time in seconds. Default is 60 seconds."
+                ],
+                "group": "/Configuration",
+                "emptyValue": 60
+              }
+            },
+            "min": 0,
+            "max": 2
+          },
+          "group": "/Configuration"
+        },
+        "redistribute": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "connected",
+                "static",
+                "ospf"
+              ]
+            },
+            "min": 0,
+            "max": 3
+          },
+          "doc": [
+            "Specifies which routes should be redistributed by BGP."
+          ],
+          "group": "/Configuration"
+        },
+        "redistribute_route_map": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "connected",
+                "static",
+                "ospf"
+              ]
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Route_Map"
+            },
+            "min": 0,
+            "max": 3
+          },
+          "doc": [
+            "Specifies route-maps to be applied when redistributing routes."
+          ],
+          "group": "/Configuration"
+        },
+        "always_compare_med": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Compares MED (Multi-Exit Discriminitor) from different neighbors. Default is",
+            "false."
+          ],
+          "group": "/Configuration",
+          "emptyValue": false
+        },
+        "deterministic_med": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "When enabled, selects the best-MED path among paths advertised from the",
+            "neighboring AS. Default is false."
+          ],
+          "group": "/Configuration",
+          "emptyValue": false
+        },
+        "gr_stale_timer": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 3600
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the maximum time to hold onto restarting peer stale paths. Range:",
+            "1-3600 seconds. Default value is 360 seconds."
+          ],
+          "group": "/Configuration",
+          "emptyValue": 360
+        },
+        "bgp_neighbors": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "BGP_Neighbor"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "keyname": "ip_or_group_name",
+          "doc": [
+            "BGP neighbors or neighbor groups, keyed by IP for the former or any     string",
+            "name for the latter."
+          ],
+          "group": "/Configuration"
+        },
+        "fast_external_failover": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Enables fast external failover for BGP directly connected peering sessions.",
+            "Default is false."
+          ],
+          "group": "/Configuration",
+          "emptyValue": false
+        },
+        "log_neighbor_changes": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Enables logging of BGP neighbor status changes. Default is false."
+          ],
+          "group": "/Configuration",
+          "emptyValue": false
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/Status"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "title": "BGP high level configuration",
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ],
+        "/Configuration": [
+          "BGP_router includes all bgp config related information. The entries are created",
+          "on per asn basis."
+        ]
+      }
+    }
+  }
+}

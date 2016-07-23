@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/dhcp_relay_v6_mcast_server.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "DHCP_Relay_V6_Mcast_Server": {
+      "columns": {
+        "ipv6_mcast_server": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            }
+          },
+          "doc": [
+            "IPv6 multicast or link local server destination to which matching DHCP broadcast",
+            "packets received on layer3 port are duplicated and forwarded."
+          ],
+          "group": "/DHCPv6-Relay Mcast Server Addresses"
+        },
+        "ports": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port"
+            },
+            "min": 1,
+            "max": 8
+          },
+          "doc": [
+            "List of egress Ports, Packet forwarding takes place through these Ports."
+          ],
+          "group": "/DHCPv6-Relay Mcast Server Addresses"
+        }
+      },
+      "isRoot": true,
+      "doc": [
+        "Placeholder for DHCPv6 multicast server reachability information. DHCPv6 relay",
+        "uses this information to forward matching multicast DHCPv6 packets received on",
+        "layer3 port."
+      ]
+    }
+  }
+}

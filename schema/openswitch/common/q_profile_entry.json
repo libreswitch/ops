@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/q_profile_entry.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Q_Profile_Entry": {
+      "columns": {
+        "local_priorities": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "This essential parameter specifies one or more local-priority(s) that are",
+            "assigned to this queue.  Packets' local-priority meta-data is initially assigned",
+            "by the port's QoS Trust Mode  (see [Port](Port) qos_config).  If missing, the",
+            "queue is not used."
+          ],
+          "group": "/Configuration"
+        },
+        "description": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Used for documentation of these queue configuration parameters."
+          ],
+          "group": "/Configuration"
+        },
+        "hw_default": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "When true, this row contains the hardware default queue profile parameters for",
+            "this queue."
+          ],
+          "group": "/Hardware Default"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "title": "Q Profile Entry",
+      "doc": [
+        "Contains configuration parameters for one queue of one profile."
+      ],
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}

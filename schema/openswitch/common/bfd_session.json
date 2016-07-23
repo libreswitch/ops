@@ -1,0 +1,470 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/bfd_session.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "BFD_Session": {
+      "columns": {
+        "enable": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "True when BFD is enabled globally. If not specified, BFD will not be enabled by",
+            "default."
+          ],
+          "group": "/BFD Configuration"
+        },
+        "bfd_src_ip": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 49
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set to an IPv4 address to set the IP address used as source for transmitted BFD",
+            "packets."
+          ],
+          "group": "/BFD Configuration"
+        },
+        "bfd_dst_ip": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 49
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "Set to an IPv4 address to set the IP address used as destination for transmitted",
+            "BFD packets."
+          ],
+          "group": "/BFD Configuration"
+        },
+        "min_rx": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 15,
+              "maxInteger": 300000
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The shortest interval, in milliseconds, at which this BFD session offers to",
+            "receive BFD control messages. The remote endpoint may choose to send messages at",
+            "a slower rate. Defaults to bfd_global_params:min_rx."
+          ],
+          "group": "/BFD Configuration"
+        },
+        "min_tx": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 15,
+              "maxInteger": 300000
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The shortest interval, in milliseconds, at which this BFD session is willing to",
+            "transmit BFD control messages. Messages will actually be transmitted at a slower",
+            "rate if the remote endpoint is not willing to receive as quickly as specified.",
+            "Defaults to bfd_global_params:min_tx."
+          ],
+          "group": "/BFD Configuration"
+        },
+        "decay_min_rx": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 255
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "An alternate receive interval, in milliseconds, that must be greater than or",
+            "equal to bfd:min_rx. The implementation switches from bfd:min_rx to",
+            "bfd:decay_min_rx when there is no obvious incoming data traffic at the",
+            "interface, to reduce the CPU and bandwidth cost of monitoring an idle interface.",
+            "This feature may be disabled by setting a value of 0. This feature is reset",
+            "whenever bfd:decay_min_rx or bfd:min_rx changes."
+          ],
+          "group": "/BFD Configuration"
+        },
+        "forwarding_if_rx": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This param is applicable for BFD sessions on physical/logical interface. When",
+            "true, traffic received on the Interface is used to indicate the capability of",
+            "packet I/O. BFD control packets are still transmitted and received. At least one",
+            "BFD control packet must be received every 100 * bfd:min_rx amount of time.",
+            "Otherwise, even if traffic are received, the bfd:forwarding will be false."
+          ],
+          "group": "/BFD Configuration"
+        },
+        "cpath_down": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set to true to notify the remote endpoint that traffic should not be forwarded",
+            "to this system for some reason other than a connectivty failure on the interface",
+            "being monitored. The typical underlying reason is &#8216;&#8216;concatenated",
+            "path down,&#8217;&#8217; that is, that connectivity beyond the local system is",
+            "down. Defaults to false"
+          ],
+          "group": "/BFD Configuration"
+        },
+        "check_tnl_key": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set to true to make BFD accept only control messages with a tunnel key of zero.",
+            "By default, BFD accepts control messages with any tunnel key."
+          ],
+          "group": "/BFD Configuration"
+        },
+        "bfd_local_src_mac": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 17
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set to an Ethernet address in the form xx:xx:xx:xx:xx:xx to set the MAC used as",
+            "source for transmitted BFD packets. The default is the mac address of the BFD",
+            "enabled interface / out going interface"
+          ],
+          "group": "/BFD Configuration"
+        },
+        "bfd_local_dst_mac": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 17
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set to an Ethernet address in the form xx:xx:xx:xx:xx:xx to set the MAC used as",
+            "destination for transmitted BFD packets."
+          ],
+          "group": "/BFD Configuration"
+        },
+        "bfd_remote_dst_mac": {
+          "category": {
+            "follows": "from"
+          },
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 17
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set to an Ethernet address in the form xx:xx:xx:xx:xx:xx to set the MAC used for",
+            "checking the destination of received BFD packets. Packets with different",
+            "destination MAC will not be considered as BFD packets. If not specified the",
+            "destination MAC address of received BFD packets are not checked."
+          ],
+          "group": "/BFD Configuration"
+        },
+        "state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "down",
+                "init",
+                "up",
+                "admin_down"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Reports the state of the BFD session. The BFD session is fully healthy and",
+            "negotiated if UP."
+          ],
+          "group": "/BFD Status"
+        },
+        "remote_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "down",
+                "init",
+                "up",
+                "admin_down"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Reports the state of the remote endpoint's BFD session. The possible values are",
+            "one of down, init, up, or admin_down."
+          ],
+          "group": "/BFD Status"
+        },
+        "diagnostic": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "none",
+                "control_detect_expired",
+                "echo_failed",
+                "neighbor_session_down",
+                "forwarding_reset",
+                "path_down",
+                "concat_path_down",
+                "admin_down",
+                "reverse_concat_path_down",
+                "max_diagnostics"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "In case of a problem, set to an error message that reports what the local BFD",
+            "session thinks is wrong. The error messages are defined in section 4.1 of [RFC",
+            "5880]."
+          ],
+          "group": "/BFD Status"
+        },
+        "remote_diagnostic": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "none",
+                "control_detect_expired",
+                "echo_failed",
+                "neighbor_session_down",
+                "forwarding_reset",
+                "path_down",
+                "concat_path_down",
+                "admin_down",
+                "reverse_concat_path_down",
+                "max_diagnostics"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "In case of a problem, set to an error message that reports what the remote",
+            "endpoint&#8217;s BFD session thinks is wrong. The error messages are defined in",
+            "section 4.1 of [RFC 5880]."
+          ],
+          "group": "/BFD Status"
+        },
+        "forwarding": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This param is applicable for BFD sessions on physical/logical interface. Reports",
+            "whether the BFD session believes this Interface may be used to forward traffic.",
+            "Typically this means the local session is signaling UP, and the remote system",
+            "isn&#8217;t signaling a problem such as concatenated path down."
+          ],
+          "group": "/BFD Status"
+        },
+        "flap_count": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "Counts the number of bfd_status:forwarding flaps since start. A flap is",
+            "considered as a change of the bfd_status:forwarding value."
+          ],
+          "group": "/BFD Status"
+        },
+        "session_id": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "BFD session identifier, useful for troubleshooting"
+          ],
+          "group": "/BFD Status"
+        },
+        "from": {
+          "category": {
+            "per-value": [
+              {
+                "value": "static",
+                "category": "configuration"
+              },
+              {
+                "value": "bgp",
+                "category": "status"
+              }
+            ]
+          },
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "static",
+                "bgp"
+              ]
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "Originator of the BFD session."
+          ],
+          "group": "/BFD Status"
+        },
+        "local_discriminator": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "BFD session local discriminator value, useful for troubleshooting"
+          ],
+          "group": "/BFD Status"
+        },
+        "remote_discriminator": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "BFD session endpoint's discriminator value, useful for troubleshooting"
+          ],
+          "group": "/BFD Status"
+        },
+        "effective_min_tx_interval": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "BFD session operational min_tx interval as determined after the session",
+            "negotiation with remote endpoint"
+          ],
+          "group": "/BFD Status"
+        },
+        "effective_min_rx_interval": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "BFD session operational min_rx interval as determined after the session",
+            "negotiation with remote endpoint"
+          ],
+          "group": "/BFD Status"
+        },
+        "remote_min_tx_interval": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "BFD session remote operational min_tx interval as detected by the local endpoint"
+          ],
+          "group": "/BFD Status"
+        },
+        "remote_min_rx_interval": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "BFD session remote operational min_rx interval as detected by the local endpoint"
+          ],
+          "group": "/BFD Status"
+        },
+        "remote_multiplier": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "BFD session remote operational multiplier as detected by the local endpoint"
+          ],
+          "group": "/BFD Status"
+        }
+      },
+      "indexes": [
+        [
+          "bfd_dst_ip",
+          "from"
+        ]
+      ],
+      "isRoot": true,
+      "doc": [
+        "BFD per session information table."
+      ]
+    }
+  }
+}

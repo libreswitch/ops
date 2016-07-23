@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/bgp_community_filter.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "BGP_Community_Filter": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          "doc": [
+            "Name of the list."
+          ],
+          "group": "/Global Community and Extended Community Configuration"
+        },
+        "permit": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Permitted POSIX regular expressions."
+          ],
+          "group": "/Global Community and Extended Community Configuration"
+        },
+        "deny": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Denied POSIX regular expressions."
+          ],
+          "group": "/Global Community and Extended Community Configuration"
+        },
+        "type": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "extcommunity-list",
+                "community-list"
+              ]
+            }
+          },
+          "doc": [
+            "There are two types, either \"extcommunity-list\" or \"community-list\"."
+          ],
+          "group": "/Global Community and Extended Community Configuration"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true,
+      "title": "BGP Community Filter"
+    }
+  }
+}

@@ -1,0 +1,755 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/bgp_neighbor.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "BGP_Neighbor": {
+      "columns": {
+        "is_peer_group": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "This is a flag which identifies whether this specific entry is an individual BGP",
+            "neighbor or is a BGP peer group.  A value of true implies a peer group.",
+            "Otherwise, the entry represents a BGP neighbor.  If the value is not set, it",
+            "implies false."
+          ],
+          "group": "/Neighbor Configuration",
+          "emptyValue": false
+        },
+        "description": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This is an optional string which can be used for describing this entry. Default",
+            "is empty."
+          ],
+          "group": "/Neighbor Configuration",
+          "emptyValue": ""
+        },
+        "shutdown": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies whether the neighbor has been administratively shut down. If not",
+            "specified, the default is false."
+          ],
+          "group": "/Neighbor Configuration",
+          "emptyValue": false
+        },
+        "remove_private_as": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies whether private AS should be removed. If not specified, the default",
+            "value is false."
+          ],
+          "group": "/Neighbor Configuration",
+          "emptyValue": false
+        },
+        "passive": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Indicates that open messages should NOT be sent to this neighbor. Default is",
+            "false."
+          ],
+          "group": "/Neighbor Configuration",
+          "emptyValue": false
+        },
+        "bgp_peer_group": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "BGP_Neighbor"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This column is used only if the entry is a BGP neighbor.  It represents the peer",
+            "group this BGP neighbor is a member of.  Default is none."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "local_interface": {
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Interface"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Reference to the corresponding interface.  This is used only for ipv6. Default",
+            "is none."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "bfd_fallover_enable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Enables BFD support for fallover. Default is no-fallover."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "bfd_session": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "BFD_Session"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "BFD session reference corresponding to the BGP Peer, as identified in the",
+            "[BFD_Session](BFD_Session)."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "remote_as": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Peer AS number. For EBGP, the peer is in another AS, so the remote AS number",
+            "must be different from the local router's AS number or BGP router asn. For IBGP,",
+            "the peer is in the same AS, so the two AS numbers must be the same. Remote AS",
+            "number. Range: 1-4294967295."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "allow_as_in": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 10
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Allow-as-in is the number of times BGP can allow an instance of AS to be in the",
+            "AS_PATH."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "local_as": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "To specify a different asn from BGP router asn to be used as local AS number in",
+            "update messages to peers. Local AS number. Range: 1-4294967295."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "weight": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This is the weight for routes from this neighbor."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "tcp_port_number": {
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This is the BGP neighbor's tcp port number.  Default value is 179."
+          ],
+          "group": "/Neighbor Configuration",
+          "emptyValue": 179
+        },
+        "advertisement_interval": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 600
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Minimum interval between sending BGP routing updates. Range: 0-600 seconds."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "ebgp_multihop": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "If set to \"true\", allows BGP connections with peers that are not directly",
+            "connected. Default is \"false\"."
+          ],
+          "group": "/Neighbor Configuration",
+          "emptyValue": false
+        },
+        "ttl_security_hops": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 254
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the maximum number of hops to the BGP peer."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "update_source": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the source-address to establish BGP connections to neighbors."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "maximum_prefix_limit": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Maximum number of prefixes that can be accepted on a BGP peer session. When the",
+            "limit is exceeded, a system log message is logged."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "inbound_soft_reconfiguration": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Allow inbound soft reconfiguration for this neighbor."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "password": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The password for this entry."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "timers": {
+          "category": "configuration",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "holdtime": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "Set the hold time for a specific BGP peer. The value is hold time in seconds.",
+                  "Default value is 180 seconds."
+                ],
+                "group": "/Neighbor Configuration",
+                "emptyValue": 180
+              },
+              "keepalive": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "Set the keepalive interval for a specific BGP peer. The value is keepalive",
+                  "interval in seconds. Default value is 60 seconds."
+                ],
+                "group": "/Neighbor Configuration",
+                "emptyValue": 60
+              }
+            },
+            "min": 0,
+            "max": 2
+          },
+          "doc": [
+            "BGP per neighbor timers - Connect timer/Keep-alive Interval."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "bgp_peer_dynamic_cap_in_count": {
+                "type": "integer",
+                "doc": [
+                  "This indicates how many times a dynamic cap message has been received."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_refresh_in_count": {
+                "type": "integer",
+                "doc": [
+                  "This indicates how many times a frefresh message has been received."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_resettime": {
+                "type": "integer",
+                "doc": [
+                  "Indicates the last time peer was reset."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_update_in_count": {
+                "type": "integer",
+                "doc": [
+                  "This indicates how many times an update message has been received."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_refresh_out_count": {
+                "type": "integer",
+                "doc": [
+                  "This indicates how many times a refresh message has been sent."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_readtime": {
+                "type": "integer",
+                "doc": [
+                  "This indicates the last time an update or keepalive message has been received."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_keepalive_in_count": {
+                "type": "integer",
+                "doc": [
+                  "This indicates how many times a keepalive message has been received."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_open_in_count": {
+                "type": "integer",
+                "doc": [
+                  "This indicates how many times an open message has been received."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_open_out_count": {
+                "type": "integer",
+                "doc": [
+                  "This indicates how many times an open message has been sent."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_keepalive_out_count": {
+                "type": "integer",
+                "doc": [
+                  "This indicates how many times a keepalive message has been sent."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_dynamic_cap_out_count": {
+                "type": "integer",
+                "doc": [
+                  "This indicates how many times a dynamic cap message has been sent."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_dropped_count": {
+                "type": "integer",
+                "doc": [
+                  "This indicates the number of times peers have been dropped from the established",
+                  "state."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_notify_in_count": {
+                "type": "integer",
+                "doc": [
+                  "This indicates how many times a notify message has been received."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_notify_out_count": {
+                "type": "integer",
+                "doc": [
+                  "This indicates how many times a notify message has been sent."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_established_count": {
+                "type": "integer",
+                "doc": [
+                  "This indicates the number of times peers have been established."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_uptime": {
+                "type": "integer",
+                "doc": [
+                  "This indicates how long since peer has been in the established state, or since",
+                  "the last route update was received."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              },
+              "bgp_peer_update_out_count": {
+                "type": "integer",
+                "doc": [
+                  "This indicates how many times an update message has been sent."
+                ],
+                "group": "/BGP Neighbor Statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/BGP Neighbor Statistics"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "bgp_num_clear_counters_peer_soft_out_requested": {
+                "type": "integer",
+                "doc": [
+                  "Indicates the number of times soft clear was requested for outbound routing",
+                  "policy updates. When this value is greater than",
+                  "bgp_num_clear_counters_peer_soft_out_performed, then soft clear is still",
+                  "pending."
+                ],
+                "group": "/Status"
+              },
+              "bgp_num_clear_counters_peer_soft_in_performed": {
+                "type": "integer",
+                "doc": [
+                  "Indicates the number of times soft clear is performed for inbound routing policy",
+                  "updates."
+                ],
+                "group": "/Status"
+              },
+              "bgp_num_clear_counters_peer_soft_out_performed": {
+                "type": "integer",
+                "doc": [
+                  "Indicates the number of times soft clear is performed for outbound routing",
+                  "policy updates."
+                ],
+                "group": "/Status"
+              },
+              "bgp_peer_state": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "Idle",
+                    "Connect",
+                    "Active",
+                    "OpenSent",
+                    "OpenConfirm",
+                    "Established",
+                    "Clearing",
+                    "Deleted"
+                  ]
+                },
+                "doc": [
+                  "This represents the BGP neighbor state at this specific instance in time.  The",
+                  "value can be one of Idle, Connect, Active, OpenSent, OpenConfirm, Established,",
+                  "Clearing or Deleted and can change any time.  Default is Idle."
+                ],
+                "group": "/BGP Neighbor or Peer group Status Info",
+                "emptyValue": "Idle"
+              },
+              "bgp_num_clear_counters_peer_soft_in_requested": {
+                "type": "integer",
+                "doc": [
+                  "Indicates the number of times soft clear was requested for inbound routing",
+                  "policy updates. When this value is greater than",
+                  "bgp_num_clear_counters_peer_soft_in_performed, then soft clear is still pending."
+                ],
+                "group": "/Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "doc": [
+            "These values describe various status information about this BGP neighbor or BGP",
+            "Peer group entry."
+          ],
+          "group": [
+            "/Status",
+            "/BGP Neighbor or Peer group Status Info"
+          ]
+        },
+        "aspath_filters": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "valueType": {
+              "type": "uuid",
+              "refTable": "BGP_ASPath_Filter"
+            },
+            "valueMap": {
+              "out": {
+                "type": {
+                  "type": "uuid",
+                  "refTable": "BGP_ASPath_Filter"
+                },
+                "doc": [
+                  "AS Path filter associated with outbound routes."
+                ],
+                "group": "/Neighbor Configuration"
+              },
+              "in": {
+                "type": {
+                  "type": "uuid",
+                  "refTable": "BGP_ASPath_Filter"
+                },
+                "doc": [
+                  "AS Path filter associated with incoming routes."
+                ],
+                "group": "/Neighbor Configuration"
+              }
+            },
+            "min": 0,
+            "max": 2
+          },
+          "doc": [
+            "Name and direction of the as-path filters."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "prefix_lists": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "valueType": {
+              "type": "uuid",
+              "refTable": "Prefix_List"
+            },
+            "valueMap": {
+              "out": {
+                "type": {
+                  "type": "uuid",
+                  "refTable": "Prefix_List"
+                },
+                "doc": [
+                  "Prefix list associated with outbound routes."
+                ],
+                "group": "/Neighbor Configuration"
+              },
+              "in": {
+                "type": {
+                  "type": "uuid",
+                  "refTable": "Prefix_List"
+                },
+                "doc": [
+                  "Prefix list associated with incoming routes."
+                ],
+                "group": "/Neighbor Configuration"
+              }
+            },
+            "min": 0,
+            "max": 2
+          },
+          "doc": [
+            "Name and direction of the prefix lists."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "route_maps": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "valueType": {
+              "type": "uuid",
+              "refTable": "Route_Map"
+            },
+            "valueMap": {
+              "out": {
+                "type": {
+                  "type": "uuid",
+                  "refTable": "Route_Map"
+                },
+                "doc": [
+                  "Map associated with outbound routes."
+                ],
+                "group": "/Neighbor Configuration"
+              },
+              "in": {
+                "type": {
+                  "type": "uuid",
+                  "refTable": "Route_Map"
+                },
+                "doc": [
+                  "Map associated with incoming routes."
+                ],
+                "group": "/Neighbor Configuration"
+              }
+            },
+            "min": 0,
+            "max": 2
+          },
+          "doc": [
+            "Name and direction of the route maps."
+          ],
+          "group": "/Neighbor Configuration"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "title": "BGP Neighbors and Peer Groups",
+      "doc": [
+        "This table holds both BGP neighbors and BGP peer groups.  A boolean named",
+        "is_peer_group identifies whether a specific entry is a bgp neighbor or a peer",
+        "group."
+      ],
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ],
+        "/BGP Neighbor or Peer group Status Info": [
+          "The `status` column contains one or more informational entries indicating",
+          "various status values for this BGP neighbor."
+        ],
+        "/BGP Neighbor Statistics": [
+          "The `statistics` column contains various counters about this BGP neighbor."
+        ]
+      }
+    }
+  }
+}

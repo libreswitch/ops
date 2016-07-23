@@ -1,0 +1,173 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/nexthop.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Nexthop": {
+      "columns": {
+        "ip_address": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "IP address of the nexthop device."
+          ],
+          "group": "/Configuration"
+        },
+        "ports": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "List of outgoing ports. Nexthop entries of type `unicast` can have atmost 1",
+            "port."
+          ],
+          "group": "/Configuration"
+        },
+        "type": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "unicast"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Type of the nexthop. Default is `unicast`."
+          ],
+          "group": "/Configuration",
+          "emptyValue": "unicast"
+        },
+        "selected": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Indicates if this nexthop is actively participating in forwarding. Multiple",
+            "nexthops can exist for each route entry but the routing protocol can indicate if",
+            "a particular nexthop should not be used in forwarding. Default is `true`."
+          ],
+          "group": "/Configuration",
+          "emptyValue": true
+        },
+        "weight": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Weight is used to differentially balance the packets. Example: For a route if",
+            "there are 2 nexthops nh1 with weight 5 and nh2 with weight 1, then for every 5",
+            "packets that uses nh1, one packet will use nh2. In the first release, the above",
+            "case is not supported. Only ECMP is supported. Default is 0 (for static routes)."
+          ],
+          "group": "/Configuration",
+          "emptyValue": 0
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "arp_resolved": {
+                "type": "boolean",
+                "doc": [
+                  "Indicate if ARP is resolved for this entry. If the ARP entry is missing, this",
+                  "value is `false`"
+                ],
+                "group": "/Status",
+                "emptyValue": "false"
+              },
+              "error": {
+                "type": "string",
+                "doc": [
+                  "Human readable error string."
+                ],
+                "group": "/Status"
+              },
+              "hw_configured": {
+                "type": "boolean",
+                "doc": [
+                  "Indicate if nexthop programmed in the asic. If the ARP entry is missing, this",
+                  "value is `false`"
+                ],
+                "group": "/Status",
+                "emptyValue": "false"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/Status"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "title": "Nexthops",
+      "doc": [
+        "Global list of all the nexthops as used by the [Route](Route) table. Each entry",
+        "in the [Route](Route) can have a reference to one or many(for ECMP) entries in",
+        "this table."
+      ],
+      "groupDoc": {
+        "/Status": [
+          "Status information to indicate the current state of the nexthop."
+        ],
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}

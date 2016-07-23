@@ -1,0 +1,434 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/mstp_common_instance.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "MSTP_Common_Instance": {
+      "columns": {
+        "vlans": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VLAN",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 4094
+          },
+          "doc": [
+            "VLANs included in the CIST instance."
+          ],
+          "group": "/Configurations"
+        },
+        "priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 61440
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to specify the priority value, configured as a multiple of 4096",
+            "The lower a priority value, the higher the priority. Default value is 8."
+          ],
+          "group": "/Configurations",
+          "emptyValue": 8
+        },
+        "bridge_identifier": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "+ The root bridge ID for CIST. Default value 64 bit string(4 bit priority",
+            "+ 12 bit Instance ID",
+            "+ 48bit system MAC address)"
+          ],
+          "group": "/Configurations"
+        },
+        "hardware_grp_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The hardware spanning tree group ID. Default value is 0."
+          ],
+          "group": "/Status",
+          "emptyValue": 0
+        },
+        "hello_time": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 2,
+              "maxInteger": 10
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The hello time value for this instance. Default value is 2."
+          ],
+          "group": "/Configurations",
+          "emptyValue": 2
+        },
+        "forward_delay": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 4,
+              "maxInteger": 30
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The forward delay time value for this instance. Default value is 15."
+          ],
+          "group": "/Configurations",
+          "emptyValue": 15
+        },
+        "max_age": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 6,
+              "maxInteger": 40
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to specify the maximum-aging time(The time a device waits without",
+            "receiving spanning tree configuration messages before attempting a",
+            "reconfiguration) for all MST instances. Default value is 20."
+          ],
+          "group": "/Configurations",
+          "emptyValue": 20
+        },
+        "max_hop_count": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 6,
+              "maxInteger": 40
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "tx_hold_count": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 10
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The value used by the MSTP transmit state machine to limit the maximum",
+            "transmission rate of MST BPDUs within the hello interval. Default value is 6."
+          ],
+          "group": "/Configurations",
+          "emptyValue": 6
+        },
+        "designated_root": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            }
+          },
+          "doc": [
+            "The root bridge name for a CIST instance."
+          ],
+          "group": "/Status"
+        },
+        "root_path_cost": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 200000000
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The path cost from the transmitting Bridge to the Root Bridge for the MSTI."
+          ],
+          "group": "/Status"
+        },
+        "root_priority": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 61440
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The root bridge priority. The lower a priority value, the higher the priority.",
+            "Default value is 32768."
+          ],
+          "group": "/Status",
+          "emptyValue": 32768
+        },
+        "root_port": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            }
+          },
+          "doc": [
+            "The root port name for a CIST instance."
+          ],
+          "group": "/Status"
+        },
+        "regional_root": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The regional root for the CIST."
+          ],
+          "group": "/Status"
+        },
+        "cist_path_cost": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 200000000
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The path cost from the transmitting bridge to the CIST regional root."
+          ],
+          "group": "/Status"
+        },
+        "remaining_hops": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 40
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Once known, contains the hop count after which the MSTP BPDU of this instance",
+            "are discarded. Default value is 20"
+          ],
+          "group": "/Status",
+          "emptyValue": 20
+        },
+        "oper_hello_time": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 2,
+              "maxInteger": 10
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The operating hello timer value for this instance."
+          ],
+          "group": "/Status"
+        },
+        "oper_forward_delay": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 4,
+              "maxInteger": 30
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The forward delay timer value for this instance."
+          ],
+          "group": "/Status"
+        },
+        "oper_max_age": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 6,
+              "maxInteger": 40
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to specify the maximum-aging time(The time a device waits without",
+            "receiving spanning tree configuration messages before attempting a",
+            "reconfiguration) for all MST instances."
+          ],
+          "group": "/Status"
+        },
+        "hello_expiry_time": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The epoch time in seconds after which a hello packet will be sent."
+          ],
+          "group": "/Status"
+        },
+        "forward_delay_expiry_time": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The epoch time in seconds when forward delay will expire."
+          ],
+          "group": "/Status"
+        },
+        "time_since_top_change": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The time last topology change happened for this instance. The format for this is",
+            "number of seconds from epoch."
+          ],
+          "group": "/Status"
+        },
+        "oper_tx_hold_count": {
+          "category": "statistics",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 10
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The value used by the MSTP transmit state machine to limit the maximum",
+            "transmission rate of MST BPDUs within the hello interval."
+          ],
+          "group": "/Status"
+        },
+        "topology_unstable": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This is set to `true` when a topology change has occurred. Once topology",
+            "stabilizes it will be set back to `false`. Default is `false`."
+          ],
+          "group": "/Status",
+          "emptyValue": false
+        },
+        "topology_change_count": {
+          "category": "statistics",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 2147483647
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The total number of topology changes that have occurred for this instance."
+          ],
+          "group": "/Status"
+        },
+        "mstp_common_instance_ports": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "MSTP_Common_Instance_Port"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "CIST configurations for port."
+          ],
+          "group": "/Configurations"
+        }
+      },
+      "title": "MSTP common instance info",
+      "doc": [
+        "This represents information regarding a Bridge's Bridge Protocol entity for the",
+        "CIST.."
+      ]
+    }
+  }
+}

@@ -1,0 +1,177 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/qos_dscp_map_entry.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "QoS_DSCP_Map_Entry": {
+      "columns": {
+        "code_point": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 63
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "The identifier for an entry in the DSCP map that represents the Differentiated",
+            "Services Code Point (DSCP) value for this entry."
+          ],
+          "group": "/Configuration"
+        },
+        "local_priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            }
+          },
+          "doc": [
+            "This is a switch internal meta-data value that will be associated with the",
+            "packet. This value will be used later to select the egress queue for the packet."
+          ],
+          "group": "/Configuration"
+        },
+        "priority_code_point": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 7
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The 802.1Q priority that will be assigned to the packet. If the packet is",
+            "transmitted with a VLAN tag, this value will be in the Priority Code Point",
+            "field. If this value is not specified, the default behavior is that the priority",
+            "of the packet will not be changed."
+          ],
+          "group": "/Configuration"
+        },
+        "color": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "green",
+                "yellow",
+                "red"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "It may be used later in the pipeline in packet-drop decision points. The default",
+            "is 'green'."
+          ],
+          "group": "/Configuration",
+          "emptyValue": "green"
+        },
+        "description": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Used for customer documentation."
+          ],
+          "group": "/Configuration"
+        },
+        "hw_defaults": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "default_local_priority": {
+                "type": "string",
+                "doc": [
+                  "When missing, the default local_priority is obtained from the",
+                  "[hw_defaults](QoS_COS_Map_Entry.hw_defaults) of the",
+                  "[QoS_COS_Map_Entry](QoS_COS_Map_Entry) row indexed by the top 3-bits of this",
+                  "row's code_point (i.e. class selector bits cs0 through cs7)."
+                ],
+                "group": "/Hardware Default"
+              },
+              "default_priority_code_point": {
+                "type": "string",
+                "doc": [
+                  "When missing, the default is not to remark packets' 802.1Q priority."
+                ],
+                "group": "/Hardware Default"
+              },
+              "default_color": {
+                "type": "string",
+                "doc": [
+                  "When missing, the default is 'green'."
+                ],
+                "group": "/Hardware Default",
+                "emptyValue": "green"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "mutable": false,
+          "group": "/Hardware Default"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "indexes": [
+        [
+          "code_point"
+        ]
+      ],
+      "maxRows": 64,
+      "title": "Quality of Service Differentiated Services Code Point Map",
+      "doc": [
+        "Contains DSCP map entries used by QoS Trust Mode. It associates each code point",
+        "to local_priority (required), and (optionally), priority code point, color and",
+        "description."
+      ],
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ],
+        "/Hardware Default": [
+          "The key-value pairs document the hardware defaults for configuration columns in",
+          "this row."
+        ]
+      }
+    }
+  }
+}

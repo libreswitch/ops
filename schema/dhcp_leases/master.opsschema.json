@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "dhcp_leases.opsschema.json#",
+  "name": "dhcp_leases",
+  "version": "0.0.1",
+  "tables": {
+    "DHCP_Lease": {
+      "$ref": "common/dhcp_lease.json#/tables/DHCP_Lease"
+    }
+  }
+}

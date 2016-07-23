@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/dhcpsrv_static_host.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "DHCPSrv_Static_Host": {
+      "columns": {
+        "ip_address": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            }
+          },
+          "doc": [
+            "Specifies the static IP address that should be assigned to the specific",
+            "host.This ip address may contain an IPv4 address or an IPv6 address, or both."
+          ]
+        },
+        "mac_addresses": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 17,
+              "maxLength": 17
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Specifies the list of MAC addresses of the DHCP hosts to which the static IP",
+            "address would be assigned. If more than one MAC addresses are specified, it",
+            "would work reliably only if one MAC address is active at a time."
+          ]
+        },
+        "set_tags": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Specifies the list of tags associated with the DHCP request. When a DHCP request",
+            "from the specific DHCP client is received, the list of configured tags would be",
+            "set and used to selectively send DHCP options for the client."
+          ]
+        },
+        "client_hostname": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the client hostname of the DHCP client to which the configured static",
+            "IP address would be assigned."
+          ]
+        },
+        "client_id": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the client id of the DHCP client to which the configured static IP",
+            "address would be assigned,"
+          ]
+        },
+        "lease_duration": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the lease expiry time in minutes. If not specified, default value of",
+            "one hour (60) would be used."
+          ],
+          "emptyValue": 60
+        }
+      },
+      "indexes": [
+        [
+          "ip_address"
+        ]
+      ],
+      "doc": [
+        "Static leases configured by the user."
+      ]
+    }
+  }
+}

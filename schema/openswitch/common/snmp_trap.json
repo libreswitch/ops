@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/snmp_trap.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "SNMP_Trap": {
+      "columns": {
+        "receiver_address": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            }
+          },
+          "doc": [
+            "The IP address of the trap receiver."
+          ],
+          "group": "/configuration"
+        },
+        "receiver_udp_port": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 65535
+            }
+          },
+          "doc": [
+            "The UDP port of the trap receiver."
+          ],
+          "group": "/configuration"
+        },
+        "type": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "trap",
+                "inform"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Trap type. The default type is \"trap\"."
+          ],
+          "group": "/configuration",
+          "emptyValue": "trap"
+        },
+        "version": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "v1",
+                "v2c",
+                "v3"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Trap/inform version. The default version is \"v2c\"."
+          ],
+          "group": "/configuration",
+          "emptyValue": "v2c"
+        },
+        "community_name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "SNMPv1/SNMPv2c community strings. The default community string is \"public\"."
+          ],
+          "group": "/configuration",
+          "emptyValue": "public"
+        }
+      },
+      "indexes": [
+        [
+          "receiver_address",
+          "receiver_udp_port"
+        ]
+      ],
+      "maxRows": 10,
+      "isRoot": true
+    }
+  }
+}

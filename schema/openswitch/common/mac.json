@@ -1,0 +1,169 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/mac.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "MAC": {
+      "columns": {
+        "mac_addr": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 17,
+              "maxLength": 17
+            }
+          },
+          "doc": [
+            "MAC address."
+          ]
+        },
+        "bridge": {
+          "category": "status",
+          "relationship": "m:1",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Bridge",
+              "refType": "weak"
+            }
+          },
+          "doc": [
+            "Specifies the bridge [Bridge](Bridge) on which this MAC address is associated."
+          ]
+        },
+        "mac_vlan": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VLAN",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the VLAN [VLAN](VLAN) associated with MAC address."
+          ]
+        },
+        "from": {
+          "category": "status",
+          "type": {
+            "key": {
+              "enum": [
+                "hw-vtep",
+                "dynamic",
+                "static",
+                "vrrp"
+              ],
+              "type": "string"
+            }
+          },
+          "doc": [
+            "This specifies whether this MAC address has been added by the hw-vtep",
+            "controller, VRRP protocol, dynamically learnt from the ASIC or statically",
+            "configured."
+          ]
+        },
+        "port": {
+          "category": "status",
+          "relationship": "m:1",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            }
+          },
+          "doc": [
+            "Specifies the port [Port](Port) on which this MAC address is associated."
+          ]
+        },
+        "tunnel_key": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "If this MAC address is learnt from the tunnel port, then the tunnel_key will be",
+            "populated/configured. Otherwise, for static entries not having tunnel as port,",
+            "this column should not be populated."
+          ]
+        },
+        "expiry_time": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "POSIX Time at which this MAC entry expires."
+          ]
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "no_memory": {
+                "type": "string",
+                "doc": [
+                  "Memory exhaustion"
+                ],
+                "group": "/status"
+              },
+              "ok": {
+                "type": "string",
+                "doc": [
+                  "Properly configured"
+                ],
+                "group": "/status"
+              },
+              "invalid": {
+                "type": "string",
+                "doc": [
+                  "Invalid parameters"
+                ],
+                "group": "/status"
+              },
+              "error": {
+                "type": "string",
+                "doc": [
+                  "Unspecified error."
+                ],
+                "group": "/status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/status"
+        }
+      },
+      "indexes": [
+        [
+          "bridge",
+          "mac_vlan",
+          "from",
+          "mac_addr"
+        ]
+      ],
+      "isRoot": true,
+      "doc": [
+        "Configuration for consolidated MAC table which can potentially be learnt from",
+        "ASIC, from the hw-vtep controller, from the VRRP or statically configured."
+      ],
+      "groupDoc": {
+        "/status": [
+          "This column specifies the status of this entry in the table."
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/ntp_key.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "NTP_Key": {
+      "columns": {
+        "key_id": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 65534
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "Specifies a key_id which is used for NTP authentication."
+          ]
+        },
+        "key_password": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 16
+            }
+          },
+          "doc": [
+            "Specifies a key_password which is used for NTP authentication."
+          ]
+        },
+        "trust_enable": {
+          "category": "configuration",
+          "type": "boolean",
+          "doc": [
+            "Enables trust settings for this key_id. Default is false."
+          ],
+          "emptyValue": false
+        }
+      },
+      "indexes": [
+        [
+          "key_id"
+        ]
+      ],
+      "isRoot": true,
+      "maxRows": 65534,
+      "doc": [
+        "NTP Keys configuration"
+      ]
+    }
+  }
+}

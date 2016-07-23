@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/qos.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "QoS": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "There must be a user-defined name of the schedule profile."
+          ],
+          "group": "/Configuration"
+        },
+        "queues": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Queue"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "keyname": "queue_number",
+          "doc": [
+            "Schedule parameters for individual queues.",
+            "",
+            "Queues are numbered in *priority order*, with zero being the lowest priority.",
+            "The maximum number of queues is hardware dependent."
+          ],
+          "group": "/Configuration"
+        },
+        "hw_default": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "When true, this row signifies the hardware default schedule profile.",
+            "",
+            "Default schedule profile is \"Strict Priority\" when any of the following occur:",
+            "",
+            "+No row in this table has hw_default true +More than one row in this table has",
+            "hw_default true +Any [Queue](Queue) rows referenced do not have their hw_default",
+            "true"
+          ],
+          "group": "/Hardware Default"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true,
+      "title": "Quality of Service Schedule Profile",
+      "doc": [
+        "Used to specify named profiles of scheduling configuration. Ports use a schedule",
+        "profile to configure their packet queue servicing behavior."
+      ],
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}

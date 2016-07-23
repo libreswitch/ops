@@ -1,0 +1,2244 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/system.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "System": {
+      "columns": {
+        "subsystems": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Subsystem"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration"
+        },
+        "bridges": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Bridge"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Set of bridges."
+          ],
+          "group": "/Configuration"
+        },
+        "vrfs": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRF"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration"
+        },
+        "management_vrf": {
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRF"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "management_mac": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 17,
+              "maxLength": 17
+            }
+          },
+          "doc": [
+            "Ethernet MAC address for the management interface port for this system."
+          ],
+          "group": "/Configuration"
+        },
+        "system_mac": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 17,
+              "maxLength": 17
+            }
+          },
+          "doc": [
+            "Ethernet MAC address available to use anywhere a non-unique MAC is needed."
+          ],
+          "group": "/Configuration"
+        },
+        "daemons": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Daemon"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration"
+        },
+        "ssl": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "SSL"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "group": "/Configuration"
+        },
+        "hostname": {
+          "category": "configuration",
+          "type": "string",
+          "group": "/Configuration"
+        },
+        "domain_name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Domain name as configured by the user."
+          ],
+          "group": "/Configuration"
+        },
+        "dns_servers": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration"
+        },
+        "router_id": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "router_id_val": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 4294967295
+                },
+                "doc": [
+                  "The system global router identifier. Any routing protocol may pick up this as",
+                  "router id, if it doesn't have a specific one configured. The router-ID may be an",
+                  "IPv4 address of the router. It can be any arbitrary 32bit number. However it",
+                  "MUST be non-zero and unique within the entire Autonomus System domain."
+                ],
+                "group": "/Configuration"
+              },
+              "router_id_static": {
+                "type": "boolean",
+                "doc": [
+                  "This determines whether the system global router-ID is configured statically or",
+                  "selected by Routing Manager dynamically. The default value is false."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "false"
+              }
+            },
+            "min": 0,
+            "max": 2
+          },
+          "group": "/Configuration"
+        },
+        "next_cfg": {
+          "type": "integer",
+          "doc": [
+            "Sequence number for client to increment.  When a client modifies any part of the",
+            "database configuration and wishes to wait for OpenSwitch to finish applying the",
+            "changes, it may increment this sequence number."
+          ],
+          "group": "/Status"
+        },
+        "cur_cfg": {
+          "type": "integer",
+          "doc": [
+            "Sequence number that OpenSwitch sets to the current value of",
+            "[next_cfg](System.next_cfg) after it finishes applying a set of configuration",
+            "changes."
+          ],
+          "group": "/Status"
+        },
+        "next_hw": {
+          "type": "integer",
+          "doc": [
+            "Sequence number to indicate that a change has occurred in the hardware",
+            "configuration (e.g., a subsystem has been added or removed)."
+          ],
+          "group": "/Status"
+        },
+        "cur_hw": {
+          "type": "integer",
+          "doc": [
+            "Sequence number that indicates the current change level for the h/w",
+            "configuration. When [cur_hw](System.cur_hw) is the same as",
+            "[next_hw](System.next_hw), then all platform daemon processing has completed in",
+            "response to the hardware addition or removal. This is not used for transceiver",
+            "pluggable module insertion/removal."
+          ],
+          "group": "/Status"
+        },
+        "statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "load_average": {
+                "type": "string",
+                "doc": [
+                  "A comma-separated list of three floating-point numbers, representing the system",
+                  "load average over the last 1, 5, and 15 minutes, respectively."
+                ],
+                "group": "/Statistics"
+              },
+              "process_NAME": {
+                "type": "string",
+                "doc": [
+                  "One such key-value pair, with `NAME` replaced by a process name, will exist for",
+                  "each running OpenSwitch daemon process, with _name_ replaced by the daemon's",
+                  "name (e.g. `process_sysd`).  The value is a comma-separated list of integers.",
+                  "The integers represent the following, with memory measured in kilobytes and",
+                  "durations in milliseconds:",
+                  "",
+                  "1. The process's virtual memory size.",
+                  "1. The process's resident set size.",
+                  "1. The amount of user and system CPU time consumed by the process.",
+                  "1. The number of times that the process has crashed and been automatically",
+                  "restarted by the monitor.",
+                  "1. The duration since the process was started.",
+                  "1. The duration for which the process has been running.",
+                  "",
+                  "The interpretation of some of these values depends on whether the process was",
+                  "started with the `--monitor`.  If it was not, then the crash count will always",
+                  "be 0 and the two durations will always be the same.  If `--monitor` was given,",
+                  "then the crash count may be positive; if it is, the latter duration is the",
+                  "amount of time since the most recent crash and restart.",
+                  "",
+                  "There will be one key-value pair for each file in OpenSwitch's ``run directory''",
+                  "(usually `/var/run/openvswitch`) whose name ends in `.pid`, whose contents are a",
+                  "process ID, and which is locked by a running process.  The _name_ is taken from",
+                  "the pidfile's name."
+                ],
+                "group": "/Statistics"
+              },
+              "cpu": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1
+                },
+                "doc": [
+                  "Number of CPU processors, threads, or cores currently online and available to",
+                  "the operating system, as an integer.  This may be less than the number",
+                  "installed, if some are not online or if they are not available to the operating",
+                  "system."
+                ],
+                "group": "/Statistics"
+              },
+              "file_systems": {
+                "type": "string",
+                "doc": [
+                  "A space-separated list of information on local, writable file systems.  Each",
+                  "item in the list describes one file system and consists in turn of a comma-",
+                  "separated list of the following:",
+                  "",
+                  "1. Mount point, e.g. `/` or `/var/log`. Any spaces or commas in the mount point",
+                  "are replaced by underscores.",
+                  "1. Total size, in kilobytes, as an integer.",
+                  "1. Amount of storage in use, in kilobytes, as an integer.",
+                  "",
+                  "This key-value pair is omitted if there are no local, writable file systems or",
+                  "if OpenSwitch cannot obtain the needed information."
+                ],
+                "group": "/Statistics"
+              },
+              "memory": {
+                "type": "string",
+                "doc": [
+                  "A comma-separated list of integers, each of which represents a quantity of",
+                  "memory in kilobytes that describes the operating system.  In respective order,",
+                  "these values are:",
+                  "",
+                  "1. Total amount of RAM allocated to the OS.",
+                  "1. RAM allocated to the OS that is in use.",
+                  "1. RAM that can be flushed out to disk or otherwise discarded if that space is",
+                  "needed for another purpose.  This number is necessarily less than or equal to",
+                  "the previous value.",
+                  "1. Total disk space allocated for swap.",
+                  "1. Swap space currently in use."
+                ],
+                "group": "/Statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/Statistics"
+        },
+        "lldp_statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "lldp_table_inserts": {
+                "type": "string",
+                "doc": [
+                  "Number of neighbor entries inserted to LLDP neighbor table. Default is 0."
+                ],
+                "group": "/Statistics/LLDP Statistics",
+                "emptyValue": "0"
+              },
+              "lldp_table_ageouts": {
+                "type": "string",
+                "doc": [
+                  "Number of times neighbor info was deleted from LLDP neighbor table because of",
+                  "the TTL timer associated with a neighbor has expired. Default is 0."
+                ],
+                "group": "/Statistics/LLDP Statistics",
+                "emptyValue": "0"
+              },
+              "lldp_table_drops": {
+                "type": "string",
+                "doc": [
+                  "Number of neighbor entries that could not be added to LLDP neighbor table and",
+                  "dropped. Default is 0."
+                ],
+                "group": "/Statistics/LLDP Statistics",
+                "emptyValue": "0"
+              },
+              "lldp_table_deletes": {
+                "type": "string",
+                "doc": [
+                  "Number of neighbor entries deleted from LLDP neighbor table. Default is 0."
+                ],
+                "group": "/Statistics/LLDP Statistics",
+                "emptyValue": "0"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/Statistics/LLDP Statistics"
+        },
+        "boot_time": {
+          "category": "status",
+          "type": "integer",
+          "doc": [
+            "Boot time of the machine, represented in seconds since 1970-01-01 00:00:00 UTC.",
+            "OVSDB integers are 64 bit, which means it will take some time until we roll",
+            "over."
+          ],
+          "group": "/Status"
+        },
+        "switch_version": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The OpenSwitch version number, e.g. `0.1.0`."
+          ],
+          "group": "/Version Reporting"
+        },
+        "db_version": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The database schema version number in the form `_major_._minor_._tweak_`, e.g.",
+            "`1.2.3`.  Whenever the database schema is changed in a non-backward compatible",
+            "way (e.g. deleting a column or a table), _major_ is incremented.  When the",
+            "database schema is changed in a backward compatible way (e.g. adding a new",
+            "column), _minor_ is incremented.  When the database schema is changed",
+            "cosmetically (e.g. reindenting its syntax), _tweak_ is incremented.",
+            "",
+            "The schema version is part of the database schema, so it can also be retrieved",
+            "by fetching the schema using the Open vSwitch database protocol."
+          ],
+          "group": "/Version Reporting"
+        },
+        "asset_tag_number": {
+          "category": "configuration",
+          "type": "string",
+          "group": "/Configuration"
+        },
+        "software_info": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "boot_loader_version": {
+                "type": "string",
+                "group": "/Version Reporting"
+              },
+              "diag_version": {
+                "type": "string",
+                "group": "/Version Reporting"
+              },
+              "os_name": {
+                "type": "string",
+                "doc": [
+                  "This column is used for the software info. The value of the key 'os_name' will",
+                  "identify the operating system, without a version component, and suitable for",
+                  "presentation to the user. If not set, defaults to `os_name=OpenSwitch`. Example:",
+                  "`os_name=Fedora` or `os_name=\"Debian GNU/Linux\"`.  This is equivalent of `NAME`",
+                  "variable of the `/etc/os-release` file.  Please refer to",
+                  "`http://www.freedesktop.org/software/systemd/man/os-release.html` for more",
+                  "detailed information."
+                ],
+                "group": "/Version Reporting"
+              },
+              "bios_vendor": {
+                "type": "string",
+                "group": "/Version Reporting"
+              },
+              "install_env_version": {
+                "type": "string",
+                "group": "/Version Reporting"
+              },
+              "bios_release_date": {
+                "type": "string",
+                "group": "/Version Reporting"
+              },
+              "bios_version": {
+                "type": "string",
+                "group": "/Version Reporting"
+              },
+              "install_env": {
+                "type": "string",
+                "group": "/Version Reporting"
+              },
+              "boot_loader": {
+                "type": "string",
+                "group": "/Version Reporting"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Version Reporting"
+        },
+        "manager_options": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Manager"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Database clients to which the OpenSwitch database server should connect or to",
+            "which it should listen, along with options for how these connection should be",
+            "configured.  See the [Manager](Manager) table for more information."
+          ],
+          "group": "/Database Configuration"
+        },
+        "bfd_enable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `true` to enable BFD functionality globally and set it to",
+            "`false` to disable it. BFD is disabled by default."
+          ],
+          "group": "/Configuration/BFD Enable"
+        },
+        "bfd_global_params": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "decay_min_rx": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 255
+                },
+                "doc": [
+                  "An alternate receive interval, in milliseconds, that must be greater than or",
+                  "equal to bfd:min_rx. The implementation switches from bfd:min_rx to",
+                  "bfd:decay_min_rx when there is no obvious incoming data traffic at the",
+                  "interface, to reduce the CPU and bandwidth cost of monitoring an idle interface.",
+                  "This feature may be disabled by setting a value of 0. This feature is reset",
+                  "whenever bfd:decay_min_rx or bfd:min_rx changes."
+                ],
+                "group": "/Configuration/BFD Global Parameters",
+                "emptyValue": "3"
+              },
+              "interval": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 15,
+                  "maxInteger": 300000
+                },
+                "doc": [
+                  "The shortest interval, in milliseconds, at which this BFD session is willing to",
+                  "transmit BFD control messages. Messages will actually be transmitted at a slower",
+                  "rate if the remote endpoint is not willing to receive as quickly as specified.",
+                  "Defaults to 1000."
+                ],
+                "group": "/Configuration/BFD Global Parameters",
+                "emptyValue": "1000"
+              },
+              "min_rx": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 15,
+                  "maxInteger": 300000
+                },
+                "doc": [
+                  "The shortest interval, in milliseconds, at which this BFD session offers to",
+                  "receive BFD control messages. The remote endpoint may choose to send messages at",
+                  "a slower rate. Defaults to 1000."
+                ],
+                "group": "/Configuration/BFD Global Parameters",
+                "emptyValue": "1000"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration/BFD Global Parameters"
+        },
+        "lacp_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "lacp-system-id": {
+                "type": "string",
+                "doc": [
+                  "The LACP system ID of this [Bridge](Bridge).  The system ID of a LACP bond is",
+                  "used to identify itself to its partners.  Must be a nonzero MAC address.",
+                  "Defaults to the bridge Ethernet address if unset."
+                ],
+                "group": "/Configuration/LACP Configurations"
+              },
+              "lacp-system-priority": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "The LACP system priority of this [Bridge](Bridge).  In LACP negotiations, link",
+                  "status decisions are made by the system with the numerically lower priority.",
+                  "Defaults to 65534."
+                ],
+                "group": "/Configuration/LACP Configurations",
+                "emptyValue": "65534"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration/LACP Configurations"
+        },
+        "qos_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "qos_trust": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "cos",
+                    "dscp"
+                  ]
+                },
+                "doc": [
+                  "Specifies the QoS Trust Mode for ports that do not specify their own Trust Mode",
+                  "(see [Port](Port) qos_config column).",
+                  "",
+                  "`none` - no fields are inspected on arriving packets.  The initial local-",
+                  "priority and color meta-data values are taken from PCP 0 entry of the COS Map",
+                  "table (see [QoS_COS_Map_Entry](QoS_COS_Map_Entry)).",
+                  "",
+                  "`cos` - will use the PCP of the outermost 802.1 VLAN tag to index the COS Map",
+                  "entry to initialize the local-priority and color meta-data values of the packet.",
+                  "For untagged packets, the initial local-priority and color meta-data values are",
+                  "taken from PCP 0 entry of the COS Map table (see",
+                  "[QoS_COS_Map_Entry](QoS_COS_Map_Entry)).",
+                  "",
+                  "`dscp` - will use the DSCP value of IP packets to index the DSCP Map entry to",
+                  "initialize the local-priority and color meta-data values of the packet.  For",
+                  "non-IP packets, what meta-data values are assigned is hardware dependent.",
+                  "",
+                  "If the key is not specified, then the system will use 'none'."
+                ],
+                "group": "/QoS configuration"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/QoS configuration"
+        },
+        "qos_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "schedule_profile": {
+                "type": "string",
+                "doc": [
+                  "This key's value contains the [QoS](QoS) [name](QoS.name) that is currently",
+                  "operating in hardware for ports that do not specify their own queue profile",
+                  "configuration.",
+                  "",
+                  "The value may be different than the name in [qos](System.qos) when that schedule",
+                  "profile cannot be supported in hardware.  In this case, this key's value may be",
+                  "the name of the last successfully configured system schedule profile."
+                ],
+                "group": "/QoS Status"
+              },
+              "queue_profile": {
+                "type": "string",
+                "doc": [
+                  "This key's value contains the [Q_Profile](Q_Profile) [name](Q_Profile.name) that",
+                  "is currently operating in hardware for ports that do not specify their own queue",
+                  "profile configuration.",
+                  "",
+                  "The value may be different than the name in [q_profile](Port.q_profile) when",
+                  "that queue profile cannot be supported in hardware.  In this case, this key's",
+                  "value is the name of the last successfully configured system queue profile."
+                ],
+                "group": "/QoS Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Key-value pairs that report the Quality of Service status in hardware for ports",
+            "that do not specify their own configuration."
+          ],
+          "group": "/QoS Status"
+        },
+        "qos_dscp_map_entries": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "QoS_DSCP_Map_Entry"
+            },
+            "min": 0,
+            "max": 64
+          },
+          "doc": [
+            "Contains references to each entry in the global DSCP map used by port trust mode",
+            "DSCP. (see [QoS_DSCP_Map_Entry](QoS_DSCP_Map_Entry))"
+          ],
+          "group": "/QoS configuration"
+        },
+        "qos_cos_map_entries": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "QoS_COS_Map_Entry"
+            },
+            "min": 0,
+            "max": 8
+          },
+          "doc": [
+            "Contains references to each entry in the global COS map used by port trust mode",
+            "COS. (see [QoS_DSCP_Map_Entry](QoS_DSCP_Map_Entry))"
+          ],
+          "group": "/QoS configuration"
+        },
+        "q_profile": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Q_Profile"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the queue profile for ports that do not specify their own queue",
+            "profile (see [Port](Port) q_profile column). When missing, the",
+            "[Q_Profile](Q_Profile) row with [hw_default](Q_Profile.hw_default) true will be",
+            "used."
+          ],
+          "group": "/QoS configuration"
+        },
+        "qos": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "QoS"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the schedule profile for ports that do not specify their own schedule",
+            "profile (see [Port](Port) qos column). When missing, the [QoS](QoS) row with",
+            "[hw_default](Q_Profile.hw_default) true will be used."
+          ],
+          "group": "/QoS configuration"
+        },
+        "acls": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "ACL"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "List of all Access Control Lists (ACLs) in the system.  The existence of the",
+            "list is not an indication that it has been applied."
+          ],
+          "group": "/Database Configuration"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "lldp_tlv_port_desc_enable": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to enable transmission of LLDP Port Description TLV or",
+                  "set it to `false` to disable transmitting it. Default is `enable`."
+                ],
+                "group": "/Configuration/LLDP Configurations",
+                "emptyValue": "true"
+              },
+              "banner_exec": {
+                "type": {
+                  "type": "string",
+                  "maxLength": 4095
+                },
+                "doc": [
+                  "Banner to be displayed on CLI login. Maximum length 4095.",
+                  "",
+                  "No banner by default."
+                ],
+                "group": "/Configuration",
+                "emptyValue": ""
+              },
+              "internal_vlan_policy": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "ascending",
+                    "descending"
+                  ]
+                },
+                "doc": [
+                  "This key indicates order of assignment of internal VLAN ID (ascending or",
+                  "descending).",
+                  "",
+                  "Default option is ascending order."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "ascending"
+              },
+              "cli_session_timeout": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 43200
+                },
+                "doc": [
+                  "This key specifies cli idle session timeout in minutes. Set this value to 0 to",
+                  "disable session timeout.",
+                  "",
+                  "Default value is 30."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "30"
+              },
+              "lldp_enable": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to enable System level LLDP or to `false` to explicitly",
+                  "disable it. Default is `disable`."
+                ],
+                "group": "/Configuration/LLDP Configurations",
+                "emptyValue": "false"
+              },
+              "lldp_tlv_sys_cap_enable": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to enable transmission of LLDP System Capabilities TLV",
+                  "or set it to `false` to disable transmitting it. Default is `enable`."
+                ],
+                "group": "/Configuration/LLDP Configurations",
+                "emptyValue": "true"
+              },
+              "min_internal_vlan": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 4094
+                },
+                "doc": [
+                  "This key specifies a lower bound of the VLAN range, which is being used for",
+                  "internal system purposes.",
+                  "",
+                  "Default value is 1024."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "1024"
+              },
+              "lldp_reinit": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 10
+                },
+                "doc": [
+                  "The amount of time in seconds to wait before performing LLDP initialization on",
+                  "any interface.",
+                  "",
+                  "Default value is 2."
+                ],
+                "group": "/Configuration/LLDP Configurations",
+                "emptyValue": "2"
+              },
+              "max_internal_vlan": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 4094
+                },
+                "doc": [
+                  "This key specifies an upper bound of the VLAN range, which is being used for",
+                  "internal system purposes.",
+                  "",
+                  "Default value is 4094."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "4094"
+              },
+              "lldp_tlv_port_vlan_enable": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to enable transmission of LLDP Port VLAN TLV or set it",
+                  "to `false` to disable transmitting it. Default is `enable`."
+                ],
+                "group": "/Configuration/LLDP Configurations",
+                "emptyValue": "true"
+              },
+              "system_description": {
+                "type": "string",
+                "doc": [
+                  "This key represents the system description."
+                ],
+                "group": "/Configuration/SNMP configuration"
+              },
+              "system_location": {
+                "type": "string",
+                "doc": [
+                  "This key represents the system location."
+                ],
+                "group": "/Configuration/SNMP configuration"
+              },
+              "sftp_server_enable": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to enable SFTP server and to set to `false` to disable",
+                  "it. If not set, SFTP server would be disabled by default."
+                ],
+                "group": "/Configuration/SFTP Server Configurations",
+                "emptyValue": "false"
+              },
+              "udp_bcast_forwarder_enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to enable UDP-Broadcast-Forwarder functionality",
+                  "globally and set it to `false` to disable it. UDP-Broadcast-Forwarder is",
+                  "disabled by default. If the key is missing, the configuration is assumed to be",
+                  "disabled. UDP-Broadcast-Forwarder port level configuration is present in",
+                  "[UDP_Bcast_Forwarder_Server](UDP_Bcast_Forwarder_Server)."
+                ],
+                "group": "/Configuration/UDP Broadcast Forwarder Configurations",
+                "emptyValue": "false"
+              },
+              "system_contact": {
+                "type": "string",
+                "doc": [
+                  "This key represents the system contact."
+                ],
+                "group": "/Configuration/SNMP configuration"
+              },
+              "tftp_server_enable": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to enable TFTP server and set to `false` to disable it.",
+                  "If not set, TFTP server would be enabled."
+                ],
+                "group": "/Configuration/TFTP Server Configurations",
+                "emptyValue": "true"
+              },
+              "acl_log_timer_interval": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 30,
+                  "maxInteger": 300
+                },
+                "doc": [
+                  "This key specifies the interval in seconds of the ACL logging timer.",
+                  "",
+                  "Default value is 300 seconds."
+                ],
+                "group": "/Configuration"
+              },
+              "lldp_tx_interval": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 5,
+                  "maxInteger": 32768
+                },
+                "doc": [
+                  "The interval in seconds at which LLDP status updates are transmitted to",
+                  "neighbors in seconds.",
+                  "",
+                  "Default value is 30 sec."
+                ],
+                "group": "/Configuration/LLDP Configurations",
+                "emptyValue": "30"
+              },
+              "snmp_agent_port": {
+                "type": "string",
+                "doc": [
+                  "The port on which the SNMP agent listens for SNMP requests. The default port is",
+                  "161."
+                ],
+                "group": "/Configuration/SNMP configuration",
+                "emptyValue": "161"
+              },
+              "vrrp_enable": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to enable VRRP functionality globally and set it to",
+                  "`false` to disable it. VRRP is disabled by default."
+                ],
+                "group": "/Configuration/Virtual Router Configurations"
+              },
+              "banner": {
+                "type": {
+                  "type": "string",
+                  "maxLength": 4095
+                },
+                "doc": [
+                  "Banner to be displayed on CLI start. Maximum length 4095.",
+                  "",
+                  "No banner by default."
+                ],
+                "group": "/Configuration",
+                "emptyValue": ""
+              },
+              "tftp_server_secure": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to enable TFTP secure mode and set to `false` to",
+                  "disable it. If not set, TFTP secure mode would be enabled. This config is valid",
+                  "only if TFTP server is enabled."
+                ],
+                "group": "/Configuration/TFTP Server Configurations",
+                "emptyValue": "true"
+              },
+              "lldp_mgmt_addr": {
+                "type": "string",
+                "doc": [
+                  "LLDP Management IP Address to be sent in TLV."
+                ],
+                "group": "/Configuration/LLDP Configurations"
+              },
+              "lldp_tlv_mgmt_addr_enable": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to enable transmission of LLDP Management Address TLV",
+                  "or set it to `false` to disable transmitting it. Default is `enable`."
+                ],
+                "group": "/Configuration/LLDP Configurations",
+                "emptyValue": "true"
+              },
+              "lldp_hold": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 2,
+                  "maxInteger": 10
+                },
+                "doc": [
+                  "The amount of time a receiving device should hold the information sent by your",
+                  "device before discarding it. This variable is used as a multiplier of",
+                  "lldp_tx_interval, to determine the value of TTL that is carried in LLDP frames.",
+                  "",
+                  "Default value is 4."
+                ],
+                "group": "/Configuration/LLDP Configurations",
+                "emptyValue": "4"
+              },
+              "stats-update-interval": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 5000
+                },
+                "doc": [
+                  "Update interval for the statistics, in milliseconds. This option will affect the",
+                  "update of `statistics`, `DHCP-Relay Statistics` columns in the `Port` table,",
+                  "`statistics` column in the `Interface` table.",
+                  "",
+                  "Default value is 5000 ms."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "5000"
+              },
+              "lldp_tlv_sys_name_enable": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to enable transmission of LLDP System Name TLV or set",
+                  "it to `false` to disable transmitting it. Default is `enable`."
+                ],
+                "group": "/Configuration/LLDP Configurations",
+                "emptyValue": "true"
+              },
+              "enable-statistics": {
+                "type": "boolean",
+                "doc": [
+                  "Statistics are disabled by default to avoid overhead in the common case when",
+                  "statistics gathering is not useful.  Set this value to `true` to enable",
+                  "populating the [statistics](System.statistics) column or to `false` to",
+                  "explicitly disable it."
+                ],
+                "group": "/Statistics",
+                "emptyValue": "false"
+              },
+              "lldp_tlv_sys_desc_enable": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to enable transmission of LLDP System Description TLV",
+                  "or set it to `false` to disable transmitting it. Default is `enable`."
+                ],
+                "group": "/Configuration/LLDP Configurations",
+                "emptyValue": "true"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": [
+            "/Configuration",
+            "/Configuration/TFTP Server Configurations",
+            "/Configuration/SFTP Server Configurations",
+            "/Configuration/UDP Broadcast Forwarder Configurations",
+            "/Configuration/Virtual Router Configurations",
+            "/Configuration/LLDP Configurations",
+            "/Configuration/SNMP configuration",
+            "/Statistics",
+            "/Common Columns"
+          ]
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "lldp_last_clear_counters_performed": {
+                "type": "string",
+                "doc": [
+                  "Last time when clear statistic counters was perfomed."
+                ],
+                "group": "/Status/LLDP Status Info"
+              },
+              "lldp_local_system_name": {
+                "type": "string",
+                "doc": [
+                  "System Name currently being advertised by LLDP."
+                ],
+                "group": "/Status/LLDP Status Info"
+              },
+              "lldp_local_system_desc": {
+                "type": "string",
+                "doc": [
+                  "System Description info currently being advertised by LLDP."
+                ],
+                "group": "/Status/LLDP Status Info"
+              },
+              "lldp_local_system_cap": {
+                "type": "string",
+                "doc": [
+                  "System Capabilities currently being advertised by LLDP."
+                ],
+                "group": "/Status/LLDP Status Info"
+              },
+              "lldp_num_clear_counters_requested": {
+                "type": "string",
+                "doc": [
+                  "Number of times clear statistic counters was requested by user."
+                ],
+                "group": "/Status/LLDP Status Info"
+              },
+              "lldp_last_table_change_time": {
+                "type": "string",
+                "doc": [
+                  "Last time when LLDP neighbor table was changed."
+                ],
+                "group": "/Status/LLDP Status Info"
+              },
+              "lldp_last_clear_table_performed": {
+                "type": "string",
+                "doc": [
+                  "Last time when neighbor table was cleared."
+                ],
+                "group": "/Status/LLDP Status Info"
+              },
+              "lldp_num_clear_table_requested": {
+                "type": "string",
+                "doc": [
+                  "Number of times clearing of neighbor table was requested by user."
+                ],
+                "group": "/Status/LLDP Status Info"
+              },
+              "lldp_local_mgmt_ip": {
+                "type": "string",
+                "doc": [
+                  "Management IP Address currently being advertised by LLDP."
+                ],
+                "group": "/Status/LLDP Status Info"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "doc": [
+            "System level status information per service like `LLDP`, etc."
+          ],
+          "group": [
+            "/Status",
+            "/Status/LLDP Status Info"
+          ]
+        },
+        "mgmt_intf": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "name": {
+                "type": "string",
+                "doc": [
+                  "The value for this key is a valid interface name that is to be configured as",
+                  "management interface"
+                ],
+                "group": "/Database Configuration"
+              },
+              "default_gateway": {
+                "type": "string",
+                "doc": [
+                  "The value for this key is default gateway IPv4 address."
+                ],
+                "group": "/Database Configuration"
+              },
+              "ip": {
+                "type": "string",
+                "doc": [
+                  "The value for this key is interface IPv4 address of the management interface."
+                ],
+                "group": "/Database Configuration"
+              },
+              "default_gateway_v6": {
+                "type": "string",
+                "doc": [
+                  "The value for this key is default gateway IPv6 address"
+                ],
+                "group": "/Database Configuration"
+              },
+              "subnet_mask": {
+                "type": "string",
+                "doc": [
+                  "The value for this key is subnet mask of the interface IP of management",
+                  "interface in CIDR format. The valid value range is 1 to 31."
+                ],
+                "group": "/Database Configuration"
+              },
+              "dns_server_2": {
+                "type": "string",
+                "doc": [
+                  "The value for this key is Secondary nameserver IPv4 address."
+                ],
+                "group": "/Database Configuration"
+              },
+              "mode": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "static",
+                    "dhcp"
+                  ]
+                },
+                "doc": [
+                  "The value is static or dhcp based on the mode in which the management ip is to",
+                  "be obtained. Default value is dhcp."
+                ],
+                "group": "/Database Configuration",
+                "emptyValue": "dhcp"
+              },
+              "ipv6": {
+                "type": "string",
+                "doc": [
+                  "The value for this key is IPv6 address of the management interface. Possible",
+                  "value X:X::X:X/M."
+                ],
+                "group": "/Database Configuration"
+              },
+              "dns_server_1": {
+                "type": "string",
+                "doc": [
+                  "The value for this key is Primary nameserver IPv4 address."
+                ],
+                "group": "/Database Configuration"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "This column is a map of string-string pairs Management interface column contains",
+            "the attributes of management interface. The keys are name, mode, ip, subnet",
+            "mask, default gateway, dns server IPv4 addresses. This column holds values that",
+            "are configured by the user."
+          ],
+          "group": "/Database Configuration"
+        },
+        "mgmt_intf_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "dhcp_domain_name": {
+                "type": "string",
+                "doc": [
+                  "The domain name as it was received from dhcp."
+                ],
+                "group": "/Status"
+              },
+              "hostname": {
+                "type": "string",
+                "doc": [
+                  "Hostname the system is configured with. Hostname can be configured through CLI,",
+                  "or specified in DHCP messages. If none of these are available, it defaults to",
+                  "\"switch\"."
+                ],
+                "group": "/Status",
+                "emptyValue": "switch"
+              },
+              "domain_name": {
+                "type": "string",
+                "doc": [
+                  "This key contains the domain name configured for the system. It can be",
+                  "configured by the user or through dhcp messages. If none of these are present",
+                  "the key itself ceases to exist."
+                ],
+                "group": "/Status"
+              },
+              "dhcp_hostname": {
+                "type": "string",
+                "doc": [
+                  "Holds hostname configured by dhcp client."
+                ],
+                "group": "/Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "This column holds the status of the management interface IP parameters. This",
+            "column contains key-value pairs that report the mangement interface IP",
+            "attributes like IP address, subnet, default gateway, primary and secondary name",
+            "server. These values are either statically configured by the user or populated",
+            "by the DHCP client. The keys of this column is same as that of mgmt_intf column."
+          ],
+          "group": "/Status"
+        },
+        "radius_servers": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Radius_Server"
+            },
+            "min": 0,
+            "max": 64
+          },
+          "doc": [
+            "Specifies radius servers configuration. See the [Radius_Server](Radius_Server)",
+            "table for more information."
+          ],
+          "group": "/Database Configuration"
+        },
+        "ecmp_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "resilient_hash_enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Determines whether ECMP hashing preserves traffic flows when ECMP group",
+                  "membership changes. Default is true."
+                ],
+                "group": "/ECMP configuration",
+                "emptyValue": "true"
+              },
+              "enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Determines whether ECMP is enabled in the system. Default is true."
+                ],
+                "group": "/ECMP configuration",
+                "emptyValue": "true"
+              },
+              "hash_dstport_enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Determines whether destination TCP/UDP port participates in ECMP hash",
+                  "calculation. Default is true."
+                ],
+                "group": "/ECMP configuration",
+                "emptyValue": "true"
+              },
+              "hash_srcport_enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Determines whether source TCP/UDP port participates in ECMP hash calculation.",
+                  "Default is true."
+                ],
+                "group": "/ECMP configuration",
+                "emptyValue": "true"
+              },
+              "hash_srcip_enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Determines whether source IP participates in ECMP hash calculation. Default is",
+                  "true."
+                ],
+                "group": "/ECMP configuration",
+                "emptyValue": "true"
+              },
+              "hash_dstip_enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Determines whether destination IP participates in ECMP hash calculation. Default",
+                  "is true."
+                ],
+                "group": "/ECMP configuration",
+                "emptyValue": "true"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/ECMP configuration"
+        },
+        "aaa": {
+          "category": "configuration",
+          "type": {
+            "omitCodeGeneration": true,
+            "valueType": "string",
+            "valueMap": {
+              "radius_auth": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "pap",
+                    "chap"
+                  ]
+                },
+                "doc": [
+                  "Specifies encoding to be used for the user password for radius based",
+                  "authentication. By default `pap` is used."
+                ],
+                "group": "/Database Configuration",
+                "emptyValue": "pap"
+              },
+              "fallback": {
+                "type": "string",
+                "doc": [
+                  "This column used for AAA feature. The valid values for the key 'fallback' are",
+                  "true or false based on the user request for authentication. If fallback=true,",
+                  "fall to local authentication if radius server is not reachable. Default value is",
+                  "`true`"
+                ],
+                "group": "/Database Configuration",
+                "emptyValue": "true"
+              },
+              "radius": {
+                "type": "string",
+                "doc": [
+                  "This column used for AAA feature. The valid values for the key 'radius' are true",
+                  "or false based on the user request for authentication. If radius=true, radius",
+                  "based authentication is enabled. By default authentication is local."
+                ],
+                "group": "/Database Configuration",
+                "emptyValue": "false"
+              },
+              "ssh_publickeyauthentication_enable": {
+                "type": "boolean",
+                "doc": [
+                  "Controls whether ssh public key authentication is enabled. Default is true."
+                ],
+                "group": "/Database Configuration",
+                "emptyValue": "true"
+              },
+              "ssh_passkeyauthentication_enable": {
+                "type": "boolean",
+                "doc": [
+                  "Controls whether ssh password based authentication is enabled. Default is true."
+                ],
+                "group": "/Database Configuration",
+                "emptyValue": "true"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Database Configuration"
+        },
+        "logrotate_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "maxsize": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 200
+                },
+                "doc": [
+                  "Log size (in megabytes), which would trigger rotation. 10 megabytes if not",
+                  "specified"
+                ],
+                "group": "/Logrotate configuration",
+                "emptyValue": "10"
+              },
+              "period": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "hourly",
+                    "daily",
+                    "weekly",
+                    "monthly"
+                  ]
+                },
+                "doc": [
+                  "The user configured period of logrotation. The possible values are",
+                  "'hourly','daily','weekly'or 'monthly'. Default value is 'daily'"
+                ],
+                "group": "/Logrotate configuration",
+                "emptyValue": "daily"
+              },
+              "target": {
+                "type": "string",
+                "doc": [
+                  "The user configured URI of the remote host .The valid value is",
+                  "'tftp://A.B.C.D'.If not specified log files will be rotated locally."
+                ],
+                "group": "/Logrotate configuration"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Logrotate configuration"
+        },
+        "broadview_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "client_ip": {
+                "type": "string",
+                "doc": [
+                  "Specifies BroadView client ip address. This is the IP that BroadView Agent tries",
+                  "to reach out to send async reports. If the value is not configured then default",
+                  "is 127.0.0.1."
+                ],
+                "group": "/BroadView configuration",
+                "emptyValue": "127.0.0.1"
+              },
+              "enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Specifies whether the BroadView feature is enabled on the system. False, if the",
+                  "value is not present."
+                ],
+                "group": "/BroadView configuration",
+                "emptyValue": "false"
+              },
+              "client_port": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "Specifies BroadView client tcp port number. This is the port number along with",
+                  "client_ip that BroadView agent shoud try to reach out to send async reports. If",
+                  "no value is set, the default is 9070."
+                ],
+                "group": "/BroadView configuration",
+                "emptyValue": "9070"
+              },
+              "agent_port": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "Specifies BroadView agent tcp port number. Agent listens on this port for client",
+                  "connections. If no value is set, the default is 8080."
+                ],
+                "group": "/BroadView configuration",
+                "emptyValue": "8080"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/BroadView configuration"
+        },
+        "bufmon_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "collection_period": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1
+                },
+                "doc": [
+                  "Specifies the period of collection in seconds. Five, if the value is not",
+                  "present."
+                ],
+                "group": "/Bufmon configuration",
+                "emptyValue": "5"
+              },
+              "threshold_trigger_rate_limit": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 600
+                },
+                "doc": [
+                  "Specifies maximum number of trigger generated reports per minute. The limit will",
+                  "be averaged and imposed on a per second basis. For example, value of 600 will",
+                  "allow report every 100ms. If no value is set, the default is 60 i.e. once per",
+                  "second."
+                ],
+                "group": "/Bufmon configuration",
+                "emptyValue": "60"
+              },
+              "periodic_collection_enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Specifies whether periodic collection of the counters is enabled. False, if the",
+                  "value is not present."
+                ],
+                "group": "/Bufmon configuration",
+                "emptyValue": "false"
+              },
+              "counters_mode": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "peak",
+                    "current"
+                  ]
+                },
+                "doc": [
+                  "Specifies whether counters should report their current values or peak values",
+                  "since last collection."
+                ],
+                "group": "/Bufmon configuration"
+              },
+              "enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Specifies whether the bufmon feature is enabled on the system. False, if the",
+                  "value is not present."
+                ],
+                "group": "/Bufmon configuration",
+                "emptyValue": "false"
+              },
+              "snapshot_on_threshold_trigger": {
+                "type": "boolean",
+                "doc": [
+                  "Specifies whether counters should be frozen when one of the thresholds is",
+                  "crossed. True, if the value is not present."
+                ],
+                "group": "/Bufmon configuration",
+                "emptyValue": "true"
+              },
+              "threshold_trigger_collection_enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Specifies whether counters should be collected immediately when one of the",
+                  "thresholds is crossed. True, if the value is not present."
+                ],
+                "group": "/Bufmon configuration",
+                "emptyValue": "true"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Bufmon configuration"
+        },
+        "bufmon_info": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "cap_mode_current": {
+                "type": "boolean",
+                "doc": [
+                  "Specifies whether the system is capable of collecting current values of the",
+                  "counters. False, if the value is not present."
+                ],
+                "group": "/Information",
+                "emptyValue": "false"
+              },
+              "cap_snapshot_on_threshold_trigger": {
+                "type": "boolean",
+                "doc": [
+                  "Specifies whether the system is capable of freezing counters values on threshold",
+                  "crossing. False, if the value is not present."
+                ],
+                "group": "/Information",
+                "emptyValue": "false"
+              },
+              "cap_threshold_trigger_collection": {
+                "type": "boolean",
+                "doc": [
+                  "Specifies whether the system is capable of immediately collecting values on",
+                  "threshold crossing. False, if the value is not present."
+                ],
+                "group": "/Information",
+                "emptyValue": "false"
+              },
+              "cap_mode_peak": {
+                "type": "boolean",
+                "doc": [
+                  "Specifies whether the system is capable of collecting peak values of the",
+                  "counters. False, if the value is not present."
+                ],
+                "group": "/Information",
+                "emptyValue": "false"
+              },
+              "last_collection_timestamp": {
+                "type": "integer",
+                "doc": [
+                  "Specifies the timestamp of the last collection in seconds from Jan 1, 1970."
+                ],
+                "group": "/Information"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Information"
+        },
+        "sflow": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "sFlow"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "sFlow(R) configuration."
+          ],
+          "group": "/Configuration"
+        },
+        "auto_provisioning_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "url": {
+                "type": "string",
+                "doc": [
+                  "Specifies the URL that was used to fetch auto-provisioning script. Would not be",
+                  "present if auto-provisioning was not performed."
+                ],
+                "group": "/Database Configuration"
+              },
+              "performed": {
+                "type": "boolean",
+                "doc": [
+                  "Specifies whether auto-provisioning was performed. False if not specified."
+                ],
+                "group": "/Database Configuration",
+                "emptyValue": "false"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Database Configuration"
+        },
+        "ntp_config": {
+          "category": "configuration",
+          "type": {
+            "omitCodeGeneration": true,
+            "valueType": "string",
+            "valueMap": {
+              "authentication_enable": {
+                "type": "boolean",
+                "doc": [
+                  "Determines whether NTP Authentication is enabled in the system. Default is",
+                  "false."
+                ],
+                "group": "/NTP configuration",
+                "emptyValue": "false"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/NTP configuration"
+        },
+        "ntp_status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "uptime": {
+                "type": "string",
+                "doc": [
+                  "Time in hours since the system was last rebooted."
+                ],
+                "group": "/Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "doc": [
+            "This column holds the global status information for NTP."
+          ],
+          "group": "/Status"
+        },
+        "ntp_statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "ntp_pkts_declined": {
+                "type": "string",
+                "doc": [
+                  "Number of packets denied access for any reason."
+                ],
+                "group": "/Statistics/NTP Statistics"
+              },
+              "ntp_pkts_with_older_version": {
+                "type": "string",
+                "doc": [
+                  "Number of packets matching the previous NTP version."
+                ],
+                "group": "/Statistics/NTP Statistics"
+              },
+              "ntp_pkts_with_auth_failed": {
+                "type": "string",
+                "doc": [
+                  "Number of packets not verified as authentic."
+                ],
+                "group": "/Statistics/NTP Statistics"
+              },
+              "ntp_pkts_with_bad_length_or_format": {
+                "type": "string",
+                "doc": [
+                  "Number of packets with invalid length, format or port number."
+                ],
+                "group": "/Statistics/NTP Statistics"
+              },
+              "ntp_pkts_restricted": {
+                "type": "string",
+                "doc": [
+                  "Number of packets restricted for any reason."
+                ],
+                "group": "/Statistics/NTP Statistics"
+              },
+              "ntp_pkts_rate_limited": {
+                "type": "string",
+                "doc": [
+                  "Number of packets discarded due to rate limitation."
+                ],
+                "group": "/Statistics/NTP Statistics"
+              },
+              "ntp_pkts_with_current_version": {
+                "type": "string",
+                "doc": [
+                  "Number of packets matching the current NTP version."
+                ],
+                "group": "/Statistics/NTP Statistics"
+              },
+              "ntp_pkts_kod_responses": {
+                "type": "string",
+                "doc": [
+                  "Number of KoD packets from the server."
+                ],
+                "group": "/Statistics/NTP Statistics"
+              },
+              "ntp_pkts_received": {
+                "type": "string",
+                "doc": [
+                  "Total number of packets received."
+                ],
+                "group": "/Statistics/NTP Statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/Statistics/NTP Statistics"
+        },
+        "syslog_remotes": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Syslog_Remote"
+            },
+            "min": 0,
+            "max": 4
+          },
+          "doc": [
+            "List of syslog servers to which syslog messages will be forwarded.",
+            "[Syslog_Remote](Syslog_Remote)"
+          ],
+          "group": "/Configuration/Syslog Remotes Configurations"
+        },
+        "dhcp_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "v4relay_option82_remote_id": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "ip",
+                    "mac"
+                  ]
+                },
+                "doc": [
+                  "Specifies the remote ID suboption that the switch uses in Option 82 fields added",
+                  "or appended to DHCP client packets. The type of remote ID defines DHCP policy",
+                  "areas in the client requests sent to the DHCP server.",
+                  "",
+                  "`ip` - Specifies the IP address of the interface on which the client DHCP packet",
+                  "enters the switch.",
+                  "",
+                  "`mac` - Specifies the router's MAC address. (The MAC address used is the same",
+                  "MAC address that is assigned to all interfaces configured on the routing",
+                  "switch.)",
+                  "",
+                  "If the key is not specified, configuration is assumed to be \"mac\"."
+                ],
+                "group": "/DHCP Configurations",
+                "emptyValue": "mac"
+              },
+              "v6relay_option79_enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to enable the DHCPv6-Relay Option 79 and set it to",
+                  "`false` otherwise. This configuration is disabled by default."
+                ],
+                "group": "/DHCP Configurations",
+                "emptyValue": "false"
+              },
+              "v4relay_option82_policy": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "drop",
+                    "keep",
+                    "replace"
+                  ]
+                },
+                "doc": [
+                  "Specifies the forwarding policy of DHCP-Relay Option 82.",
+                  "",
+                  "`drop` - Drop an inbound dhcp-client request with an Option 82 field already",
+                  "appended. If no Option 82 fields are present, drop causes the router to add an",
+                  "Option 82 field to dhcp request and forward.",
+                  "",
+                  "`keep` - If the relay agent receives a client request that already has one or",
+                  "more Option 82 fields, keep causes the relay agent to retain such fields and",
+                  "forward the request without adding another Option 82 field. But if the incoming",
+                  "client request does not already have any Option 82 fields, the relay agent",
+                  "appends an Option 82 field and forwards the dhcp request.",
+                  "",
+                  "`replace` - Replace any existing Option 82 fields from downstream relay agents",
+                  "(and/or the originating client) with an Option 82 field for the current relay",
+                  "agent.",
+                  "",
+                  "If the keys is missing, Option 82 configuration is assumed to be disabled."
+                ],
+                "group": "/DHCP Configurations"
+              },
+              "v4relay_hop_count_increment_disabled": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to disable the hop count increment in the relayed DHCP",
+                  "requests and set it to `false` otherwise. This configuration is enabled by",
+                  "default. If the key is missing, the configuration is assumed to be enabled."
+                ],
+                "group": "/DHCP Configurations",
+                "emptyValue": "false"
+              },
+              "v4relay_disabled": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to disable DHCP-Relay functionality globally and set it",
+                  "to `false` to enable it. DHCP-Relay is enabled by default. If the key is",
+                  "missing, the configuration is assumed to be enabled. Though DHCP-Relay",
+                  "configuration is enabled globally, the functionality is effective only after the",
+                  "port level server configuration."
+                ],
+                "group": "/DHCP Configurations",
+                "emptyValue": "false"
+              },
+              "v4relay_option82_enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to enable the DHCP-Relay Option 82 and set it to",
+                  "`false` otherwise. This configuration is disabled by default. If the key is",
+                  "missing, the configuration is assumed to be disabled."
+                ],
+                "group": "/DHCP Configurations",
+                "emptyValue": "false"
+              },
+              "v4relay_option82_validation_enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to validate server response packets and set it to",
+                  "`false` otherwise. This configuration is disabled by default. If the key is",
+                  "missing, the configuration is assumed to be disabled. This configuration is",
+                  "valid only for drop or replace dhcp-relay Option 82 policy."
+                ],
+                "group": "/DHCP Configurations",
+                "emptyValue": "false"
+              },
+              "v6relay_enabled": {
+                "type": "boolean",
+                "doc": [
+                  "Set this value to `true` to enable DHCPv6-Relay functionality globally and set",
+                  "it to `false` to disable it. This configuration is disabled by default. Though",
+                  "DHCPv6-Relay configuration is enabled globally, the functionality is effective",
+                  "only after the port level server configuration."
+                ],
+                "group": "/DHCP Configurations",
+                "emptyValue": "false"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/DHCP Configurations"
+        },
+        "snmp_communities": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32
+            },
+            "min": 0,
+            "max": 10
+          },
+          "doc": [
+            "Community strings to be used by the system when communicating over",
+            "SNMPv1/SNMPv2c."
+          ],
+          "group": "/Configuration"
+        },
+        "copp_statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "total_packets_dropped": {
+                "type": "string",
+                "doc": [
+                  "Total number of protocol packets dropped due to excessive rate."
+                ],
+                "group": "/COPP Statistics"
+              },
+              "total_bytes_passed": {
+                "type": "string",
+                "doc": [
+                  "Total number of protocol bytes delivered to the management CPU."
+                ],
+                "group": "/COPP Statistics"
+              },
+              "total_bytes_dropped": {
+                "type": "string",
+                "doc": [
+                  "Total number of protocol bytes dropped due to excessive rate."
+                ],
+                "group": "/COPP Statistics"
+              },
+              "total_packets_passed": {
+                "type": "string",
+                "doc": [
+                  "Total number of protocol packets delivered to the management CPU."
+                ],
+                "group": "/COPP Statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/COPP Statistics"
+        },
+        "other_info": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "max_acls": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 4294967295
+                },
+                "doc": [
+                  "Total number of ACLs that may be configured in the system."
+                ],
+                "group": "/ACL Limits"
+              },
+              "max_aces_per_acl": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 512
+                },
+                "doc": [
+                  "Total number of ACL entries that may be configured in one ACL."
+                ],
+                "group": "/ACL Limits"
+              },
+              "max_aces": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 4294967295
+                },
+                "doc": [
+                  "Total number of ACL entries that may be configured in the system."
+                ],
+                "group": "/ACL Limits"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/ACL Limits"
+        },
+        "loop_protect_disable_timer": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 604800
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This specifies the time in seconds for which the ports are to be disabled on",
+            "detecting a loop. Default value is `0` i.e the port is disabled indefinitely."
+          ],
+          "group": "/Loop-protect Configuration",
+          "emptyValue": 0
+        },
+        "loop_protect_transmit_interval": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 10
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This specifies the time interval in seconds between successive transmissions of",
+            "loop-protect packets. Default value is `5` seconds."
+          ],
+          "group": "/Loop-protect Configuration",
+          "emptyValue": 5
+        }
+      },
+      "isRoot": true,
+      "maxRows": 1,
+      "title": "OpenSwitch top level configuration.",
+      "doc": [
+        "Configuration for an OpenSwitch system. There must be exactly one record in the",
+        "[System](System) table."
+      ],
+      "groupDoc": {
+        "/Database Configuration": [
+          "These columns primarily configure the OpenSwitch database (`ovsdb-server`), not",
+          "the OpenSwitch switch (`pswitchd`).  The OVSDB database also uses the",
+          "[ssl](System.ssl) settings.",
+          "",
+          "The OpenSwitch switch does read the database configuration to determine remote",
+          "IP addresses to which in-band control should apply."
+        ],
+        "/NTP configuration": [
+          "Specifies the NTP global configuration."
+        ],
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ],
+        "/QoS configuration": [
+          "Specifies QoS (Quality of Service) configuration options that are global or are",
+          "the configured default to use if no per-port override has been specified."
+        ],
+        "/Configuration/BFD Global Parameters": [
+          "Bidirectional Forwarding Detection (BFD) is a protocol, defined in RFC 5880",
+          "intended to detect faults in the bidirectional path between two forwarding",
+          "engines, including physical interfaces, subinterfaces, data link(s), and to the",
+          "extent possible the forwarding engines themselves, with potentially very low",
+          "latency. BFD operates by regularly transmitting BFD control messages at a rate",
+          "negotiated independently in each direction. Each endpoint specifies the rate at",
+          "which it expects to receive control messages, and the rate at which it is",
+          "willing to transmit them."
+        ],
+        "/Loop-protect Configuration": [
+          "Contains global configuration for the Loop-protect feature."
+        ],
+        "/BroadView configuration": [
+          "The parameters in this group are used to configure BroadView agent. Parameter",
+          "enabled is used to enable/disable BroadView. Agent sends asynch reports to the",
+          "application at client_ip and client_port. Parameter agent_port is the port",
+          "number on which agent listens for client connections. The communication on agent",
+          "port is of request - response style."
+        ],
+        "/ECMP configuration": [
+          "Specifies the various ECMP (Equal Cost Multi-Path) configuration options."
+        ],
+        "/Statistics": [
+          "The `statistics` column contains key-value pairs that report statistics about a",
+          "system running OpenSwitch.  These are updated periodically (by default, every 5",
+          "seconds).  Key-value pairs that cannot be determined or that do not apply to a",
+          "platform are omitted."
+        ],
+        "/COPP Statistics": [
+          "Contains key-value pairs that report overall Control Plane Policing statistics",
+          "regarding packets/bytes delivered to the management CPU or packets/bytes dropped",
+          "due to excessive rate."
+        ],
+        "/Version Reporting": [
+          "These columns report the types and versions of the hardware and software running",
+          "OpenSwitch.  We recommend in general that software should test whether specific",
+          "features are supported instead of relying on version number checks.  These",
+          "values are primarily intended for reporting to human administrators."
+        ]
+      }
+    }
+  }
+}

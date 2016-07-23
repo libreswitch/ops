@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/ospf_summary_address.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "OSPF_Summary_Address": {
+      "columns": {
+        "prefix": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 18
+            }
+          },
+          "doc": [
+            "The prefix address in A.B.C.D/M format."
+          ],
+          "group": "/Configuration"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "advertise": {
+                "type": "boolean",
+                "doc": [
+                  "This determines whether to advertise the summary address or not. If value is",
+                  "false then the OSPFv2 router does not advertise this summary address. The",
+                  "default value is true."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "true"
+              },
+              "cost": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 16777214
+                },
+                "doc": [
+                  "The cost of the summary address. The default value is 16777214."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "16777214"
+              },
+              "tag": {
+                "type": {
+                  "type": "string",
+                  "maxLength": 64
+                },
+                "doc": [
+                  "The tag for the summarized prefix."
+                ],
+                "group": "/Configuration"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration"
+        }
+      },
+      "title": "OSPFv2 summarization related configurations"
+    }
+  }
+}

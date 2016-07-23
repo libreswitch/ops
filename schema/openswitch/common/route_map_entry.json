@@ -1,0 +1,432 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/route_map_entry.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Route_Map_Entry": {
+      "columns": {
+        "description": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": 1
+          },
+          "group": "/Global Route Map Entries Configuration"
+        },
+        "action": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "permit",
+                "deny",
+                "any"
+              ]
+            }
+          },
+          "doc": [
+            "There are three types, permit, deny, and any."
+          ],
+          "group": "/Global Route Map Entries Configuration"
+        },
+        "exitpolicy": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "goto",
+                "next"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Rather than normal exiting, route map can continue on processing next route map,",
+            "or goto N route map and continue on processing."
+          ],
+          "group": "/Global Route Map Entries Configuration"
+        },
+        "goto_target": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Route_Map_Entry"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "If exitpolicy is goto, nextpref is the route map to jump to."
+          ],
+          "group": "/Global Route Map Entries Configuration"
+        },
+        "call": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Route_Map_Entry"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "If call command is used, nextrm indicate which route map to goto."
+          ],
+          "group": "/Global Route Map Entries Configuration"
+        },
+        "match_ipv4_prefix_list": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Prefix_List",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Match routes based on IPv4 prefix list."
+          ],
+          "group": "/Global Route Map Entries Configuration"
+        },
+        "match_ipv6_prefix_list": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Prefix_List",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Match routes based on IPv6 prefix list."
+          ],
+          "group": "/Global Route Map Entries Configuration"
+        },
+        "match_community_list": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "BGP_Community_Filter",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Match routes based on community list."
+          ],
+          "group": "/Global Route Map Entries Configuration"
+        },
+        "match_extcommunity_list": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "BGP_Community_Filter",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Match routes based on extended community list."
+          ],
+          "group": "/Global Route Map Entries Configuration"
+        },
+        "match_as_path": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "BGP_ASPath_Filter",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Match routes based on AS path."
+          ],
+          "group": "/Global Route Map Entries Configuration"
+        },
+        "match": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "origin": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "EGP",
+                    "IBGP",
+                    "incomplete"
+                  ]
+                },
+                "doc": [
+                  "Matches BGP routes based on the origin of the specified route. The allowed",
+                  "values are below.",
+                  "",
+                  "1. `EGP` - Indicates that the route is learned through EBGP.",
+                  "1. `IGP` - Indicates that the route is learned through IBGP.",
+                  "1. `incomplete` - Indicates that the origin of route is unknown. This occurs",
+                  "when a route is redistributed into BGP."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "ipv6_next_hop": {
+                "type": "string",
+                "doc": [
+                  "Matches routes based on next hop IPv6 address."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "metric": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 4294967295
+                },
+                "doc": [
+                  "Matches routes with the specific metric value."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "probability": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 100
+                },
+                "doc": [
+                  "Randomly match specified percentage of the routes."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The match rule for route map. Default is deny."
+          ],
+          "group": "/Global Route Map Entries Configuration"
+        },
+        "set": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "origin": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "EGP",
+                    "IBGP",
+                    "incomplete"
+                  ]
+                },
+                "doc": [
+                  "Sets the origin attribute of a local BGP route. The allowed values are below.",
+                  "",
+                  "1. `EGP` - Indicates that the route is learned through EBGP.",
+                  "1. `IGP` - Indicates that the route is learned through IBGP.",
+                  "1. `incomplete` - Indicates that the origin of route is unknown. This occurs",
+                  "when a route is redistributed into BGP."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "extcommunity_soo": {
+                "type": "string",
+                "doc": [
+                  "Sets the site-of-origin extended community of a BGP route. The value is the",
+                  "community attribute in the form AA:NN where AA can be either AS number or IP",
+                  "address and NN is the community identifier."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "weight": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 4294967295
+                },
+                "doc": [
+                  "Sets the weight of a BGP route."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "metric": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 4294967295
+                },
+                "doc": [
+                  "Sets the metric which is used with BGP route advertisement."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "atomic-aggregate": {
+                "type": "boolean",
+                "doc": [
+                  "If set to 'true', upstream routers will be notified that route is aggregated.",
+                  "Default is false."
+                ],
+                "group": "/Global Route Map Entries Configuration",
+                "emptyValue": "false"
+              },
+              "community": {
+                "type": "string",
+                "doc": [
+                  "Sets the community list of the route.The value is community list name."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "as_path_exclude": {
+                "type": "string",
+                "doc": [
+                  "Excludes AS numbers from the AS path. The value is a comma delimited list of",
+                  "autonomous system numbers to be excluded for incoming routes."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "local_preference": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 4294967295
+                },
+                "doc": [
+                  "Sets the BGP local preference and the local preference value of an IBGP route."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "aggregator_as": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 4294967295
+                },
+                "doc": [
+                  "Sets the originating AS of an aggregated route. The value is the Autonomous",
+                  "System  number."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "ipv6_next_hop_global": {
+                "type": "string",
+                "doc": [
+                  "+ Sets the BGP-4",
+                  "+ global IPv6 next hop address. The value is the IPv6 address."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "as_path_prepend": {
+                "type": "string",
+                "doc": [
+                  "Prepends AS numbers to the AS path. The value is a list of AS numbers seperated",
+                  "by a space."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "extcommunity_rt": {
+                "type": "string",
+                "doc": [
+                  "Sets the route target extended community of a BGP route. The value is the",
+                  "community attribute in the form AA:NN where AA can be either AS number or IP",
+                  "address and NN is the community identifier."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The set rule for route map."
+          ],
+          "group": "/Global Route Map Entries Configuration"
+        },
+        "set_community_list_delete": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "BGP_Community_Filter",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Removes communities from the specified community list for BGP route",
+            "advertisements."
+          ],
+          "group": "/Global Route Map Entries Configuration"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/Status"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "title": "Route Map Entry",
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}

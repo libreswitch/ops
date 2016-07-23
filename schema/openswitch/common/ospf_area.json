@@ -1,0 +1,533 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/ospf_area.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "OSPF_Area": {
+      "columns": {
+        "ospf_interfaces": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_Interface"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all the \"OSPF_Interface\" for the OSPFv2 Area, which contains the",
+            "OSPFv2 interface realted configurations, statuses, and statistics."
+          ],
+          "group": "/Configuration"
+        },
+        "area_type": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "default",
+                "stub",
+                "stub_no_summary",
+                "nssa",
+                "nssa_no_summary"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This defines how the external routing and summary lsas for this area will be",
+            "handled. The default value is \"default\"."
+          ],
+          "group": "/Configuration",
+          "emptyValue": "default"
+        },
+        "nssa_translator_role": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "never",
+                "candidate",
+                "always"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "If value is set to \"always\", then NSSA ABR always translates NSSA External (type",
+            "5) LSAs to AS External (type 7) LSAs. If value is set to \"never\", then NSSA ABR",
+            "will not translate NSSA External (type 5) LSAs to AS External (type 7) LSAs. If",
+            "value is set to \"candidate\", then  this ABR router participates in the",
+            "translator election to determine if it will perform the translation duties. If",
+            "this NSSA router is not an ABR, then this option has no effect. The default",
+            "value is \"candidate\"."
+          ],
+          "group": "/Configuration",
+          "emptyValue": "candidate"
+        },
+        "ospf_vlinks": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "OSPF_Vlink"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "keyname": "peer_router_id",
+          "doc": [
+            "The list of all the \"OSPF_Vlink\" for the OSPFv2 Area, which contains the OSPFv2",
+            "Virtual link related configurations."
+          ],
+          "group": "/Configuration"
+        },
+        "ospf_area_summary_addresses": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_Summary_Address"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all OSPFv2 summary aAddresses for this OSPFv2 area. If area range",
+            "addresses are configured, then ABR may advertise summarized prefixes to other",
+            "areas."
+          ],
+          "group": "/Configuration"
+        },
+        "prefix_lists": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "in",
+                "out"
+              ]
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Prefix_List"
+            },
+            "min": 0,
+            "max": 2
+          },
+          "doc": [
+            "The ABR filters the  Type-3 summary-LSAs to or from area using prefix lists."
+          ],
+          "group": "/Configuration"
+        },
+        "ospf_auth_type": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "text",
+                "md5"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The type of OSPFv2 authentication. If not set, the OSPFv2 protocol packets",
+            "excahges are not authenticated."
+          ],
+          "group": "/Configuration"
+        },
+        "router_lsas": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_LSA"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all the Router LSAs."
+          ],
+          "group": "/status"
+        },
+        "network_lsas": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_LSA"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all the Network LSAs."
+          ],
+          "group": "/status"
+        },
+        "abr_summary_lsas": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_LSA"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all the Type 3 ABR Summary LSAs."
+          ],
+          "group": "/status"
+        },
+        "asbr_summary_lsas": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_LSA"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all the Type 4 ASBR Summary LSAs."
+          ],
+          "group": "/status"
+        },
+        "as_nssa_lsas": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_LSA"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all the Type 7 NSSA External LSAs."
+          ],
+          "group": "/status"
+        },
+        "opaque_area_lsas": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_LSA"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all the Area scope Opaque LSAs."
+          ],
+          "group": "/status"
+        },
+        "opaque_link_lsas": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_LSA"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all the Link scope Opaque LSAs."
+          ],
+          "group": "/status"
+        },
+        "intra_area_ospf_routes": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_Route"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all the OSPFv2 intra area routes."
+          ],
+          "group": "/status"
+        },
+        "inter_area_ospf_routes": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_Route"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all the OSPFv2 inter area routes."
+          ],
+          "group": "/status"
+        },
+        "router_ospf_routes": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_Route"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all the OSPFv2 routes to the routers."
+          ],
+          "group": "/status"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "transit_capability": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "enable",
+                    "disable"
+                  ]
+                },
+                "doc": [
+                  "This describes the transit capability for virtual links. The default value is",
+                  "false."
+                ],
+                "group": "/status",
+                "emptyValue": "disable"
+              },
+              "opaque_link_lsas_sum_cksum": {
+                "type": "integer",
+                "doc": [
+                  "The sum of checksums of list of Link scope Opaque LSAs. The default value is 0."
+                ],
+                "group": "/status",
+                "emptyValue": "0"
+              },
+              "asbr_summary_lsas_sum_cksum": {
+                "type": "integer",
+                "doc": [
+                  "The sum of checksums of list of Type 4 ASBR Summary LSAs. The default value is",
+                  "0."
+                ],
+                "group": "/status",
+                "emptyValue": "0"
+              },
+              "full_virtual_nbrs": {
+                "type": "integer",
+                "doc": [
+                  "This describes the number of adjacent virtual neighbors. The default value is 0."
+                ],
+                "group": "/status",
+                "emptyValue": "0"
+              },
+              "stub_router_admin_set": {
+                "type": "boolean",
+                "doc": [
+                  "This describes the status of the stub_router if it is set administratively. The",
+                  "default value is false."
+                ],
+                "group": "/status",
+                "emptyValue": "false"
+              },
+              "spf_last_run_timestamp": {
+                "type": "string",
+                "doc": [
+                  "This describes the time when the last time SPF algorithm had run for this area."
+                ],
+                "group": "/status"
+              },
+              "active_interfaces": {
+                "type": "integer",
+                "doc": [
+                  "This describes the number of active OSPFv2 interfaces in the area. The default",
+                  "value is 0."
+                ],
+                "group": "/status",
+                "emptyValue": "0"
+              },
+              "stub_router_startup": {
+                "type": "boolean",
+                "doc": [
+                  "This describes the status of the stub_router if it is set \"startup\". The default",
+                  "value is false."
+                ],
+                "group": "/status",
+                "emptyValue": "false"
+              },
+              "router_lsas_sum_cksum": {
+                "type": "integer",
+                "doc": [
+                  "The sum of checksums of list of Router LSAs. The default value is 0."
+                ],
+                "group": "/status",
+                "emptyValue": "0"
+              },
+              "stub_router_state_active": {
+                "type": "boolean",
+                "doc": [
+                  "This describes the status of the stub_router. The default value is false."
+                ],
+                "group": "/status",
+                "emptyValue": "false"
+              },
+              "abr_summary_lsas_sum_cksum": {
+                "type": "integer",
+                "doc": [
+                  "The sum of checksums of list of Type 3 ABR Summary LSAs. The default value is 0."
+                ],
+                "group": "/status",
+                "emptyValue": "0"
+              },
+              "NSSA_translator_role": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "enable",
+                    "disable"
+                  ]
+                },
+                "doc": [
+                  "This describes the NSSA translator state. The default value is disable."
+                ],
+                "group": "/status",
+                "emptyValue": "disable"
+              },
+              "full_nbrs": {
+                "type": "integer",
+                "doc": [
+                  "This describes the the number of adjacent neighbors in the area. The default",
+                  "value is 0."
+                ],
+                "group": "/status",
+                "emptyValue": "0"
+              },
+              "opaque_area_lsas_sum_cksum": {
+                "type": "integer",
+                "doc": [
+                  "The sum of checksums of list of  Area scope Opaque LSAs. The default value is 0."
+                ],
+                "group": "/status",
+                "emptyValue": "0"
+              },
+              "network_lsas_sum_cksum": {
+                "type": "integer",
+                "doc": [
+                  "The sum of checksums of list of Network LSAs. The default value is 0."
+                ],
+                "group": "/status",
+                "emptyValue": "0"
+              },
+              "as_nssa_lsas_sum_cksum": {
+                "type": "integer",
+                "doc": [
+                  "The sum of checksums of list of Type 7 NSSA External LSAs. The default value is",
+                  "0."
+                ],
+                "group": "/status",
+                "emptyValue": "0"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/status"
+        },
+        "statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "abr_count": {
+                "type": "integer",
+                "doc": [
+                  "The number of Area Border Routers (ABR) in the area."
+                ],
+                "group": "/statistics"
+              },
+              "asbr_count": {
+                "type": "integer",
+                "doc": [
+                  "The number of autonomous system border routers (ASBR) in the area."
+                ],
+                "group": "/statistics"
+              },
+              "spf_calc": {
+                "type": "integer",
+                "doc": [
+                  "The number of times the SPF calculations has run."
+                ],
+                "group": "/statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/statistics"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "stub_default_cost": {
+                "type": "integer",
+                "doc": [
+                  "The cost metric for the default summary route sent into the stub area. The",
+                  "default value is 1."
+                ],
+                "emptyValue": "1"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          }
+        }
+      },
+      "title": "OSPF Area level configurations",
+      "doc": [
+        "The configurations and other details of and OSPFv2 Area entity."
+      ]
+    }
+  }
+}

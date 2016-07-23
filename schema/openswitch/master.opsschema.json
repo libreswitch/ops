@@ -1,0 +1,293 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "master.opsschema.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "doc": [
+    "# OpenSwitch Configuration Database",
+    "A database with this schema holds the configuration for one OpenSwitch",
+    "system.",
+    "",
+    "The schema is derived from Open vSwitch schema.",
+    "Tables/attributes which are not related to OpenSwitch first open source release",
+    "(OSR1) were removed. Additionally the schema was extended to include OSR1",
+    "features that don't exist in Open vSwitch, as well as information",
+    "specific to a physical switch.",
+    "Going forward, the expectation is to restore the Open vSwitch parts",
+    "of the schema that were removed as we implement additional features.",
+    "",
+    "The top-level configuration is the",
+    "[`System` table](#system-table), which must have exactly one",
+    "record. Records that are not reachable from",
+    "the [`System` table](#system-table) are automatically deleted",
+    "from the database, except for records in a few distinguished",
+    "`root set` tables.",
+    "",
+    "Note that a basic tenet of the OpenSwitch schema is that in the absence of any",
+    "configuration, the default behavior of the OpenSwitch switch is such that",
+    "no data traffic can be accepted or transmitted on any port or interface.",
+    "Any future additions to the OpenSwitch schema must adhere to this principle.",
+    "",
+    "## Common Columns",
+    "Many tables contain two special columns, named `other_config`",
+    "and `external_ids`. These columns have the same form and",
+    "purpose each place that they appear, so we describe them here to save space",
+    "later.",
+    "",
+    "### `other_config`: map of string-string pairs",
+    "Key-value pairs for configuring rarely used features. Supported keys,",
+    "along with the forms taken by their values, are documented individually",
+    "for each table.",
+    "",
+    "### `external_ids`: map of string-string pairs",
+    "Key-value pairs for use by external frameworks that integrate with OpenSwitch,",
+    "rather than by OpenSwitch itself.  System integrators should",
+    "either use the OpenSwitch development mailing list to coordinate on",
+    "common key-value definitions, or choose key names that are likely to be",
+    "unique.  In some cases, where key-value pairs have been defined that are",
+    "likely to be widely useful, they are documented individually for each",
+    "table."
+  ],
+  "tables": {
+    "System": {
+      "$ref": "common/system.json#/tables/System"
+    },
+    "Subsystem": {
+      "$ref": "common/subsystem.json#/tables/Subsystem"
+    },
+    "Bridge": {
+      "$ref": "common/bridge.json#/tables/Bridge"
+    },
+    "VRF": {
+      "$ref": "common/vrf.json#/tables/VRF"
+    },
+    "MSTP_Instance": {
+      "$ref": "common/mstp_instance.json#/tables/MSTP_Instance"
+    },
+    "MSTP_Instance_Port": {
+      "$ref": "common/mstp_instance_port.json#/tables/MSTP_Instance_Port"
+    },
+    "MSTP_Common_Instance": {
+      "$ref": "common/mstp_common_instance.json#/tables/MSTP_Common_Instance"
+    },
+    "MSTP_Common_Instance_Port": {
+      "$ref": "common/mstp_common_instance_port.json#/tables/MSTP_Common_Instance_Port"
+    },
+    "VRRP": {
+      "$ref": "common/vrrp.json#/tables/VRRP"
+    },
+    "VRRP_Track_Entity": {
+      "$ref": "common/vrrp_track_entity.json#/tables/VRRP_Track_Entity"
+    },
+    "Daemon": {
+      "$ref": "common/daemon.json#/tables/Daemon"
+    },
+    "Route_Map": {
+      "$ref": "common/route_map.json#/tables/Route_Map"
+    },
+    "Route_Map_Entry": {
+      "$ref": "common/route_map_entry.json#/tables/Route_Map_Entry"
+    },
+    "BGP_ASPath_Filter": {
+      "$ref": "common/bgp_aspath_filter.json#/tables/BGP_ASPath_Filter"
+    },
+    "Prefix_List": {
+      "$ref": "common/prefix_list.json#/tables/Prefix_List"
+    },
+    "Prefix_List_Entry": {
+      "$ref": "common/prefix_list_entry.json#/tables/Prefix_List_Entry"
+    },
+    "BGP_Community_Filter": {
+      "$ref": "common/bgp_community_filter.json#/tables/BGP_Community_Filter"
+    },
+    "Route": {
+      "$ref": "common/route.json#/tables/Route"
+    },
+    "Nexthop": {
+      "$ref": "common/nexthop.json#/tables/Nexthop"
+    },
+    "BGP_Router": {
+      "$ref": "common/bgp_router.json#/tables/BGP_Router"
+    },
+    "BGP_Neighbor": {
+      "$ref": "common/bgp_neighbor.json#/tables/BGP_Neighbor"
+    },
+    "Recursive_Nexthop": {
+      "$ref": "common/recursive_nexthop.json#/tables/Recursive_Nexthop"
+    },
+    "BGP_Route": {
+      "$ref": "common/bgp_route.json#/tables/BGP_Route"
+    },
+    "BGP_Nexthop": {
+      "$ref": "common/bgp_nexthop.json#/tables/BGP_Nexthop"
+    },
+    "Neighbor": {
+      "$ref": "common/neighbor.json#/tables/Neighbor"
+    },
+    "VLAN": {
+      "$ref": "common/vlan.json#/tables/VLAN"
+    },
+    "Port": {
+      "$ref": "common/port.json#/tables/Port"
+    },
+    "Interface": {
+      "$ref": "common/interface.json#/tables/Interface"
+    },
+    "Flow_Table": {
+      "$ref": "common/flow_table.json#/tables/Flow_Table"
+    },
+    "MCLAG": {
+      "$ref": "common/mclag.json#/tables/MCLAG"
+    },
+    "MCLAG_Remote_Interface": {
+      "$ref": "common/mclag_remote_interface.json#/tables/MCLAG_Remote_Interface"
+    },
+    "Fan": {
+      "$ref": "common/fan.json#/tables/Fan"
+    },
+    "LED": {
+      "$ref": "common/led.json#/tables/LED"
+    },
+    "Temp_sensor": {
+      "$ref": "common/temp_sensor.json#/tables/Temp_sensor"
+    },
+    "Power_supply": {
+      "$ref": "common/power_supply.json#/tables/Power_supply"
+    },
+    "Controller": {
+      "$ref": "common/controller.json#/tables/Controller"
+    },
+    "Manager": {
+      "$ref": "common/manager.json#/tables/Manager"
+    },
+    "SSL": {
+      "$ref": "common/ssl.json#/tables/SSL"
+    },
+    "Radius_Server": {
+      "$ref": "common/radius_server.json#/tables/Radius_Server"
+    },
+    "CLI_Alias": {
+      "$ref": "common/cli_alias.json#/tables/CLI_Alias"
+    },
+    "bufmon": {
+      "$ref": "common/bufmon.json#/tables/bufmon"
+    },
+    "DHCP_Server": {
+      "$ref": "common/dhcp_server.json#/tables/DHCP_Server"
+    },
+    "DHCPSrv_Range": {
+      "$ref": "common/dhcpsrv_range.json#/tables/DHCPSrv_Range"
+    },
+    "DHCPSrv_Static_Host": {
+      "$ref": "common/dhcpsrv_static_host.json#/tables/DHCPSrv_Static_Host"
+    },
+    "DHCPSrv_Option": {
+      "$ref": "common/dhcpsrv_option.json#/tables/DHCPSrv_Option"
+    },
+    "DHCPSrv_Match": {
+      "$ref": "common/dhcpsrv_match.json#/tables/DHCPSrv_Match"
+    },
+    "Logical_Switch": {
+      "$ref": "common/logical_switch.json#/tables/Logical_Switch"
+    },
+    "MAC": {
+      "$ref": "common/mac.json#/tables/MAC"
+    },
+    "BFD_Session": {
+      "$ref": "common/bfd_session.json#/tables/BFD_Session"
+    },
+    "sFlow": {
+      "$ref": "common/sflow.json#/tables/sFlow"
+    },
+    "QoS_DSCP_Map_Entry": {
+      "$ref": "common/qos_dscp_map_entry.json#/tables/QoS_DSCP_Map_Entry"
+    },
+    "QoS_COS_Map_Entry": {
+      "$ref": "common/qos_cos_map_entry.json#/tables/QoS_COS_Map_Entry"
+    },
+    "Q_Profile": {
+      "$ref": "common/q_profile.json#/tables/Q_Profile"
+    },
+    "Q_Profile_Entry": {
+      "$ref": "common/q_profile_entry.json#/tables/Q_Profile_Entry"
+    },
+    "QoS": {
+      "$ref": "common/qos.json#/tables/QoS"
+    },
+    "Queue": {
+      "$ref": "common/queue.json#/tables/Queue"
+    },
+    "NTP_Association": {
+      "$ref": "common/ntp_association.json#/tables/NTP_Association"
+    },
+    "NTP_Key": {
+      "$ref": "common/ntp_key.json#/tables/NTP_Key"
+    },
+    "OSPF_Router": {
+      "$ref": "common/ospf_router.json#/tables/OSPF_Router"
+    },
+    "OSPF_Area": {
+      "$ref": "common/ospf_area.json#/tables/OSPF_Area"
+    },
+    "OSPF_Summary_Address": {
+      "$ref": "common/ospf_summary_address.json#/tables/OSPF_Summary_Address"
+    },
+    "OSPF_Interface": {
+      "$ref": "common/ospf_interface.json#/tables/OSPF_Interface"
+    },
+    "OSPF_Neighbor": {
+      "$ref": "common/ospf_neighbor.json#/tables/OSPF_Neighbor"
+    },
+    "OSPF_NBMA_Neighbor": {
+      "$ref": "common/ospf_nbma_neighbor.json#/tables/OSPF_NBMA_Neighbor"
+    },
+    "OSPF_Vlink": {
+      "$ref": "common/ospf_vlink.json#/tables/OSPF_Vlink"
+    },
+    "OSPF_Route": {
+      "$ref": "common/ospf_route.json#/tables/OSPF_Route"
+    },
+    "OSPF_LSA": {
+      "$ref": "common/ospf_lsa.json#/tables/OSPF_LSA"
+    },
+    "DHCP_Relay_V6_Mcast_Server": {
+      "$ref": "common/dhcp_relay_v6_mcast_server.json#/tables/DHCP_Relay_V6_Mcast_Server"
+    },
+    "DHCP_Relay": {
+      "$ref": "common/dhcp_relay.json#/tables/DHCP_Relay"
+    },
+    "Mirror": {
+      "$ref": "common/mirror.json#/tables/Mirror"
+    },
+    "UDP_Bcast_Forwarder_Server": {
+      "$ref": "common/udp_bcast_forwarder_server.json#/tables/UDP_Bcast_Forwarder_Server"
+    },
+    "Package_Info": {
+      "$ref": "common/package_info.json#/tables/Package_Info"
+    },
+    "Syslog_Remote": {
+      "$ref": "common/syslog_remote.json#/tables/Syslog_Remote"
+    },
+    "SNMP_Trap": {
+      "$ref": "common/snmp_trap.json#/tables/SNMP_Trap"
+    },
+    "SNMPv3_User": {
+      "$ref": "common/snmpv3_user.json#/tables/SNMPv3_User"
+    },
+    "SNMPv3_Context": {
+      "$ref": "common/snmpv3_context.json#/tables/SNMPv3_Context"
+    },
+    "ACL": {
+      "$ref": "common/acl.json#/tables/ACL"
+    },
+    "ACL_Entry": {
+      "$ref": "common/acl_entry.json#/tables/ACL_Entry"
+    },
+    "Notification_Subscriber": {
+      "$ref": "common/notification_subscriber.json#/tables/Notification_Subscriber"
+    },
+    "Notification_Subscription": {
+      "$ref": "common/notification_subscription.json#/tables/Notification_Subscription"
+    }
+  }
+}

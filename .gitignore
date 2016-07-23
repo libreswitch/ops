@@ -11,3 +11,5 @@ schema/vswitch.ovsschema
 /schema/CMakeFiles/
 /schema/Makefile
 /schema/cmake_install.cmake
+/schema/bin/*.pyc
+/schema/lib/*.pyc

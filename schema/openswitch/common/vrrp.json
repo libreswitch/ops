@@ -1,0 +1,557 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/vrrp.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "VRRP": {
+      "columns": {
+        "preempt_disable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `true`, to disable preempt mode. Default value is `false`. In",
+            "the default mode, a Backup router coming up with a higher priority than another",
+            "Backup that is currently operating as Master will take over the Master function.",
+            "When the mode is disabled, the protocol prevents higher-priority Backup from",
+            "taking over the Master operation from a lower-priority Backup. This mode does",
+            "not prevent an Owner router from resuming the Master function after recovering",
+            "from being unavailable. Also, the VR instance must be disabled (that is, set",
+            "\"admin_enable\" to `false`) when setting this field."
+          ],
+          "group": "/Configurations"
+        },
+        "ip_address": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "primary",
+                "source"
+              ]
+            },
+            "value": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 0,
+            "max": 2
+          },
+          "doc": [
+            "Specifies a virtual IPv4 or IPv6 address for the VR instance. For an owner, the",
+            "virtual IP must be one of the IP addresses configured on the interface for that",
+            "VR. For a backup, the virtual IP must match the virtual IP of the owner. The",
+            "owner and the backups using a given virtual IP must all belong to the same",
+            "network or subnet. For IPv6, VR's first address should be link local address.",
+            "After the primary link local IPv6 address is configured on the VR, user can add",
+            "the global IPv6 addresses.  This column, also specifies the interface's IP",
+            "address to designate as the source for VRRP advertisements from the VR. By",
+            "default lowest interface's IP address is used as source for VRRP advertisements.",
+            "Source IP configuration parameter is for IPv4 only. IPv6 doesn't have a source",
+            "IP address configuration parameter. For IPv6, the source IP address is the link-",
+            "local address of the real interface over which the packet is transmitted."
+          ],
+          "group": "/Configurations"
+        },
+        "ip_address_secondary": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Specifies secondary IPv4 or IPv6 addresses for the VRRP group. You must",
+            "configure a primary address before you are able to configure secondary",
+            "addresses."
+          ],
+          "group": "/Configurations"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "init_to_master_last_change": {
+                "type": "integer",
+                "doc": [
+                  "Epoch time of the last change from init to master state."
+                ],
+                "group": "/Status"
+              },
+              "master_router": {
+                "type": "string",
+                "doc": [
+                  "Specifies the IP address of the master router."
+                ],
+                "group": "/Status"
+              },
+              "state_duration": {
+                "type": "string",
+                "doc": [
+                  "The amount of time in seconds since VRRP group moved to this state."
+                ],
+                "group": "/Status"
+              },
+              "master_to_backup_last_change": {
+                "type": "integer",
+                "doc": [
+                  "Epoch time of the last change from master to backup state."
+                ],
+                "group": "/Status"
+              },
+              "backup_to_init_last_change": {
+                "type": "integer",
+                "doc": [
+                  "Epoch time of the last change from backup to init state."
+                ],
+                "group": "/Status"
+              },
+              "backup_to_master_last_change": {
+                "type": "integer",
+                "doc": [
+                  "Epoch time of the last change from backup to master state."
+                ],
+                "group": "/Status"
+              },
+              "state": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "master",
+                    "backup"
+                  ]
+                },
+                "doc": [
+                  "Specifies current state of the VRRP group."
+                ],
+                "group": "/Status"
+              },
+              "init_to_backup_last_change": {
+                "type": "integer",
+                "doc": [
+                  "Epoch time of the last change from init to backup state."
+                ],
+                "group": "/Status"
+              },
+              "mode": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "backup",
+                    "owner",
+                    "uninitialized"
+                  ]
+                },
+                "doc": [
+                  "Specifies mode of the VRRP group. Default value is `unintialized`.",
+                  "",
+                  "`backup` - A router configured in a VR as a Backup to the Owner configured for",
+                  "the same VR. There must be a minimum of one Backup in a VR to support VRRP",
+                  "operation if the Owner fails. Every backup is created with a configurable",
+                  "priority that determines the precedence for becoming the Master of the VR if the",
+                  "Owner or another Backup operating as the Master becomes unavailable.Default",
+                  "backup priority value is `100`.",
+                  "",
+                  "`owner` - The router configured in a VR to own the virtual IP address associated",
+                  "with the VR.(The virtual IP address for the VR must be configured as a real IP",
+                  "address on the interface on which the VR is configured. The Owner is",
+                  "automatically configured with the highest VRRP router priority value `255` in",
+                  "the VR and operates as the Master router for the VR unless it becomes",
+                  "unavailable to the network.",
+                  "",
+                  "`uninitialized` - Default value. The operational mode for the VR entry has not",
+                  "been yet specified. The mode is set to owner or bakcup after an IP address",
+                  "associated for the VR."
+                ],
+                "group": "/Status"
+              },
+              "is_master_local": {
+                "type": "boolean",
+                "doc": [
+                  "Specifies if this router is master. Default value is `false`."
+                ],
+                "group": "/Status"
+              },
+              "master_to_init_last_change": {
+                "type": "integer",
+                "doc": [
+                  "Epoch time of the last change from master to init state."
+                ],
+                "group": "/Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Status"
+        },
+        "statistics": {
+          "category": "statistics",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "master_to_init": {
+                "type": "integer",
+                "doc": [
+                  "Number of times VR state changed from master to init."
+                ],
+                "group": "/Statistics"
+              },
+              "init_to_master": {
+                "type": "integer",
+                "doc": [
+                  "Number of times VR state changed from init to master."
+                ],
+                "group": "/Statistics"
+              },
+              "backup_to_init": {
+                "type": "integer",
+                "doc": [
+                  "Number of times VR state changed from backup to init."
+                ],
+                "group": "/Statistics"
+              },
+              "zero_priority_tx": {
+                "type": "integer",
+                "doc": [
+                  "Number of VRRP advertisement packets sent with the priority field set to",
+                  "0(zero)."
+                ],
+                "group": "/Statistics"
+              },
+              "vrrpv3_advertisement_rx": {
+                "type": "integer",
+                "doc": [
+                  "Number of VRRPv3 advertisement packets received."
+                ],
+                "group": "/Statistics"
+              },
+              "init_to_backup": {
+                "type": "integer",
+                "doc": [
+                  "Number of times VR state changed from init to backup."
+                ],
+                "group": "/Statistics"
+              },
+              "near_failovers": {
+                "type": "integer",
+                "doc": [
+                  "Number of occurences of near failovers on the Backup VRRP routers. This makes",
+                  "visible any difficulties the VRRP routers are having receiving the \"hello\"",
+                  "advertisement from the master router."
+                ],
+                "group": "/Statistics"
+              },
+              "vrrpv2_incompatibility": {
+                "type": "integer",
+                "doc": [
+                  "Number of VRRPv2 incompatible packets discarded."
+                ],
+                "group": "/Statistics"
+              },
+              "mismatched_auth_type_pkts": {
+                "type": "integer",
+                "doc": [
+                  "Number of VRRP packets received with the authentication type not equal to 0",
+                  "(zero, which is no authentication)."
+                ],
+                "group": "/Statistics"
+              },
+              "ip_address_owner_conflicts": {
+                "type": "integer",
+                "doc": [
+                  "Number of packets discarded due to owner IP address conflict."
+                ],
+                "group": "/Statistics"
+              },
+              "zero_priority_rx": {
+                "type": "integer",
+                "doc": [
+                  "Number of VRRP advertisement packets received with the priority field set to",
+                  "0(zero)."
+                ],
+                "group": "/Statistics"
+              },
+              "vrrpv2_advertisement_tx": {
+                "type": "integer",
+                "doc": [
+                  "Number of VRRPv2 advertisement packets sent."
+                ],
+                "group": "/Statistics"
+              },
+              "invalid_group": {
+                "type": "integer",
+                "doc": [
+                  "Number of packets discarded due to invalid group in packet."
+                ],
+                "group": "/Statistics"
+              },
+              "master_to_backup": {
+                "type": "integer",
+                "doc": [
+                  "Number of times VR state changed from master to backup."
+                ],
+                "group": "/Statistics"
+              },
+              "advertise_interval_errors": {
+                "type": "integer",
+                "doc": [
+                  "Number of packets discarded due to advertisement interval mismatch."
+                ],
+                "group": "/Statistics"
+              },
+              "vrrpv2_advertisement_rx": {
+                "type": "integer",
+                "doc": [
+                  "Number of VRRPv2 advertisement packets received."
+                ],
+                "group": "/Statistics"
+              },
+              "vrrpv3_advertisement_tx": {
+                "type": "integer",
+                "doc": [
+                  "Number of VRRPv3 advertisement packets sent."
+                ],
+                "group": "/Statistics"
+              },
+              "mismatched_addr_list_pkts": {
+                "type": "integer",
+                "doc": [
+                  "Number of VRRP packets received wherein the list of VIPs doesn't match the",
+                  "locally configured VIPs for a VR."
+                ],
+                "group": "/Statistics"
+              },
+              "backup_to_master": {
+                "type": "integer",
+                "doc": [
+                  "Number of times VR state changed from backup to master."
+                ],
+                "group": "/Statistics"
+              },
+              "other_reasons": {
+                "type": "integer",
+                "doc": [
+                  "Number of packets discarded due to other reasons."
+                ],
+                "group": "/Statistics"
+              },
+              "advertise_recv_in_init_state": {
+                "type": "integer",
+                "doc": [
+                  "Number of packets discarded due to advertisements recieved in init state."
+                ],
+                "group": "/Statistics"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "ephemeral": true,
+          "group": "/Statistics"
+        },
+        "admin_enable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `true`, to activate the VR instance. Default value is `false`."
+          ],
+          "group": "/Configurations"
+        },
+        "failover": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "enable_with_no_monitoring",
+                "enable_with_monitoring",
+                "disable"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies whether to force the Backup VR operating as Master to relinquish",
+            "ownership of the VR instance. Allowed values are `enable_with_no_monitoring`,",
+            "`enable_with_monitoring`, `disable`. Failover operation involves handing off the",
+            "VR's control of the virtual IP to another VR. Once a failover is enabled, the VR",
+            "begins sending advertisements with priority zero instead of the configured",
+            "priority. When the VR detects a peer VR taking control, it releases control of",
+            "the virtual IP and ceases VR operation until a failback is executed. Failover",
+            "occurs on only a backup VR operating as master. If failover is enabled with",
+            "monitoring option, the VR continues to monitor the virtual IP after ceasing VR",
+            "operation. If the master VR goes down, it then retakes control of the virtual",
+            "IP. Default value is `disable`."
+          ],
+          "group": "/Configurations"
+        },
+        "failback_enable": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `true`, to force the Backup VR to take ownership of the VR",
+            "instance. This only takes effect if the Backup VR instance has a higher priority",
+            "than the current Owner, which is normal VRRP router behavior. Default value is",
+            "`false`."
+          ],
+          "group": "/Configurations"
+        },
+        "timers": {
+          "category": "configuration",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "preempt_delay_time": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 1600
+                },
+                "doc": [
+                  "Specifies a time in seconds that this router will wait before taking control of",
+                  "the virtual IP address that will allow it to route packets. Default is `0`",
+                  "seconds.  In normal VRRP operation, one router(say Router-1) is in the Master",
+                  "state and one router (Router-2) is in the Backup state. Router-1 provides the",
+                  "default gateway for the hosts. If Router-1 goes down for any reason, the Backup",
+                  "router, Router-2, provides the default gateway for the host. When Router-1 comes",
+                  "back on line (fail-back), it takes control of the VIP, and begins sending out",
+                  "VRRP advertisement packets at regular intervals. The backup router receives the",
+                  "VRRP advertisements and transitions to the backup state.  When OSPF is also",
+                  "enabled on the routers and a fail-back event occurs, the master router",
+                  "immediately takes control of the VIP and provides the default gateway",
+                  "functionality. If the OSPF has not converged, the route table in the master",
+                  "router may not be completely populated. When hosts send packets to the default",
+                  "gateway, the master router may not know where to send them and packets may be",
+                  "dropped.  The Preempt Delay Timer allows user to configure a period of time",
+                  "before the VR takes control of the VIP. It doesn't transition to master state",
+                  "until the timer period expires."
+                ],
+                "group": "/Configurations"
+              },
+              "advertise_interval": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 100,
+                  "maxInteger": 40950
+                },
+                "doc": [
+                  "Specifies VRRP hello interval time in milliseconds. Default is `1000`",
+                  "milliseconds."
+                ],
+                "group": "/Configurations"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configurations"
+        },
+        "version": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 2,
+              "maxInteger": 3
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "VRRP protocol version. Default is version `2`. VRRPv3 supports usage of IPv4 and",
+            "IPv6 addresses while VRRPv2 only supports IPv4 addresses."
+          ],
+          "group": "/Configurations"
+        },
+        "priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 255
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The priority value of the VR. Default value is `100`."
+          ],
+          "group": "/Configurations"
+        },
+        "virtual_mac": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "MAC",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the virtual MAC address for the VR that gets added to the MAC table",
+            "when the VR becomes master."
+          ],
+          "group": "/Status"
+        },
+        "track_entities": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRRP_Track_Entity",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 128
+          },
+          "doc": [
+            "Set of VRRP track entities."
+          ],
+          "group": "/Configurations"
+        }
+      },
+      "title": "Virtual Router Redundancy Protocol(VRRP) info",
+      "doc": [
+        "This represents information regarding a VRRP group(or VR instance)."
+      ],
+      "groupDoc": {
+        "/Status": [
+          "VRRP group status items."
+        ],
+        "/Statistics": [
+          "Various statistics related to this VRRP group (or VR instance)."
+        ]
+      }
+    }
+  }
+}

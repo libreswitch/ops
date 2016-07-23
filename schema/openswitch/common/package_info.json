@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/package_info.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Package_Info": {
+      "columns": {
+        "name": {
+          "category": "status",
+          "type": "string",
+          "mutable": false,
+          "doc": [
+            "Name of the package. Example: ops-openvswitch, sed, ops-quagga, openssh etc."
+          ]
+        },
+        "src_type": {
+          "category": "status",
+          "type": "string",
+          "mutable": true,
+          "doc": [
+            "Corresponds to the type of source pointed to by src_url. Depending on the",
+            "src_url, some of the values it can take are - git, https, http, ftp, svn, cvs",
+            "etc."
+          ]
+        },
+        "src_url": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": true,
+          "doc": [
+            "This denotes the download location for the source-code of the package. For",
+            "example: ops-openvswitch: https://git.openswitch.net/openswitch/ops-openvswitch",
+            "sed: http://ftp.gnu.org/gnu/sed/sed-4.2.2.tar.gz"
+          ]
+        },
+        "version": {
+          "category": "status",
+          "type": "string",
+          "mutable": true,
+          "doc": [
+            "If the src_type is a git repository, this will contain the git hash. Otherwise",
+            "it will contain the version string (depending on the package). For example: ops-",
+            "openvswitch: ac19ac49778adf6cf011a3ef6e0675025f1945b5 sed: 4.2.2"
+          ]
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true,
+      "doc": [
+        "Each entry contains metadata related to package which is part of the image"
+      ]
+    }
+  }
+}

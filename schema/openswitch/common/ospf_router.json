@@ -1,0 +1,640 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/ospf_router.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "OSPF_Router": {
+      "columns": {
+        "router_id": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "router_id_val": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 4294967295
+                },
+                "doc": [
+                  "The OSPFv2 router identifier. The router ID for the OSPFv2 instance. The router",
+                  "ID may be an IPv4 address of the router. It can be any arbitrary 32bit number.",
+                  "However it MUST be non-zero and unique within the entire Autonomus System",
+                  "domain."
+                ],
+                "group": "/Configuration"
+              },
+              "router_id_static": {
+                "type": "boolean",
+                "doc": [
+                  "This determines whether the router-ID is configured statically on this router",
+                  "instance or not. The default is false."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "false"
+              }
+            },
+            "min": 0,
+            "max": 2
+          },
+          "group": "/Configuration"
+        },
+        "areas": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "OSPF_Area"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "keyname": "area_id",
+          "doc": [
+            "The list of all the \"OSPF_Area\" for the OSPFv2 router instance, which contains",
+            "the OSPFv2 area related configurations."
+          ],
+          "group": "/Configuration"
+        },
+        "networks": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 18
+            },
+            "value": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "keyname": "network_prefix",
+          "doc": [
+            "The list of all the IPv4 networks configured to run OSPFv2 protocol. The key is",
+            "the network prefix in A.B.C.D/M format."
+          ],
+          "group": "/Configuration"
+        },
+        "distance": {
+          "category": "configuration",
+          "type": {
+            "valueType": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 255
+            },
+            "valueMap": {
+              "all": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 255
+                },
+                "doc": [
+                  "The administrative distance applies to all types of routes if not configured",
+                  "specifically for certain types. The default value is 110."
+                ],
+                "group": "/Configuration",
+                "emptyValue": 110
+              },
+              "inter_area": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 255
+                },
+                "doc": [
+                  "The administrative distance applies to routes of type inter-area. The default is",
+                  "110."
+                ],
+                "group": "/Configuration",
+                "emptyValue": 110
+              },
+              "external": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 255
+                },
+                "doc": [
+                  "The administrative distance applies to routes of type external. The default is",
+                  "110."
+                ],
+                "group": "/Configuration",
+                "emptyValue": 110
+              },
+              "intra_area": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 255
+                },
+                "doc": [
+                  "The administrative distance applies to routes of type intra-area. The default is",
+                  "110."
+                ],
+                "group": "/Configuration",
+                "emptyValue": 110
+              }
+            },
+            "min": 0,
+            "max": 4
+          },
+          "group": "/Configuration"
+        },
+        "default_information": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "always": {
+                "type": "boolean",
+                "doc": [
+                  "The default route must be advertised always, even if the default route doesn't",
+                  "exist in the local system or VRF RIB. The default value is false."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "false"
+              },
+              "default_info_originate": {
+                "type": "boolean",
+                "doc": [
+                  "The router should advertise the default route into the Autonomus System. The",
+                  "default value is false, that is, router should not advertise the default route."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "false"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The configurations related to the default routes advertisement. The router",
+            "should originate an AS-External (type-5) LSA describing a default route into the",
+            "Autonomus Sytem's all external-routing capable areas."
+          ],
+          "group": "/Configuration"
+        },
+        "redistribute": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "connected",
+                "static",
+                "bgp"
+              ]
+            },
+            "min": 0,
+            "max": 3
+          },
+          "doc": [
+            "Redistributes the different types of routes into OSPFv2 network."
+          ],
+          "group": "/Configuration"
+        },
+        "stub_router_adv": {
+          "category": "configuration",
+          "type": {
+            "valueType": {
+              "type": "string"
+            },
+            "valueMap": {
+              "admin_set": {
+                "type": "boolean",
+                "doc": [
+                  "This determines whether the stub router router_lsa advertisement is set",
+                  "administratively. The default value is false."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "false"
+              },
+              "startup": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 5,
+                  "maxInteger": 86400
+                },
+                "doc": [
+                  "This determines whether the router should advertise stub router router_lsa on",
+                  "start-up. The delay, in seconds, is the duration for how long, after the reboot,",
+                  "stub router router_lsa should be advertised."
+                ],
+                "group": "/Configuration"
+              }
+            },
+            "min": 0,
+            "max": 1
+          },
+          "group": "/Configuration"
+        },
+        "passive_interface_default": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This determines whether all interfaces should be set to passive by default. The",
+            "default value is false."
+          ],
+          "group": "/Configuration",
+          "emptyValue": false
+        },
+        "passive_interfaces": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of the passive-interfaces. If \"passive_interface_default\" is set",
+            "\"true\", then this list should be empty."
+          ],
+          "group": "/Configuration"
+        },
+        "active_interfaces": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of the active-interfaces. If \"passive_interface_default\" is set",
+            "\"false\", then this list should be empty."
+          ],
+          "group": "/Configuration"
+        },
+        "spf_calculation": {
+          "category": "configuration",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "spf_holdtime": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 600000
+                },
+                "doc": [
+                  "The minimum hold time, in milliseconds, between the SPF calculation schedules.",
+                  "The SPF hold time itself will be adaptive and increasing and bounded by max wait",
+                  "time. The default value is 1000 milliseconds."
+                ],
+                "group": "/Configuration",
+                "emptyValue": 1000
+              },
+              "spf_max_wait": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 600000
+                },
+                "doc": [
+                  "The the maximum wait time or hold time, in milliseconds, between the SPF",
+                  "calculation schedules. The default value is 10000 milliseconds."
+                ],
+                "group": "/Configuration",
+                "emptyValue": 10000
+              },
+              "spf_delay": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 600000
+                },
+                "doc": [
+                  "The initial delay time, in milliseconds, for SPF calculation schedule. The",
+                  "default value is 200 milliseconds."
+                ],
+                "group": "/Configuration",
+                "emptyValue": 200
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration"
+        },
+        "nbma_nbrs": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "OSPF_NBMA_Neighbor"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "keyname": "nbr_ip_address",
+          "doc": [
+            "The list of all the \"OSPF_NBMA_Neighbor\" for the OSPFv2 router instance, which",
+            "contains the OSPFv2 configurations related to non-broadcast multi-access",
+            "networks."
+          ],
+          "group": "/Configuration"
+        },
+        "lsa_timers": {
+          "category": "configuration",
+          "type": {
+            "valueType": "integer",
+            "valueMap": {
+              "lsa_arrival_interval": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 10,
+                  "maxInteger": 600000
+                },
+                "doc": [
+                  "The minimum interval, in milliseconds, between accepting the same LSA. The",
+                  "default value is 1000 milliseconds."
+                ],
+                "group": "/Configuration",
+                "emptyValue": 1000
+              },
+              "lsa_group_pacing": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 1800
+                },
+                "doc": [
+                  "The LSA group pacing timer. This is the interval, in seconds, between group of",
+                  "LSA being refreshed or maxaged. The default value is 10 seconds."
+                ],
+                "group": "/Configuration",
+                "emptyValue": 10
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "asbr": {
+                "type": "boolean",
+                "doc": [
+                  "The Router is a OSPFv2 Autonomus System Boundary Router (ASBR). The default",
+                  "value is false."
+                ],
+                "group": "/Status",
+                "emptyValue": "false"
+              },
+              "opaque_origination_blocked": {
+                "type": "boolean",
+                "doc": [
+                  "This describes if the Opaque LSA origination is blocked. The default value is",
+                  "false."
+                ],
+                "group": "/Status",
+                "emptyValue": "false"
+              },
+              "spf_hold_multiplier": {
+                "type": "integer",
+                "doc": [
+                  "This is current value of adaptive multiplier of the initial-holdtime and used in",
+                  "determining the hold time. The default value is 1."
+                ],
+                "group": "/Status",
+                "emptyValue": "1"
+              },
+              "capability_restart": {
+                "type": "boolean",
+                "doc": [
+                  "This describes if the device has support for Graceful OSPFv2 Restart. The",
+                  "default value is false."
+                ],
+                "group": "/Status",
+                "emptyValue": "false"
+              },
+              "as_ext_lsas_sum_cksum": {
+                "type": "integer",
+                "doc": [
+                  "The sum of checksum of list of AS External LSAs. The default value is 0."
+                ],
+                "group": "/Status",
+                "emptyValue": "0"
+              },
+              "opaque_as_lsas_sum_cksum": {
+                "type": "integer",
+                "doc": [
+                  "The sum of checksum of list of AS scope Opaque LSAs. The default value is 0."
+                ],
+                "group": "/Status"
+              },
+              "capability_opaque": {
+                "type": "boolean",
+                "doc": [
+                  "This describes if the device has support for Opaque lsa capability. The default",
+                  "value is true."
+                ],
+                "group": "/Status",
+                "emptyValue": "true"
+              },
+              "abr": {
+                "type": "boolean",
+                "doc": [
+                  "The Router is a OSPFv2 Area Border Router (ABR). The default value is false."
+                ],
+                "group": "/Status",
+                "emptyValue": "false"
+              },
+              "opaque_status": {
+                "type": "boolean",
+                "doc": [
+                  "This describes if the device has support for Opaque LSA enabled. The default",
+                  "value is false."
+                ],
+                "group": "/Status",
+                "emptyValue": "false"
+              },
+              "stub_router_support": {
+                "type": "boolean",
+                "doc": [
+                  "This describes if the device has support for stub router advertisement as per",
+                  "RFC 3137. The default value is true."
+                ],
+                "group": "/Status",
+                "emptyValue": "true"
+              },
+              "ospf_rfc1583_compatibility": {
+                "type": "boolean",
+                "doc": [
+                  "This describes if the device has support for rfc1583 compatibility. The default",
+                  "value is true."
+                ],
+                "group": "/Status",
+                "emptyValue": "true"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Status"
+        },
+        "as_ext_lsas": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_LSA"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all the AS External LSAs."
+          ],
+          "group": "/Status"
+        },
+        "opaque_as_lsas": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_LSA"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all the AS scope Opaque_LSAs."
+          ],
+          "group": "/Status"
+        },
+        "ext_ospf_routes": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "OSPF_Route"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "The list of all the ospf external routes."
+          ],
+          "group": "/Status"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "log_adjacency_details": {
+                "type": "boolean",
+                "doc": [
+                  "This determines whether to log changes in adjacency in detail or not. If the",
+                  "flag is not set then only changes to full or regressions are shown. The default",
+                  "value is false."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "false"
+              },
+              "default_metric": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 16777214
+                },
+                "doc": [
+                  "The default cost metric for the redistributed routes. The default value is 20."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "20"
+              },
+              "log_adjacency_changes": {
+                "type": "boolean",
+                "doc": [
+                  "This determines whether to log changes in adjacency or not. The default value is",
+                  "false."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "false"
+              },
+              "ospf_rfc1583_compatible": {
+                "type": "boolean",
+                "doc": [
+                  "This determines whether RFC1583 compatibility mode is enabled or not. If value",
+                  "is false then the path preference algorithm is calculated as per RFC 2328. The",
+                  "default value is false."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "false"
+              },
+              "auto_cost_ref_bw": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 1,
+                  "maxInteger": 4000000
+                },
+                "doc": [
+                  "1.The reference bandwidth, Mbits/second, for default cost calculations. This",
+                  "bandwidth is considered equivalent to an OSPFv2 cost of",
+                  "1. The allowed range is 1 to 4000000 Mbps, that is 1 Mbps to 4000 Gbps. The",
+                  "default value is 40000 Mbps, that is 40 Gbps."
+                ],
+                "group": "/Configuration"
+              },
+              "enable_ospf_opaque_lsa": {
+                "type": "boolean",
+                "doc": [
+                  "This  determines if the OSPFv2 Opaque LSA capability is enabled or not. The",
+                  "default value is false."
+                ],
+                "group": "/Configuration",
+                "emptyValue": "false"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Configuration"
+        }
+      },
+      "title": "An OSPFv2 Router Instance"
+    }
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/flow_table.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Flow_Table": {
+      "columns": {
+        "name": {
+          "type": {
+            "key": "string",
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The table's name.  Set this column to change the name that controllers will",
+            "receive when they request table statistics, e.g. `ovs-ofctl dump-tables`.  The",
+            "name does not affect switch behavior."
+          ]
+        },
+        "flow_limit": {
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "If set, limits the number of flows that may be added to the table. OpenSwitch",
+            "may limit the number of flows in a table for other reasons, e.g. due to hardware",
+            "limitations or for resource availability or performance reasons."
+          ],
+          "group": "/Eviction Policy"
+        },
+        "overflow_policy": {
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "refuse",
+                "evict"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Controls the switch's behavior when an OpenFlow flow table modification request",
+            "would add flows in excess of [flow_limit](Flow_Table.flow_limit).  The supported",
+            "values are:",
+            "",
+            "+ __`refuse`__:   Refuse to add the flow or flows.  This is also the default",
+            "policy when [overflow_policy](Flow_Table.overflow_policy) is unset.",
+            "+ __`evict`__:   Delete a flow chosen according to the algorithm described",
+            "above."
+          ],
+          "group": "/Eviction Policy"
+        },
+        "groups": {
+          "type": {
+            "key": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "When [overflow_policy](Flow_Table.overflow_policy) is `evict`, this controls how",
+            "flows are chosen for eviction when the flow table would otherwise exceed",
+            "[flow_limit](Flow_Table.flow_limit) flows.  Its value is a set of NXM fields or",
+            "sub-fields, each of which takes one of the forms `_field_[]` or",
+            "`_field_[_start_.._end_]`, e.g. `NXM_OF_IN_PORT[]`.  Please see `nicira-ext.h`",
+            "for a complete list of NXM field names.",
+            "",
+            "OpenSwitch ignores any invalid or unknown field specifications.",
+            "",
+            "+ When eviction is not enabled, via",
+            "[overflow_policy](Flow_Table.overflow_policy) or an OpenFlow 1.4",
+            "+ ``table mod,'' this column has no effect."
+          ],
+          "group": "/Eviction Policy"
+        },
+        "external_ids": {
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "title": "OpenFlow table configuration",
+      "doc": [
+        "Configuration for a particular OpenFlow table."
+      ],
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ],
+        "/Eviction Policy": [
+          "OpenSwitch supports limiting the number of flows that may be installed in a flow",
+          "table, via the [flow_limit](Flow_Table.flow_limit) column. When adding a flow",
+          "would exceed this limit, by default OpenSwitch reports an error, but there are",
+          "two ways to configure OpenSwitch to instead delete (``evict'') a flow to make",
+          "room for the new one:",
+          "",
+          "+ Set the [overflow_policy](Flow_Table.overflow_policy) column to `evict`.",
+          "+ Send an OpenFlow 1.4",
+          "+ ``table mod request'' to enable eviction for the flow table (e.g. `ovs-ofctl",
+          "-O OpenFlow14 mod-table br0 0 evict` to enable eviction on flow table 0 of",
+          "bridge `br0`).",
+          "",
+          "When a flow must be evicted due to overflow, the flow to evict is chosen through",
+          "an approximation of the following algorithm.  This algorithm is used regardless",
+          "of how eviction was enabled:",
+          "",
+          "1.  Divide the flows in the table into groups based on the values of the fields",
+          "or subfields specified in the [groups](Flow_Table.groups) column, so that all of",
+          "the flows in a given group have the same values for those fields.  If a flow",
+          "does not specify a given field, that field's value is treated as 0.  If",
+          "[groups](Flow_Table.groups) is empty, then all of the flows in the flow table",
+          "are treated as a single group.",
+          "1.  Consider the flows in the largest group, that is, the group that contains",
+          "the greatest number of flows.  If two or more groups all have the same largest",
+          "number of flows, consider the flows in all of those groups.",
+          "1.  If the flows under consideration have different importance values, eliminate",
+          "from consideration any flows except those with the lowest importance.",
+          "(``Importance,'' a 16-bit integer value attached to each flow, was introduced in",
+          "OpenFlow",
+          "1.4.  Flows inserted with older versions of OpenFlow always have an importance",
+          "of 0.)",
+          "1.  Among the flows under consideration, choose the flow that expires soonest",
+          "for eviction.",
+          "",
+          "The eviction process only considers flows that have an idle timeout or a hard",
+          "timeout.  That is, eviction never deletes permanent flows. (Permanent flows do",
+          "count against [flow_limit](Flow_Table.flow_limit).)"
+        ]
+      }
+    }
+  }
+}

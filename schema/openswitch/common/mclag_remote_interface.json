@@ -1,0 +1,228 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/mclag_remote_interface.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "MCLAG_Remote_Interface": {
+      "columns": {
+        "name": {
+          "category": "status",
+          "type": "string",
+          "mutable": false,
+          "doc": [
+            "Name of the peer interface."
+          ],
+          "group": "/partner information"
+        },
+        "lacp_partner_system_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Peer interface's LACP partner system ID."
+          ],
+          "group": "/partner information"
+        },
+        "lacp_partner_port_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Peer interface's LACP partner port ID."
+          ],
+          "group": "/partner information"
+        },
+        "lacp_partner_key": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Peer interface's LACP partner key."
+          ],
+          "group": "/partner information"
+        },
+        "lacp_partner_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "LACP partner state."
+          ],
+          "group": "/partner link status"
+        },
+        "lacp_actor_system_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Peer interface's LACP actor system ID."
+          ],
+          "group": "/actor information"
+        },
+        "lacp_actor_port_id": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Peer interface's LACP actor port ID."
+          ],
+          "group": "/actor information"
+        },
+        "lacp_actor_key": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Peer interface's LACP actor key."
+          ],
+          "group": "/actor information"
+        },
+        "lacp_actor_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Peer interface's LACP actor state."
+          ],
+          "group": "/actor information"
+        },
+        "lacp_port_priority": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 65535
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "LACP port-priority."
+          ]
+        },
+        "admin_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "up",
+                "down"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The administrative state of the physical network link."
+          ],
+          "group": "/partner link status"
+        },
+        "link_state": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "up",
+                "down"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The observed state of the physical network link. This is ordinarily the link's",
+            "carrier status."
+          ],
+          "group": "/partner link status"
+        },
+        "link_speed": {
+          "category": "status",
+          "type": {
+            "key": "integer",
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The negotiated speed of the physical network link in bits per second. Valid",
+            "values are positive integers greater than 0."
+          ],
+          "group": "/partner link status"
+        },
+        "duplex": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "half",
+                "full"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The duplex mode of the physical network link."
+          ],
+          "group": "/partner link status"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true,
+      "title": "Remote MCLAG information",
+      "doc": [
+        "Each entry contains the information about a physical interface on the peer",
+        "switch which is configured for MCLAG. This information is determined by",
+        "exchanging packets over the ISL link between the MLAG switches."
+      ]
+    }
+  }
+}

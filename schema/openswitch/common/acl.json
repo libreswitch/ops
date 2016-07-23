@@ -1,0 +1,245 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/acl.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "ACL": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "Name of an Access Control List (ACL)."
+          ],
+          "group": "/Access Control List Configuration"
+        },
+        "list_type": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "ipv4"
+              ]
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "Type of an Access Control List  Accepted values: 'ipv4'"
+          ],
+          "group": "/Access Control List Configuration"
+        },
+        "cur_aces": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "ACL_Entry"
+            },
+            "min": 0,
+            "max": 512
+          },
+          "keyname": "sequence_number",
+          "doc": [
+            "The currently configured version of the Access Control List.  Access Control",
+            "Entries (ACE) specified in this version of the ACL are defined in",
+            "[ACL_Entry](ACL_Entry)"
+          ],
+          "group": "/Access Control List Status"
+        },
+        "cfg_aces": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "ACL_Entry"
+            },
+            "min": 0,
+            "max": 512
+          },
+          "keyname": "sequence_number",
+          "doc": [
+            "The desired version of the Access Control List.  Access Control Entries (ACE)",
+            "specified in this version of the ACL are defined in [ACL_Entry](ACL_Entry)"
+          ],
+          "group": "/Access Control List Configuration"
+        },
+        "in_progress_aces": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "ACL_Entry"
+            },
+            "min": 0,
+            "max": 512
+          },
+          "keyname": "sequence_number",
+          "doc": [
+            "The in flight version of the Access Control List.  Access Control Entries (ACE)",
+            "specified in this ACL are defined in [ACL_Entry](ACL_Entry)"
+          ],
+          "group": "/Access Control List Status"
+        },
+        "cfg_version": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The version of the 'cfg_aces' column. This value is incremented by the",
+            "management interface - CLI/REST/Web UI, etc. every time it changes the",
+            "'cfg_aces' value."
+          ],
+          "group": "/Access Control List Configuration"
+        },
+        "in_progress_version": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "The version of the 'in_progress' Access Control List.  This value is copied from",
+            "the cfg_version column when the ACL processing begins. This value is cleared",
+            "when the ACL status is updated to 'applied' or 'rejected.'"
+          ],
+          "group": "/Access Control List Status"
+        },
+        "status": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "code": {
+                "type": "integer",
+                "doc": [
+                  "Numeric error code.  Expected to be 0 when state is 'applied'"
+                ],
+                "group": "/Access Control List Status"
+              },
+              "state": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "in_progress",
+                    "applied",
+                    "rejected",
+                    "canceled"
+                  ]
+                },
+                "doc": [
+                  "Valid values are 'applied', 'in_progress', 'canceled', 'rejected'"
+                ],
+                "group": "/Access Control List Status"
+              },
+              "status_string": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "in_progress",
+                    "applied",
+                    "rejected",
+                    "canceled"
+                  ]
+                },
+                "doc": [
+                  "The status of the last version of 'cfg_aces' column, that has been processed by",
+                  "switchd.  Accepted values are: 'in_progress', 'applied', 'rejected', and",
+                  "'canceled'."
+                ],
+                "group": "/Access Control List Status"
+              },
+              "message": {
+                "type": "string",
+                "doc": [
+                  "Detailed reason for error state.  Expected empty when state is 'applied'"
+                ],
+                "group": "/Access Control List Status"
+              },
+              "version": {
+                "type": "integer",
+                "doc": [
+                  "The version of cfg_aces that corresponds to this status."
+                ],
+                "group": "/Access Control List Status"
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Access Control List Status"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "indexes": [
+        [
+          "name",
+          "list_type"
+        ]
+      ],
+      "title": "Access Control List",
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}

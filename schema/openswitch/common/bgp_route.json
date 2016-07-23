@@ -1,0 +1,476 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/bgp_route.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "BGP_Route": {
+      "columns": {
+        "vrf": {
+          "category": "status",
+          "relationship": "m:1",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VRF"
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "Reference to the VRF to which this route belongs."
+          ],
+          "group": "/BGP Routes"
+        },
+        "prefix": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 49
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "IPv4 or IPv6 destination prefix and mask in the address/mask format. Example",
+            "192.168.0.0/16"
+          ],
+          "group": "/BGP Routes"
+        },
+        "peer": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            }
+          }
+        },
+        "address_family": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "ipv4",
+                "ipv6"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Represents the address family for this entry. Default value is `ipv4`."
+          ],
+          "group": "/BGP Routes",
+          "emptyValue": "ipv4"
+        },
+        "sub_address_family": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "unicast",
+                "multicast",
+                "vpn"
+              ]
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Represents subsequent address family identifier such as unicast, multicast or",
+            "MPLS VPN. Default is `unicast`."
+          ],
+          "group": "/BGP Routes",
+          "emptyValue": "unicast"
+        },
+        "distance": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 255
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Administrative distance for the route entry. Default value is 0."
+          ],
+          "group": "/BGP Routes",
+          "emptyValue": 0
+        },
+        "metric": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "This is the BGP Multi Exit Discriminator (MED) attribute used in best path",
+            "selection. Default value is 0"
+          ],
+          "group": "/BGP Routes",
+          "emptyValue": 0
+        },
+        "weight": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Weight of the BGP route. Default value is 32768"
+          ],
+          "group": "/BGP Routes",
+          "emptyValue": 32768
+        },
+        "flags": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 30,
+              "enum": [
+                "IGP_CHANGED",
+                "DAMPED",
+                "HISTORY",
+                "SELECTED",
+                "VALID",
+                "DMED_CHECK",
+                "DMED_SELECTED",
+                "STALE",
+                "REMOVED",
+                "COUNTED",
+                "MULTIPATH"
+              ]
+            },
+            "min": 0,
+            "max": 13
+          },
+          "doc": [
+            "Flags attibute of the BGP route.",
+            "",
+            "1. `DAMPED` - Suppress routes from being advertised due to flapping.",
+            "1. `HISTORY` - Router does not have a best path for the route based on",
+            "historical information.",
+            "1. `STALE` - Used with nonstop forwarding to indicate that the route is stale",
+            "and needs to be refreshed when the peer is reestablished.",
+            "1. `VALID` - Route has a valid next-hop.",
+            "1. `DMED_CHECK` - Route is evaluated as part of an effort to identify preferred",
+            "entry point into local AS from neighboring autonomous system.",
+            "1. `DMED_SELECTED` - Route is selected as preferred entry point into local AS",
+            "from neighboring autonomous system.",
+            "1. `REMOVED` - Route has been removed from list of advertised routes to",
+            "neighboring autonomous system.",
+            "1. `SELECTED` - Route had been selected as best path to destination prefix.",
+            "1. `COUNTED` - Route has been included in internal prefix list count.",
+            "1. `MULTIPATH` -Route has been included as part of multipath route selection to",
+            "destination prefix.",
+            "1. `IGP_CHANGED` - Set for routes exhanged over iBGP intradomain autonomous",
+            "system networks."
+          ],
+          "group": "/BGP Routes"
+        },
+        "local_pref": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Local preference of the BGP route. Default value is 0."
+          ],
+          "group": "/BGP Routes",
+          "emptyValue": 0
+        },
+        "aggregator_as": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 4294967295
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Originating AS number of the aggregate route. Default value is 0."
+          ],
+          "group": "/BGP Routes",
+          "emptyValue": 0
+        },
+        "protocol_internal": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies whether the route originated locally on the BGP peer. Default value is",
+            "false."
+          ],
+          "group": "/BGP Routes",
+          "emptyValue": false
+        },
+        "protocol_iBGP": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies whether the route was learned through iBGP session. Default value is",
+            "false."
+          ],
+          "group": "/BGP Routes",
+          "emptyValue": false
+        },
+        "aspath": {
+          "category": "status",
+          "type": {
+            "key": "integer",
+            "value": "integer",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Aspath for a BGP route. Aspath is the list of autonomous system numbers of the",
+            "BGP nodes traversed by the route before reaching local node. Aspath contains",
+            "key-value pairs with keys corresponding to the position of the autonomous system",
+            "number in the list of autonomous system numbers and values corresponding to",
+            "autonomous system numbers."
+          ],
+          "group": "/BGP Routes"
+        },
+        "origin": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 30
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Origin of the BGP route. Allowed values are `egp`,`igp`,`incomplete` igp origin",
+            "code specifies whether route entry originated from an Interior Gateway Protocol",
+            "(IGP) and was advertised with a network router configuration command. egp origin",
+            "code specifies whether route entry originated from an Exterior Gateway Protocol",
+            "(EGP). incomplete origin code is assigned to redistributed routes. Default value",
+            "is igp."
+          ],
+          "group": "/BGP Routes",
+          "emptyValue": "igp"
+        },
+        "creation_time": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0
+            }
+          },
+          "doc": [
+            "Time in seconds, at which the route arrived from the neighbor. Value is the",
+            "number of seconds elapsed since epoch. Default value is 0."
+          ],
+          "group": "/BGP Routes",
+          "emptyValue": 0
+        },
+        "aggregator": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 30
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "IP address of the BGP node responsible for route aggregation. Value is empty if",
+            "route is not aggregated."
+          ],
+          "group": "/BGP Routes",
+          "emptyValue": ""
+        },
+        "aggregate": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "True if notification is sent to upstream routers that the route is aggregated.",
+            "Default value is false."
+          ],
+          "group": "/BGP Routes",
+          "emptyValue": false
+        },
+        "community": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Space delimited list of community names for the route. No value means that no",
+            "community names are associated with the route."
+          ],
+          "group": "/BGP Routes",
+          "emptyValue": ""
+        },
+        "ecommunity": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Space delimited list of extended community names for the route. No value means",
+            "that no extended community names are associated with the route."
+          ],
+          "group": "/BGP Routes",
+          "emptyValue": ""
+        },
+        "bgp_nexthops": {
+          "category": "status",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "BGP_Nexthop"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Represents nexthops for this entry. Each entry in the [BGP_Route](BGP_Route) can",
+            "have a reference to one or many(for ECMP) nexthop entries."
+          ],
+          "group": "/BGP Routes"
+        },
+        "path_attributes": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "bgp_loc_pref": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 4294967295
+                },
+                "doc": [
+                  "Local preference path attribute. Used by BGP to influence in the best path",
+                  "selection. Default value is 0."
+                ],
+                "group": "/Path attributes",
+                "emptyValue": "0"
+              },
+              "bgp_origin": {
+                "type": "string",
+                "doc": [
+                  "Indicates whether a route is `IGP`, `EGP` or `incomplete`. Default is",
+                  "incomplete."
+                ],
+                "group": "/Path attributes",
+                "emptyValue": "incomplete"
+              },
+              "bgp_flags": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "",
+                    "history",
+                    "damped",
+                    "multipath",
+                    "valid",
+                    "selected"
+                  ]
+                },
+                "doc": [
+                  "Route status flags. Allowed values are `history`, `damped`,`multipath`,`valid`,",
+                  "`selected` Default value is the empty string."
+                ],
+                "group": "/Path attributes",
+                "emptyValue": ""
+              },
+              "bgp_as_path": {
+                "type": "string",
+                "doc": [
+                  "List of AS path number for a route. Default is the empty string. Example:",
+                  "200,300,400"
+                ],
+                "group": "/Path attributes",
+                "emptyValue": ""
+              }
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Path attributes"
+        }
+      },
+      "indexes": [
+        [
+          "vrf",
+          "prefix",
+          "peer"
+        ]
+      ],
+      "isRoot": true,
+      "title": "BGP Routes Information Base",
+      "doc": [
+        "BGP local RIB."
+      ],
+      "groupDoc": {
+        "/Path attributes": [
+          "The `path_attributes` column contains key-value pairs that represent route",
+          "attributes."
+        ]
+      }
+    }
+  }
+}

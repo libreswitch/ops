@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/notification_subscriber.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Notification_Subscriber": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": "string",
+          "mutable": false,
+          "doc": [
+            "Name of the notification subscriber."
+          ],
+          "group": "/Configuration"
+        },
+        "type": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "ws"
+              ]
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "Notification transport type. For WebSockets the type is \"ws\"."
+          ],
+          "group": "/Configuration"
+        },
+        "notification_subscriptions": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "Notification_Subscription"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "keyname": "name",
+          "doc": [
+            "List of notification subscriptions by name for this subscriber."
+          ],
+          "group": "/Configuration"
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "isRoot": true,
+      "title": "Notification subscriber information"
+    }
+  }
+}

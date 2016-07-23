@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/notification_subscription.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Notification_Subscription": {
+      "columns": {
+        "resource": {
+          "category": "configuration",
+          "type": "string",
+          "mutable": false,
+          "doc": [
+            "URI of the resource being subscribed to for notifications."
+          ],
+          "group": "/Configuration"
+        }
+      },
+      "title": "Notification subscription information"
+    }
+  }
+}

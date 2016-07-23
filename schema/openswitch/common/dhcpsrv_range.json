@@ -1,0 +1,190 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/dhcpsrv_range.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "DHCPSrv_Range": {
+      "columns": {
+        "name": {
+          "category": "configuration",
+          "type": "string",
+          "mutable": false,
+          "doc": [
+            "Identifier for DHCP Server IP address range configuration. This has to be unique",
+            "across all DHCP ranges and across all VRFs."
+          ]
+        },
+        "start_ip_address": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            }
+          },
+          "doc": [
+            "Specifies the start IPv4/IPv6 address of the dynamic IP address range."
+          ]
+        },
+        "end_ip_address": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the end IPv4/IPv6 address of the dynamic IP address range. If not",
+            "specifed, then for IPv4 address family - end ip address would be calculated",
+            "based on the configured netmask for this range or based on the netmask of the",
+            "interface that received the DHCP request and for IPv6 family - end ip address",
+            "would be calculated based on the constructor template configuration."
+          ]
+        },
+        "set_tag": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Sets an alphanumeric label that marks the network so that dhcp options would be",
+            "specified on a per-network basis."
+          ]
+        },
+        "match_tags": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+            "Specifies the list of the tags that would be matched for the incoming DHCP",
+            "request on the interfaces whose IP addresses are in the configured range."
+          ]
+        },
+        "is_static": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Set this value to `true` to assign static IP addresses to DHCP clients that have",
+            "static host configuration. If the value is set to `false`, then the IP addresses",
+            "in this range would be use for dynamic allocation. If not specifed, the IP",
+            "address range would be used for dynamic allocation."
+          ],
+          "emptyValue": false
+        },
+        "lease_duration": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the lease expiry time in minutes. If not specified, default value of",
+            "one hour (60) would be used."
+          ],
+          "emptyValue": 60
+        },
+        "netmask": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 15
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This is used only in IPv4 address ranges configuration. Specifies the netmask",
+            "that would be used for the assigned IP addresses in this range and this would be",
+            "sent to DHCP clients. If end ip address is not configured for this range, then",
+            "end ip address would be chosen based on the netmask. If netmask is not",
+            "specified, then netmask of the switch interface that received the DHCP request",
+            "would be used."
+          ]
+        },
+        "broadcast": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This is used only in IPv4 address ranges configuration. Specifies the broadcast",
+            "address that would be used for the assigned IP addresses in this range and this",
+            "would be sent to DHCP clients. If not specified, broadcast address of the switch",
+            "interface that received the DHCP request would be used."
+          ]
+        },
+        "constructor": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This is used only in IPv6 address ranges configuration. Specifies the interface",
+            "whose IP address would be used to calculate the end IP address for this range.",
+            "This is used when end ip address is not specified."
+          ]
+        },
+        "prefix_len": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 64
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "This is used only in IPv6 address ranges configuration. Specifies the prefix",
+            "length that would be used for the assigned IPv6 addresses. If not specifed,",
+            "default value of 64 would be used."
+          ],
+          "emptyValue": 64
+        }
+      },
+      "indexes": [
+        [
+          "name"
+        ]
+      ],
+      "doc": [
+        "Dynamic IP address ranges configuration of the DHCP server."
+      ]
+    }
+  }
+}

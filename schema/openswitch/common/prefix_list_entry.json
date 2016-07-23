@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/prefix_list_entry.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Prefix_List_Entry": {
+      "columns": {
+        "le": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 128
+            },
+            "min": 0,
+            "max": 1
+          },
+          "group": "/Global Prefix List Entries Configuration"
+        },
+        "ge": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 128
+            },
+            "min": 0,
+            "max": 1
+          },
+          "group": "/Global Prefix List Entries Configuration"
+        },
+        "action": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "permit",
+                "deny",
+                "any"
+              ]
+            }
+          },
+          "doc": [
+            "There are three types, permit, deny, and any."
+          ],
+          "group": "/Global Prefix List Entries Configuration"
+        },
+        "prefix": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 43
+            }
+          },
+          "group": "/Global Prefix List Entries Configuration"
+        },
+        "other_config": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        },
+        "external_ids": {
+          "category": "configuration",
+          "type": {
+            "key": "string",
+            "value": "string",
+            "min": 0,
+            "max": "unlimited"
+          },
+          "group": "/Common Columns"
+        }
+      },
+      "title": "Prefix List Entry",
+      "groupDoc": {
+        "/Common Columns": [
+          "The overall purpose of these columns is described under `Common Columns` at the",
+          "beginning of this document."
+        ]
+      }
+    }
+  }
+}
