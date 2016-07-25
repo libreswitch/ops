@@ -5,6 +5,7 @@
     - [show tech list](#show-tech-list)
     - [show tech feature](#show-tech-feature)
     - [Show tech to file](#show-tech-to-file)
+    - [Terminating the show tech command](#Terminating-the-showtech-command)
 
 ## Display commands
 
@@ -221,3 +222,11 @@ switch# show tech basic localfile stbasic.sta force
 Show Tech output stored in file /tmp/stbasic.sta
 
 ```
+### Terminating the `show tech` command
+To terminate the `show tech` command in the middle of its execution, press one of the following:
+* **Ctrl+c** Terminates the `show tech` command within 10 seconds.
+* **Ctrl+z** Terminates the `show tech` command immediately.
+
+By default, each show command that is called by `show tech` auto terminates in 60 seconds.
+
+Note: Pressing Ctrl+c or Ctrl+z after pressing Ctrl+c can lead to unexpected behavior. You might need to restart VTYSH process.

@@ -6,9 +6,10 @@
     - [Show supported feature list](#show-supported-feature-list)
     - [Show basic diagnostic](#show-basic-diagnostic)
     - [Capture basic diagnostic to file](#capture-basic-diagnostic-to-file)
-    - [References](#references)
+    - [Terminating the diag-dump basic command](#Terminating-the-diag-dump-basic-command)
+- [References](#references)
 
-##Display commands
+## Display commands
 ### Show supported feature list
 #### Syntax
 `diag-dump list`
@@ -130,5 +131,13 @@ None
 ```
 switch# diag-dump lldp basic lldp.txt
 ```
-##References
+### Terminating the `diag-dump basic` command
+To terminate the `diag-dump basic` command in the middle of its execution, press one of the following:
+* **Ctrl+c** Terminates the `diag-dump basic` command within 10 seconds.
+* **Ctrl+z** Terminates the `diag-dump basic` command immediately.
+
+By default `diag-dump basic` command complete its execution within 60 seconds.
+
+Note: Pressing Ctrl+c or Ctrl+z after pressing Ctrl+c can lead to unexpected behavior. You might need to restart VTYSH process.
+## References
 * [Reference 1]`diagnostic_cli.md`
