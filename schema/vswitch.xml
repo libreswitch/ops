@@ -4038,120 +4038,7 @@
           deleted by administrator. Loopback interface IP address is used
           as router-id and source address by many protocols.</dd>
 
-          <dt><code>vxlan</code></dt>
-          <dd>This is a vitual interface of type vxlan (L2 overlay over L3
-          network RFC 7348).</dd>
        </dl>
-      </column>
-
-    </group>
-
-    <group title="Tunnel Options">
-      <p>
-        These options apply to interfaces with <ref column="type"/> of
-        <code>vxlan</code>.
-      </p>
-
-      <p>
-        Each tunnel must be uniquely identified by the combination of <ref
-        column="type"/>, <ref column="options" key="remote_ip"/>, <ref
-        column="options" key="local_ip"/>, and <ref column="options"
-        key="in_key"/>.  If two ports are defined that are the same except one
-        has an optional identifier and the other does not, the more specific
-        one is matched first.  <ref column="options" key="in_key"/> is
-        considered more specific than <ref column="options" key="local_ip"/> if
-        a port defines one and another port defines the other.
-      </p>
-
-      <column name="options" key="remote_ip">
-        <p>Required.  The remote tunnel endpoint, one of:</p>
-
-        <ul>
-          <li>
-            An IPv4 address (not a DNS name), e.g. <code>192.168.0.123</code>.
-            Only unicast endpoints are supported.
-          </li>
-        </ul>
-      </column>
-
-      <column name="options" key="local_ip">
-        <p>
-          The tunnel destination IP that received packets must
-          match.
-        </p>
-        <ul>
-          <li>
-            An IPv4 address (not a DNS name), e.g. <code>192.168.12.3</code>.
-          </li>
-        </ul>
-      </column>
-
-      <column name="options" key="in_key">
-        <p>Optional.  The key that received packets must contain, one of:</p>
-
-        <ul>
-          <li>
-            <code>0</code>.  The tunnel receives packets with no key or with a
-            key of 0.  This is equivalent to specifying no <ref column="options"
-            key="in_key"/> at all.
-          </li>
-          <li>
-            A 32-bit (for GRE).  The tunnel receives only packets with the
-            specified key.
-          </li>
-          <li>
-            A positive 24-bit (VXLAN). The tunnel receives only
-            packets with the specified key.
-          </li>
-        </ul>
-      </column>
-
-      <column name="options" key="out_key">
-        <p>Optional.  The key to be set on outgoing packets, one of:</p>
-
-        <ul>
-          <li>
-            <code>0</code>.  Packets sent through the tunnel will have no key.
-            This is equivalent to specifying no <ref column="options"
-            key="out_key"/> at all.
-          </li>
-          <li>
-            A 32-bit (for GRE).  The tunnel sends packets only with the
-            specified key.
-          </li>
-          <li>
-            A positive 24-bit (VXLAN). The tunnel sends packets only with the
-            specified key.
-          </li>
-        </ul>
-      </column>
-
-      <column name="options" key="key">
-        Optional.  Shorthand to set <code>in_key</code> and
-        <code>out_key</code> at the same time.
-      </column>
-
-      <column name="options" key="tos">
-        Optional.  The value of the ToS bits to be set on the encapsulating
-        packet.  ToS is interpreted as DSCP and ECN bits, ECN part must be
-        zero.  It may also be the word <code>inherit</code>, in which case
-        the ToS will be copied from the inner packet if it is IPv4 or IPv6
-        (otherwise it will be 0).  The ECN fields are always inherited.
-        Default is 0.
-      </column>
-
-      <column name="options" key="ttl">
-        Optional.  The TTL to be set on the encapsulating packet.  It may also
-        be the word <code>inherit</code>, in which case the TTL will be copied
-        from the inner packet if it is IPv4 or IPv6 (otherwise it will be the
-        system default, typically 64).  Default is the system default TTL.
-      </column>
-
-      <column name="options" key="df_default"
-              type='{"type": "boolean"}'>
-        Optional.  If enabled, the Don't Fragment bit will be set on tunnel
-        outer headers to allow path MTU discovery. Default is enabled; set
-        to <code>false</code> to disable.
       </column>
 
     </group>
@@ -6652,29 +6539,6 @@
     </group>
   </table>
 
-  <table name="Logical_Switch">
-      <p>
-        Configuration for identifying overlay networks associated with
-        bridges.
-      </p>
-      <column name="name">
-        Name of the overlay network.
-      </column>
-      <column name="description">
-        Description of the overlay network.
-      </column>
-      <column name="bridge">
-        Reference to a <ref table="Bridge"/> participating in the overlay.
-      </column>
-      <column name="tunnel_key">
-        Tunnel key used in the overlay.
-        For VXLAN, this is the VNI.
-      </column>
-      <column name="from">
-        The entity managing the overlay.
-      </column>
-  </table>
-
   <table name="MAC">
 
     <p>
@@ -6696,8 +6560,7 @@
     </column>
 
     <column name="from">
-      This specifies whether this MAC address has been added by the
-      hw-vtep controller or dynamically learnt from the ASIC.
+      This specifies whether this MAC address has been dynamically learnt from the ASIC.
     </column>
 
     <column name="port">
@@ -6709,6 +6572,7 @@
       If this MAC address is learnt from the tunnel port, then the tunnel_key
       will be populated/configured. Otherwise, for static entries not having
       tunnel as port, this column should not be populated.
+      Reserved for future use.
     </column>
 
     <column name="expiry_time">

@@ -3909,24 +3909,6 @@
             "max": "unlimited"
           }
         },
-        "vlan_tunnel_keys": {
-          "category": "status",
-          "relationship": "reference",
-          "type": {
-            "key": {
-              "type": "integer",
-              "minInteger": 0,
-              "maxInteger": 4094
-            },
-            "value": {
-              "type": "uuid",
-              "refTable": "Logical_Switch",
-              "refType" : "weak"
-            },
-            "min": 0,
-            "max": 4095
-          }
-        },
         "mac": {
           "category": "configuration",
           "type": {
@@ -4426,8 +4408,7 @@
               { "value": "system", "category": "status" },
               { "value": "internal", "category": "configuration" },
               { "value": "vlansubint", "category": "configuration" },
-              { "value": "loopback", "category": "configuration" },
-              { "value": "vxlan", "category": "configuration" }
+              { "value": "loopback", "category": "configuration" }
             ]
           },
           "mutable": false,
@@ -4440,8 +4421,7 @@
                   "system",
                   "internal",
                   "vlansubint",
-                  "loopback",
-                  "vxlan"
+                  "loopback"
                 ]
               ]
             }
@@ -5814,61 +5794,6 @@
        }
      }
     },
-    "Logical_Switch": {
-      "columns":{
-        "name":{
-          "category": "status",
-          "type": "string",
-          "mutable": false
-        },
-        "description":{
-          "category": "status",
-          "type": "string"
-        },
-        "bridge":{
-          "category": "status",
-          "relationship":"m:1",
-          "type": {
-            "key": {
-              "type": "uuid",
-              "refTable": "Bridge",
-              "refType" : "weak"
-            }
-          }
-        },
-        "tunnel_key":{
-          "category": "status",
-          "type": {
-            "key": {
-              "type": "integer",
-              "minInteger": 0,
-              "maxInteger": 4294967295
-            }
-          }
-        },
-        "from": {
-          "category": "configuration",
-          "type": {
-            "key": {
-              "enum": [
-                "set",
-                [
-                  "hw-vtep"
-                ]
-              ],
-              "type": "string"
-            }
-          }
-        }
-      },
-      "indexes": [
-        [
-          "bridge",
-          "tunnel_key"
-        ]
-      ],
-      "isRoot": true
-    },
     "MAC": {
       "columns": {
         "mac_addr": {
@@ -5912,7 +5837,6 @@
               "enum": [
                 "set",
                 [
-                  "hw-vtep",
                   "dynamic"
                 ]
               ],
