@@ -9,12 +9,12 @@ This document describes the design of those improvements to OVSDB. These
 improvements are currently available only for the C IDL.
 
 ## Improvements
-1. [Partial update of map columns](#Partial-update-of-map-columns)
-2. [On-demand fetching of non-monitored data](#On-demand-fetching-of-non-monitored-data)
-3. [Compound indexes](#Compound-Indexes)
-4. [jemalloc Memory Allocator](#jemalloc-Memory-Allocator)
-5. [Priority Sessions](#Priority-Sessions)
-6. [Wait Monitoring and Blocking Waits](#Wait-Monitoring-and-Blocking-Waits)
+1. [Partial update of map columns](#partial-update-of-map-columns)
+2. [On-demand fetching of non-monitored data](#on-demand-fetching-of-non-monitored-data)
+3. [Compound indexes](#compound-indexes)
+4. [jemalloc Memory Allocator](#jemalloc-memory-allocator)
+5. [Priority Sessions](#priority-sessions)
+6. [Wait Monitoring and Blocking Waits](#wait-monitoring-and-blocking-waits)
 
 ## Partial update of map columns
 
@@ -141,10 +141,12 @@ The on-demand column fetch request for a row are traduced to:
 "columns": "<column-name>, uuid"
 }
 ```
+
 Once the request is sent, the row is marked with a pending fetch request. It
 will be pending until the replica is updated with the server reply.
 
 The on-demand column fetch request are traduced to:
+
 ```
 {
 "op": "select",
