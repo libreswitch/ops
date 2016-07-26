@@ -38,7 +38,7 @@ This file contains the default configuration for show tech.
 ### Troubleshooting the configuration
 
 #### Condition
-The `show tech` cli commands result in the following error:
+1.  The `show tech` cli commands result in the following error:
 
 `Failed to obtain Show Tech Configuration`
 
@@ -51,6 +51,17 @@ This "Failed to obtain Show Tech Configuration" error can appear in the followin
 1. Ensure that the `ops_showtech.yaml file` is present in its path (/etc/openswitch/supportability/ops_showtech.yaml).
 2. Verify that the ops_showtech.yaml configuration file is a valid yaml file, using the  yaml lint tools.
 3. Verify that the structure of the configuration is valid.  Refer [here](/documents/user/show-tech_design#show-tech-configuration-yaml-file) for structure information and examples.
+
+#### Condition
+2. The `show event` command within `show tech` has timed out.
+
+#### Cause
+There is a time limit of 60 seconds for each command within show tech, on exceeding that, the command will time out.
+When switch contains too many event logs and show tech is executed via a telnet connection, there is a chance for `show event` command to time out.
+
+#### Remedy
+1. Use a ssh connection to access CLI and execute `show tech`.
+2. Use the command `show tech localfile <filename>`
 
 ## CLI
 
