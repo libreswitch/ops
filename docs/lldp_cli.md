@@ -2,7 +2,7 @@ LLDP Commands
 ======
 ## Contents
 
-- [LLDP Configuration Commands](#lldp-configuration-commands)
+- [LLDP configuration commands](#lldp-configuration-commands)
 	- [Enable LLDP](#enable-lldp)
 	- [Disable LLDP](#disable-lldp)
 	- [Clear LLDP counters](#clear-lldp-counters)
@@ -11,8 +11,8 @@ LLDP Commands
 	- [Set LLDP holdtime to default](#set-lldp-holdtime-to-default)
 	- [Set LLDP reinit delay](#set-lldp-reinit-delay)
 	- [Set LLDP reinit delay to default](#set-lldp-reinit-delay-to-default)
-	- [Set Management IP address](#set-management-ip-address)
-	- [Remove Management IP address](#remove-management-ip-address)
+	- [Set management IP address](#set-management-ip-address)
+	- [Remove management IP address](#remove-management-ip-address)
 	- [Select TLVs](#select-tlvs)
 	- [Remove TLVs](#remove-tlvs)
 	- [Set LLDP timer](#set-lldp-timer)
@@ -21,22 +21,23 @@ LLDP Commands
 	- [Disable LLDP transmission](#disable-lldp-transmission)
 	- [Enable LLDP reception](#enable-lldp-reception)
 	- [Disable LLDP reception](#disable-lldp-reception)
-- [LLDP Show Commands](#lldp-show-commands)
-	- [Show LLDP Configuration](#show-lldp-configuration)
+- [LLDP show commands](#lldp-show-commands)
+	- [Show LLDP configuration](#show-lldp-configuration)
 	- [Show LLDP TLV](#show-lldp-tlv)
-	- [Show LLDP Neighbor information](#show-lldp-neighbor-information)
+	- [Show LLDP neighbor information](#show-lldp-neighbor-information)
 	- [Show LLDP neighbor information for the interface](#show-lldp-neighbor-information-for-the-interface)
-	- [Show LLDP Statistics](#show-lldp-statistics)
+	- [Show LLDP statistics](#show-lldp-statistics)
 	- [Show LLDP statistics for the interface](#show-lldp-statistics-for-the-interface)
 	- [Show LLDP local device information](#show-lldp-local-device-information)
 
-## LLDP Configuration Commands
+## LLDP configuration commands
+
 All LLDP configuration commands except `lldp transmission` and `lldp reception` work in config context.
 ### Enable LLDP
 #### Syntax
 `lldp enable`
 #### Description
-This command enables the LLDP (Link Layer Discovery Protocol) feature in the device.
+This command enables the LLDP (Link Layer Discovery Protocol) feature in the device. By default, LLDP is enabled on the device.
 #### Authority
 All users.
 #### Parameters
@@ -151,7 +152,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# no lldp reinit
 ```
 
-### Set Management IP address
+### Set management IP address
 #### Syntax
 `lldp management-address ( <ipv4_address> | <ipv6_address>)`
 #### Description
@@ -171,7 +172,7 @@ ops-as5712# configure terminal
 ops-as5712(config)# lldp management-address 16.93.49.9
 ops-as5712(config)# lldp management-address 2001:db8:85a3::8a2e:370:7334
 ```
-### Remove Management IP address
+### Remove management IP address
 #### Syntax
 `no lldp management-address`
 #### Description
@@ -344,8 +345,8 @@ ops-as5712(config)# interface 1
 ops-as5712(config-if)# no lldp receive
 ```
 
-## LLDP Show Commands
-### Show LLDP Configuration
+## LLDP show commands
+### Show LLDP configuration
 #### Syntax
 `show lldp configuration`
 #### Description
@@ -409,7 +410,7 @@ System capabilities
 System description
 System name
 ```
-### Show LLDP Neighbor information
+### Show LLDP neighbor information
 #### Syntax
 `show lldp neighbor-info`
 #### Description
