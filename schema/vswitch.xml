@@ -7119,10 +7119,10 @@
       derived from the first interface in alphabetical order.
     </column>
 
-    <column name="agent_addr_family" emptyValue="IPv4">
+    <column name="agent_addr_family" emptyValue="ipv4">
       Address type of agent address reported. If agent interface has both
       IPv4 and IPv6 address configured, then this column selects which address
-      will be used. Defaults to IPv4.
+      will be used. Defaults to ipv4.
     </column>
 
     <column name="external_ids"/>
