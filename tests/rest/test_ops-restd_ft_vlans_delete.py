@@ -89,10 +89,6 @@ class DeleteNonExistentVlan(OpsVsiTest):
             "Response status received: %s\n" % response_status
         info("Response status received: \"%s\"\n" % response_status)
 
-        assert response_data is "", \
-            "Response data received: %s\n" % response_data
-        info("Response data received: %s\n" % response_data)
-
         info("########## Executing DELETE for %s DONE "
              "##########\n" % self.vlan_path)
 
