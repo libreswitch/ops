@@ -4,18 +4,18 @@ OpenSwitch software is compatible with the following switch platforms:
 
 | Vendor | Model | Description | Switch Silicon | CPU Type | Memory | Storage |
 |--------|-------|-------------|----------------|----------|--------|---------|
-| HPE Altoline 5712 | (SKU: JL167A) | 48 10GbE SFP+, 6 40GbE QSFP Front-to-Back | Broadcom Trident2 BCM56854 | x86 | 8GB | 8GB micro SD |
-| HPE Altoline 5712 | (SKU: JL168A) | 48 10GbE SFP+, 6 40GbE QSFP Back-to-Front | Broadcom Trident2 BCM56854 | x86 | 8GB | 8GB micro SD |
-| HPE Altoline 6712 | (SKU: JL165A) | 32 40GbE QSFP+ Front-to-Back | Broadcom Trident2 BCM56850 | x86 | 8GB | 16GB micro SD |
-| HPE Altoline 6712 | (SKU: JL166A) | 32 40GbE QSFP+ Back-to-Front | Broadcom Trident2 BCM56850 | x86 | 8GB | 16GB micro SD |
+| HPE Altoline 5712/6920 | (SKU: JL167A) | 48 10GbE SFP+, 6 40GbE QSFP Front-to-Back | Broadcom Trident2 BCM56854 | x86 | 8GB | 8GB micro SD |
+| HPE Altoline 5712/6920 | (SKU: JL168A) | 48 10GbE SFP+, 6 40GbE QSFP Back-to-Front | Broadcom Trident2 BCM56854 | x86 | 8GB | 8GB micro SD |
+| HPE Altoline 6712/6940 | (SKU: JL165A) | 32 40GbE QSFP+ Front-to-Back | Broadcom Trident2 BCM56850 | x86 | 8GB | 16GB micro SD |
+| HPE Altoline 6712/6940 | (SKU: JL166A) | 32 40GbE QSFP+ Back-to-Front | Broadcom Trident2 BCM56850 | x86 | 8GB | 16GB micro SD |
 | HPE Altoline 6960 | (SKU: JL279A) | 32 100GbE QSFP28 Front-to-Back | Broadcom Tomahawk BCM56960 | x86 | 8GB | 32GB micro SD |
 | HPE Altoline 6960 | (SKU: JL280A) | 32 100GbE QSFP28 Back-to-Front | Broadcom Tomahawk BCM56960 | x86 | 8GB | 32GB micro SD |
-| Edge-Core | 5712-54X-O-AC-F | 48 10GbE SFP+, 6 40GbE QSFP Front-to-Back | Broadcom Trident2 BCM56854 | x86 | 8GB | 8GB micro SD |
-| Edge-Core | 5712-54X-O-AC-B | 48 10GbE SFP+, 6 40GbE QSFP Back-to-Front | Broadcom Trident2 BCM56854 | x86 | 8GB | 8GB micro SD |
-| Edge-Core | 6712-32X-O-AC-F | 32 40GbE QSFP+ Front-to-Back | Broadcom Trident2 BCM56850 | x86 | 8GB | 16GB micro SD |
-| Edge-Core | 6712-32X-O-AC-B | 32 40GbE QSFP+ Back-to-Front | Broadcom Trident2 BCM56850 | x86 | 8GB | 16GB micro SD |
-| Edge-Core | 7712-32X-O-AC-F | 32 100GbE QSFP28 Front-to-Back | Broadcom Tomahawk BCM56960 | x86 | 8GB | 32GB micro SD |
-| Edge-Core | 7712-32X-O-AC-B | 32 100GbE QSFP28 Back-to-Front | Broadcom Tomahawk BCM56960 | x86 | 8GB | 32GB micro SD |
+| Edge-Core AS5712-54X | 5712-54X-O-AC-F | 48 10GbE SFP+, 6 40GbE QSFP Front-to-Back | Broadcom Trident2 BCM56854 | x86 | 8GB | 8GB micro SD |
+| Edge-Core AS5712-54X | 5712-54X-O-AC-B | 48 10GbE SFP+, 6 40GbE QSFP Back-to-Front | Broadcom Trident2 BCM56854 | x86 | 8GB | 8GB micro SD |
+| Edge-Core AS6712-32X | 6712-32X-O-AC-F | 32 40GbE QSFP+ Front-to-Back | Broadcom Trident2 BCM56850 | x86 | 8GB | 16GB micro SD |
+| Edge-Core AS6712-32X | 6712-32X-O-AC-B | 32 40GbE QSFP+ Back-to-Front | Broadcom Trident2 BCM56850 | x86 | 8GB | 16GB micro SD |
+| Edge-Core AS7712-32X | 7712-32X-O-AC-F | 32 100GbE QSFP28 Front-to-Back | Broadcom Tomahawk BCM56960 | x86 | 8GB | 32GB micro SD |
+| Edge-Core AS7712-32X | 7712-32X-O-AC-B | 32 100GbE QSFP28 Back-to-Front | Broadcom Tomahawk BCM56960 | x86 | 8GB | 32GB micro SD |
 
 
 ## Transceiver compatibility
