@@ -3,8 +3,8 @@ set(metaschema "${CMAKE_CURRENT_SOURCE_DIR}/ops.metaschema.json")
 
 # Pytnon scripts
 file(GLOB python_scripts
-	${CMAKE_CURRENT_SOURCE_DIR}/bin/*.py
-	${CMAKE_CURRENT_SOURCE_DIR}/lib/*.py
+	${CMAKE_SOURCE_DIR}/bin/*.py
+	${CMAKE_SOURCE_DIR}/lib/*.py
 )
 
 # Add the local python libraries to the path
@@ -38,7 +38,7 @@ function(generate_database_schema)
 	set(xml "${CMAKE_CURRENT_BINARY_DIR}/${output_dbname}.xml")
 	set(empty_values_header "${CMAKE_CURRENT_BINARY_DIR}/${dbname}_empty_values.h")
 
-	file(GLOB json_schemas
+	file(GLOB_RECURSE json_schemas
 		${CMAKE_CURRENT_SOURCE_DIR}/common/*.json
 	)
 
@@ -52,7 +52,7 @@ function(generate_database_schema)
 	)
 
 	add_custom_target(generate-${dbname}-dbschema DEPENDS ${unified_schema})
-	add_dependencies(ovsschema generate-${dbname}-dbschema)
+	add_dependencies(database-schema generate-${dbname}-dbschema)
 
 	add_custom_command(
 		OUTPUT ${ovsschema}
@@ -70,7 +70,7 @@ function(generate_database_schema)
 		DEPENDS ${ovsschema}
 			${empty_values_header}
 	)
-	add_dependencies(ovsschema generate-${dbname}-extschema)
+	add_dependencies(database-schema generate-${dbname}-extschema)
 
 	install(FILES ${empty_values_header} DESTINATION include)
 	install(FILES ${unified_schema} DESTINATION share/openvswitch)
@@ -79,4 +79,3 @@ function(generate_database_schema)
 	install(FILES ${xml} DESTINATION share/openvswitch OPTIONAL)
 
 endfunction(generate_database_schema)
-

@@ -1,0 +1,567 @@
+#!/usr/bin/env python
+
+# Copyright (C) 2016 Hewlett Packard Enterprise Development LP
+#
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  not use this file except in compliance with the License. You may obtain
+#  a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+
+
+import copy
+import json
+
+from argparse import ArgumentParser
+from collections import OrderedDict
+from plantuml import (PlantUML, PlantUMLConnectionError,
+                      PlantUMLError, PlantUMLHTTPError)
+
+
+DIAGRAM_FOOTER = '''
+hide circle\n
+hide members\n
+skinparam monochrome true\n
+legend right\n
+continuos line - <b>strong</b> reference\n
+dotted line - <i>weak</i> reference\n
+endlegend\n
+@enduml\n
+'''
+
+
+def get_type(obj):
+    '''Return the OVSDB type inside obj.'''
+    if isinstance(obj, (dict, OrderedDict)):
+        if 'type' in obj:
+            return get_type(obj['type'])
+        elif 'key' in obj:
+            return get_type(obj['key'])
+        elif 'valueMap' in obj:
+            return 'string'
+    elif isinstance(obj, basestring):
+        return obj
+    return 'unknown'
+
+
+def get_ref_table(obj):
+    '''Return the value of 'refTable'.
+
+    If there is no 'refTable' key, return 'unknown'.
+    '''
+    if isinstance(obj, dict) and 'key' in obj and \
+       isinstance(obj['key'], dict) and 'refTable' in obj['key']:
+        return obj['key']['refTable']
+    return 'unknown'
+
+
+def get_ref_type(obj):
+    '''Return the reference type.
+
+    If there is no 'refType' key, returns 'strong'
+    (the default 'refType' value).
+    '''
+    if isinstance(obj, dict):
+        if 'refType' in obj:
+            return obj['refType']
+        ref_type = 'strong'
+        for key, value in obj.iteritems():
+            temp = get_ref_type(value)
+            if temp != 'strong':
+                ref_type = temp
+        return ref_type
+    return 'strong'
+
+
+def get_value(obj):
+    '''Return 'value' or 'valueType' in obj.'''
+    if isinstance(obj, dict) and 'value' in obj:
+        return obj['value']
+    if isinstance(obj, dict) and 'valueType' in obj:
+        return obj['valueType']
+    return None
+
+
+def get_value_type(obj):
+    '''Return the value type of obj.'''
+    if isinstance(obj, dict) and ('value' in obj or 'valueType' in obj):
+        return get_type(get_value(obj))
+    return None
+
+
+class DocSection:
+    '''A document's section.
+
+    This class represents a section of a document, which contains a section
+    title, link to image, text and subsections.
+    '''
+    def __init__(self, title='', obj=None, link=None):
+        self.title = title
+        if obj is not None and isinstance(obj, dict) and 'doc' in obj:
+            self.text = obj['doc']
+        else:
+            self.text = []
+        if obj is not None and isinstance(obj, dict) and 'type' in obj:
+            self.sec_type = obj['type']
+        else:
+            self.sec_type = None
+        self.subsections = []
+        self.link = link
+
+    def add(self, subsection):
+        '''Add a subsection to this section.'''
+        self.subsections.append(subsection)
+
+    def to_str(self, level=[]):
+        '''Save this section to its own MarkDown file.'''
+        # Write title.
+        output = ''
+        if self.title:
+            num = '.'.join(str(i) for i in level)
+            output = '%s %s %s\n\n' % ('#' * (len(level)+1), num, self.title)
+
+        # Write link to image
+        if self.link:
+            output += '![{}_table_img]({})\n\n'.format(self.title, self.link)
+
+        # Write section type (the corresponding table type, in fact)
+        if self.sec_type:
+            ktype = get_type(self.sec_type)
+            vtype = get_value_type(self.sec_type)
+            ref_str = ''
+            sec_type = ktype + '->' + vtype if vtype else ktype
+            for_str = '\n\n**refTable**: [%s](%s.html) **refType**: _%s_'
+            if ktype == 'uuid':
+                ref_table = get_ref_table(self.sec_type)
+                ref_type = get_ref_type(self.sec_type)
+                ref_str += for_str % (ref_table, ref_table.lower(), ref_type)
+            if vtype == 'uuid':
+                value_type = get_value(self.sec_type)
+                ref_table = value_type['refTable']
+                ref_type = get_ref_type(value_type)
+                ref_str += for_str % (ref_table, ref_table.lower(), ref_type)
+            output = output + '\n\n**Type**: _%s_%s' % (sec_type, ref_str)
+            # Write text (the proper documentation)
+            output += '\n\n' + '\n'.join(self.text) + '\n\n'
+
+        # Write subsections, with corresponding enumeration
+        level.append(1)
+        for subsection in self.subsections:
+            output += subsection.to_str(level)
+            level[-1] += 1
+        level.pop()
+        return output
+
+    def fix_links(self):
+        '''Convert links from OpenSwitch format to MarkDown format.
+
+        Link inside OpenSwitch schema have the following format:
+        [link_text](table.column.key)
+        with column and key being optional. This format has to be changed
+        into a proper URL for MarkDown to work correctly.
+        '''
+        def clean(text):
+            textl = text.lower()
+            textl = textl.replace('_', '-')
+            textl = textl.replace(' ', '-')
+            return textl
+        ref_mark = ']('
+        new_text = []
+        for line in self.text:
+            index = line.find(ref_mark)
+            while index != -1:
+                # Split line.
+                end = line.find(')', index+len(ref_mark))
+                pre_link = line[:index+len(ref_mark)]
+                link = line[index+len(ref_mark):end]
+                post_link = line[end:]
+                # Check if the link points to a table, a column or a key,
+                # and create the corresponding link.
+                parts = link.split('.')
+                new_link = ''
+                if len(parts) > 0:
+                    new_link = parts[0].lower() + '.html'
+                if len(parts) == 2:
+                    new_link = new_link + '#' + clean(parts[1])
+                if len(parts) == 3:
+                    new_link = new_link + '#' + clean(parts[1]) + \
+                               '-' + clean(parts[2])
+                # Reassembly the line with the new link
+                line = pre_link + new_link + post_link
+                index = line.find(ref_mark, index + len(ref_mark))
+            new_text.append(line)
+        self.text = new_text
+        # Recursively fix all links in text.
+        for section in self.subsections:
+            section.fix_links()
+
+
+class DocGroup:
+    '''Groups sections logically using paths.
+
+    A DogGroup could contain one section, and several subgroups. This allows
+    to construct trees of sections grouped togueter.
+    '''
+    def __init__(self, title='', obj=None):
+        self.section = DocSection(title, obj)
+        self.subgroups = OrderedDict()
+
+    def add_section(self, section):
+        '''Add a subsection to this group' section.'''
+        self.section.add(section)
+
+    def add_group(self, path):
+        '''Add a group.
+
+        If the group indicated by path doesn't exits, it is created.
+        '''
+        groups = path.split('/')
+        groups = groups[2:]
+        current_group = self
+        for group in groups:
+            if group not in current_group.subgroups:
+                current_group.subgroups[group] = DocGroup(group)
+            current_group = current_group.subgroups[path]
+
+    def get_group(self, path, table_schema):
+        '''Get the group indicated by path.
+
+        If the group doesn't exist, it is created.
+        '''
+        groups = path.split('/')
+        current_path = '/' + groups[1]
+        groups = groups[2:]
+        current_group = self
+        for group in groups:
+            current_path += '/' + group
+            if group not in current_group.subgroups:
+                group_dict = OrderedDict()
+                if 'groupDoc' in table_schema:
+                    group_dict = table_schema['groupDoc']
+                current_group.subgroups[group] = \
+                    DocGroup(group, group_dict.get(current_path))
+            current_group = current_group.subgroups[group]
+        return current_group
+
+    def add_to_group(self, path, section, table_schema):
+        '''Add a section to this group in the specified path.'''
+        group = self.get_group(path, table_schema)
+        group.add_section(section)
+
+    def to_doc_section(self):
+        '''Return a DocSection with the contents of this group.'''
+        doc = copy.deepcopy(self.section)
+        for group in self.subgroups.itervalues():
+            doc.add(group.to_doc_section())
+        return doc
+
+    def from_table(self, table_name, table_schema, diagram,
+            server_url, output_dir, embedded_images):
+        '''Fill this group from a schema's table.'''
+        if diagram:
+            table_diagram = diagram.focus_on(table_name)
+            link = table_diagram.get_link(table_name, server_url, 
+                                          output_dir, embedded_images)
+        self.section = DocSection(table_name, table_schema, link)
+        docgroup = self
+        columns = table_schema['columns']
+        for column_name, column in columns.iteritems():
+            section = DocSection(column_name, column)
+            if 'group' in column:
+                group = column['group']
+                if isinstance(group, (str, unicode)):
+                    group_path = '/' + table_name + '/' + group 
+                    docgroup.add_to_group(group_path, section, table_schema)
+                else:
+                    for g in group:
+                        group_path = '/' + table_name + '/' + g 
+                        docgroup.add_to_group(group_path, section, table_schema)
+            else:
+                # Column does not belong to any group
+                docgroup.add_to_group('/' + table_name + '/Ungrouped',
+                                      section, table_schema)
+            col_type = column['type']
+            if 'valueMap' in col_type:
+                for key_name, key in col_type['valueMap'].iteritems():
+                    section = DocSection(column_name + ' : ' + key_name, key)
+                    doc_path = key['group'] if 'group' in key else 'Ungrouped'
+                    docgroup.add_to_group('/' + table_name + '/' + doc_path,
+                                          section, table_schema)
+
+
+class TableDiagram:
+    '''Represents a table inside a diagram.'''
+    def __init__(self, name='', table=None):
+        self.name = name
+
+    def __str__(self):
+        return 'class %s\n' % self.name
+
+    def __eq__(self, other):
+        if isinstance(other, (str, unicode)):
+            return self.name == other
+        return self.name == other.name
+
+    def __hash__(self):
+        return hash(self.name)
+
+
+class Diagram:
+    '''A PlantUML diagram representing tables and table references for a
+    OpenSwitch schema.
+    '''
+    def __init__(self, schema=None):
+        self.name = ''
+        self.root_tables = set()
+        self.tables = set()
+        self.links = set()  # Tuples of table names
+        self.weak_links = set()  # Tuples of table names
+        if schema is not None:
+            self.from_schema(schema)
+
+    def add_table(self, table):
+        self.tables.add(table)
+
+    def add_root_table(self, table):
+        self.root_tables.add(table)
+
+    def add_link(self, table_a, table_b, link_type='strong'):
+        self.links.add((table_a, table_b, link_type))
+
+    def from_schema(self, schema):
+        '''Builds a diagram from a schema.'''
+        tables = schema['tables']
+        for table_name, table in tables.iteritems():
+            table_diag = TableDiagram(table_name)
+            if table.get('isRoot', False):
+                self.add_root_table(table_diag)
+            else:
+                self.add_table(table_diag)
+            columns = table['columns']
+            for column in columns.itervalues():
+                if isinstance(column['type'], dict) and \
+                   'key' in column['type'] and \
+                   isinstance(column['type']['key'], dict) and \
+                   'refTable' in column['type']['key']:
+                    ref_table = column['type']['key']['refTable']
+                    if 'refType' in column['type']['key'] and \
+                       column['type']['key']['refType'] == 'strong':
+                        self.add_link(table_name, ref_table)
+                    else:
+                        self.add_link(table_name, ref_table, 'weak')
+
+    def from_table(self, table_name, table):
+        '''Builds a diagram from a table.'''
+        table_diag = TableDiagram(table_name)
+        self.add_table(table_diag)
+        columns = table['columns']
+        for column in columns.itervalues():
+            if isinstance(column['type'], dict) and \
+               isinstance(column['type']['key'], dict) and \
+               'refTable' in column['type']['key']:
+                other_table_name = column['type']['key']['refTable']
+                self.add_table(TableDiagram(other_table_name))
+                self.add_link(table_name, other_table_name)
+
+    def focus_on(self, table_name):
+        '''Return a Diagram that focus on the given table.
+
+        All tables and links not related to the focused table are deleted from
+        the returned diagram.
+        '''
+        diag = Diagram()
+        diag.name = table_name
+        valid_tables = set()
+        valid_tables.add(table_name)
+        # Copy relevant links
+        for ta, tb, link_type in self.links:
+            if ta == table_name or tb == table_name:
+                valid_tables.add(ta)
+                valid_tables.add(tb)
+                diag.add_link(ta, tb, link_type)
+        # Copy relevant root tables
+        for table in self.root_tables:
+            if table.name in valid_tables:
+                diag.root_tables.add(table)
+        # Copy relevant tables
+        for table in self.tables:
+            if table.name in valid_tables:
+                diag.tables.add(table)
+        return diag
+
+    def _group_tables(self, tables, name, n):
+        '''Groups tables using invisible links
+
+        tables - set of tables
+        name - a table's name to ignore
+        n - elements per group
+        '''
+        t = tables.copy()
+        ret = ''
+        while len(t) >= n:
+            g = []
+            for i in range(n):
+                table = t.pop()
+                if table == name:
+                    table = t.pop()
+                g.append(table)
+            for i in range(n):
+                if i < n-1:
+                    ret += '%s -[hidden]- %s\n' % (g[i].name, g[i+1].name)
+                else:
+                    ret += '%s -[hidden]- %s\n' % (g[i].name, g[0].name)
+        return ret
+
+    def __str__(self):
+        ret = '@startuml\n'
+        if len(self.root_tables) > 0:
+            ret += 'package "Root Tables" {\n'
+            for table in self.root_tables:
+                ret += str(table)
+            ret += '}\n'
+        if len(self.tables) > 0:
+            ret += 'together {\n'
+            for table in self.tables:
+                ret += str(table)
+            ret += '}\n'
+        for ta, tb, link_type in self.links:
+            link = ' -%s-> '
+            pos, no_pos = 'd', 'u'
+            if tb == self.name:
+                ta, tb = tb, ta
+                pos, no_pos = no_pos, pos
+                link = ' <-%s- '
+            if tb in self.root_tables:
+                pos, no_pos = no_pos, pos
+            if link_type == 'weak':
+                link = link.replace('-', '.')
+            ret += ta + (link % pos) + tb + '\n'
+        # Group tables when there are too many
+        if len(self.root_tables) >= 8:
+            ret += self._group_tables(self.root_tables, self.name, 3)
+        if len(self.tables) >= 8:
+            ret += self._group_tables(self.tables, self.name, 3)
+        ret += DIAGRAM_FOOTER
+        return ret
+
+    def get_link(self, table_name, server_url, output_dir, embedded=False):
+        '''Return an URL to this diagram.'''
+        img_type = 'img/' if embedded else 'png/'
+        plantuml = PlantUML(server_url + img_type)
+        link = plantuml.get_url(str(self))
+        if not embedded:
+            try:
+                img_filename = output_dir + table_name.lower() + '.png'
+                img = plantuml.processes(str(self))
+            except PlantUMLConnectionError:
+                print "W: ConnectionError processing table %s" % table_name
+            except PlantUMLError:
+                print "W: Error in processing table %s" % table_name
+            except PlantUMLHTTPError as e:
+                print "W: Request to PlantUML server returned an error"
+            else:
+                with open(img_filename, 'wb') as img_fd:
+                    for chunk in img:
+                        img_fd.write(chunk)
+                link = table_name.lower() + '.png'
+        return link
+
+
+def generate_md_files(doc, path):
+    '''Save all tables in doc to docs_dir.'''
+    # Save each table in a MarkDown file
+    sections = []
+    for section in doc.subsections:
+        section_name = section.title.lower()
+        sections.append(section_name)
+        content = section.to_str()
+        # Put the output string into the file
+        with open(path + section_name + '.md', 'w') as md_fd:
+            md_fd.write(content)
+    # Save index.rst
+    with open(path + 'index.rst', 'w') as index_fd:
+        header = '''
+OpenSwitch Schema Documentation
+===============================
+
+Tables:
+
+.. toctree::
+   :maxdepth: 1
+'''
+        body = '\n   ' + '\n   '.join(sections)
+        index_fd.write(header + body)
+
+
+def build_grouped_doc(schema, diagram, server_url, output_dir,
+                      embedded_images):
+    '''Return a DocSection filled with documentation from schema,
+    with grouped tables.
+    '''
+    doc = DocSection('OpenSwitch Schema', schema)
+    tables = schema['tables']
+    for table_name, table_schema in tables.iteritems():
+        group = DocGroup()
+        group.from_table(table_name, table_schema, diagram, server_url, 
+                output_dir, embedded_images)
+        doc.add(group.to_doc_section())
+    return doc
+
+
+def generate_schema_documentation(unified_schema_file, output_dir,
+                                  server_url, embedded_images):
+
+    if not output_dir.endswith('/'):
+        output_dir += '/'
+    if not server_url.endswith('/'):
+        server_url += '/'
+    if embedded_images is None:
+        embedded_images = False
+
+    # Read schema
+    with open(unified_schema_file, 'r') as fp:
+        schema = json.load(fp, object_pairs_hook=OrderedDict)
+
+    # Build diagram and documentation
+    diagram = Diagram(schema)
+    doc = build_grouped_doc(
+            schema,
+            diagram,
+            server_url,
+            output_dir,
+            embedded_images)
+    doc.fix_links()
+
+    # Generate the MarkDown files
+    generate_md_files(doc, output_dir)
+
+
+if __name__ == '__main__':
+
+    # Setup and parse arguments
+    desc = ('Generate documentation in MarkDown format, as well as PlantUML ' +
+            'scripts for table diagrams.')
+    arg_parser = ArgumentParser(description=desc)
+    arg_parser.add_argument('unified_schema_file', type=str,
+                            help='input unified extended schema')
+    arg_parser.add_argument('--output-dir', type=str,
+                            help='where the  MD documents will be stored')
+    arg_parser.add_argument('--plantuml-server-url', type=str,
+                            help='server to convert the puml files into images')
+    arg_parser.add_argument('--embedded-images', action="store_true",
+                            help='use image links instead of generating local images')
+
+    args = arg_parser.parse_args()
+
+    generate_schema_documentation(
+            args.unified_schema_file,
+            args.output_dir,
+            args.plantuml_server_url,
+            args.embedded_images
+    )

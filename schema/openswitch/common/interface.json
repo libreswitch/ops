@@ -1746,11 +1746,14 @@
                 },
                 "doc": [
                   "Enumeration indicating the forwarding state of the interface when it is",
-                  "configured as a member of a LAG. * Up: The interface is eligible and should be",
-                  "fowarding traffic according to LACP * Blocked:  The interface is either not",
-                  "eligible or should be blocked according to LACP.  If an interface is Rx disable,",
-                  "it is also Tx disable, thus, it is blocked * Down:  The interface is configured",
-                  "to be a member of a LAG, but it is either administratively or operatively down"
+                  "configured as a member of a LAG.",
+                  "* `up`: The interface is eligible and should be fowarding traffic according",
+                  "to LACP",
+                  "* `blocked`: The interface is either not eligible or should be blocked",
+                  "according to LACP.  If an interface is Rx disable, it is also Tx disable,",
+                  "thus, it is blocked",
+                  "* `down`: The interface is configured to be a member of a LAG, but it is",
+                  "either administratively or operatively down"
                 ],
                 "group": "/Interface Status"
               }

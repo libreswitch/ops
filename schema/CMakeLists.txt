@@ -1,10 +1,14 @@
-add_custom_target(ovsschema ALL)
-
-# Rules for database schemas using the old format
-include("dbschemas.cmake")
+add_custom_target(database-schema ALL)
+add_custom_target(doc)
 
 # Rules for OpenSwitch database format
 include("opsschemas.cmake")
+
+# Rules for generating the OpenSwitch documentation
+include("documentation.cmake")
+
+# Rules for database schemas using the old format
+include("dbschemas.cmake")
 
 # Process the legacy header files
 add_subdirectory(legacy)
