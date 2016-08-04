@@ -2499,9 +2499,9 @@
         type='{"type": "string", "enum": ["set", ["EGP", "IBGP", "incomplete"]]}'>
         Matches BGP routes based on the origin of the specified route. The allowed values are below.
         <ol>
-        <li><mark>EGP</mark> - Indicates that the route is learned through EBGP.</li>
-        <li><mark>IGP</mark> - Indicates that the route is learned through IBGP.</li>
-        <li><mark>incomplete</mark> - Indicates that the origin of route is unknown. This occurs when a route is redistributed into BGP.</li>
+        <li><code>EGP</code> - Indicates that the route is learned through EBGP.</li>
+        <li><code>IGP</code> - Indicates that the route is learned through IBGP.</li>
+        <li><code>incomplete</code> - Indicates that the origin of route is unknown. This occurs when a route is redistributed into BGP.</li>
         </ol>
       </column>
       <column name="match" key="metric"
@@ -2557,9 +2557,9 @@
         type='{"type": "string", "enum": ["set", ["EGP", "IBGP", "incomplete"]]}'>
         Sets the origin attribute of a local BGP route. The allowed values are below.
         <ol>
-        <li><mark>EGP</mark> - Indicates that the route is learned through EBGP.</li>
-        <li><mark>IGP</mark> - Indicates that the route is learned through IBGP.</li>
-        <li><mark>incomplete</mark> - Indicates that the origin of route is unknown. This occurs when a route is redistributed into BGP.</li>
+        <li><code>EGP</code> - Indicates that the route is learned through EBGP.</li>
+        <li><code>IGP</code> - Indicates that the route is learned through IBGP.</li>
+        <li><code>incomplete</code> - Indicates that the origin of route is unknown. This occurs when a route is redistributed into BGP.</li>
         </ol>
       </column>
       <column name="set" key="weight"
@@ -2889,27 +2889,27 @@
            type='{"type":"string", "enum": ["set", ["IGP_CHANGED", "DAMPED", "HISTORY", "SELECTED", "VALID", "DMED_CHECK", "DMED_SELECTED", "STALE", "REMOVED", "COUNTED", "MULTIPATH"]]}'>
           Flags attibute of the BGP route.
           <ol>
-          <li><mark>DAMPED</mark> - Suppress routes from being advertised due to flapping.</li>
-          <li><mark>HISTORY</mark> - Router does not have a best path
+          <li><code>DAMPED</code> - Suppress routes from being advertised due to flapping.</li>
+          <li><code>HISTORY</code> - Router does not have a best path
                                      for the route based on historical information.</li>
-          <li><mark>STALE</mark> - Used with nonstop forwarding to indicate that the route is stale
+          <li><code>STALE</code> - Used with nonstop forwarding to indicate that the route is stale
                                    and needs to be refreshed when the peer is reestablished.</li>
-          <li><mark>VALID</mark> - Route has a valid next-hop.</li>
-          <li><mark>DMED_CHECK</mark> - Route is evaluated as part of an effort to identify preferred
+          <li><code>VALID</code> - Route has a valid next-hop.</li>
+          <li><code>DMED_CHECK</code> - Route is evaluated as part of an effort to identify preferred
                                         entry point into local AS from neighboring autonomous system.</li>
-          <li><mark>DMED_SELECTED</mark> - Route is selected as preferred entry point
+          <li><code>DMED_SELECTED</code> - Route is selected as preferred entry point
                                            into local AS from neighboring autonomous system.</li>
-          <li><mark>REMOVED</mark> - Route has been removed from list of advertised routes to neighboring
+          <li><code>REMOVED</code> - Route has been removed from list of advertised routes to neighboring
                                      autonomous system.</li>
-          <li><mark>SELECTED</mark> - Route had been selected as best path to destination prefix.</li>
-          <li><mark>COUNTED</mark> - Route has been included in internal prefix list count.</li>
-          <li><mark>MULTIPATH</mark> -Route has been included as part of multipath route selection to destination prefix.</li>
-          <li><mark>IGP_CHANGED</mark> - Set for routes exhanged over iBGP intradomain autonomous system networks.</li>
+          <li><code>SELECTED</code> - Route had been selected as best path to destination prefix.</li>
+          <li><code>COUNTED</code> - Route has been included in internal prefix list count.</li>
+          <li><code>MULTIPATH</code> -Route has been included as part of multipath route selection to destination prefix.</li>
+          <li><code>IGP_CHANGED</code> - Set for routes exhanged over iBGP intradomain autonomous system networks.</li>
       </ol>
       </column>
       <column name="origin" emptyValue="igp">
           Origin of the BGP route.
-          Allowed values are <mark>egp</mark>,<mark>igp</mark>,<mark>incomplete</mark>
+          Allowed values are <code>egp</code>,<code>igp</code>,<code>incomplete</code>
           igp origin code specifies whether route entry originated from an Interior
           Gateway Protocol (IGP) and was advertised with a network router
           configuration command.
@@ -4355,7 +4355,7 @@
         The default value is <code>false</code>.
       </column>
       <column name="flood_block" emptyValue="false">
-        When set to ‘true’, all flood traffic received from and forwarded to this
+        When set to 'true', all flood traffic received from and forwarded to this
         port will be dropped.
         The default value is <code>false</code>.
       </column>
@@ -4688,7 +4688,7 @@
         is detected and "do-not-disable" will not disable any port.
         Default value is <code>tx-port-disable</code>.
       </column>
-      <column name="loop_protect_vlans">
+      <column name="loop_protect_vlan">
         List of VLANs on which loop-protect should operate if enabled by loop_protect_enable.
         If not specified, native VLAN will be protected.
       </column>
@@ -4889,28 +4889,6 @@
           </p>
         </column>
 
-        <column name="ofport_request"
-                type='{"type": "integer", "minInteger": 1, "maxInteger": 65279}'>
-          <p>
-            Requested OpenFlow port number for this interface.
-          </p>
-
-          <p>
-            A client should ideally set this column's value in the same
-            database transaction that it uses to create the interface.  OpenSwitch 
-            will honor a later request for a
-            specific port number, although it might confuse some controllers:
-            OpenFlow does not have a way to announce a port number change, so
-            OpenSwitch represents it over OpenFlow as a port deletion
-            followed immediately by a port addition.
-          </p>
-
-          <p>
-            If <ref column="ofport_request"/> is set or changed to some other
-            port's automatically assigned port number, OpenSwitch chooses a
-            new port number for the latter port.
-          </p>
-        </column>
       </group>
     </group>
 
@@ -8757,7 +8735,7 @@
 
         <p>
           OpenSwitch permits a bridge to have any number of primary
-          controllers.  When multiple controllers are configured, OpenSwitch 
+          controllers.  When multiple controllers are configured, OpenSwitch
           connects to all of them simultaneously.  Because
           OpenFlow 1.0 does not specify how multiple controllers
           coordinate in interacting with a single switch, more than
@@ -8888,7 +8866,7 @@
         <dl>
           <dt><code>in-band</code></dt>
           <dd>In this mode, this controller's OpenFlow traffic travels over the
-          bridge associated with the controller.  With this setting, OpenSwitch 
+          bridge associated with the controller.  With this setting, OpenSwitch
           allows traffic to and from the controller regardless of the
           contents of the OpenFlow flow table.  (Otherwise, OpenSwitch
           would never be able to connect to the controller, because it did
