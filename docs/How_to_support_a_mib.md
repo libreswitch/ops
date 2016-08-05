@@ -139,7 +139,7 @@ For every table in the MIB, the following set of files are generated:
   a. Write a makefile under the `src/snmp` directory. Override the default library directory path to  */usr/lib/snmp/plugins/*. For example:
  `libdir =/usr/lib/snmp/plugins`
   b. Avoid generating a static library by adding LDFLAGS = -module -shared -avoid-version.
-  c. Include this library path in the *FILES-{PN}* of the feature .bb file.
+  c. Include this library path in the *"FILES-{PN}"* of the feature .bb file.
 6.  Add a net-snmp dependency to the feature repository by adding DEPENDS += 'net-snmp'.
 ```
 DEPENDS = "net-snmp ops-utils ops-config-yaml ops-ovsdb libevent openssl ops-supportability"
