@@ -91,6 +91,8 @@ All users.
 | *command* | Required | String | Command for which to create an alias. |
 | *$1 $2 $3 ... $9 ${10} … ${N} * | Optional | String | These parameters are replaced by the corresponding arguments from the command line. Maximum length is 400 characters.|
 
+Note: Alias commands available only in the configuration context.
+
 #### Examples
 ```
 switch(config)# alias hst hostname $1
