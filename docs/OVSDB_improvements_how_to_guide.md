@@ -492,6 +492,33 @@ WAIT_UPDATE_FOR_EACH_SAFE(req, next, idl) {
 }
 ```
 
+Additional to the `WAIT_UPDATE_FOR_EACH_SAFE` there is a `WAIT_UPDATE_FOR_EACH_POP`
+that automatically removes the request from the list, but *doesn't release its memory*,
+so the developer still *must release it* using `ovsdb_idl_wait_update_destroy`.
+
+This last one is useful if the developer is moving the request to an internal queue,
+to be processed later.
+
+It is used in a similar way to `WAIT_UPDATE_FOR_EACH_SAFE`:
+
+```c
+struct ovsdb_idl_wait_update *req;
+WAIT_UPDATE_FOR_EACH_POP(req, idl) {
+    /* Do something with req
+     * struct ovsdb_idl_wait_update includes the requested
+     * table, rows and columns.
+     */
+
+    /* Unblock the client's blocking_wait. If the blocking wait
+     * isn't unblocked then it will timeout and the whole
+     * transaction will fail. */
+    ovsdb_idl_wait_unblock(idl, req);
+
+    /* Remove the request from the requests list */
+    ovsdb_idl_wait_update_destroy(req);
+}
+```
+
 ### Performing blocking waits
 A client can perform a `blocking_wait` operation that blocks a transaction
 until all the clients wait monitoring the columns requested unblock the
