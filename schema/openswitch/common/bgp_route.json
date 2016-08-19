@@ -146,7 +146,6 @@
           "type": {
             "key": {
               "type": "string",
-              "maxLength": 30,
               "enum": [
                 "IGP_CHANGED",
                 "DAMPED",
