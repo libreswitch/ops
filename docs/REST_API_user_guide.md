@@ -30,7 +30,13 @@ This feature provides two major functionalities:
 
 ### Setting up the basic configuration
 
-This feature is included in the switch image build and is enabled by default. This feature cannot be turned off through CLI. You do not need to do anything other than basic network connectivity to the switch to use this feature.
+This feature is disabled in the switch image build by default. This feature can be turned on as shown below:
+```
+systemctl enable restd
+systemctl start restd
+```
+
+ You do not need to do anything other than start the restd and basic network connectivity to the switch to use this feature.
 
 ### Troubleshooting the configuration
 
