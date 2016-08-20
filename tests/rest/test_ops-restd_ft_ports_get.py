@@ -183,6 +183,5 @@ class Test_QueryPort:
         self.test_var.query_port()
         self.test_var.query_non_existent_port()
         info("container_id_test %s\n" % self.container_id)
-        # TODO: enable once swagger doc generation is fixed
-        # swagger_model_verification(self.container_id, "/system/ports/{id}",
-        #                           "GET_ID", PORT_DATA)
+        swagger_model_verification(self.container_id, "/system/ports/{id}",
+                                   "GET_ID", PORT_DATA)

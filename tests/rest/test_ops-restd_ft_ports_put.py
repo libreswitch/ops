@@ -402,6 +402,5 @@ class Test_ModifyPort:
         self.test_var.verify_unknown_attribute()
         self.test_var.verify_malformed_json()
         info("container_id_test %s\n" % self.container_id)
-        # TODO: enable once swagger doc generation is fixed
-        # swagger_model_verification(self.container_id, "/system/ports/{id}",
-        #                           "PUT", PORT_DATA)
+        swagger_model_verification(self.container_id, "/system/ports/{id}",
+                                   "PUT", PORT_DATA)

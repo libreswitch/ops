@@ -284,9 +284,8 @@ class Test_system:
     def test_run_call_sytem_get(self, netop_login):
         self.test_var.test_call_system_get()
         info("container_id_test_get_id %s\n" % self.container_id)
-        # TODO: enable once swagger doc generation is fixed
-        # swagger_model_verification(self.container_id, "/system", "GET_ID",
-        #                           response_global)
+        swagger_model_verification(self.container_id, "/system", "GET_ID",
+                                   response_global)
 
     def test_run_call_sytem_options(self, netop_login):
         self.test_var.test_call_system_options()
