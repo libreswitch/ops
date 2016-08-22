@@ -1,0 +1,264 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/cpu_rx.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "CPU_RX": {
+      "columns": {
+        "matches": {
+          "category": "status",
+          "type": {
+            "valueType": "string",
+            "valueMap": {
+              "ether_type": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "EtherType value to match."
+                ],
+                "group": "/Matches Keys"
+              },
+              "ip_protocol": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 255
+                },
+                "doc": [
+                  "IP protocol value to match."
+                ],
+                "group": "/Matches Keys"
+              },
+              "dest_multicast_mac": {
+                "type": {
+                  "type": "string"
+                },
+                "doc": [
+                  "Destination multicast mac address to match."
+                ],
+                "group": "/Matches Keys"
+              },
+              "dest_multicast_ipv4": {
+                "type": {
+                  "type": "string"
+                },
+                "doc": [
+                  "Destination IPv4 multicast address to match."
+                ],
+                "group": "/Matches Keys"
+              },
+              "dest_multicast_ipv6": {
+                "type": {
+                  "type": "string"
+                },
+                "doc": [
+                  "Destination IPv6 multicast address to match."
+                ],
+                "group": "/Matches Keys"
+              },
+              "dest_udp_port": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 65535
+                },
+                "doc": [
+                  "Destination UDP port to match."
+                ],
+                "group": "/Matches Keys"
+              },
+              "dest_ipv4": {
+                "type": {
+                  "type": "string"
+                },
+                "doc": [
+                  "Destination IPv4 unicast address to match.",
+                  "Used when host has several local IPv4 addresses, but only wants",
+                  "traffic to be copied to CPU for one of them."
+                ],
+                "group": "/Matches Keys"
+              },
+              "dest_ipv6": {
+                "type": {
+                  "type": "string"
+                },
+                "doc": [
+                  "Destination IPv6 unicast address to match.",
+                  "Used when host has several local IPv6 addresses, but only wants",
+                  "traffic to be copied to CPU for one of them."
+                ],
+                "group": "/Matches Keys"
+              },
+              "multicast_misses": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "ipv4",
+                    "ipv6"
+                  ]
+                },
+                "doc": [
+                  "Multicast unknown or Multicast misses traffic.",
+                  "Two rules should be created in order to enable multicast misses",
+                  "traffic for ipv4 and ipv6 at same time."
+                ],
+                "group": "/Matches Keys"
+              }
+            },
+            "min": 1,
+            "max": "unlimited"
+          },
+          "mutable": false,
+          "doc": [
+            "Rules to match packets which are to be copied to the CPU.",
+            "Something like ipv4, ipv6, mac address or protocol types.",
+            "There can be one or more key-value pairs to match.",
+            "If more than one match is specified packets must meet all matches",
+            "to be copied to the CPU.",
+            "",
+            "Unique rows should be inserted using above applicable keys to",
+            "match packet types and copy them to the CPU.",
+            "Example: For receiving ipv4 OSPF All-Router protocol packet,",
+            "OSPF daemon will create a row with:",
+            "  matches column: ip_protocol:59, dest_multicast_ipv4:224.0.0.5.",
+            "  port column: reference to ports on which to allow OSPF packet.",
+            "  from column: process_name:\"ops-ospf\".",
+            "  ops-switchd will get this update and program the ASIC and update the",
+            "  status column: hw_configured: \"true\" and error: \"Ok\"",
+            "",
+            "And similarly OSPF will have to insert seperate rows for ipv4 OSPF DR,",
+            "ipv6 All Router, and ipv6 DR.",
+            "In case of invalid matching key-values or failure to program the ASIC,",
+            "status column will be populated with relevent error string."
+          ],
+          "group": "/Configuration"
+        },
+        "ports": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Port",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "doc": [
+             "Specifies the set of ports in [Port](PORTS) table whose",
+             "matching traffic will be copied to the CPU.",
+             "Default is *NULL*, which means allow on all ports."
+          ],
+          "group": "/Configuration"
+        },
+        "vlans": {
+          "category": "status",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "VLAN",
+              "refType": "weak"
+            },
+            "min": 0,
+            "max": 4094
+          },
+          "doc": [
+            "Specifies the set of VLANs in [VLAN](VLAN) table whose",
+            "matching traffic will be copied to the CPU.",
+            "Default is *NULL*, which means VLAN is not considered for match."
+          ],
+          "group": "/Configuration"
+        },
+        "drop_after_copy": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "boolean"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Set this value to *true*, if the ASIC after copying",
+            "the packet to the CPU should drop it.",
+            "Default is *false*."
+          ],
+          "group": "/Configuration"
+        },
+        "from": {
+          "category": "status",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 1,
+            "max": 1
+          },
+          "mutable": false,
+          "doc": [
+            "Name of Process/Daemon which is creating this match's row.",
+            "In case when more than one process is interested in receiving same",
+            "traffic class, then each of the process should create seperate rows,",
+            "with their process_name's."
+          ],
+          "group": "/Configuration"
+        },
+        "hw_status": {
+          "category": "status",
+           "type": {
+            "valueType": "string",
+            "valueMap": {
+              "hw_configured": {
+                "type": "boolean",
+                "doc": [
+                  "Indicates whether the matching rule is installed in the ASIC"
+                ],
+                "group": "/Hardware status"
+              },
+              "error": {
+                "type": "string",
+                "doc": [
+                  "Human readable error string, in case of validation error",
+                  "or failure while programming the ASIC."
+                ],
+                "group": "/Hardware status"
+              }
+            },
+            "min": 0,
+            "max": 2
+          },
+          "doc": [
+            "Status indicating whether the entry is successfully programmed in",
+            "ASIC."
+          ],
+          "group": "/Hardware status"
+        }
+      },
+      "isRoot": true,
+      "title": "CPU Packet Reception",
+      "doc": [
+        "Traffic types which ASIC will copy to the CPU for further",
+        "processing by respective daemons.",
+        "This table is populated by daemons whenever they need specific",
+        "traffic (ex. a protocol was enabled on a VLAN or port)."
+      ],
+      "groupDoc": {
+        "/Matches Keys": [
+          "These values define the possible filters or reasons to",
+          "copy a packet to the CPU"
+        ],
+        "/Hardware status": [
+          "Display the hardware configuration results, used to show",
+          "if configuration was success or not and what was the error"
+        ]
+      }
+    }
+  }
+}

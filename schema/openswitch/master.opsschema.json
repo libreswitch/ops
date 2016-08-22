@@ -288,6 +288,9 @@
     },
     "Notification_Subscription": {
       "$ref": "common/notification_subscription.json#/tables/Notification_Subscription"
+    },
+    "CPU_RX": {
+      "$ref": "common/cpu_rx.json#/tables/CPU_RX"
     }
   }
 }
