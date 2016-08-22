@@ -43,6 +43,8 @@ The OpenSwitch web UI provides an easy-to-see visual representation displaying t
 # Accessing the web UI
 To access the web UI, open a web browser (Google Chrome preferred) and enter the IP address of the switch management interface.
 
+The web server (REST daemon) is disabled by default.  Refer to the REST API user guide for information on how to enable the REST daemon.
+
 # Screens
 
 
