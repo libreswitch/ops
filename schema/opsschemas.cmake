@@ -55,15 +55,11 @@ function(generate_database_schema)
 	add_dependencies(ovsschema generate-${dbname}-dbschema)
 
 	add_custom_command(
-		OUTPUT ${extschema}
-			${ovsschema}
-			${xml}
+		OUTPUT ${ovsschema}
 			${empty_values_header}
 		COMMAND PYTHONPATH=${PYTHONPATH} ${schemas_generator}
 			${unified_schema}
-			--extschema ${extschema}
 			--ovsschema ${ovsschema}
-			--xml ${xml}
 			--metaschema ${metaschema}
 			--empty_values_header ${empty_values_header}
 			MAIN_DEPENDENCY ${unified_schema}
@@ -71,18 +67,16 @@ function(generate_database_schema)
 	)
 
 	add_custom_target(generate-${dbname}-extschema
-		DEPENDS ${vswitch_extschema}
-			${vswitch_ovsschema}
-			${vswitch_xml}
+		DEPENDS ${ovsschema}
 			${empty_values_header}
 	)
 	add_dependencies(ovsschema generate-${dbname}-extschema)
 
 	install(FILES ${empty_values_header} DESTINATION include)
 	install(FILES ${unified_schema} DESTINATION share/openvswitch)
-	install(FILES ${extschema} DESTINATION share/openvswitch)
+	install(FILES ${extschema} DESTINATION share/openvswitch OPTIONAL)
 	install(FILES ${ovsschema} DESTINATION share/openvswitch)
-	install(FILES ${xml} DESTINATION share/openvswitch)
+	install(FILES ${xml} DESTINATION share/openvswitch OPTIONAL)
 
 endfunction(generate_database_schema)
 
