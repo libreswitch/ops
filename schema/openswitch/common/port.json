@@ -1756,10 +1756,10 @@
       "doc": [
         "A port within a [Bridge](Bridge).",
         "",
-        "Most commonly, a port has exactly one ``interface,'' pointed to by its",
+        "Most commonly, a port has exactly one *interface*, pointed to by its",
         "[interfaces](Port.interfaces) column.  Such a port logically corresponds to a",
         "port on a physical Ethernet switch.  A port with more than one interface is a",
-        "``bonded port'' (see [Port](Port)).",
+        "*bonded port* (see [Port](Port)).",
         "",
         "Some properties that one might think as belonging to a port are actually part of",
         "the port's [Interface](Interface) members.",
@@ -1790,7 +1790,7 @@
           "header is the access port's VLAN ID.",
           "+ __native-tagged__:   A native-tagged port resembles a trunk port, with the",
           "exception that a packet without an 802.1Q header that ingresses on a native-",
-          "tagged port is in the ``native VLAN'' (specified in the [tag](Port.tag) column).",
+          "tagged port is in the *native VLAN* (specified in the [tag](Port.tag) column).",
           "+ __native-untagged__:   A native-untagged port resembles a native-tagged port,",
           "with the exception that a packet that egresses on a native-untagged port in the",
           "native VLAN will not have an 802.1Q header.",
@@ -1799,7 +1799,7 @@
           "packet, as described by the rules above."
         ],
         "/Bonding Configuration": [
-          "A port that has more than one interface is a ``bonded port.'' Bonding allows for",
+          "A port that has more than one interface is a *bonded port*. Bonding allows for",
           "load balancing and fail-over.",
           "",
           "The following modes (bond_mode) require the upstream switch to support 802.3ad",

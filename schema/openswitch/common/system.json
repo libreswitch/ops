@@ -249,7 +249,7 @@
                   "then the crash count may be positive; if it is, the latter duration is the",
                   "amount of time since the most recent crash and restart.",
                   "",
-                  "There will be one key-value pair for each file in OpenSwitch's ``run directory''",
+                  "There will be one key-value pair for each file in OpenSwitch's *run directory*",
                   "(usually `/var/run/openvswitch`) whose name ends in `.pid`, whose contents are a",
                   "process ID, and which is locked by a running process.  The _name_ is taken from",
                   "the pidfile's name."

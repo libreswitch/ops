@@ -446,7 +446,7 @@
           "OpenSwitch supports limiting the rate of packet forwarding to a controller.",
           "",
           "There are two main reasons in OpenFlow for a packet to be sent to a controller:",
-          "either the packet ``misses'' in the flow table, that is, there is no matching",
+          "either the packet **misses** in the flow table, that is, there is no matching",
           "flow, or a flow table action says to send the packet to the controller.",
           "OpenSwitch limits the rate of each kind of packet separately at the configured",
           "rate.  Therefore, the actual rate that packets are sent to the controller can be",
@@ -459,7 +459,7 @@
         "/Asynchronous Messages": [
           "OpenFlow switches send certain messages to controllers spontanenously, that is,",
           "not in response to any request from the controller.  These messages are called",
-          "``asynchronous messages.''  These columns allow asynchronous messages to be",
+          "*asynchronous messages*.  These columns allow asynchronous messages to be",
           "limited or disabled to ensure the best use of network resources."
         ],
         "/Common Columns": [

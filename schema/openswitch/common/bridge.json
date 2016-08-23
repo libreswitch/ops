@@ -411,7 +411,7 @@
         "Configuration for a bridge within an [System](System).",
         "",
         "A [Bridge](Bridge) record represents an Ethernet switch with one or more",
-        "``ports,'' which are the [Port](Port) records pointed to by the",
+        "*ports*, which are the [Port](Port) records pointed to by the",
         "[Bridge](Bridge)'s [ports](Bridge.ports) column. In the first release, only one",
         "default bridge (bridge_normal) is supported"
       ],

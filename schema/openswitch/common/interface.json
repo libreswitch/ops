@@ -61,13 +61,13 @@
             "The interface type, one of:",
             "",
             "+ __`system`__:  An ordinary network device, e.g. `eth0` on Linux. Sometimes",
-            "referred to as ``external interfaces'' since they are generally connected to",
+            "referred to as *external interfaces* since they are generally connected to",
             "hardware external to that on which the OpenSwitch is running.  The empty string",
             "is a synonym for `system`.",
             "+ __`internal`__:  A simulated network device that sends and receives traffic.",
             "An internal interface whose [name](Interface.name) is the same as its bridge's",
-            "[name](Bridge.name) is called the ``local interface.''  It does not make sense",
-            "to bond an internal interface, so the terms ``port'' and ``interface'' are often",
+            "[name](Bridge.name) is called the *local interface*.  It does not make sense",
+            "to bond an internal interface, so the terms *port* and *interface* are often",
             "used imprecisely for internal interfaces.",
             "+ __`vlansubint`__:  A sub-interface created for a physical interface. Sub-",
             "interfaces are used for router-on-stick configurations and to allow separation",
@@ -1154,7 +1154,7 @@
             "OpenFlow port number for this interface.  OpenSwitch sets this column's value,",
             "so other clients should treat it as read-only.",
             "",
-            "The OpenFlow ``local'' port (`OFPP_LOCAL`) is 65,534. The other valid port",
+            "The OpenFlow *local* port (`OFPP_LOCAL`) is 65,534. The other valid port",
             "numbers are in the range 1 to 65,279, inclusive.  Value -1 indicates an error",
             "adding the interface."
           ],
@@ -1390,10 +1390,10 @@
               "bridge": {
                 "type": "boolean",
                 "doc": [
-                  "Boolean value indicating interface is a `bridge' interface which is created for",
-                  "every bridge instance. The `bridge' interface receives all VLAN traffic and",
+                  "Boolean value indicating interface is a *bridge* interface which is created for",
+                  "every bridge instance. The *bridge* interface receives all VLAN traffic and",
                   "distributes to the vlan interfaces based on the VLAN tags. The default value is",
-                  "`false'"
+                  "*false*"
                 ],
                 "group": "/Hardware Interface Information",
                 "emptyValue": "false"

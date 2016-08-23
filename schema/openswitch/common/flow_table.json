@@ -76,7 +76,7 @@
             "",
             "+ When eviction is not enabled, via",
             "[overflow_policy](Flow_Table.overflow_policy) or an OpenFlow 1.4",
-            "+ ``table mod,'' this column has no effect."
+            "+ *table mod*, this column has no effect."
           ],
           "group": "/Eviction Policy"
         },
@@ -103,12 +103,12 @@
           "OpenSwitch supports limiting the number of flows that may be installed in a flow",
           "table, via the [flow_limit](Flow_Table.flow_limit) column. When adding a flow",
           "would exceed this limit, by default OpenSwitch reports an error, but there are",
-          "two ways to configure OpenSwitch to instead delete (``evict'') a flow to make",
+          "two ways to configure OpenSwitch to instead delete (*evict*) a flow to make",
           "room for the new one:",
           "",
           "+ Set the [overflow_policy](Flow_Table.overflow_policy) column to `evict`.",
           "+ Send an OpenFlow 1.4",
-          "+ ``table mod request'' to enable eviction for the flow table (e.g. `ovs-ofctl",
+          "+ *table mod request* to enable eviction for the flow table (e.g. `ovs-ofctl",
           "-O OpenFlow14 mod-table br0 0 evict` to enable eviction on flow table 0 of",
           "bridge `br0`).",
           "",
@@ -127,7 +127,7 @@
           "number of flows, consider the flows in all of those groups.",
           "1.  If the flows under consideration have different importance values, eliminate",
           "from consideration any flows except those with the lowest importance.",
-          "(``Importance,'' a 16-bit integer value attached to each flow, was introduced in",
+          "(*Importance*, a 16-bit integer value attached to each flow, was introduced in",
           "OpenFlow",
           "1.4.  Flows inserted with older versions of OpenFlow always have an importance",
           "of 0.)",
