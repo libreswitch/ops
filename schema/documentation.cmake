@@ -55,6 +55,6 @@ function(generate_database_documentation)
 	add_dependencies(doc generate-${dbname}-documentation)
 
 	# Deploy the documentation files into the image
-	#install(DIRECTORY ${html_dir}/schemadoc DESTINATION /srv/www PATTERN ".*" EXCLUDE)
+	install(DIRECTORY ${html_dir}/schemadoc DESTINATION /srv/www PATTERN ".*" EXCLUDE)
 
 endfunction(generate_database_documentation)
