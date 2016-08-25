@@ -17,6 +17,7 @@
 
 import copy
 import json
+import sys
 
 from argparse import ArgumentParser
 from collections import OrderedDict
@@ -452,24 +453,32 @@ class Diagram:
 
     def get_link(self, table_name, server_url, output_dir, embedded=False):
         '''Return an URL to this diagram.'''
-        img_type = 'img/' if embedded else 'png/'
-        plantuml = PlantUML(server_url + img_type)
-        link = plantuml.get_url(str(self))
+        sys.stdout.write('Generating image link for table "%s"... ' % table_name)
         if not embedded:
             try:
-                img_filename = output_dir + table_name.lower() + '.png'
+                plantuml = PlantUML(server_url + 'png/')
                 img = plantuml.processes(str(self))
+                if 'The URL you requested has been blocked' not in img:
+                    img_filename = table_name.lower() + '.png'
+                    with open(output_dir + img_filename, 'wb') as img_fd:
+                        for chunk in img:
+                            img_fd.write(chunk)
+                    print 'done'
+                    return img_filename
+                else:
+                    print 'URL blocked'
             except PlantUMLConnectionError:
                 print "W: ConnectionError processing table %s" % table_name
             except PlantUMLError:
                 print "W: Error in processing table %s" % table_name
             except PlantUMLHTTPError as e:
                 print "W: Request to PlantUML server returned an error"
-            else:
-                with open(img_filename, 'wb') as img_fd:
-                    for chunk in img:
-                        img_fd.write(chunk)
-                link = table_name.lower() + '.png'
+            except:
+                print "E: Unable to write the image file"
+                raise
+        # Use an URL when the previous process failed
+        plantuml = PlantUML(server_url + 'img/')
+        link = plantuml.get_url(str(self))
         return link
 
 
