@@ -84,7 +84,7 @@ The primary responsibility of ops-switchd is to translate the data model residin
 
 Internal modularity of ops-switchd provides the ability to port OpenSwitch to different SDKs and the corresponding silicon. For more information on ASIC portability, refer to ["porting to a different ASIC".](/documents/user/porting#porting-to-a-different-asic)
 
-Being based on ovs-vswtchd from Open vSwitch, ops-switchd also contains the Openflow agent and communicates directly to Openflow controllers. OpenFlow functionality is not yet supported (not connected to any ASIC SDK), but will be added in the future.
+Being based on ovs-vswitchd from Open vSwitch, ops-switchd also contains the Openflow agent and communicates directly to Openflow controllers. OpenFlow functionality is supported on certain platforms (the OpenNSL is one ASIC SDK that has support).
 
 ## Hardware support daemons
 Hardware support daemons mediate between the kernel drivers of various peripheral devices and the OVSDB. In the current implementation, I2C based peripherals are supported using **Config-YAML library**.
