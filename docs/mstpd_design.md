@@ -1,24 +1,28 @@
 #MSTP Feature
 
-**Table of Contents**
+##Table of Contents
+- [Responsibilities](#responsibilities)
+- [Design choices](#design-choices)
+- [Relationships to external OpenSwitch entities](#relationships-to-external-openswitch-entities)
+- [OVSDB Schema](#ovsdb-schema)
+- [MSTP BPDU Format](#mstp-bpdu-format)
+- [Internal structure](#internal-structure)
+- [OVSDB Event Handling](#ovsdb-event-handling)
+- [Daemon Restartablity](#daemon-restartablity)
+- [Other Feature Interactions](#other-feature-interactions)
+- [CoPP for MSTP](#copp-for-mstp)
+- [Troubleshooting Support](#troubleshooting-support)
+- [References](#references)
 
-[TOC]
-
-High level design of ops-stpd
-==============================
+#High level design of ops-stpd
 
 The ops-stpd daemon manages to avoid bridge loops (multiple paths linking one segment to another, resulting in an infinite loop situation).
 
-Responsibilities
-----------------
+##Responsibilities
 The ops-stpd daemon is responsible for managing all MSTP Instances defined by the user.
-
-Design choices
---------------
+##Design choices
 N/A
-
-Relationships to external OpenSwitch entities
----------------------------------------------
+## Relationships to external OpenSwitch entities
 ```ditaa
 +-------------+      +-------------+       +------+
 |             +------>Interfaces   +       +      +
@@ -50,9 +54,7 @@ The ops-stpd daemon monitors the MSTP related schema in the database. As the con
 The ops-stpd daemon registers for MSTP BPDUs on all L2-Ports configured for MSTP, and sends and receives BPDUs to the peer via the L2-Ports.
 
 When the state information maintained by ops-stpd changes, it updates the information in the database. Some of this information is strictly status, but this also includes hardware configuration, which is used by ops-switchd to configure the switch.
-
-OVSDB-Schema
-------------
+##OVSDB Schema
 The following OpenSwitch database schema elements are referenced by ops-stpd:
 
 Configuration Columns are listened by ops-stpd for changes in the configuration.
@@ -167,10 +169,7 @@ Status Columns are written into DB by ops-stpd by comparing configuration with p
         port_state: used by ops-switchd to communicate to ASIC to Block/Forward.
     MSTP_Instance_Port:
         port_state: used by ops-switchd to communicate to ASIC to Block/Forward.
-
-
-MSTP BPDU Format
-----------------
+## MSTP BPDU Format
 ```ditaa
 +--------------------------------------+
 |           Protocol Identifier        |1-2
@@ -215,9 +214,7 @@ MSTP BPDU Format
 When we configure only CIST and enable a spanning-tree MSTP BPDUs will be sent out with a length of 119 bytes incremented by 16 bytes for each instance.
 
 Maximum of 64 MSTP instances can be configured and each instance will have an exclusive,non-overlapping set of VLANs. Hence, the Maximum size of a packet can be 1147 bytes.
-
-Internal structure
-------------------
+##Internal structure
 The ops-stpd daemon has three operational threads:
 * ovsdb_thread
   This thread processes the typical OVSDB main loop, and handles any changes. Some changes are handled by passing messages to the mstpd_protocol_thread thread.
@@ -225,9 +222,7 @@ The ops-stpd daemon has three operational threads:
   This thread processes messages sent to it by the other two threads. Processing of the messages includes operating the finite state machines.
 * mstp_rx_pdu_thread
   This thread waits for MSTP BPDUs on interfaces. When a MSTP BPDU is received, it sends a message (including the packet data) to the mstpd_protocol_thread thread for processing through the state machines.
-
-OVSDB Event Handling
----------------
+##OVSDB Event Handling
 The ops-stpd daemon handles multiple events received from OVSDB updates.
 * L2-Port Add:
   When a L2-Port is created in OVSDB, daemon will creata a entry for CIST_port and MSTI_port if exists. Updates the daemon data structures and if MSTP is enabled it triggers the state machines which are relevant. Split/LAG ports does not have any special functionality from ops-stpd perspective.
@@ -249,26 +244,17 @@ Daemon calculates the priority vectors and takes a decision on the ports which h
 ops-stpd also updates DB on the state changes/statistics/status parameters in interfaces based on priority vectors.
 
 Once daemon sets port state as Forwarding/Blocking/Learning, switchd plugin shall take care of setting the values into the ASIC.
-
-Daemon Restartablity
---------------------
+##Daemon Restartablity
 When a ops-stpd crashes, daemon cleans up the status and statistics columns on restart with the configuration columns intact in the DB.
-
-Other Feature Interactions
---------------------------
-
+##Other Feature Interactions
 As MSTP is one of the features that can bring up/down a port, it aligns with the  [Port Pecking Order Design](http://git.openswitch.net/cgit/openswitch/ops/plain/docs/port_state_pecking_order_design.md) which facilitates multiple such features to inter-operate. An example of such an interaction would be between LAG and MSTP.
 
 MSTP can operate over LAGs (static or dynamic) in the same way that it operates over physical interfaces.
 Please refer to [Link Aggregation Design](http://git.openswitch.net/cgit/openswitch/ops/tree/docs/link_aggregation_design.md)
-
-CoPP for MSTP
--------------
+##CoPP for MSTP
 The default CoPP profile for MSTP in OPS restricts number of MSTP BPDUs sent to CPU per second to 1000 packets and that MSTP packets will be sent on the highest priority queue "10" to the CPU.
 Refer to [CoPP User Guide](http://git.openswitch.net/cgit/openswitch/ops/plain/docs/CoPP_user_guide.md?h=rel/dill)
-
-Troubleshooting Support
------------------------
+##Troubleshooting Support
 ops-stpd daemon has some support for debugging in case of any issues.
 There are multiple options to troubleshoot ops-stpd daemon
 1. diag-dump mstp basic : This will dump all the relevant data from the ops-stpd daemon..
@@ -283,8 +269,6 @@ There are multiple options to troubleshoot ops-stpd daemon
 * ovs-appctl -t ops-stpd mstpd/daemon/msti_port <msti> <port>
 3. show tech mstp : This will show all the data related to MSTP.
 4. show events mstp: This will show all the events related to MSTP.
-
-References
-----------
+##References
 *  [Port Pecking Order Design](http://git.openswitch.net/cgit/openswitch/ops/plain/docs/port_state_pecking_order_design.md)
 *  [MSTP CLI Document](http://git.openswitch.net/cgit/openswitch/ops/plain/docs/MSTP_cli.md?h=rel/dill)
