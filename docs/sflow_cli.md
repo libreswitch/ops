@@ -226,7 +226,7 @@ All users.
 ##### Parameters
 | Parameter | Status   | Syntax         | Description                           |
 |:-----------|:----------|:----------------:|:---------------------------------------|
-| *size* | Required | 1-9000 | Sets the maximum size of an sFlow datagram. |
+| *size* | Required | 200-9000 | Sets the maximum size of an sFlow datagram. |
 ##### Example
 ```
 switch# configure terminal

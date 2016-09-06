@@ -33,7 +33,9 @@
           "category": "configuration",
           "type": {
             "key": {
-              "type": "integer"
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 1000000000
             },
             "min": 0,
             "max": 1
@@ -90,7 +92,9 @@
           "category": "configuration",
           "type": {
             "key": {
-              "type": "integer"
+              "type": "integer",
+              "minInteger": 0,
+              "maxInteger": 3600
             },
             "min": 0,
             "max": 1
@@ -105,7 +109,9 @@
           "category": "configuration",
           "type": {
             "key": {
-              "type": "integer"
+              "type": "integer",
+              "minInteger": 64,
+              "maxInteger": 256
             },
             "min": 0,
             "max": 1
@@ -120,7 +126,9 @@
           "category": "configuration",
           "type": {
             "key": {
-              "type": "integer"
+              "type": "integer",
+              "minInteger": 200,
+              "maxInteger": 9000
             },
             "min": 0,
             "max": 1
