@@ -196,6 +196,41 @@
                 ],
                 "group": "/Global Route Map Entries Configuration"
               },
+              "prefix_list": {
+                "type": "string",
+                "doc": [
+                  "Matches routes based on prefix list."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "as_path": {
+                "type": "string",
+                "doc": [
+                  "Matches routes based on AS path."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "community": {
+                "type": "string",
+                "doc": [
+                  "Matches routes based on community list."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "extcommunity": {
+                "type": "string",
+                "doc": [
+                  "Matches routes based on extended community list."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
+              "ipv6_prefix_list": {
+                "type": "string",
+                "doc": [
+                  "Matches routes based on IPv6 prefix list."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
               "ipv6_next_hop": {
                 "type": "string",
                 "doc": [
@@ -267,6 +302,15 @@
                 ],
                 "group": "/Global Route Map Entries Configuration"
               },
+              "comm_list": {
+                "type": "string",
+                "doc": [
+                  "Removes the community attributes from the eBGP routes identified in the",
+                  "specified community list. It also deletes matching communities for the route",
+                  "map."
+                ],
+                "group": "/Global Route Map Entries Configuration"
+              },
               "weight": {
                 "type": {
                   "type": "integer",
@@ -289,7 +333,7 @@
                 ],
                 "group": "/Global Route Map Entries Configuration"
               },
-              "atomic-aggregate": {
+              "atomic_aggregate": {
                 "type": "boolean",
                 "doc": [
                   "If set to 'true', upstream routers will be notified that route is aggregated.",
