@@ -1490,6 +1490,31 @@
                 "group": "/Database Configuration",
                 "emptyValue": "false"
               },
+              "radius_timeout": {
+                "type": {
+                   "type": "integer",
+                   "minInteger": 1,
+                   "maxInteger": 60
+                },
+                "doc": [
+                  "Specifies the timeout interval in seconds that the switch waits for response",
+                  "from the RADIUS server before declaring a timeout failure."
+                ],
+                "group": "/RADIUS global configuration",
+                "emptyValue": "5"
+              },
+              "radius_passkey": {
+                "type": {
+                  "type": "string",
+                  "maxLength": 32
+                },
+                "doc": [
+                  "Specifies the shared secret key between the RADIUS client",
+                  "and the RADIUS server."
+                ],
+                "group": "/RADIUS global configuration",
+                "emptyValue": "testing123-1"
+              },
               "radius_auth": {
                 "type": {
                   "type": "string",
@@ -1500,31 +1525,22 @@
                 },
                 "doc": [
                   "Specifies encoding to be used for the user password for radius based",
-                  "authentication. By default `pap` is used."
+                  "authentication."
                 ],
-                "group": "/Database Configuration",
+                "group": "/RADIUS global configuration",
                 "emptyValue": "pap"
               },
-              "fallback": {
-                "type": "string",
+              "radius_retries": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0,
+                  "maxInteger": 5
+                 },
                 "doc": [
-                  "This column used for AAA feature. The valid values for the key 'fallback' are",
-                  "true or false based on the user request for authentication. If fallback=true,",
-                  "fall to local authentication if radius server is not reachable. Default value is",
-                  "`true`"
+                  "Specifies the number of retries to radius server if there is no response."
                 ],
-                "group": "/Database Configuration",
-                "emptyValue": "true"
-              },
-              "radius": {
-                "type": "string",
-                "doc": [
-                  "This column used for AAA feature. The valid values for the key 'radius' are true",
-                  "or false based on the user request for authentication. If radius=true, radius",
-                  "based authentication is enabled. By default authentication is local."
-                ],
-                "group": "/Database Configuration",
-                "emptyValue": "false"
+                "group": "/RADIUS global configuration",
+                "emptyValue": 1
               },
               "tacacs_timeout": {
                 "type": {

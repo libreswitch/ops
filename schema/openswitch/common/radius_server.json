@@ -6,25 +6,12 @@
   "tables": {
     "Radius_Server": {
       "columns": {
-        "ip_address": {
+        "address": {
           "category": "configuration",
           "type": "string",
           "mutable": false,
           "doc": [
-            "IP address of the radius server configured."
-          ]
-        },
-        "priority": {
-          "category": "configuration",
-          "type": {
-            "key": {
-              "type": "integer",
-              "minInteger": 0,
-              "maxInteger": 64
-            }
-          },
-          "doc": [
-            "Specifies the order in which radius servers are configured on the switch."
+            "IPV4/IPV6 address or FQDN of the RADIUS server."
           ]
         },
         "udp_port": {
@@ -32,15 +19,14 @@
           "type": {
             "key": {
               "type": "integer",
-              "minInteger": 0,
+              "minInteger": 1,
               "maxInteger": 65535
             },
             "min": 0,
             "max": 1
           },
           "doc": [
-            "Specifies the udp port number for authentication. Default udp port number for",
-            "authentication is 1812."
+            "Specifies the udp port number for authentication."
           ],
           "emptyValue": 1812
         },
@@ -56,7 +42,7 @@
           },
           "doc": [
             "Specifies the passkey between radius client and radius server for",
-            "authentication. Default passkey is testing123-1."
+            "authentication."
           ],
           "emptyValue": "testing123-1"
         },
@@ -72,8 +58,7 @@
             "max": 1
           },
           "doc": [
-            "Specifies the timeout between authentication requests to radius server. Default",
-            "timeout is 5 seconds."
+            "Specifies the timeout between authentication requests to radius server."
           ],
           "emptyValue": 5
         },
@@ -89,10 +74,27 @@
             "max": 1
           },
           "doc": [
-            "Specifies the number of retries to radius server if there is no response.",
-            "Default retry value is 1."
+            "Specifies the number of retries to radius server if there is no response."
           ],
           "emptyValue": 1
+        },
+        "auth_type": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "pap",
+                "chap"
+              ]
+            },
+            "min" : 0,
+            "max" : 1
+          },
+          "doc": [
+            "Specifies the authentication method (pap/chap) used."
+          ],
+          "emptyValue": "pap"
         },
         "group": {
           "category": "configuration",
@@ -102,23 +104,58 @@
               "type": "uuid",
               "refTable": "AAA_Server_Group"
             },
+            "min": 1,
+            "max": 2
+          },
+          "doc": [
+            "Specifies the RADIUS server-group that it belongs to.",
+            "It would belong to a family group 'radius' group",
+            "and the user defined AAA server group"
+          ]
+        },
+        "user_group_priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1
+            },
             "min": 0,
             "max": 1
           },
           "doc": [
-            "Specifies the RADIUS server-group that it belongs to."
+            "Specifies the order in which RADIUS servers are configured",
+            "within a user defined server group. Priority is assigned",
+            "starting with 1 and incremental. In case this server is",
+            "not part of a user defined group, this will be empty."
+          ]
+        },
+        "default_group_priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1
+            }
+          },
+          "doc": [
+            "Specifies the order in which a RADIUS server is configurad within",
+            "RADIUS default family group 'radius'.",
+            "By default all RADIUS servers should be added to default group 'radius'",
+            "Priority is assigned starting with 1 and incremental."
           ]
         }
       },
       "indexes": [
         [
-          "ip_address"
+          "address",
+          "udp_port"
         ]
       ],
       "title": "Radius server configuration",
       "doc": [
         "These radius servers are being used for authenticating when users wants to login",
-        "to the box."
+        "to the switch."
       ]
     }
   }
