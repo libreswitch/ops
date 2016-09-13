@@ -283,6 +283,15 @@
     "ACL_Entry": {
       "$ref": "common/acl_entry.json#/tables/ACL_Entry"
     },
+    "Tacacs_Server": {
+      "$ref": "common/tacacs_server.json#/tables/Tacacs_Server"
+    },
+    "AAA_Server_Group": {
+      "$ref": "common/aaa_server_group.json#/tables/AAA_Server_Group"
+    },
+    "AAA_Server_Group_Prio": {
+      "$ref": "common/aaa_server_group_prio.json#/tables/AAA_Server_Group_Prio"
+    },
     "Notification_Subscriber": {
       "$ref": "common/notification_subscriber.json#/tables/Notification_Subscriber"
     },

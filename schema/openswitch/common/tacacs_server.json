@@ -1,0 +1,152 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/tacacs_server.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "Tacacs_Server": {
+      "columns": {
+        "ip_address": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 45
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "IPV4/IPV6 address or FQDN of the TACACS+ server."
+          ]
+        },
+        "tcp_port": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 65535
+            }
+          },
+          "doc": [
+            "Specifies the tcp port number used for exchanging TACACS+ messages",
+            "between the client and server. Default tcp port number is 49."
+          ],
+          "emptyValue": 49
+        },
+        "passkey": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "maxLength": 32 
+            },
+            "min" : 0,
+            "max" : 1
+          },
+          "doc": [
+            "Specifies the shared secret key between the TACACS+ client",
+            "and the TACACS+ server. Default passkey is testing123-1."
+          ],
+          "emptyValue": "testing123-1"
+        },
+        "timeout": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 60
+            },
+            "min" : 0,
+            "max" : 1
+          },
+          "doc": [
+            "Specifies the timeout interval that the switch waits for response",
+            "from the TACACS+ server before declaring a timeout failure.",
+            "Default timeout value is 5 seconds."
+          ],
+          "emptyValue": 5
+        },
+        "auth_type": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "pap",
+                "chap"
+              ]
+            },
+            "min" : 0,
+            "max" : 1
+          },
+          "doc": [
+            "Specifies the authentication method (pap/chap) used.",
+            "Default is pap."
+          ],
+          "emptyValue": "pap",
+          "group": "/Core Features"
+        },
+        "group": {
+          "category": "configuration",
+          "relationship": "reference",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "AAA_Server_Group"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "Specifies the TACACS+ server-group that it belongs to."
+          ]
+        },
+        "group_priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0
+            }
+          },
+          "doc": [
+            "Specifies the order in which TACACS+ servers are configured",
+            "within a server group. This is an increasing counter",
+            "starting with 1. In case this server is not part of a user",
+            "defined group, this will be set to 0."
+          ],
+          "emptyValue": 0
+        },
+        "default_priority": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0
+            }
+          },
+          "doc": [
+            "Specifies the order in which TACACS+ servers are configured.",
+            "By default they are added to the default family group.",
+            "This is an increasing counter starting with 1."
+          ],
+          "emptyValue": 0
+        }
+      },
+      "indexes": [
+        [
+          "ip_address",
+          "tcp_port"
+        ]
+      ],
+      "title": "TACACS+ server configuration",
+      "doc": [
+        "These TACACS+ servers are being used for authenticating when users wants to login",
+        "to the box."
+      ]
+    }
+  }
+}
+

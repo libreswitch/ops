@@ -1420,6 +1420,18 @@
             "omitCodeGeneration": true,
             "valueType": "string",
             "valueMap": {
+              "fail_through": {
+                "type": "boolean",
+                "doc": [
+                  "This determines whether to access the next remote AAA server",
+                  "in case of an authentication failure from the current one",
+                  "If true, the next server in line will be accessed.",
+                  "If false, the authentication process will be aborted at the",
+                  "first instance of an authentication failure."
+                ],
+                "group": "/Database Configuration",
+                "emptyValue": "false"
+              },
               "radius_auth": {
                 "type": {
                   "type": "string",
@@ -1455,6 +1467,46 @@
                 ],
                 "group": "/Database Configuration",
                 "emptyValue": "false"
+              },
+              "tacacs_timeout": {
+                "type": {
+                   "type": "integer",
+                   "minInteger": 0,
+                   "maxInteger": 60
+                },
+                "doc": [
+                  "This column used for AAA feature. ",
+                  "Specifies the timeout interval that the switch waits for response",
+                  "from the TACACS+ server before declaring a timeout failure.",
+                  "Default timeout value is 5 seconds."
+                ],
+                "group": "/TACACS+ global configuration",
+                "emptyValue": "5"
+              },
+              "tacacs_passkey": {
+                "type": "string",
+                "doc": [
+                  "This column used for AAA feature. ",
+                  "Specifies the shared secret key between the TACACS+ client",
+                  "and the TACACS+ server. Default passkey is 'testing123-1'."
+                ],
+                "group": "/TACACS+ global configuration",
+                "emptyValue": "testing123-1"
+              },
+             "tacacs_auth": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "pap",
+                    "chap"
+                  ]
+                },
+                "doc": [
+                  "Specifies encoding to be used for the user password for tacacs+",
+                  "authentication. By default `pap` is used."
+                ],
+                "group": "/TACACS+ global configuration",
+                "emptyValue": "pap"
               },
               "ssh_publickeyauthentication_enable": {
                 "type": "boolean",

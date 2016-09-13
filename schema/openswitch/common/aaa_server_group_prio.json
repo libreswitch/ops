@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/aaa_server_group_prio.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "AAA_Server_Group_Prio": {
+      "columns": {
+        "session_type": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "default"
+              ]
+            }
+          },
+          "doc": [
+            "Refers to the type of user session.",
+            "For example: console, default, ssh, telnet etc.",
+            "Currently we do not distinguish between session types",
+            "and hence support the generic 'default' session."
+          ],
+          "group": "/Core Features"
+        },
+        "authentication_group_prios": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "AAA_Server_Group"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "keyname": "prio",
+          "doc": [
+            "Specifies the list of AAA-server-groups and the order in which they",
+            "will be applied for authentication.",
+            "",
+            "For example: 1=UUID1, 2=UUID2 ...",
+            "If no server groups are mentioned, the local authentication is used.",
+            "The local group has a default priority of 0",
+            "A positive priority is applied to the server groups upon configuration."
+          ]
+        },
+        "authorization_group_prios": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 0
+            },
+            "value": {
+              "type": "uuid",
+              "refTable": "AAA_Server_Group"
+            },
+            "min": 0,
+            "max": "unlimited"
+          },
+          "keyname": "prio",
+          "doc": [
+            "Specifies the list of AAA-server-groups and the order in which they",
+            "will be applied for authorization.",
+            "",
+            "For example: 1=UUID1, 2=UUID2 ...",
+            "The local group has a default priority of 0",
+            "A positive priority is applied to the server groups upon configuration."
+          ]
+        }
+      },
+      "indexes": [
+        [
+          "session_type"
+        ]
+      ],
+      "isRoot": true,
+      "maxRows": 32,
+      "doc": [
+        "Captures the priorities in which the server groups will be applied",
+        "to authenticate/authorize a user for a session_type."
+      ]
+    }
+  }
+}
+

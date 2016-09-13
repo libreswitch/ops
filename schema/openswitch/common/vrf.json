@@ -179,8 +179,21 @@
                   "refType": "weak"
                 },
                 "doc": [
-                  "Provides source interface for outgoing radius server packets. If not present,",
-                  "the key \"all\" provides the source interface for outgoing tftp packets. Otherwise",
+                  "Provides source interface for outgoing radius packets. If not present,",
+                  "the key \"all\" provides the source interface for outgoing radius packets. Otherwise",
+                  "regular routing rules take place."
+                ],
+                "group": "/Source Interface Selection Configurations"
+              },
+              "tacacs": {
+                "type": {
+                  "type": "uuid",
+                  "refTable": "Port",
+                  "refType": "weak"
+                },
+                "doc": [
+                  "Provides source interface for outgoing tacacs packets. If not present,",
+                  "the key \"all\" provides the source interface for outgoing tacacs packets. Otherwise",
                   "regular routing rules take place."
                 ],
                 "group": "/Source Interface Selection Configurations"
@@ -199,7 +212,7 @@
               }
             },
             "min": 0,
-            "max": 3
+            "max": 4
           },
           "group": "/Source Interface Selection Configurations"
         },
@@ -233,7 +246,20 @@
                 },
                 "doc": [
                   "Provides source ip for outgoing radius packets. If not present, the key \"all\"",
-                  "provides the source ip for outgoing tftp packets. Otherwise regular routing",
+                  "provides the source ip for outgoing radius packets. Otherwise regular routing",
+                  "rules take place."
+                ],
+                "group": "/Source Interface Selection Configurations"
+              },
+              "tacacs": {
+                "type": {
+                  "type": "string",
+                  "minLength": 7,
+                  "maxLength": 15
+                },
+                "doc": [
+                  "Provides source ip for outgoing tacacs packets. If not present, the key \"all\"",
+                  "provides the source ip for outgoing tacacs packets. Otherwise regular routing",
                   "rules take place."
                 ],
                 "group": "/Source Interface Selection Configurations"
@@ -252,7 +278,7 @@
               }
             },
             "min": 0,
-            "max": 3
+            "max": 4
           },
           "group": "/Source Interface Selection Configurations"
         },

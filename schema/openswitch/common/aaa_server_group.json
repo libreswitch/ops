@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "common/aaa_server_group.json#",
+  "name": "OpenSwitch",
+  "version": "0.1.8",
+  "tables": {
+    "AAA_Server_Group": {
+      "columns": {
+        "group_type": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "enum": [
+                "none",
+                "local",
+                "radius",
+                "tacacs_plus"
+              ]
+            }
+          },
+          "doc": [
+            "Either none, local, radius or tacacs_plus",
+            "Group 0: none: Special group that contains no servers.",
+            "         Corresponds to no command authorization. All the commands",
+            "         will be authorized",
+            "",
+            "Group 1: local: Special group that contains no servers.",
+            "         More of a place-holder to capture the order to be followed",
+            "         for authentication",
+            "",
+            "Group 2: radius: Default family group containing all RADIUS servers",
+            "         in the order in which they were configured.",
+            "",
+            "Group 3: tacacs_plus: Default family group containing all TACACS+ servers",
+            "         in the order in which they were configured.",
+            "",
+            "Group 4-32: User groups.",
+            "         A RADIUS user-group will contain RADIUS servers alone",
+            "         A TACACS+ user-group will contain TACACS+ servers alone"
+          ],
+          "group": "/Core Features"
+        },
+        "group_name": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32
+            }
+          },
+          "mutable": false,
+          "doc": [
+            "Specifies the unique name of the server-group.",
+            "This can be max 32 bytes long.",
+            "It can comprise of a group family or a group-name.",
+            "",
+            "Example:",
+            "group radius: Server group that consists of all defined RADIUS hosts",
+            "group tacacs+: Server group that consists of all defined TACACS+ hosts",
+            "group name: A RADIUS or a TACACS+ group consisting of a list of",
+            "all RADIUS or all TACACS+ servers respectively. "
+          ]
+        },
+        "is_static": {
+          "category": "status",
+          "type": "boolean",
+          "doc": [
+            "Specifies whether the server-group is static or user-defined.",
+            "The 3 default family groups (local, radius, tacacs) are static.",
+            "They are created during init time.",
+            "The other 29 groups are the user-defined"
+          ]
+        }
+      },
+      "indexes": [
+        [
+          "group_name"
+        ]
+      ],
+      "isRoot": true,
+      "maxRows": 32,
+      "doc": [
+        "Contains a list of RADIUS and TACACS+ server-groups comprising",
+        "of a list of respective servers.",
+        "",
+        "Maximum of 32 server-groups are allowed.",
+        "(3 are default family groups viz. 'local', 'radius', 'tacacs+'",
+        "and 29 are user-defined groups)"
+      ]
+    }
+  }
+}
+
