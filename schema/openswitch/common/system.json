@@ -1350,6 +1350,23 @@
           ],
           "group": "/Database Configuration"
         },
+        "tacacs_servers": {
+          "category": "configuration",
+          "relationship": "1:m",
+          "type": {
+            "key": {
+              "type": "uuid",
+              "refTable": "Tacacs_Server"
+            },
+            "min": 0,
+            "max": 64
+          },
+          "doc": [
+            "Specifies tacacs+ servers configuration. See the [Tacacs_Server](Tacacs_Server)",
+            "table for more information."
+          ],
+          "group": "/Database Configuration"
+        },
         "ecmp_config": {
           "category": "configuration",
           "type": {

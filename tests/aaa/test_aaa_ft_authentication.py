@@ -365,12 +365,15 @@ class Test_aaafeature:
     def __del__(self):
         del self.test
 
+    @pytest.mark.skipif(True, reason="Disabling as AAA feature revamp in progress")
     def test_loginSSHlocal(self):
         self.test.loginSSHlocal()
 
+    @pytest.mark.skipif(True, reason="Disabling as AAA feature revamp in progress")
     def test_loginSSHradius(self):
         self.test.loginSSHradius()
         self.test.loginSSHradius(chap=True)
 
+    @pytest.mark.skipif(True, reason="Disabling as AAA feature revamp in progress")
     def test_loginSSHradiusWithFallback(self):
         self.test.loginSSHradiusWithFallback()
