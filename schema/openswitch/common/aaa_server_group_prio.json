@@ -71,7 +71,7 @@
             "will be applied for authorization.",
             "",
             "For example: 1=UUID1, 2=UUID2 ...",
-            "The local group has a default priority of 0",
+            "The none group has a default priority of 0",
             "A positive priority is applied to the server groups upon configuration."
           ]
         }
@@ -82,7 +82,7 @@
         ]
       ],
       "isRoot": true,
-      "maxRows": 32,
+      "maxRows": 1,
       "doc": [
         "Captures the priorities in which the server groups will be applied",
         "to authenticate/authorize a user for a session_type."

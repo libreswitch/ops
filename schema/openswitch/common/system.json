@@ -1545,24 +1545,24 @@
               "tacacs_timeout": {
                 "type": {
                    "type": "integer",
-                   "minInteger": 0,
+                   "minInteger": 1,
                    "maxInteger": 60
                 },
                 "doc": [
-                  "This column used for AAA feature. ",
-                  "Specifies the timeout interval that the switch waits for response",
-                  "from the TACACS+ server before declaring a timeout failure.",
-                  "Default timeout value is 5 seconds."
+                  "Specifies the timeout interval in seconds that the switch waits for response",
+                  "from the TACACS+ server before declaring a timeout failure."
                 ],
                 "group": "/TACACS+ global configuration",
                 "emptyValue": "5"
               },
               "tacacs_passkey": {
-                "type": "string",
+                "type": {
+                  "type": "string",
+                  "maxLength": 32
+                },
                 "doc": [
-                  "This column used for AAA feature. ",
                   "Specifies the shared secret key between the TACACS+ client",
-                  "and the TACACS+ server. Default passkey is 'testing123-1'."
+                  "and the TACACS+ server."
                 ],
                 "group": "/TACACS+ global configuration",
                 "emptyValue": "testing123-1"
@@ -1577,7 +1577,7 @@
                 },
                 "doc": [
                   "Specifies encoding to be used for the user password for tacacs+",
-                  "authentication. By default `pap` is used."
+                  "authentication."
                 ],
                 "group": "/TACACS+ global configuration",
                 "emptyValue": "pap"

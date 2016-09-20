@@ -68,9 +68,9 @@
           "type": "boolean",
           "doc": [
             "Specifies whether the server-group is static or user-defined.",
-            "The 3 default family groups (local, radius, tacacs) are static.",
+            "The 4 default family groups (local, none, radius, tacacs) are static.",
             "They are created during init time.",
-            "The other 29 groups are the user-defined"
+            "The other 28 groups are the user-defined"
           ]
         }
       },
@@ -86,8 +86,8 @@
         "of a list of respective servers.",
         "",
         "Maximum of 32 server-groups are allowed.",
-        "(3 are default family groups viz. 'local', 'radius', 'tacacs+'",
-        "and 29 are user-defined groups)"
+        "(4 are default family groups viz. 'local', 'none', 'radius', 'tacacs+'",
+        "and 28 are user-defined groups)"
       ]
     }
   }
