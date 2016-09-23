@@ -552,6 +552,19 @@
                   "or operatively down"
                 ],
                 "group": "/Port Status"
+              },
+              "bond_speed": {
+                "type": {
+                  "type": "integer",
+                  "minInteger": 0
+                },
+                "doc": [
+                  "Speed, in bits per second (bps), of interfaces operating in LAG. By operating,",
+                  "it means the active interfaces of the LAG, if one member interface operates at a",
+                  "different speed, that interface is not considered as eligible. Valid values are",
+                  "integers greater or equal to 0."
+                ],
+                "group": "/Port Status"
               }
             },
             "min": 0,

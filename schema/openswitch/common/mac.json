@@ -34,7 +34,7 @@
           ]
         },
         "mac_vlan": {
-          "category": "configuration",
+          "category": "status",
           "relationship": "reference",
           "type": {
             "key": {

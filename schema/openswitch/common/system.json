@@ -380,6 +380,24 @@
           ],
           "group": "/Version Reporting"
         },
+        "timezone": {
+          "category": "configuration",
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          },
+          "doc": [
+            "User configured Timezone. Time zone of the device in case sensitive Posix format",
+            "- \"US/Pacific\",\"Asia/Singapore\", \"Etc/GMT\". Please refer to the full list of",
+            "supported time zones at",
+            "`https://en.wikipedia.org/wiki/List_of_tz_database_time_zones`. If not",
+            "specified, system defaults to \"UTC\" timezone."
+          ],
+          "group": "/Configuration"
+        },
         "db_version": {
           "category": "status",
           "type": {
@@ -889,6 +907,17 @@
                 "group": "/Configuration/LLDP Configurations",
                 "emptyValue": "true"
               },
+              "tftp_source": {
+                "type": {
+                  "type": "string",
+                  "maxLength": 256
+                },
+                "doc": [
+                  "Provides source interface or IP address for tftp client. If not present, regular",
+                  "routing rules take place."
+                ],
+                "group": "/Configuration/Source Interface Selection Configurations"
+              },
               "system_description": {
                 "type": "string",
                 "doc": [
@@ -1055,6 +1084,17 @@
                 "group": "/Configuration",
                 "emptyValue": "5000"
               },
+              "protocols_source": {
+                "type": {
+                  "type": "string",
+                  "maxLength": 256
+                },
+                "doc": [
+                  "Overrides source interface or IP address for all the protocols that support it.",
+                  "If not present, regular routing rules take place."
+                ],
+                "group": "/Configuration/Source Interface Selection Configurations"
+              },
               "lldp_tlv_sys_name_enable": {
                 "type": "boolean",
                 "doc": [
@@ -1092,6 +1132,7 @@
             "/Configuration",
             "/Configuration/TFTP Server Configurations",
             "/Configuration/SFTP Server Configurations",
+            "/Configuration/Source Interface Selection Configurations",
             "/Configuration/UDP Broadcast Forwarder Configurations",
             "/Configuration/Virtual Router Configurations",
             "/Configuration/LLDP Configurations",

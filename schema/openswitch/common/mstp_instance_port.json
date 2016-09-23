@@ -65,6 +65,7 @@
               "type": "string",
               "enum": [
                 "Root",
+                "Master",
                 "Designated",
                 "Alternate",
                 "Backup",
