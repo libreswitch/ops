@@ -938,6 +938,9 @@ class QueryFilterPortTest (OpsVsiTest):
         info("\n########## Ending Port Filter Tests ##########\n")
 
 
+@pytest.mark.timeout(600)
+@pytest.mark.skipif(True, reason="Skipping this test case, as it needs \
+                                  rework to handle different platforms")
 class Test_QueryFilterPort:
     def setup(self):
         pass
