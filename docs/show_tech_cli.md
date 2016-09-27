@@ -46,10 +46,10 @@ Platform            : Generic-x86-64
 Manufacturer        : OpenSwitch
 Manufacturer Date   : 09/01/2015 00:00:01
 
-Serial Number       : X8664001            Label Revision      : L01
+Serial Number       : X0000000            Label Revision      : L01
 
 ONIE Version        : 2014.08.00.05       DIAG Version        : 1.0.0.0
-Base MAC Address    : 70:72:cf:d0:bc:e0   Number of MACs      : 74
+Base MAC Address    : xx:xx:xx:xx:xx:xx   Number of MACs      : 74
 Interface Count     : 78                  Max Interface Speed : 40000 Mbps
 
 Fan details:
@@ -154,10 +154,10 @@ Platform            : Generic-x86-64
 Manufacturer        : OpenSwitch
 Manufacturer Date   : 09/01/2015 00:00:01
 
-Serial Number       : X8664001            Label Revision      : L01
+Serial Number       : X0000000            Label Revision      : L01
 
 ONIE Version        : 2014.08.00.05       DIAG Version        : 1.0.0.0
-Base MAC Address    : 70:72:cf:d0:bc:e0   Number of MACs      : 74
+Base MAC Address    : xx:xx:xx:xx:xx:xx   Number of MACs      : 74
 Interface Count     : 78                  Max Interface Speed : 40000 Mbps
 
 Fan details:
