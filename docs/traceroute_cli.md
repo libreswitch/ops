@@ -19,11 +19,11 @@ Root user.
 |*IPv4-address*|Required| A.B.C.D | IPv4 address to traceroute.|
 #### Examples
 ```
-switch# traceroute 10.168.1.146
-traceroute to 10.168.1.146 (10.168.1.146) , 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
-  1 10.57.191.129 2 ms 3 ms 3 ms
-  2 10.57.232.1 4 ms 2 ms 3 ms
-  3 10.168.1.146 4 ms 3 ms 3 ms
+switch# traceroute 10.0.10.1
+traceroute to 10.0.10.1 (10.0.10.1) , 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
+  1   10.0.40.2  0.002ms  0.002ms  0.001ms
+  2   10.0.30.1  0.002ms  0.001ms  0.001ms
+  3   10.0.10.1  0.001ms  0.002ms  0.002ms
 ```
 
 ### Hostname
@@ -60,11 +60,11 @@ Root user.
 | *number*  |Optional |<1-255> | Select maximum number of hops used in outgoing probe packets between 1 to 255.|
 #### Examples
 ```
-switch# switch# traceroute 10.168.1.146 maxttl 30
-traceroute to 10.168.1.146 (10.168.1.146) , 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
-  1 10.57.191.129 2 ms 3 ms 3 ms
-  2 10.57.232.1 4 ms 2 ms 3 ms
-  3 10.168.1.146 4 ms 3 ms 3 ms
+switch# traceroute 10.0.10.1 maxttl 20
+traceroute to 10.0.10.1 (10.0.10.1) , 1 hops min, 20 hops max, 3 sec. timeout, 3 probes
+  1   10.0.40.2  0.002ms  0.002ms  0.001ms
+  2   10.0.30.1  0.002ms  0.001ms  0.001ms
+  3   10.0.10.1  0.001ms  0.002ms  0.002ms
 ```
 
 ### Set minimum TTL
@@ -82,11 +82,11 @@ Root user.
 | *number*  |Optional |<1-255> | Select minimum number of hops used in outgoing probe packets between 1 to 255.|
 #### Examples
 ```
-switch# traceroute 10.168.1.146 minttl 1
-traceroute to 10.168.1.146 (10.168.1.146) , 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
-  1 10.57.191.129 2 ms 3 ms 3 ms
-  2 10.57.232.1 4 ms 2 ms 3 ms
-  3 10.168.1.146 4 ms 3 ms 3 ms
+switch# traceroute 10.0.10.1 minttl 1
+traceroute to 10.0.10.1 (10.0.10.1) , 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
+  1   10.0.40.2  0.002ms  0.002ms  0.001ms
+  2   10.0.30.1  0.002ms  0.001ms  0.001ms
+  3   10.0.10.1  0.001ms  0.002ms  0.002ms
 ```
 
 ### Set destination port
@@ -104,11 +104,11 @@ Root user.
 | *number*  |Optional |<1-34000>| Select the destination port number.|
 #### Examples
 ```
-switch# traceroute 10.168.1.146 dstport 33434
-traceroute to 10.168.1.146 (10.168.1.146) , 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
-  1 10.57.191.129 2 ms 3 ms 3 ms
-  2 10.57.232.1 4 ms 2 ms 3 ms
-  3 10.168.1.146 4 ms 3 ms 3 ms
+switch# traceroute 10.0.10.1 dstport 33434
+traceroute to 10.0.10.1 (10.0.10.1) , 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
+  1   10.0.40.2  0.002ms  0.002ms  0.001ms
+  2   10.0.30.1  0.002ms  0.001ms  0.001ms
+  3   10.0.10.1  0.001ms  0.002ms  0.002ms
 ```
 
 ### Set probes
@@ -126,11 +126,11 @@ Root user.
 | *number*  | Optional| <1-5>  | Select the number of probe queries to send out for each hop between 1 to 5.|
 #### Examples
 ```
-switch# traceroute 10.168.1.146 probes 3
-traceroute to 10.168.1.146 (10.168.1.146) , 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
-  1 10.57.191.129 2 ms 3 ms 3 ms
-  2 10.57.232.1 4 ms 2 ms 3 ms
-  3 10.168.1.146 4 ms 3 ms 3 ms
+switch# traceroute 10.0.10.1 probes 3
+traceroute to 10.0.10.1 (10.0.10.1) , 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
+  1   10.0.40.2  0.002ms  0.002ms  0.001ms
+  2   10.0.30.1  0.002ms  0.001ms  0.001ms
+  3   10.0.10.1  0.001ms  0.002ms  0.002ms
 ```
 
 ### Set timeout
@@ -148,11 +148,11 @@ Root user.
 | *time* | Optional|<1-60> | Select time in seconds to wait for a response to a probe between 1 and 60.|
 #### Examples
 ```
-switch# traceroute 10.168.1.146 timeout 5
-traceroute to 10.168.1.146 (10.168.1.146) , 1 hops min, 30 hops max, 5 sec. timeout, 3 probes
-  1 10.57.191.129 2 ms 3 ms 3 ms
-  2 10.57.232.1 4 ms 2 ms 3 ms
-  3 10.168.1.146 4 ms 3 ms 3 ms
+switch# traceroute 10.0.10.1 timeout 5
+traceroute to 10.0.10.1 (10.0.10.1) , 1 hops min, 30 hops max, 5 sec. timeout, 3 probes
+  1   10.0.40.2  0.002ms  0.002ms  0.001ms
+  2   10.0.30.1  0.002ms  0.001ms  0.001ms
+  3   10.0.10.1  0.001ms  0.002ms  0.002ms
 ```
 
 ### Set ip-option loose source route
@@ -170,11 +170,11 @@ Root user.
 |*IPv4-address*|Optional | A.B.C.D | Loose source route address to traceroute.|
 #### Examples
 ```
-switch# traceroute 10.168.1.146 ip-option loosesourceroute 10.57.191.129
-traceroute to 10.168.1.146 (10.168.1.146) , 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
-  1 10.57.191.129 2 ms 3 ms 3 ms
-  2 10.57.232.1 4 ms 2 ms 3 ms
-  3 10.168.1.146 4 ms 3 ms 3 ms
+switch# traceroute 10.0.10.1 ip-option loosesourceroute 10.0.40.2
+traceroute to 10.0.10.1 (10.0.10.1) , 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
+  1   10.0.40.2  0.002ms  0.002ms  0.001ms
+  2   10.0.30.1  0.002ms  0.001ms  0.001ms
+  3   10.0.10.1  0.001ms  0.002ms  0.002ms
  ```
 
 ##Traceroute6 options

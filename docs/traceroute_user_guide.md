@@ -43,13 +43,13 @@ The time-to-live (TTL) value, also known as hop limit, is used in determining th
 ### Traceroute examples
 
 #### Traceroute IP-address
-    Send IP traceroute UDP packets to the device that has IP address 10.168.1.146:
+    Send IP traceroute UDP packets to the device that has IP address 10.0.10.1:
 ```
-    switch# traceroute 10.168.1.146
-    traceroute to 10.168.1.146 (10.168.1.146) , 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
-      1 10.57.191.129 2 ms 3 ms 3 ms
-      2 10.57.232.1 4 ms 2 ms 3 ms
-      3 10.168.1.146 4 ms 3 ms 3 ms
+    switch# traceroute 10.0.10.1
+    traceroute to 10.0.10.1 (10.0.10.1) , 1 hops min, 30 hops max, 3 sec. timeout, 3 probes
+      1   10.0.40.2  0.002ms  0.002ms  0.001ms
+      2   10.0.30.1  0.002ms  0.001ms  0.001ms
+      3   10.0.10.1  0.001ms  0.002ms  0.002ms
 ```
 Send IP traceroute UDP packets to the device that has IP address 0.0.0.0:
 ```
