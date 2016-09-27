@@ -161,16 +161,16 @@ Admin user.
 | **no** | Optional | Literal | Removes the announced network for the eBGP router. |
 
 #### Examples
-The following configuration example shows that network 10.0.0.0/8 is announced to all neighbors:
+The following configuration example shows that network 10.1.2.0/24 is announced to all neighbors:
 
 ```
-s1(config-router)# network 10.0.0.0/8
+s1(config-router)# network 10.1.2.0/24
 s1(config)# do sh run
 Current configuration:
 !
 router bgp 6001
      bgp router-id 9.0.0.1
-     network 10.0.0.0/8
+     network 10.1.2.0/24
 ```
 
 ### maximum-paths
@@ -637,8 +637,8 @@ Admin user.
 
 ##### Examples
 ```
-s1(config-router)# neighbor 10.0.2.15 ebgp-multihop
-s1(config-router)# no neighbor 10.0.2.15 ebgp-multihop
+s1(config-router)# neighbor 10.1.2.1 ebgp-multihop
+s1(config-router)# no neighbor 10.1.2.1 ebgp-multihop
 ```
 
 #### neighbor filter-list
@@ -664,8 +664,8 @@ Admin user.
 
 ##### Examples
 ```
-s1(config-router)# neighbor 172.16.1.1 filter-list 1 out
-s1(config-router)# no neighbor 172.16.1.1 filter-list 1 out
+s1(config-router)# neighbor 192.18.1.1 filter-list 1 out
+s1(config-router)# no neighbor 192.18.1.1 filter-list 1 out
 ```
 
 #### neighbor prefix-list
@@ -691,8 +691,8 @@ Admin user.
 
 ##### Examples
 ```
-s1(config-router)# neighbor 10.23.4.2 prefix-list abc in
-s1(config-router)# no neighbor 10.23.4.2 prefix-list abc in
+s1(config-router)# neighbor 10.1.4.2 prefix-list abc in
+s1(config-router)# no neighbor 10.1.4.2 prefix-list abc in
 ```
 
 #### neighbor soft-reconfiguration
@@ -1511,9 +1511,9 @@ Admin user.
 
 #### Examples
 ```
-s1(config)# ip prefix-list PLIST1 seq 5 deny 11.0.0.0/8
-s1(config)# ip prefix-list PLIST2 seq 10 permit 10.0.0.0/8
-s1(config)# no ip prefix-list PLIST1 seq 5 deny 11.0.0.0/8
+s1(config)# ip prefix-list PLIST1 seq 5 deny 10.1.1.0/24
+s1(config)# ip prefix-list PLIST2 seq 10 permit 10.2.2.0/24
+s1(config)# no ip prefix-list PLIST1 seq 5 deny 10.3.2.0/24
 s1(config)# no ip prefix-list PLIST2
 ```
 ### IPv6 prefix-list
@@ -1641,10 +1641,10 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
 
 Local router-id 9.0.0.1
    Network          Next Hop            Metric LocPrf Weight Path
-*> 11.0.0.0/8       0.0.0.0                  0      0  32768  i
-*> 12.0.0.0/8       10.10.10.2               0      0      0 2 5 i
-*  12.0.0.0/8       20.20.20.2               0      0      0 3 5 i
-*  12.0.0.0/8       30.30.30.2               0      0      0 4 5 i
+*> 10.1.2.0/24       0.0.0.0                  0      0  32768  i
+*> 10.2.3.0/24       10.10.10.2               0      0      0 2 5 i
+*  10.3.4.0/24       10.20.20.2               0      0      0 3 5 i
+*  10.4.5.0/24       10.30.30.2               0      0      0 4 5 i
 Total number of entries 4
 ```
 
@@ -1783,11 +1783,11 @@ None
 ```
 s1# show ip prefix-list
 ip prefix-list BGP_IN_: 5 entries
-   seq 5 deny 11.0.0.0/8
-   seq 10 permit 10.0.0.0/8
-   seq 15 permit 150.168.15.0/24 ge 25 le 28
-   seq 20 permit 192.168.15.0/24 ge 27
-   seq 25 deny 192.168.15.0/24 le 25
+   seq 5 deny 10.1.1.0/24
+   seq 10 permit 10.2.2.0/24
+   seq 15 permit 172.16.15.0/20 ge 21 le 28
+   seq 20 permit 192.168.15.0/16 ge 19
+   seq 25 deny 192.168.15.0/16 le 25
 ```
 
 ### show ip prefix-list WORD seq num
@@ -1811,7 +1811,7 @@ Admin user.
 #### Examples
 ```
 s1# show ip prefix-list BGP_IN_ seq 10
-   seq 10 permit 10.0.0.0/8
+   seq 10 permit 10.1.0.0/24
 ```
 ### show ip prefix list detail WORD
 #### Syntax
@@ -1835,11 +1835,11 @@ Admin user.
 s1# show ip prefix-list detail BGP_IN_
 ip prefix-list BGP_IN_:
    count: 5, sequences: 5 - 25
-   seq 5 deny 11.0.0.0/8
-   seq 10 permit 10.0.0.0/8
-   seq 15 permit 150.168.15.0/24 ge 25 le 28
-   seq 20 permit 192.168.15.0/24 ge 27
-   seq 25 deny 192.168.15.0/24 le 25
+   seq 5 deny 10.1.0.0/24
+   seq 10 permit 10.2.0.0/24
+   seq 15 permit 172.16.15.0/20 ge 25 le 28
+   seq 20 permit 192.168.15.0/16 ge 27
+   seq 25 deny 192.168.15.0/16 le 25
 ```
 
 ### show ip prefix list summary WORD
