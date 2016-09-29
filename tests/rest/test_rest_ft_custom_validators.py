@@ -56,10 +56,6 @@ DC_PUT_DATA = {
         }
     },
     "System": {
-        "aaa": {
-            "fallback": "false",
-            "radius": "false"
-        },
         "asset_tag_number": "",
         "bridges": {
             "bridge_normal": {
@@ -202,9 +198,6 @@ class QueryCustomValidatorsTest(OpsVsiTest):
         assert d['Port']['p1'] == DC_PUT_DATA['Port']['p1'], \
             'Failed in checking the GET METHOD JSON response validation for \
             Port p1'
-        assert d['System']['aaa'] == DC_PUT_DATA['System']['aaa'], \
-            'Failed in checking the GET METHOD JSON response validation for \
-            System aaa'
 
         info("### Received successful HTTP status code ###\n")
 

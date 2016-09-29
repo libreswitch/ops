@@ -53,9 +53,6 @@ class QuerySystem(OpsVsiTest):
         self.DATA = {
             "configuration": {
                 "bridges": ["/rest/v1/system/bridges/bridge_normal"],
-                "aaa": {
-                    "fallback": "true",
-                    "radius": "false"},
                 "hostname": "openswitch",
                 "asset_tag_number": "",
                 "mgmt_intf": {

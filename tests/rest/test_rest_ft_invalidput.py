@@ -31,11 +31,6 @@ DATA = {
         "bridges": ["/rest/v1/system/bridge_normal"],
         "lacp_config": {},
         "dns_servers": [],
-        "aaa": {
-            "ssh_publickeyauthentication": "enable",
-            "fallback": "true",
-            "radius": "false",
-            "ssh_passkeyauthentication": "enable"},
         "logrotate_config": {},
         "hostname": "openswitch",
         "manager_options": [],

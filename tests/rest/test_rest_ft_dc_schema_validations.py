@@ -43,10 +43,6 @@ PUT_DATA = {
         }
     },
     "System": {
-        "aaa": {
-            "fallback": "false",
-            "radius": "false"
-        },
         "asset_tag_number": "",
         "bridges": {
             "bridge_normal": {
@@ -114,9 +110,6 @@ class QueryDcSchemaValidations(OpsVsiTest):
         assert d['Port']['p1'] == PUT_DATA['Port']['p1'], \
             'Failed in checking the GET METHOD JSON response validation for \
             Port p1'
-        assert d['System']['aaa'] == PUT_DATA['System']['aaa'], \
-            'Failed in checking the GET METHOD JSON response validation for \
-            System aaa'
 
         info("### Successfully executed PUT for url=%s ###\n" % self.put_url)
         info("### Received successful HTTP status code ###\n")
