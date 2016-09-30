@@ -16,6 +16,7 @@
 # under the License.
 
 import pytest
+from pytest import mark
 import re
 from opstestfw import *
 from opstestfw.switch.CLI import *
@@ -534,7 +535,7 @@ def sftpRebootTest(**kwargs):
 
     return True
 
-
+@mark.skipif(True, reason="Disabling as AAA feature revamp in progress")
 # Test class to verify SFTP
 class Test_sftp:
     def setup_class(cls):
