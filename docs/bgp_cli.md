@@ -138,8 +138,8 @@ Admin user.
 
 #### Examples
 ```
-s1(config-router)# bgp router-id 9.0.0.1
-s1(config-router)# no bgp router-id 9.0.0.1
+s1(config-router)# bgp router-id 10.1.2.1
+s1(config-router)# no bgp router-id 10.1.2.1
 ```
 
 ### IPv4 network
@@ -169,7 +169,7 @@ s1(config)# do sh run
 Current configuration:
 !
 router bgp 6001
-     bgp router-id 9.0.0.1
+     bgp router-id 10.1.2.1
      network 10.1.2.0/24
 ```
 
@@ -348,8 +348,8 @@ Admin user.
 ##### Examples
 ```
 s1(config)# router bgp 6001
-s1(config-router)# neighbor 9.0.0.2 remote-as 6002
-s1(config-router)# no neighbor 9.0.0.2 remote-as 6002
+s1(config-router)# neighbor 10.1.2.1 remote-as 6002
+s1(config-router)# no neighbor 10.1.2.1 remote-as 6002
 ```
 
 #### neighbor description
@@ -374,8 +374,8 @@ Admin user.
 ##### Examples
 ```
 s1(config)# router bgp 6001
-s1(config-router)# neighbor 9.0.0.2 remote-as 6002
-s1(config-router)# neighbor 9.0.0.2 description peer1
+s1(config-router)# neighbor 10.1.2.1 remote-as 6002
+s1(config-router)# neighbor 10.1.2.1 description peer1
 ```
 
 #### neighbor password
@@ -400,8 +400,8 @@ Admin user.
 ##### Examples
 ```
 s1(config)# router bgp 6001
-s1(config-router)# neighbor 9.0.0.2 remote-as 6002
-s1(config-router)# neighbor 9.0.0.2 password secret
+s1(config-router)# neighbor 10.1.2.1 remote-as 6002
+s1(config-router)# neighbor 10.1.2.1 password secret
 ```
 
 #### neighbor timers
@@ -426,8 +426,8 @@ Admin user.
 ##### Examples
 ```
 s1(config)# router bgp 6001
-s1(config-router)# neighbor 9.0.0.2 remote-as 6002
-s1(config-router)# neighbor 9.0.0.2 timers 20 10
+s1(config-router)# neighbor 10.1.2.1 remote-as 6002
+s1(config-router)# neighbor 10.1.2.1 timers 20 10
 ```
 
 #### neighbor allowas-in
@@ -452,8 +452,8 @@ Admin user.
 ##### Examples
 ```
 s1(config)# router bgp 6001
-s1(config-router)# neighbor 9.0.0.2 remote-as 6002
-s1(config-router)# neighbor 9.0.0.2 allowas-in 2
+s1(config-router)# neighbor 10.1.2.1 remote-as 6002
+s1(config-router)# neighbor 10.1.2.1 allowas-in 2
 ```
 
 #### neighbor remove-private-AS
@@ -478,8 +478,8 @@ Admin user.
 ##### Examples
 ```
 s1(config)# router bgp 6001
-s1(config-router)# neighbor 9.0.0.2 remote-as 6002
-s1(config-router)# neighbor 9.0.0.2 remove-private-AS
+s1(config-router)# neighbor 10.1.2.1 remote-as 6002
+s1(config-router)# neighbor 10.1.2.1 remove-private-AS
 ```
 
 #### neighbor soft-reconfiguration inbound
@@ -503,8 +503,8 @@ admin
 ##### Examples
 ```
 s1(config)# router bgp 6001
-s1(config-router)# neighbor 9.0.0.2 remote-as 6002
-s1(config-router)# neighbor 9.0.0.2 soft-reconfiguration inbound
+s1(config-router)# neighbor 10.1.2.1 remote-as 6002
+s1(config-router)# neighbor 10.1.2.1 soft-reconfiguration inbound
 ```
 
 #### neighbor shutdown
@@ -528,8 +528,8 @@ Admin user.
 ##### Examples
 ```
 s1(config)# router bgp 6001
-s1(config-router)# neighbor 9.0.0.2 remote-as 6002
-s1(config-router)# neighbor 9.0.0.2 shutdown
+s1(config-router)# neighbor 10.1.2.1 remote-as 6002
+s1(config-router)# neighbor 10.1.2.1 shutdown
 ```
 
 #### neighbor peer-group
@@ -554,8 +554,8 @@ Admin user.
 ##### Examples
 ```
 s1(config)# router bgp 6001
-s1(config-router)# neighbor 9.0.0.2 remote-as 6002
-s1(config-router)# neighbor 9.0.0.2 peer-group pg1
+s1(config-router)# neighbor 10.1.2.1 remote-as 6002
+s1(config-router)# neighbor 10.1.2.1 peer-group pg1
 ```
 
 #### neighbor route-map
@@ -579,8 +579,8 @@ Admin user.
 ##### Examples
 ```
 s1(config)# router bgp 6001
-s1(config-router)# neighbor 9.0.0.2 remote-as 6002
-s1(config-router)# neighbor 9.0.0.2 route-map rm1 in
+s1(config-router)# neighbor 10.1.2.1 remote-as 6002
+s1(config-router)# neighbor 10.1.2.1 route-map rm1 in
 ```
 
 #### neighbor advertisement-interval
@@ -607,8 +607,8 @@ Admin user.
 ##### Examples
 ```
 s1(config)# router bgp 6001
-s1(config-router)# neighbor 9.0.0.2 advertisement-interval 400
-s1(config-router)# no neighbor 9.0.0.2 advertisement-interval 400
+s1(config-router)# neighbor 10.1.2.1 advertisement-interval 400
+s1(config-router)# no neighbor 10.1.2.1 advertisement-interval 400
 ```
 ```
 s1(config)# router bgp 6001
@@ -1106,7 +1106,7 @@ Admin user.
 ##### Examples
 ```
 s1(config)# route-map RMAP1 deny 1
-s1(config-route-map)#set aggregator as 1 9.0.0.1
+s1(config-route-map)#set aggregator as 1 10.1.2.1
 ```
 
 #### set as-path exclude
@@ -1254,7 +1254,7 @@ Admin user.
 ```
 s1(config)# route-map RMAP1 deny 1
 s1(config-route-map)#set extcommunity rt 6000:100
-s1(config-route-map)#set extcommunity rt 9.0.0.1:100
+s1(config-route-map)#set extcommunity rt 10.1.2.1:100
 ```
 
 #### set extcommunity soo
@@ -1279,7 +1279,7 @@ Admin user.
 ```
 s1(config)# route-map RMAP1 deny 1
 s1(config-route-map)#set extcommunity soo 6000:100
-s1(config-route-map)#set extcommunity soo 9.0.0.1:100
+s1(config-route-map)#set extcommunity soo 10.1.2.1:100
 ```
 
 #### set ipv6 next-hop global
@@ -1639,7 +1639,7 @@ Status codes: s suppressed, d damped, h history, * valid, > best, = multipath,
               i internal, S Stale, R Removed
 Origin codes: i - IGP, e - EGP, ? - incomplete
 
-Local router-id 9.0.0.1
+Local router-id 10.1.2.1
    Network          Next Hop            Metric LocPrf Weight Path
 *> 10.1.2.0/24       0.0.0.0                  0      0  32768  i
 *> 10.2.3.0/24       10.10.10.2               0      0      0 2 5 i
@@ -1666,12 +1666,12 @@ None
 #### Examples
 ```ditaa
 s1# show ip bgp summary
-BGP router identifier 9.0.0.1, local AS number 1
+BGP router identifier 10.1.2.1, local AS number 1
 RIB entries 2
 Peers 1
 
 Neighbor             AS MsgRcvd MsgSent Up/Down  State
-9.0.0.2               2       4       5 00:00:28 Established
+10.1.2.1               2       4       5 00:00:28 Established
 ```
 
 ### show bgp neighbors
@@ -1692,7 +1692,7 @@ None
 #### Examples
 ```ditaa
 s1# show bgp neighbors
-  name: 9.0.0.2, remote-as: 6002
+  name: 10.1.2.1, remote-as: 6002
     state: undefined
     shutdown: yes
     description: peer1
@@ -1742,7 +1742,7 @@ Entry 1:
      action : permit
      Set parameters :
      metric : 4
-     aggregator_as : 1 8.0.0.1
+     aggregator_as : 1 10.1.2.1
      as_path_prepend : 1 1
      atomic_aggregate : true
      comm_list : test delete
