@@ -73,7 +73,7 @@ All Users
 ```
 ops-as5712# configure terminal
 ops-as5712(config)# interface 1.1
-ops-as5712(config-subif)# ip address 16.93.50.2/24
+ops-as5712(config-subif)# ip address 10.0.10.1/24
 ```
 ###  Set or unset IPv6 addresses
 #### Syntax
@@ -164,10 +164,10 @@ ops-as5712# show running-config
 .............................
 interface 1.1
     no shutdown
-    ip address 192.168.1.1/24
+    ip address 10.0.10.1/24
 interface 1.2
     no shutdown
-    ip address 182.168.1.1/24
+    ip address 10.0.20.1/24
     encapsulation dot1Q 44
 .............................
 .............................
@@ -192,7 +192,7 @@ Interface 1.1 is down(Parent Interface Admin down)
  parent interface is 1
  encapsulation dot1Q 33
  Hardware: Ethernet, MAC Address: 70:72:cf:fd:e7:b4
- IPv4 address 192.168.1.1/2
+ IPv4 address 10.0.10.1/24
  Input flow-control is off, output flow-control is off
  RX
       0 input packets     0 bytes
@@ -207,7 +207,7 @@ Interface 1.2 is down(Parent Interface Admin down))
  parent interface is 1
  encapsulation dot1Q 44
  Hardware: Ethernet, MAC Address: 70:72:cf:fd:e7:b4
- IPv4 address 182.168.1.1/2
+ IPv4 address 10.0.20.1/24
  Input flow-control is off, output flow-control is off
  RX
       0 input packets     0 bytes
@@ -247,7 +247,7 @@ Interface 1.1 is down(Parent Interface Admin down)
  parent interface is 1
  encapsulation dot1Q 33
  Hardware: Ethernet, MAC Address: 70:72:cf:fd:e7:b4
- IPv4 address 182.168.1.1/2
+ IPv4 address 10.0.10.1/2
  Input flow-control is off, output flow-control is off
  RX
       0 input packets     0 bytes
