@@ -33,7 +33,7 @@ Log-rotate works as follows:
 -  All module logs are stored in `var/log/messages`, all authentication logs are stored in `/var/log/auth.log`, all audit logs are stored in `/var/log/audit/audit.log` and all event logs are stored in `/var/log/event.log`. Only logs stored in these paths are rotated.
 - Management of rotated log files:
   - Rotated log files are compressed and stored locally in the path `/var/log/`, regardless of the remote host configuration
-  - Rotated log files are stored with respective time extension to the granularity of hour and switch name in the format "file1- YYYYMMDDHH_${switchname}.gz" (e.g., messages-2015080715_access1.gz)
+  - Rotated log files are stored with respective time extension to the granularity of hour and switch name in the format "file1- YYYYMMDDHH_switchname.gz" (e.g., messages-2015080715_access1.gz)
   - Rotated log files are replaced when the number of old rotated log files exceeds three. The newly rotated log file replaces the oldest rotated log file.
 - Remote transfer of rotated log files:
   -  Only TFTP protocol is supported.
